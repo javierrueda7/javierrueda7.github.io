@@ -120,7 +120,7 @@ class _CreateCustomerPageState extends State<CreateCustomerPage> {
     return Scaffold(      
       extendBodyBehindAppBar: false,
       appBar: AppBar(
-        backgroundColor: fifthColor,
+        backgroundColor: fourthColor,
         foregroundColor: primaryColor,
         elevation: 0,
         centerTitle: true,
