@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "635921344671",
+    "firebase_url": "https://albaterra-8f0bc-default-rtdb.firebaseio.com",
+    "project_id": "albaterra-8f0bc",
+    "storage_bucket": "albaterra-8f0bc.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:635921344671:android:d4b1a4d8ed39a16ba7daaa",
+        "android_client_info": {
+          "package_name": "com.cond_albaterra.albaterrapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "635921344671-r9pvevueknu8lnnucp687ugoep27ndm3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCjCPIHLfLRzv7CkdzeO6obSOw6njGwlGc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "635921344671-r9pvevueknu8lnnucp687ugoep27ndm3.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "635921344671-bba8iit1850je41sj10p017bfgi0n1gk.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.condalbaterra.albaterrapp"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
