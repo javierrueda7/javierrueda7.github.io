@@ -537,167 +537,170 @@ class _CreateCustomerPageState extends State<CreateCustomerPage> {
                       height: 20,
                       child: Center(child: Text('Lugar de expedición', style: TextStyle(fontSize: 10),)),
                     ),
-                    Column(
-                      mainAxisSize: MainAxisSize.max,
-                      children: [
-                        Container(
-                          alignment: Alignment.center,
-                          height: 50,
-                          decoration: BoxDecoration(borderRadius: BorderRadius.circular(90), border: Border.all(color: fifthColor.withOpacity(0.1))),
-                          child: Padding(
-                            padding: const EdgeInsets.only(left: 10.0, right: 10),
-                            child: StreamBuilder<QuerySnapshot>(
-                              stream: FirebaseFirestore.instance.collection('countries').orderBy('countryName').snapshots(),
-                              builder: (context, snapshot) {
-                                List<DropdownMenuItem> countryItems = [];
-                                if (!snapshot.hasData) {
-                                  const CircularProgressIndicator();
-                                } else {
-                                  final countriesList = snapshot.data?.docs;
-                                  for (var countries in countriesList!) {
-                                    countryItems.add(
-                                      DropdownMenuItem(
-                                        value: countries['countryName'],
-                                        child: Center(child: Text(countries['countryName'])),
-                                      ),
-                                    );
+                    Container(
+                      constraints: const BoxConstraints(maxWidth: 800),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.max,
+                        children: [
+                          Container(
+                            alignment: Alignment.center,
+                            height: 50,
+                            decoration: BoxDecoration(borderRadius: BorderRadius.circular(90), border: Border.all(color: fifthColor.withOpacity(0.1))),
+                            child: Padding(
+                              padding: const EdgeInsets.only(left: 10.0, right: 10),
+                              child: StreamBuilder<QuerySnapshot>(
+                                stream: FirebaseFirestore.instance.collection('countries').orderBy('countryName').snapshots(),
+                                builder: (context, snapshot) {
+                                  List<DropdownMenuItem> countryItems = [];
+                                  if (!snapshot.hasData) {
+                                    const CircularProgressIndicator();
+                                  } else {
+                                    final countriesList = snapshot.data?.docs;
+                                    for (var countries in countriesList!) {
+                                      countryItems.add(
+                                        DropdownMenuItem(
+                                          value: countries['countryName'],
+                                          child: Center(child: Text(countries['countryName'])),
+                                        ),
+                                      );
+                                    }
                                   }
-                                }
-                                return DropdownButton(
-                                  items: countryItems,
-                                  hint: Center(child: Text(selectedIssuedCountry)),
-                                  underline: Container(),
-                                  style: TextStyle(color: fifthColor.withOpacity(0.9),),
-                                  onChanged: (countryValue) {
-                                    setState(() {
-                                      selectedIssuedCountry = countryValue!;
-                                      if(selectedIssuedCountry ==  'Colombia'){
-                                        countryBool = true;
-                                      } else {
-                                        countryBool = false;
-                                      }
-                                    });
-                                  },
-                                  isExpanded: true,
-                                );
-                              },
+                                  return DropdownButton(
+                                    items: countryItems,
+                                    hint: Center(child: Text(selectedIssuedCountry)),
+                                    underline: Container(),
+                                    style: TextStyle(color: fifthColor.withOpacity(0.9),),
+                                    onChanged: (countryValue) {
+                                      setState(() {
+                                        selectedIssuedCountry = countryValue!;
+                                        if(selectedIssuedCountry ==  'Colombia'){
+                                          countryBool = true;
+                                        } else {
+                                          countryBool = false;
+                                        }
+                                      });
+                                    },
+                                    isExpanded: true,
+                                  );
+                                },
+                              ),
                             ),
                           ),
-                        ),
-                        const SizedBox(
-                          height: 5,
-                        ),
-                        Row(
-                          children: [
-                            Expanded(
-                              flex: 6,
-                              child: Container(
-                                alignment: Alignment.center,
-                                height: 50,
-                                decoration: BoxDecoration(borderRadius: BorderRadius.circular(90), border: Border.all(color: fifthColor.withOpacity(0.1))),
-                                child: Padding(
-                                  padding: const EdgeInsets.only(left: 10.0, right: 10),
-                                  child: StreamBuilder<QuerySnapshot>(
-                                    stream: FirebaseFirestore.instance.collection('cities').orderBy('stateName', descending: true).snapshots(),
-                                    builder: (context, snapshot) {
-                                      Set<String> stateNames = {};
-                                      List<DropdownMenuItem> stateItems = [];
-                                      if (!snapshot.hasData) {
-                                        return const CircularProgressIndicator();
-                                      } else {
-                                        final statesList = snapshot.data?.docs.reversed.toList();
-                                        for (var cities in statesList!) {
-                                          String stateName = cities['stateName'];
-                                          if(countryBool == true){
-                                            if (!stateNames.contains(stateName)) {
-                                              stateNames.add(stateName);
-                                              stateItems.add(
-                                                DropdownMenuItem(
-                                                  value: stateName,
-                                                  child: Center(child: Text(stateName)),
-                                                ),
-                                              );
-                                            }
-                                          } else {
-                                            if (stateName == 'Otro') {
-                                              stateItems.add(
-                                                DropdownMenuItem(
-                                                  value: stateName,
-                                                  child: Center(child: Text(stateName)),
-                                                ),
-                                              );
+                          const SizedBox(
+                            height: 5,
+                          ),
+                          Row(
+                            children: [
+                              Expanded(
+                                flex: 6,
+                                child: Container(
+                                  alignment: Alignment.center,
+                                  height: 50,
+                                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(90), border: Border.all(color: fifthColor.withOpacity(0.1))),
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(left: 10.0, right: 10),
+                                    child: StreamBuilder<QuerySnapshot>(
+                                      stream: FirebaseFirestore.instance.collection('cities').orderBy('stateName', descending: true).snapshots(),
+                                      builder: (context, snapshot) {
+                                        Set<String> stateNames = {};
+                                        List<DropdownMenuItem> stateItems = [];
+                                        if (!snapshot.hasData) {
+                                          return const CircularProgressIndicator();
+                                        } else {
+                                          final statesList = snapshot.data?.docs.reversed.toList();
+                                          for (var cities in statesList!) {
+                                            String stateName = cities['stateName'];
+                                            if(countryBool == true){
+                                              if (!stateNames.contains(stateName)) {
+                                                stateNames.add(stateName);
+                                                stateItems.add(
+                                                  DropdownMenuItem(
+                                                    value: stateName,
+                                                    child: Center(child: Text(stateName)),
+                                                  ),
+                                                );
+                                              }
+                                            } else {
+                                              if (stateName == 'Otro') {
+                                                stateItems.add(
+                                                  DropdownMenuItem(
+                                                    value: stateName,
+                                                    child: Center(child: Text(stateName)),
+                                                  ),
+                                                );
+                                              }
                                             }
                                           }
                                         }
-                                      }
-                                      return DropdownButton(
-                                        items: stateItems,
-                                        hint: Center(child: Text(selectedIssuedState)),
-                                        style: TextStyle(color: fifthColor.withOpacity(0.9),),
-                                        underline: Container(),
-                                        onChanged: (stateValue) {
-                                          setState(() {
-                                            selectedIssuedState = stateValue!;
-                                          });
-                                        },
-                                        isExpanded: true,
-                                      );
-                                    },
+                                        return DropdownButton(
+                                          items: stateItems,
+                                          hint: Center(child: Text(selectedIssuedState)),
+                                          style: TextStyle(color: fifthColor.withOpacity(0.9),),
+                                          underline: Container(),
+                                          onChanged: (stateValue) {
+                                            setState(() {
+                                              selectedIssuedState = stateValue!;
+                                            });
+                                          },
+                                          isExpanded: true,
+                                        );
+                                      },
+                                    ),
                                   ),
+                                  
                                 ),
-                                
                               ),
-                            ),
-                            Expanded(
-                              flex: 5,
-                              child: Container(
-                                alignment: Alignment.center,
-                                height: 50,
-                                decoration: BoxDecoration(borderRadius: BorderRadius.circular(90), border: Border.all(color: fifthColor.withOpacity(0.1))),
-                                child: Padding(
-                                  padding: const EdgeInsets.only(left: 10.0, right: 10),
-                                  child: StreamBuilder<QuerySnapshot>(
-                                    stream: FirebaseFirestore.instance.collection('cities').where('stateName', isEqualTo: selectedIssuedState).orderBy('cityName', descending: true).snapshots(),
-                                    builder: (context, snapshot) {
-                                      Set<String> cityNames = {};
-                                      List<DropdownMenuItem> cityItems = [];
-                                      if (!snapshot.hasData) {
-                                        return const CircularProgressIndicator();
-                                      } else {
-                                        final citiesList = snapshot.data?.docs.reversed.toList();
-                                        for (var cities in citiesList!) {
-                                          String cityName = cities['cityName'];                                   
-                                          if (!cityNames.contains(cityName)) {
-                                            cityNames.add(cityName);
-                                            cityItems.add(
-                                              DropdownMenuItem(
-                                                value: cityName,
-                                                child: Center(child: Text(cityName)),
-                                              ),
-                                            );
-                                          }                                    
+                              Expanded(
+                                flex: 5,
+                                child: Container(
+                                  alignment: Alignment.center,
+                                  height: 50,
+                                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(90), border: Border.all(color: fifthColor.withOpacity(0.1))),
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(left: 10.0, right: 10),
+                                    child: StreamBuilder<QuerySnapshot>(
+                                      stream: FirebaseFirestore.instance.collection('cities').where('stateName', isEqualTo: selectedIssuedState).orderBy('cityName', descending: true).snapshots(),
+                                      builder: (context, snapshot) {
+                                        Set<String> cityNames = {};
+                                        List<DropdownMenuItem> cityItems = [];
+                                        if (!snapshot.hasData) {
+                                          return const CircularProgressIndicator();
+                                        } else {
+                                          final citiesList = snapshot.data?.docs.reversed.toList();
+                                          for (var cities in citiesList!) {
+                                            String cityName = cities['cityName'];                                   
+                                            if (!cityNames.contains(cityName)) {
+                                              cityNames.add(cityName);
+                                              cityItems.add(
+                                                DropdownMenuItem(
+                                                  value: cityName,
+                                                  child: Center(child: Text(cityName)),
+                                                ),
+                                              );
+                                            }                                    
+                                          }
                                         }
-                                      }
-                                      return DropdownButton(
-                                        items: cityItems,
-                                        hint: Center(child: Text(selectedIssuedCity)),
-                                        underline: Container(),
-                                        style: TextStyle(color: fifthColor.withOpacity(0.9),),
-                                        onChanged: (cityValue) {
-                                          setState(() {
-                                            selectedIssuedCity = cityValue!;
-                                          });
-                                        },
-                                        isExpanded: true,
-                                      );
-                                    },
-                                  ),
-                                )
+                                        return DropdownButton(
+                                          items: cityItems,
+                                          hint: Center(child: Text(selectedIssuedCity)),
+                                          underline: Container(),
+                                          style: TextStyle(color: fifthColor.withOpacity(0.9),),
+                                          onChanged: (cityValue) {
+                                            setState(() {
+                                              selectedIssuedCity = cityValue!;
+                                            });
+                                          },
+                                          isExpanded: true,
+                                        );
+                                      },
+                                    ),
+                                  )
+                                ),
                               ),
-                            ),
-                          ],
-                        ),
-                      ],
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
                     const SizedBox(
                       height: 5,
@@ -720,167 +723,170 @@ class _CreateCustomerPageState extends State<CreateCustomerPage> {
                     const SizedBox(
                       height: 5,
                     ),
-                    Column(
-                      mainAxisSize: MainAxisSize.max,
-                      children: [
-                        Container(
-                          alignment: Alignment.center,
-                          height: 50,
-                          decoration: BoxDecoration(borderRadius: BorderRadius.circular(90), border: Border.all(color: fifthColor.withOpacity(0.1))),
-                          child: Padding(
-                            padding: const EdgeInsets.only(left: 10.0, right: 10),
-                            child: StreamBuilder<QuerySnapshot>(
-                              stream: FirebaseFirestore.instance.collection('countries').orderBy('countryName').snapshots(),
-                              builder: (context, snapshot) {
-                                List<DropdownMenuItem> countryItems = [];
-                                if (!snapshot.hasData) {
-                                  const CircularProgressIndicator();
-                                } else {
-                                  final countriesList = snapshot.data?.docs;
-                                  for (var countries in countriesList!) {
-                                    countryItems.add(
-                                      DropdownMenuItem(
-                                        value: countries['countryName'],
-                                        child: Center(child: Text(countries['countryName'])),
-                                      ),
-                                    );
+                    Container(
+                      constraints: const BoxConstraints(maxWidth: 800),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.max,
+                        children: [
+                          Container(
+                            alignment: Alignment.center,
+                            height: 50,
+                            decoration: BoxDecoration(borderRadius: BorderRadius.circular(90), border: Border.all(color: fifthColor.withOpacity(0.1))),
+                            child: Padding(
+                              padding: const EdgeInsets.only(left: 10.0, right: 10),
+                              child: StreamBuilder<QuerySnapshot>(
+                                stream: FirebaseFirestore.instance.collection('countries').orderBy('countryName').snapshots(),
+                                builder: (context, snapshot) {
+                                  List<DropdownMenuItem> countryItems = [];
+                                  if (!snapshot.hasData) {
+                                    const CircularProgressIndicator();
+                                  } else {
+                                    final countriesList = snapshot.data?.docs;
+                                    for (var countries in countriesList!) {
+                                      countryItems.add(
+                                        DropdownMenuItem(
+                                          value: countries['countryName'],
+                                          child: Center(child: Text(countries['countryName'])),
+                                        ),
+                                      );
+                                    }
                                   }
-                                }
-                                return DropdownButton(
-                                  items: countryItems,
-                                  hint: Center(child: Text(selectedCountry)),
-                                  underline: Container(),
-                                  style: TextStyle(color: fifthColor.withOpacity(0.9),),
-                                  onChanged: (countryValue) {
-                                    setState(() {
-                                      selectedCountry = countryValue!;
-                                      if(selectedCountry ==  'Colombia'){
-                                        countryBool = true;
-                                      } else {
-                                        countryBool = false;
-                                      }
-                                    });
-                                  },
-                                  isExpanded: true,
-                                );
-                              },
+                                  return DropdownButton(
+                                    items: countryItems,
+                                    hint: Center(child: Text(selectedCountry)),
+                                    underline: Container(),
+                                    style: TextStyle(color: fifthColor.withOpacity(0.9),),
+                                    onChanged: (countryValue) {
+                                      setState(() {
+                                        selectedCountry = countryValue!;
+                                        if(selectedCountry ==  'Colombia'){
+                                          countryBool = true;
+                                        } else {
+                                          countryBool = false;
+                                        }
+                                      });
+                                    },
+                                    isExpanded: true,
+                                  );
+                                },
+                              ),
                             ),
                           ),
-                        ),
-                        const SizedBox(
-                          height: 5,
-                        ),
-                        Row(
-                          children: [
-                            Expanded(
-                              flex: 6,
-                              child: Container(
-                                alignment: Alignment.center,
-                                height: 50,
-                                decoration: BoxDecoration(borderRadius: BorderRadius.circular(90), border: Border.all(color: fifthColor.withOpacity(0.1))),
-                                child: Padding(
-                                  padding: const EdgeInsets.only(left: 10.0, right: 10),
-                                  child: StreamBuilder<QuerySnapshot>(
-                                    stream: FirebaseFirestore.instance.collection('cities').orderBy('stateName', descending: true).snapshots(),
-                                    builder: (context, snapshot) {
-                                      Set<String> stateNames = {};
-                                      List<DropdownMenuItem> stateItems = [];
-                                      if (!snapshot.hasData) {
-                                        return const CircularProgressIndicator();
-                                      } else {
-                                        final statesList = snapshot.data?.docs.reversed.toList();
-                                        for (var cities in statesList!) {
-                                          String stateName = cities['stateName'];
-                                          if(countryBool == true){
-                                            if (!stateNames.contains(stateName)) {
-                                              stateNames.add(stateName);
-                                              stateItems.add(
-                                                DropdownMenuItem(
-                                                  value: stateName,
-                                                  child: Center(child: Text(stateName)),
-                                                ),
-                                              );
-                                            }
-                                          } else {
-                                            if (stateName == 'Otro') {
-                                              stateItems.add(
-                                                DropdownMenuItem(
-                                                  value: stateName,
-                                                  child: Center(child: Text(stateName)),
-                                                ),
-                                              );
+                          const SizedBox(
+                            height: 5,
+                          ),
+                          Row(
+                            children: [
+                              Expanded(
+                                flex: 6,
+                                child: Container(
+                                  alignment: Alignment.center,
+                                  height: 50,
+                                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(90), border: Border.all(color: fifthColor.withOpacity(0.1))),
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(left: 10.0, right: 10),
+                                    child: StreamBuilder<QuerySnapshot>(
+                                      stream: FirebaseFirestore.instance.collection('cities').orderBy('stateName', descending: true).snapshots(),
+                                      builder: (context, snapshot) {
+                                        Set<String> stateNames = {};
+                                        List<DropdownMenuItem> stateItems = [];
+                                        if (!snapshot.hasData) {
+                                          return const CircularProgressIndicator();
+                                        } else {
+                                          final statesList = snapshot.data?.docs.reversed.toList();
+                                          for (var cities in statesList!) {
+                                            String stateName = cities['stateName'];
+                                            if(countryBool == true){
+                                              if (!stateNames.contains(stateName)) {
+                                                stateNames.add(stateName);
+                                                stateItems.add(
+                                                  DropdownMenuItem(
+                                                    value: stateName,
+                                                    child: Center(child: Text(stateName)),
+                                                  ),
+                                                );
+                                              }
+                                            } else {
+                                              if (stateName == 'Otro') {
+                                                stateItems.add(
+                                                  DropdownMenuItem(
+                                                    value: stateName,
+                                                    child: Center(child: Text(stateName)),
+                                                  ),
+                                                );
+                                              }
                                             }
                                           }
                                         }
-                                      }
-                                      return DropdownButton(
-                                        items: stateItems,
-                                        hint: Center(child: Text(selectedState)),
-                                        underline: Container(),
-                                        style: TextStyle(color: fifthColor.withOpacity(0.9),),
-                                        onChanged: (stateValue) {
-                                          setState(() {
-                                            selectedState = stateValue!;
-                                          });
-                                        },
-                                        isExpanded: true,
-                                      );
-                                    },
+                                        return DropdownButton(
+                                          items: stateItems,
+                                          hint: Center(child: Text(selectedState)),
+                                          underline: Container(),
+                                          style: TextStyle(color: fifthColor.withOpacity(0.9),),
+                                          onChanged: (stateValue) {
+                                            setState(() {
+                                              selectedState = stateValue!;
+                                            });
+                                          },
+                                          isExpanded: true,
+                                        );
+                                      },
+                                    ),
                                   ),
+                                  
                                 ),
-                                
                               ),
-                            ),
-                            Expanded(
-                              flex: 5,
-                              child: Container(
-                                alignment: Alignment.center,
-                                height: 50,
-                                decoration: BoxDecoration(borderRadius: BorderRadius.circular(90), border: Border.all(color: fifthColor.withOpacity(0.1))),
-                                child: Padding(
-                                  padding: const EdgeInsets.only(left: 10.0, right: 10),
-                                  child: StreamBuilder<QuerySnapshot>(
-                                    stream: FirebaseFirestore.instance.collection('cities').where('stateName', isEqualTo: selectedState).orderBy('cityName', descending: true).snapshots(),
-                                    builder: (context, snapshot) {
-                                      Set<String> cityNames = {};
-                                      List<DropdownMenuItem> cityItems = [];
-                                      if (!snapshot.hasData) {
-                                        return const CircularProgressIndicator();
-                                      } else {
-                                        final citiesList = snapshot.data?.docs.reversed.toList();
-                                        for (var cities in citiesList!) {
-                                          String cityName = cities['cityName'];                                   
-                                          if (!cityNames.contains(cityName)) {
-                                            cityNames.add(cityName);
-                                            cityItems.add(
-                                              DropdownMenuItem(
-                                                value: cityName,
-                                                child: Center(child: Text(cityName)),
-                                              ),
-                                            );
-                                          }                                    
+                              Expanded(
+                                flex: 5,
+                                child: Container(
+                                  alignment: Alignment.center,
+                                  height: 50,
+                                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(90), border: Border.all(color: fifthColor.withOpacity(0.1))),
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(left: 10.0, right: 10),
+                                    child: StreamBuilder<QuerySnapshot>(
+                                      stream: FirebaseFirestore.instance.collection('cities').where('stateName', isEqualTo: selectedState).orderBy('cityName', descending: true).snapshots(),
+                                      builder: (context, snapshot) {
+                                        Set<String> cityNames = {};
+                                        List<DropdownMenuItem> cityItems = [];
+                                        if (!snapshot.hasData) {
+                                          return const CircularProgressIndicator();
+                                        } else {
+                                          final citiesList = snapshot.data?.docs.reversed.toList();
+                                          for (var cities in citiesList!) {
+                                            String cityName = cities['cityName'];                                   
+                                            if (!cityNames.contains(cityName)) {
+                                              cityNames.add(cityName);
+                                              cityItems.add(
+                                                DropdownMenuItem(
+                                                  value: cityName,
+                                                  child: Center(child: Text(cityName)),
+                                                ),
+                                              );
+                                            }                                    
+                                          }
                                         }
-                                      }
-                                      return DropdownButton(
-                                        items: cityItems,
-                                        hint: Center(child: Text(selectedCity)),
-                                        underline: Container(),
-                                        style: TextStyle(color: fifthColor.withOpacity(0.9),),
-                                        onChanged: (cityValue) {
-                                          setState(() {
-                                            selectedCity = cityValue!;
-                                          });
-                                        },
-                                        isExpanded: true,
-                                      );
-                                    },
-                                  ),
-                                )
+                                        return DropdownButton(
+                                          items: cityItems,
+                                          hint: Center(child: Text(selectedCity)),
+                                          underline: Container(),
+                                          style: TextStyle(color: fifthColor.withOpacity(0.9),),
+                                          onChanged: (cityValue) {
+                                            setState(() {
+                                              selectedCity = cityValue!;
+                                            });
+                                          },
+                                          isExpanded: true,
+                                        );
+                                      },
+                                    ),
+                                  )
+                                ),
                               ),
-                            ),
-                          ],
-                        ),
-                      ],
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
                     const SizedBox(
                       height: 5,
