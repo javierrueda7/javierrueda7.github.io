@@ -174,7 +174,7 @@ class _CreateCustomerPageState extends State<CreateCustomerPage> {
                                       decoration: InputDecoration(
                                         border: InputBorder.none,
                                         icon: Icon(Icons.date_range_outlined, color: fifthColor,),
-                                        hintText: "Fecha de cotización",                                    
+                                        hintText: DateFormat('MM-dd-yyyy').format(quotePickedDate),                                    
                                       ),
                                       readOnly: true,
                                       onTap: () async{
@@ -308,9 +308,8 @@ class _CreateCustomerPageState extends State<CreateCustomerPage> {
                             height: 10,
                           ),                          
                           IconButton(onPressed: (){
-                              setState(() {                                            
+                              setState(() {      
                                 vlrSeparacion =  double.parse(vlrSeparacionController.text);
-                                porcCuotaInicial = double.parse(porcCuotaInicialController.text);
                                 saldoCuotaIniController.text = (currencyCOP((saldoCI.toInt()).toString()));
                                 vlrPorPagarController.text = (currencyCOP(valorAPagar.toInt().toString()));
                                 vlrCuotaController.text =  (currencyCOP(valorCuota.toInt().toString()));                                
@@ -319,9 +318,9 @@ class _CreateCustomerPageState extends State<CreateCustomerPage> {
                             icon: Icon(Icons.refresh_outlined, color: fifthColor,),
                             alignment: Alignment.centerLeft
                           ),
-                          const SizedBox(
+                          SizedBox(
                             height: 20,
-                            child: Text('Cuota inicial', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),)
+                            child: Text('Cuota inicial: ${((porcCuotaInicial).toInt()).toString()}%', style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),)
                           ),
                           const SizedBox(
                             height: 15,
@@ -337,20 +336,11 @@ class _CreateCustomerPageState extends State<CreateCustomerPage> {
                               child: Text("Plazo: ${((plazoCI*30).toInt()).toString()} días", style: const TextStyle(fontSize: 10,),),
                             )
                           ),
-                          Row(
-                            children: [
-                              Expanded(
-                                flex: 1,
-                                child: textFieldWidget(
-                                  (porcCuotaInicial.toInt()).toString(), Icons.percent_outlined, false, porcCuotaInicialController, true),
-                              ),
-                              Expanded(
-                                flex: 3,
-                                child: textFieldWidget(
-                                  (currencyCOP(cuotaInicial.toInt().toString())), Icons.monetization_on_outlined, false, vlrCuotaIniController, false
-                                ),
-                              ),
-                            ],
+                          Container(
+                            constraints: const BoxConstraints(maxWidth: 800),
+                            child: textFieldWidget(
+                              (currencyCOP(cuotaInicial.toInt().toString())), Icons.monetization_on_outlined, false, vlrCuotaIniController, false
+                            ),
                           ),                          
                           const SizedBox(
                             height: 10,
@@ -941,9 +931,10 @@ class _CreateCustomerPageState extends State<CreateCustomerPage> {
                       ),
                     ),
                     const SizedBox(
-                      height: 5,
+                      height: 15,
                     ),                    
                     ElevatedButton(
+                      style: ButtonStyle(fixedSize: MaterialStateProperty.all(const Size(250, 50))),
                       onPressed: () async {
                         await addUsers(
                           nameController.text, 
@@ -956,7 +947,10 @@ class _CreateCustomerPageState extends State<CreateCustomerPage> {
                         });
                       },
                       child: const Text("Guardar"),
-                    ),
+                    ),                    
+                    const SizedBox(
+                      height: 30,
+                    ),     
                   ],
                 ),
               ),
