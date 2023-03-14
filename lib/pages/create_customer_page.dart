@@ -17,18 +17,28 @@ class CreateCustomerPage extends StatefulWidget {
 }
 
 class _CreateCustomerPageState extends State<CreateCustomerPage> {
-  
+  // ignore: prefer_typing_uninitialized_variables
+  var timer;
+
   @override
   void initState() {
     super.initState();    
     loteInfo = widget.loteInfo;
-    Timer.periodic(const Duration(seconds: 1), (timer) {
+    timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       setState(() {
         realtimeDateTime = dateOnly(true, 0, DateTime.now());
       });
     });
   }
+  
+  @override
+  void dispose() {
+    timer.cancel(); //cancel the periodic task
+    timer; //clear the timer variable
+    super.dispose();
+}
 
+  late String qid;
   DateTime quotePickedDate = DateTime.now();
   List<dynamic> loteInfo = [];
   String realtimeDateTime = '';
@@ -56,8 +66,8 @@ class _CreateCustomerPageState extends State<CreateCustomerPage> {
 
 
 
-  TextEditingController quoteDateController = TextEditingController(text: "");
-  TextEditingController quoteDeadlineController = TextEditingController(text: "");
+  TextEditingController quoteDateController = TextEditingController(text: DateFormat('MM-dd-yyyy').format(DateTime.now()));
+  TextEditingController quoteDeadlineController = TextEditingController(text: dateOnly(false, 0.5, DateTime.now()));
   TextEditingController loteController = TextEditingController(text: "");
   TextEditingController etapaloteController = TextEditingController(text: "");
   TextEditingController arealoteController = TextEditingController(text: "");
@@ -65,13 +75,13 @@ class _CreateCustomerPageState extends State<CreateCustomerPage> {
   TextEditingController porcCuotaInicialController = TextEditingController(text: "");
   TextEditingController vlrCuotaIniController = TextEditingController(text: "");
   TextEditingController vlrSeparacionController = TextEditingController(text: "");
-  TextEditingController separacionDeadlineController = TextEditingController(text: "");
+  TextEditingController separacionDeadlineController = TextEditingController(text: dateOnly(false, 0, DateTime.now()));
   TextEditingController saldoCuotaIniController = TextEditingController(text: "");
-  TextEditingController saldoCuotaIniDeadlineController = TextEditingController(text: "");
-  TextEditingController vlrPorPagarController = TextEditingController(text: "");
+  TextEditingController saldoCuotaIniDeadlineController = TextEditingController(text: dateOnly(false, 4, DateTime.now()));
 
-  TextEditingController pagoContadoDeadlineController = TextEditingController(text: "");
-  TextEditingController statementsStartDateController = TextEditingController(text: "");
+  TextEditingController vlrPorPagarController = TextEditingController(text: "");
+  TextEditingController pagoContadoDeadlineController = TextEditingController(text: dateOnly(false, 5, DateTime.now()));
+  TextEditingController statementsStartDateController = TextEditingController(text: dateOnly(false, 5, DateTime.now()));
   TextEditingController vlrCuotaController = TextEditingController(text: "");
   TextEditingController temController = TextEditingController(text: "");
 
@@ -108,6 +118,12 @@ class _CreateCustomerPageState extends State<CreateCustomerPage> {
     saldoCI = cuotaInicial - vlrSeparacion;
     valorAPagar = intLotePrice - cuotaInicial;
     valorCuota = valorAPagar/(double.parse(selectedNroCuotas));
+
+    priceloteController.text = (currencyCOP((intLotePrice.toInt()).toString()));
+    vlrCuotaIniController.text = (currencyCOP((cuotaInicial.toInt()).toString()));
+    saldoCuotaIniController.text = (currencyCOP((saldoCI.toInt()).toString()));
+    vlrCuotaController.text = (currencyCOP((valorCuota.toInt()).toString()));
+    vlrPorPagarController.text = (currencyCOP((valorAPagar.toInt()).toString()));
 
     return Scaffold(      
       extendBodyBehindAppBar: false,
@@ -309,10 +325,9 @@ class _CreateCustomerPageState extends State<CreateCustomerPage> {
                           ),                          
                           IconButton(onPressed: (){
                               setState(() {      
-                                vlrSeparacion =  double.parse(vlrSeparacionController.text);
-                                saldoCuotaIniController.text = (currencyCOP((saldoCI.toInt()).toString()));
-                                vlrPorPagarController.text = (currencyCOP(valorAPagar.toInt().toString()));
-                                vlrCuotaController.text =  (currencyCOP(valorCuota.toInt().toString()));                                
+                                vlrSeparacion =  stringConverter(vlrSeparacionController.text);
+                                vlrSeparacionController.text = (currencyCOP((vlrSeparacion.toInt()).toString()));
+                                saldoCuotaIniController.text = (currencyCOP((saldoCI.toInt()).toString()));                             
                               });
                             }, 
                             icon: Icon(Icons.refresh_outlined, color: fifthColor,),
@@ -936,15 +951,74 @@ class _CreateCustomerPageState extends State<CreateCustomerPage> {
                     ElevatedButton(
                       style: ButtonStyle(fixedSize: MaterialStateProperty.all(const Size(250, 50))),
                       onPressed: () async {
-                        await addUsers(
-                          nameController.text, 
-                          lastnameController.text, 
-                          phoneController.text, 
-                          idController.text, 
-                          'user',
-                        ).then((_) {
-                          Navigator.pop(context);
-                        });
+                        
+                        if(quoteDateController.text.isEmpty ||
+                          quoteDeadlineController.text.isEmpty || 
+                          priceloteController.text.isEmpty ||
+                          vlrCuotaIniController.text.isEmpty ||
+                          vlrSeparacionController.text.isEmpty ||
+                          separacionDeadlineController.text.isEmpty || 
+                          saldoCuotaIniController.text.isEmpty ||
+                          saldoCuotaIniDeadlineController.text.isEmpty ||
+                          vlrPorPagarController.text.isEmpty ||
+                          paymentMethodSelectedItem.isEmpty ||
+                          pagoContadoDeadlineController.text.isEmpty ||
+                          statementsStartDateController.text.isEmpty ||
+                          selectedNroCuotas.isEmpty || 
+                          vlrCuotaController.text.isEmpty ||  
+                          idController.text.isEmpty){
+
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: CustomAlertMessage(
+                                errorTitle: "Oops!", 
+                                errorText: "Verifique que todos los campos se hayan llenado correctamente.",
+                                stateColor: dangerColor,
+                              ), 
+                              behavior: SnackBarBehavior.floating,
+                              backgroundColor: Colors.transparent,
+                              elevation: 0,
+                            ),
+                          );
+                        } else {
+                          await addQuote(
+                            '${loteInfo[2]}${idController.text}${quoteDateController.text}',
+                            quoteDateController.text,
+                            quoteDeadlineController.text, 
+                            loteInfo[1],
+                            loteInfo[7],
+                            '${((loteInfo[8].toInt()).toString())} m²',
+                            priceloteController.text,
+                            porcCuotaInicial,
+                            vlrCuotaIniController.text,
+                            vlrSeparacionController.text,
+                            separacionDeadlineController.text, 
+                            saldoCuotaIniController.text,
+                            saldoCuotaIniDeadlineController.text,
+                            vlrPorPagarController.text, 
+                            paymentMethodSelectedItem,
+                            pagoContadoDeadlineController.text,
+                            statementsStartDateController.text,
+                            int.parse(selectedNroCuotas), 
+                            vlrCuotaController.text,  
+                            idController.text,
+                            ).then((_) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: CustomAlertMessage(
+                                    errorTitle: "Genial!", 
+                                    errorText: "Datos almacenados de manera satisfactoria.",
+                                    stateColor: successColor,
+                                  ), 
+                                  behavior: SnackBarBehavior.floating,
+                                  backgroundColor: Colors.transparent,
+                                  elevation: 0,
+                                ),
+                              );
+
+                              Navigator.pop(context);
+                          });
+                        }
                       },
                       child: const Text("Guardar"),
                     ),                    
@@ -959,6 +1033,16 @@ class _CreateCustomerPageState extends State<CreateCustomerPage> {
         ),
       ),
     );
+  }
+
+  double stringConverter(String valorAConvertir){
+    String valorSinPuntos = valorAConvertir.replaceAll('\$', '').replaceAll('.', '');
+    return double.parse(valorSinPuntos);
+  }
+
+  DateTime dateConverter(String stringAConvertir){
+    DateTime dateConverted = DateFormat('MM-dd-yyyy').parse(stringAConvertir);
+    return dateConverted;
   }
 
   Widget paymentMethod(String paymentMethodSelection){

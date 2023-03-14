@@ -61,6 +61,51 @@ Future<void> deleteUsers(String uid) async {
   await db.collection("users").doc(uid).delete();
 }
 
+Future<void> addQuote(
+  String qid, 
+  String quoteDate, 
+  String quoteDLDate, 
+  String loteName, 
+  String etapaLote, 
+  String areaLote,
+  String priceLote,
+  double perCILote,
+  String vlrCILote,
+  String vlrSepLote,
+  String sepDLDate, 
+  String saldoCILote,
+  String saldoCIDLDate, 
+  String vlrPorPagarLote,
+  String metodoPagoLote,
+  String pagoContadoDLLote,
+  String statementsStartDateLote,
+  int nroCuotasLote,
+  String vlrCuotasLote,
+  String clienteID) async {
+  await db.collection("quotes").doc(qid).set({
+    "quoteDate": quoteDate,
+    "quoteDLDate": quoteDLDate,
+    "loteName": loteName, 
+    "etapaLote": etapaLote, 
+    "areaLote": areaLote, 
+    "priceLote": priceLote,
+    "perCILote": perCILote,
+    "vlrCILote": vlrCILote,
+    "vlrSepLote": vlrSepLote,
+    "sepDLDate": sepDLDate,
+    "saldoCILote": saldoCILote,
+    "saldoCIDLDate": saldoCIDLDate,
+    "vlrPorPagarLote": vlrPorPagarLote,
+    "metodoPagoLote": metodoPagoLote,
+    "pagoContadoDLLote": pagoContadoDLLote,
+    "statementsStartDateLote": statementsStartDateLote,
+    "nroCuotasLote": nroCuotasLote,
+    "vlrCuotasLote": vlrCuotasLote,
+    "clienteID": clienteID,
+    }
+  );
+}
+
 Future<List> getLotes() async {
   List lotes = [];
   QuerySnapshot? queryLotes = await db.collection('lotes').get();
