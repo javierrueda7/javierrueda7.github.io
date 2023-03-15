@@ -143,7 +143,7 @@ class CustomAlertMessage extends StatelessWidget {
   }
 }
 
-Widget loteCard(List<dynamic> currentSelection, Function cancelOnPressed, Function quoteOnPressed){
+Widget loteCard(List<dynamic> currentSelection, Function cancelOnPressed, Function quoteOnPressed, Function quoteExisting){
   if(currentSelection[0] == true){
     return Card(
       elevation: 3,
@@ -154,7 +154,18 @@ Widget loteCard(List<dynamic> currentSelection, Function cancelOnPressed, Functi
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             const SizedBox(height: 8,),
-            Text(currentSelection[1].toString(), style: const TextStyle(fontWeight: FontWeight.bold),),
+            Stack(
+              alignment: Alignment.center,
+              children: [
+                Text(currentSelection[1].toString(), style: const TextStyle(fontWeight: FontWeight.bold),),
+                Padding(
+                  padding: const EdgeInsets.only(left: 145),
+                  child: IconButton(onPressed: (){
+                        cancelOnPressed(false);                  
+                      }, icon: Icon(Icons.close_rounded, color: dangerColor,), alignment: Alignment.topRight,),
+                )
+              ],
+            ),
             const SizedBox(
               height: 10,
             ),
@@ -175,8 +186,8 @@ Widget loteCard(List<dynamic> currentSelection, Function cancelOnPressed, Functi
                   Expanded(
                     flex: 1,
                     child: TextButton(onPressed: (){
-                      cancelOnPressed(false);                  
-                    }, child: Text('Cancelar', style: TextStyle(fontSize: 16, color: fifthColor.withOpacity(0.5),),)),
+                      quoteExisting(true);                  
+                    }, child: Text('Ver cotizaciones', style: TextStyle(fontSize: 16, color: fifthColor.withOpacity(0.5),),)),
                   ),
                 ],
               ),

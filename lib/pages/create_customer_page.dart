@@ -61,8 +61,6 @@ class _CreateCustomerPageState extends State<CreateCustomerPage> {
   String paymentMethodSelectedItem = 'Pago de contado';
   Stream<QuerySnapshot>? citiesStream;
 
-  Color testColor = fifthColor;
-
 
 
 
@@ -128,7 +126,7 @@ class _CreateCustomerPageState extends State<CreateCustomerPage> {
     return Scaffold(      
       extendBodyBehindAppBar: false,
       appBar: AppBar(
-        backgroundColor: testColor,
+        backgroundColor: fifthColor,
         foregroundColor: primaryColor,
         elevation: 0,
         centerTitle: true,

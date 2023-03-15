@@ -1,5 +1,6 @@
 import 'package:albaterrapp/pages/add_csv_info.dart';
 import 'package:albaterrapp/pages/create_customer_page.dart';
+import 'package:albaterrapp/pages/existing_quotes.dart';
 import 'package:albaterrapp/pages/signin_page.dart';
 import 'package:albaterrapp/services/firebase_services.dart';
 import 'package:albaterrapp/utils/color_utils.dart';
@@ -210,6 +211,19 @@ class _InitPageState extends State<InitPage> {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(builder: (context) => CreateCustomerPage(loteInfo: currentLote)),
+                                  );
+                                  
+                                });
+                              } else {
+                                setState(() {
+                                });
+                              }
+                            }, (bool quoteExisting){
+                              if(quoteExisting == true){
+                                setState(() {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(builder: (context) => ExistingQuotes(loteInfo: currentLote)),
                                   );
                                   
                                 });
