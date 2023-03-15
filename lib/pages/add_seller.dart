@@ -35,7 +35,7 @@ class _AddSellerPageState extends State<AddSellerPage> {
         foregroundColor: primaryColor,
         elevation: 0,
         title: Text(
-          "CREAR USUARIO", 
+          "Crear vendedor", 
           style: TextStyle(color: primaryColor,fontSize: 18, fontWeight: FontWeight.bold),
         )
       ),
