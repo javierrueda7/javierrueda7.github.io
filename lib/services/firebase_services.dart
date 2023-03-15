@@ -34,13 +34,14 @@ Future<List> getUsers() async {
   return users;
 }
 
-Future<void> addUsers(String uid, String nameUser, String lastnameUser, String email, String phone, String role) async {
+Future<void> addUsers(String uid, String nameUser, String lastnameUser, String email, String phone, String address, String id) async {
   await db.collection("users").doc(uid).set({
     "nameUser": nameUser, 
     "lastnameUser": lastnameUser, 
     "email": email, 
     "phone": phone,
-    "role": role,
+    "address": address,
+    "id": id
     }
   );
 }
@@ -111,38 +112,67 @@ Future<void> addQuote(
   );
 }
 
-Future<List> getQuotes(String loteName) async {
+Future<List> getQuotes(String loteName, bool allLotes) async {
   List quotes = [];
   QuerySnapshot? queryQuotes = await db.collection('quotes').get();
   for (var doc in queryQuotes.docs) {
     final Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-    if (data['loteName'] == loteName && data['quoteStage'] == 'EN ESPERA') {
+    if (allLotes == false) {
+      if (data['loteName'] == loteName && data['quoteStage'] == 'EN ESPERA') {
+        final quote = {
+          "qid": doc.id,
+          "sellerID": data['sellerID'],
+          "quoteDate": data['quoteDate'],
+          "quoteDLDate": data['quoteDLDate'],
+          "loteName": data['loteName'],
+          "etapaLote": data['etapaLote'],
+          "areaLote": data['areaLote'],
+          "priceLote": data['priceLote'],
+          "perCILote": data['perCILote'],
+          "vlrCILote": data['vlrCILote'],
+          "vlrSepLote": data['vlrSepLote'],
+          "sepDLDate": data['sepDLDate'],
+          "saldoCILote": data['saldoCILote'],
+          "saldoCIDLDate": data['saldoCIDLDate'],
+          "vlrPorPagarLote": data['vlrPorPagarLote'],
+          "metodoPagoLote": data['metodoPagoLote'],
+          "pagoContadoDLLote": data['pagoContadoDLLote'],
+          "statementsStartDateLote": data['statementsStartDateLote'],
+          "nroCuotasLote": data['nroCuotasLote'],
+          "vlrCuotasLote": data['vlrCuotasLote'],
+          "observacionesLote": data['observacionesLote'],
+          "clienteID": data['clienteID'],
+          "quoteStage": data['quoteStage'],
+        };
+        quotes.add(quote);
+      }
+    } else {
       final quote = {
-        "qid": doc.id,
-        "sellerID": data['sellerID'],
-        "quoteDate": data['quoteDate'],
-        "quoteDLDate": data['quoteDLDate'],
-        "loteName": data['loteName'],
-        "etapaLote": data['etapaLote'],
-        "areaLote": data['areaLote'],
-        "priceLote": data['priceLote'],
-        "perCILote": data['perCILote'],
-        "vlrCILote": data['vlrCILote'],
-        "vlrSepLote": data['vlrSepLote'],
-        "sepDLDate": data['sepDLDate'],
-        "saldoCILote": data['saldoCILote'],
-        "saldoCIDLDate": data['saldoCIDLDate'],
-        "vlrPorPagarLote": data['vlrPorPagarLote'],
-        "metodoPagoLote": data['metodoPagoLote'],
-        "pagoContadoDLLote": data['pagoContadoDLLote'],
-        "statementsStartDateLote": data['statementsStartDateLote'],
-        "nroCuotasLote": data['nroCuotasLote'],
-        "vlrCuotasLote": data['vlrCuotasLote'],
-        "observacionesLote": data['observacionesLote'],
-        "clienteID": data['clienteID'],
-        "quoteStage": data['quoteStage'],
-      };
-      quotes.add(quote);
+          "qid": doc.id,
+          "sellerID": data['sellerID'],
+          "quoteDate": data['quoteDate'],
+          "quoteDLDate": data['quoteDLDate'],
+          "loteName": data['loteName'],
+          "etapaLote": data['etapaLote'],
+          "areaLote": data['areaLote'],
+          "priceLote": data['priceLote'],
+          "perCILote": data['perCILote'],
+          "vlrCILote": data['vlrCILote'],
+          "vlrSepLote": data['vlrSepLote'],
+          "sepDLDate": data['sepDLDate'],
+          "saldoCILote": data['saldoCILote'],
+          "saldoCIDLDate": data['saldoCIDLDate'],
+          "vlrPorPagarLote": data['vlrPorPagarLote'],
+          "metodoPagoLote": data['metodoPagoLote'],
+          "pagoContadoDLLote": data['pagoContadoDLLote'],
+          "statementsStartDateLote": data['statementsStartDateLote'],
+          "nroCuotasLote": data['nroCuotasLote'],
+          "vlrCuotasLote": data['vlrCuotasLote'],
+          "observacionesLote": data['observacionesLote'],
+          "clienteID": data['clienteID'],
+          "quoteStage": data['quoteStage'],
+        };
+        quotes.add(quote);
     }
   }
   return quotes;

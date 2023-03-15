@@ -8,7 +8,8 @@ FirebaseFirestore db = FirebaseFirestore.instance;
 
 class ExistingQuotes extends StatefulWidget {
   final List<dynamic> loteInfo;
-  const ExistingQuotes({Key? key, required this.loteInfo}) : super(key: key);
+  final bool needAll;
+  const ExistingQuotes({Key? key, required this.loteInfo, required this.needAll}) : super(key: key);
 
 
   @override
@@ -24,6 +25,7 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
   }
 
   List<dynamic> loteInfo = [];
+  bool needAll = true;
   
     @override
   Widget build(BuildContext context) {
@@ -44,7 +46,7 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
           constraints: const BoxConstraints(maxWidth: 1200),
 
           child: FutureBuilder(
-            future: getQuotes(loteInfo[1]),
+            future: getQuotes(loteInfo[1], needAll),
             builder: ((context, snapshot){
               if(snapshot.hasData){
                 return ListView.builder(

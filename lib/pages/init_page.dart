@@ -17,6 +17,29 @@ class InitPage extends StatefulWidget {
 
 class _InitPageState extends State<InitPage> {
 
+  
+  User? user = FirebaseAuth.instance.currentUser;
+  bool anon = FirebaseAuth.instance.currentUser!.isAnonymous;
+  bool userLoggedIn = false;
+
+  bool checkLogin(){
+    if (user != null && anon == false) {
+      userLoggedIn = true;
+    } else {
+      userLoggedIn = false;
+    }  
+    return userLoggedIn;
+  }
+  
+  @override
+  void initState() {
+    super.initState();
+    setState(() {
+      checkLogin; 
+    });
+       
+  } 
+
   List<String> etapasList = ['Seleccionar Etapa', 'Etapa 1', 'Etapa 2', 'Etapa Premium'];
   String selectedItemEtapa = 'Seleccionar Etapa';
   String imgEtapa = "E00.png";
@@ -43,12 +66,12 @@ class _InitPageState extends State<InitPage> {
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold,),
           ),
           leading: Visibility(
-              visible: false,
+              visible: checkLogin(),
               child: Padding(
                 padding: const EdgeInsets.only(left: 20.0),
                   child: GestureDetector(
                     onTap: () {                      
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => const CsvReader()));                      
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => ExistingQuotes(loteInfo: currentLote, needAll: true,)));                      
                     },
                     child: const Icon(
                       Icons.add_outlined
@@ -223,7 +246,7 @@ class _InitPageState extends State<InitPage> {
                                 setState(() {
                                   Navigator.push(
                                     context,
-                                    MaterialPageRoute(builder: (context) => ExistingQuotes(loteInfo: currentLote)),
+                                    MaterialPageRoute(builder: (context) => ExistingQuotes(loteInfo: currentLote, needAll: false,)),
                                   );
                                   
                                 });
