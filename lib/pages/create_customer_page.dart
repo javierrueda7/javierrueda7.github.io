@@ -1,3 +1,4 @@
+import 'package:albaterrapp/pages/pdf_generator.dart';
 import 'package:albaterrapp/services/firebase_services.dart';
 import 'package:albaterrapp/utils/color_utils.dart';
 import 'package:albaterrapp/widgets/widgets.dart';
@@ -38,6 +39,7 @@ class _CreateCustomerPageState extends State<CreateCustomerPage> {
     super.dispose();
 }
   
+  late int quoteCounter;
   late String qid;
   DateTime quotePickedDate = DateTime.now();
   List<dynamic> loteInfo = [];
@@ -60,10 +62,10 @@ class _CreateCustomerPageState extends State<CreateCustomerPage> {
   List<String> paymentMethodList= ['Pago de contado', 'Financiación directa'];
   String paymentMethodSelectedItem = 'Pago de contado';
   Stream<QuerySnapshot>? citiesStream;
+  final CollectionReference collectionReference = FirebaseFirestore.instance.collection('quotes');
 
 
-
-
+  String selectedSeller = 'Vendedor';
   TextEditingController quoteDateController = TextEditingController(text: DateFormat('MM-dd-yyyy').format(DateTime.now()));
   TextEditingController quoteDeadlineController = TextEditingController(text: dateOnly(false, 0.5, DateTime.now()));
   TextEditingController loteController = TextEditingController(text: "");
@@ -82,12 +84,14 @@ class _CreateCustomerPageState extends State<CreateCustomerPage> {
   TextEditingController statementsStartDateController = TextEditingController(text: dateOnly(false, 5, DateTime.now()));
   TextEditingController vlrCuotaController = TextEditingController(text: "");
   TextEditingController temController = TextEditingController(text: "");
+  TextEditingController observacionesController = TextEditingController(text: "");
 
 
   TextEditingController nameController = TextEditingController(text: "");
   TextEditingController lastnameController = TextEditingController(text: "");
   String selectedGender = 'Masculino';
   TextEditingController birthdayController = TextEditingController(text: "");
+  TextEditingController ocupacionController = TextEditingController(text: "");
   TextEditingController phoneController = TextEditingController(text: "");
   TextEditingController idtypeController = TextEditingController(text: "");
   TextEditingController idController = TextEditingController(text: "");
@@ -111,6 +115,9 @@ class _CreateCustomerPageState extends State<CreateCustomerPage> {
   
   @override
   Widget build(BuildContext context) {
+    collectionReference.get().then((QuerySnapshot quotesSnapshot) {
+      quoteCounter = quotesSnapshot.size;
+    });
     int intLotePrice = loteInfo[9].toInt();
     cuotaInicial = intLotePrice * (porcCuotaInicial/100);
     saldoCI = cuotaInicial - vlrSeparacion;
@@ -130,7 +137,7 @@ class _CreateCustomerPageState extends State<CreateCustomerPage> {
         foregroundColor: primaryColor,
         elevation: 0,
         centerTitle: true,
-        title: Text('Cotización ${loteInfo[1]}', 
+        title: Text('Nueva cotización ${loteInfo[1]}', 
           style: TextStyle(color: primaryColor,fontSize: 18, fontWeight: FontWeight.bold),),
       ),
       body: Center(
@@ -154,6 +161,54 @@ class _CreateCustomerPageState extends State<CreateCustomerPage> {
                 padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
                 child: Column(
                   children: [                    
+                    
+                    Container(
+                      constraints: const BoxConstraints(maxWidth: 800),
+                      alignment: Alignment.center,
+                      height: 50,
+                      decoration: BoxDecoration(borderRadius: BorderRadius.circular(90), border: Border.all(color: fifthColor.withOpacity(0.1))),
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: 10.0, right: 10),
+                        child: StreamBuilder<QuerySnapshot>(
+                          stream: FirebaseFirestore.instance.collection('users').orderBy('uid').snapshots(),
+                          builder: (context, usersSnapshot) {
+                            List<DropdownMenuItem> userItems = [];
+                            if (!usersSnapshot.hasData) {
+                              const CircularProgressIndicator();
+                            } else {
+                              final usersList = usersSnapshot.data?.docs;
+                              for (var users in usersList!) {
+                                userItems.add(
+                                  DropdownMenuItem(
+                                    value: users['uid'],
+                                    child: Center(child: Text(users['nameUser'])),
+                                  ),
+                                );
+                              }
+                            }
+                            return DropdownButton(
+                              items: userItems,
+                              hint: Center(child: Text(selectedSeller)),
+                              underline: Container(),
+                              style: TextStyle(color: fifthColor.withOpacity(0.9),),
+                              onChanged: (userValue) {
+                                setState(() {
+                                  selectedSeller = userValue!;
+                                });
+                              },
+                              isExpanded: true,
+                            );
+                          },
+                        ),
+                      ),
+                    ),           
+                    
+                    
+                    
+                    
+                    
+                    
+                    
                     const SizedBox(
                       height: 15,
                       child: Center(child: Text('Vigencia cotización', style: TextStyle(fontSize: 12),)),
@@ -561,6 +616,15 @@ class _CreateCustomerPageState extends State<CreateCustomerPage> {
                     Container(
                       constraints: const BoxConstraints(maxWidth: 800),
                       child: textFieldWidget(
+                        "Ocupación o actividad económica", Icons.work_outline, false, ocupacionController, true
+                      ),
+                    ),       
+                    const SizedBox(
+                      height: 5,
+                    ),
+                    Container(
+                      constraints: const BoxConstraints(maxWidth: 800),
+                      child: textFieldWidget(
                         "Número telefónico", Icons.phone_android, false, phoneController, true
                       ),
                     ),
@@ -944,12 +1008,27 @@ class _CreateCustomerPageState extends State<CreateCustomerPage> {
                       ),
                     ),
                     const SizedBox(
+                      height: 5,
+                    ),
+                    Container(
+                      constraints: const BoxConstraints(maxWidth: 800),
+                      child: textFieldWidget(
+                        "Observaciones", Icons.search_outlined, false, observacionesController, true
+                      ),
+                    ),  
+                    const SizedBox(
                       height: 15,
-                    ),                    
+                    ),                  
                     ElevatedButton(
                       style: ButtonStyle(fixedSize: MaterialStateProperty.all(const Size(250, 50))),
-                      onPressed: () async {                        
-                        if(quoteDateController.text.isEmpty ||
+                      onPressed: () async {                       
+                        setState(() {
+                          vlrSeparacion =  stringConverter(vlrSeparacionController.text);
+                          vlrSeparacionController.text = (currencyCOP((vlrSeparacion.toInt()).toString()));
+                          saldoCuotaIniController.text = (currencyCOP((saldoCI.toInt()).toString()));   
+                        });
+                        if(selectedSeller.isEmpty ||
+                          quoteDateController.text.isEmpty ||
                           quoteDeadlineController.text.isEmpty || 
                           priceloteController.text.isEmpty ||
                           vlrCuotaIniController.text.isEmpty ||
@@ -968,6 +1047,7 @@ class _CreateCustomerPageState extends State<CreateCustomerPage> {
                           lastnameController.text.isEmpty || 
                           selectedGender.isEmpty || 
                           birthdayController.text.isEmpty || 
+                          ocupacionController.text.isEmpty  || 
                           phoneController.text.isEmpty || 
                           selectedItemIdtype.isEmpty || 
                           selectedIssuedCountry.isEmpty || 
@@ -998,6 +1078,7 @@ class _CreateCustomerPageState extends State<CreateCustomerPage> {
                             lastnameController.text, 
                             selectedGender,
                             birthdayController.text,
+                            ocupacionController.text,
                             phoneController.text,
                             selectedItemIdtype,
                             selectedIssuedCountry,
@@ -1010,7 +1091,8 @@ class _CreateCustomerPageState extends State<CreateCustomerPage> {
                             selectedCity,
                             );
                           await addQuote(
-                            '${loteInfo[2]}${idController.text}${dateidGenerator(dateOnly(true, 0, DateTime.now()))}',
+                            idGenerator(quoteCounter),
+                            selectedSeller,
                             quoteDateController.text,
                             quoteDeadlineController.text, 
                             loteInfo[1],
@@ -1028,7 +1110,8 @@ class _CreateCustomerPageState extends State<CreateCustomerPage> {
                             pagoContadoDeadlineController.text,
                             statementsStartDateController.text,
                             int.parse(selectedNroCuotas), 
-                            vlrCuotaController.text,  
+                            vlrCuotaController.text,
+                            observacionesController.text,
                             idController.text,
                             'EN ESPERA'
                             ).then((_) {
@@ -1045,7 +1128,50 @@ class _CreateCustomerPageState extends State<CreateCustomerPage> {
                                 ),
                               );
 
-                              Navigator.pop(context);
+                              //Navigator.pop(context);
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => PDFGenerator(
+                                    seller: selectedSeller,
+                                    quoteId: idGenerator(quoteCounter),
+                                    name: nameController.text,
+                                    lastname: lastnameController.text,
+                                    phone: phoneController.text,
+                                    date: quoteDateController.text,
+                                    dueDate: quoteDeadlineController.text,
+                                    lote: loteInfo[1],
+                                    area: '${((loteInfo[8].toInt()).toString())} m²',
+                                    price: priceloteController.text,
+                                    porcCuotaIni: '${((porcCuotaInicial.toInt()).toString())}%',
+                                    vlrCuotaIni: vlrCuotaIniController.text,
+                                    vlrSeparacion: vlrSeparacionController.text,
+                                    dueDateSeparacion: separacionDeadlineController.text,
+                                    plazoCI: '${(((plazoCI*30).toInt()).toString())} días',
+                                    saldoCI: saldoCuotaIniController.text,
+                                    dueDateSaldoCI: saldoCuotaIniDeadlineController.text,
+                                    porcPorPagar: '${(((100-porcCuotaInicial).toInt()).toString())}%',
+                                    vlrPorPagar: vlrPorPagarController.text,
+                                    paymentMethod: paymentMethodSelectedItem,
+                                    tiempoFinanc: '${(int.parse(selectedNroCuotas))/12} años',
+                                    vlrCuota: vlrCuotaController.text,
+                                    statementsStartDate: statementsStartDateController.text,
+                                    nroCuotas: selectedNroCuotas,
+                                    pagoContadoDue: pagoContadoDeadlineController.text,
+                                    tem: '${temController.text}%',
+                                    observaciones: observacionesController.text,
+                                  ),
+                                ),
+                              );
+                              
+
+
+
+
+
+
+
+
                           });
                         }
                       },
@@ -1074,9 +1200,10 @@ class _CreateCustomerPageState extends State<CreateCustomerPage> {
     return dateConverted;
   }
 
-  String dateidGenerator(String dateToUse){
-    String idGenerated = dateToUse.replaceAll(':', '');
-    idGenerated = idGenerated.replaceAll(' ', '');
+  String idGenerator(int quoteCount){
+    quoteCount++;
+    String idGenerated = quoteCount.toString().padLeft(5, '0');
+    idGenerated = idGenerated+loteInfo[2];
     return idGenerated;
   }
 

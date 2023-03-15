@@ -23,9 +23,9 @@ Future<List> getUsers() async {
   for (var doc in queryUsers.docs) {
     final Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
     final person = {
-      "name": data['name'],
+      "nameUser": data['nameUser'],
       "uid": doc.id,
-      "username": data['username'],
+      "lastnameUser": data['lastnameUser'],
       "email": data['email'],
       "phone": data['phone'],
       "role": data['role'],
@@ -35,10 +35,10 @@ Future<List> getUsers() async {
   return users;
 }
 
-Future<void> addUsers(String username, String name, String email, String phone, String role) async {
-  await db.collection("users").add({
-    "username": username, 
-    "name": name, 
+Future<void> addUsers(String uid, String nameUser, String lastnameUser, String email, String phone, String role) async {
+  await db.collection("users").doc(uid).set({
+    "nameUser": nameUser, 
+    "lastnameUser": lastnameUser, 
     "email": email, 
     "phone": phone,
     "role": role,
@@ -63,6 +63,7 @@ Future<void> deleteUsers(String uid) async {
 
 Future<void> addQuote(
   String qid, 
+  String sellerID,
   String quoteDate, 
   String quoteDLDate, 
   String loteName, 
@@ -81,9 +82,11 @@ Future<void> addQuote(
   String statementsStartDateLote,
   int nroCuotasLote,
   String vlrCuotasLote,
+  String observacionesLote,
   String clienteID,
   String quoteStage) async {
   await db.collection("quotes").doc(qid).set({
+    "sellerID": sellerID,
     "quoteDate": quoteDate,
     "quoteDLDate": quoteDLDate,
     "loteName": loteName, 
@@ -102,10 +105,48 @@ Future<void> addQuote(
     "statementsStartDateLote": statementsStartDateLote,
     "nroCuotasLote": nroCuotasLote,
     "vlrCuotasLote": vlrCuotasLote,
+    "observacionesLote": observacionesLote,
     "clienteID": clienteID,
     "quoteStage": quoteStage
     }
   );
+}
+
+Future<List> getQuotes(String loteName) async {
+  List quotes = [];
+  QuerySnapshot? queryQuotes = await db.collection('quotes').get();
+  for (var doc in queryQuotes.docs) {
+    final Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+    if (data['loteName'] == loteName && data['quoteStage'] == 'EN ESPERA') {
+      final quote = {
+        "qid": doc.id,
+        "sellerID": data['sellerID'],
+        "quoteDate": data['quoteDate'],
+        "quoteDLDate": data['quoteDLDate'],
+        "loteName": data['loteName'],
+        "etapaLote": data['etapaLote'],
+        "areaLote": data['areaLote'],
+        "priceLote": data['priceLote'],
+        "perCILote": data['perCILote'],
+        "vlrCILote": data['vlrCILote'],
+        "vlrSepLote": data['vlrSepLote'],
+        "sepDLDate": data['sepDLDate'],
+        "saldoCILote": data['saldoCILote'],
+        "saldoCIDLDate": data['saldoCIDLDate'],
+        "vlrPorPagarLote": data['vlrPorPagarLote'],
+        "metodoPagoLote": data['metodoPagoLote'],
+        "pagoContadoDLLote": data['pagoContadoDLLote'],
+        "statementsStartDateLote": data['statementsStartDateLote'],
+        "nroCuotasLote": data['nroCuotasLote'],
+        "vlrCuotasLote": data['vlrCuotasLote'],
+        "observacionesLote": data['observacionesLote'],
+        "clienteID": data['clienteID'],
+        "quoteStage": data['quoteStage'],
+      };
+      quotes.add(quote);
+    }
+  }
+  return quotes;
 }
 
 Future<void> addCustomer(
@@ -123,12 +164,14 @@ Future<void> addCustomer(
   String addressCliente, 
   String countryCliente,
   String stateCliente,
+  String ocupacionCliente,
   String cityCliente) async {
   await db.collection("customers").doc(clienteID).set({
     "nameCliente": nameCliente,
     "lastnameCliente": lastnameCliente, 
     "genderCliente": genderCliente, 
     "bdayCliente": bdayCliente, 
+    "ocupacionCliente": ocupacionCliente,
     "telCliente": telCliente,
     "idTypeCliente": idTypeCliente,
     "idIssueCountryCliente": idIssueCountryCliente,
@@ -137,10 +180,37 @@ Future<void> addCustomer(
     "emailCliente": emailCliente,
     "addressCliente": addressCliente,
     "countryCliente": countryCliente,
-    "stateCliente": stateCliente,
+    "stateCliente": stateCliente,    
     "cityCliente": cityCliente,
     }
   );
+}
+
+Future<List> getCustomers() async {
+  List customers = [];
+  QuerySnapshot? queryCustomers = await db.collection('customers').get();
+  for (var doc in queryCustomers.docs) {
+    final Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+    final customer = {
+      "clienteID":doc.id,
+      "nameCliente":data["nameCliente"],
+      "lastnameCliente":data["lastnameCliente"],
+      "genderCliente":data["genderCliente"],
+      "bdayCliente":data["bdayCliente"],
+      "telCliente":data["telCliente"],
+      "idTypeCliente":data["idTypeCliente"],
+      "idIssueCountryCliente":data["idIssueCountryCliente"],
+      "idIssueStateCliente":data["idIssueStateCliente"],
+      "idIssueCityCliente":data["idIssueCityCliente"],
+      "emailCliente":data["emailCliente"],
+      "addressCliente":data["addressCliente"],
+      "countryCliente":data["countryCliente"],
+      "stateCliente":data["stateCliente"],
+      "cityCliente":data["cityCliente"]      
+    };
+    customers.add(customer);
+  }
+  return customers;
 }
 
 Future<List> getLotes() async {

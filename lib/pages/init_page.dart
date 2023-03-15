@@ -39,7 +39,7 @@ class _InitPageState extends State<InitPage> {
           foregroundColor: primaryColor,
           centerTitle: true,
           title: const Text(
-            "ELIGE TU LOTE", 
+            "Seleccione el lote de sus sueños", 
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold,),
           ),
           leading: Visibility(

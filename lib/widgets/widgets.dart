@@ -159,7 +159,7 @@ Widget loteCard(List<dynamic> currentSelection, Function cancelOnPressed, Functi
               children: [
                 Text(currentSelection[1].toString(), style: const TextStyle(fontWeight: FontWeight.bold),),
                 Padding(
-                  padding: const EdgeInsets.only(left: 145),
+                  padding: const EdgeInsets.only(left: 230),
                   child: IconButton(onPressed: (){
                         cancelOnPressed(false);                  
                       }, icon: Icon(Icons.close_rounded, color: dangerColor,), alignment: Alignment.topRight,),
@@ -173,7 +173,7 @@ Widget loteCard(List<dynamic> currentSelection, Function cancelOnPressed, Functi
             loteCardData('Area', '${(currentSelection[8].toInt()).toString()} m²'),
             loteCardData('Precio', (currencyCOP((currentSelection[9].toInt()).toString()))),
             Container(
-              width: 200,
+              width: 300,
               padding: const EdgeInsets.all(8.0),
               child: Row(
                 children: [
@@ -187,7 +187,7 @@ Widget loteCard(List<dynamic> currentSelection, Function cancelOnPressed, Functi
                     flex: 1,
                     child: TextButton(onPressed: (){
                       quoteExisting(true);                  
-                    }, child: Text('Ver cotizaciones', style: TextStyle(fontSize: 16, color: fifthColor.withOpacity(0.5),),)),
+                    }, child: Text('Ver más', style: TextStyle(fontSize: 16, color: fifthColor.withOpacity(0.5),),)),
                   ),
                 ],
               ),
