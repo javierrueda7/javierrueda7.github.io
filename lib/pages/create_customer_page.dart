@@ -37,7 +37,7 @@ class _CreateCustomerPageState extends State<CreateCustomerPage> {
     timer; //clear the timer variable
     super.dispose();
 }
-
+  
   late String qid;
   DateTime quotePickedDate = DateTime.now();
   List<dynamic> loteInfo = [];
@@ -74,7 +74,7 @@ class _CreateCustomerPageState extends State<CreateCustomerPage> {
   TextEditingController priceloteController = TextEditingController(text: "");
   TextEditingController porcCuotaInicialController = TextEditingController(text: "");
   TextEditingController vlrCuotaIniController = TextEditingController(text: "");
-  TextEditingController vlrSeparacionController = TextEditingController(text: "");
+  TextEditingController vlrSeparacionController = TextEditingController(text: "\$10.000.000");
   TextEditingController separacionDeadlineController = TextEditingController(text: dateOnly(false, 0, DateTime.now()));
   TextEditingController saldoCuotaIniController = TextEditingController(text: "");
   TextEditingController saldoCuotaIniDeadlineController = TextEditingController(text: dateOnly(false, 4, DateTime.now()));
@@ -950,8 +950,7 @@ class _CreateCustomerPageState extends State<CreateCustomerPage> {
                     ),                    
                     ElevatedButton(
                       style: ButtonStyle(fixedSize: MaterialStateProperty.all(const Size(250, 50))),
-                      onPressed: () async {
-                        
+                      onPressed: () async {                        
                         if(quoteDateController.text.isEmpty ||
                           quoteDeadlineController.text.isEmpty || 
                           priceloteController.text.isEmpty ||
@@ -966,8 +965,22 @@ class _CreateCustomerPageState extends State<CreateCustomerPage> {
                           statementsStartDateController.text.isEmpty ||
                           selectedNroCuotas.isEmpty || 
                           vlrCuotaController.text.isEmpty ||  
-                          idController.text.isEmpty){
-
+                          idController.text.isEmpty || 
+                          nameController.text.isEmpty || 
+                          lastnameController.text.isEmpty || 
+                          selectedGender.isEmpty || 
+                          birthdayController.text.isEmpty || 
+                          phoneController.text.isEmpty || 
+                          selectedItemIdtype.isEmpty || 
+                          selectedIssuedCountry.isEmpty || 
+                          selectedIssuedState.isEmpty || 
+                          selectedIssuedCity.isEmpty ||  
+                          emailController.text.isEmpty || 
+                          addressController.text.isEmpty || 
+                          selectedCountry.isEmpty ||  
+                          selectedState.isEmpty || 
+                          selectedCity.isEmpty
+                          ){
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               content: CustomAlertMessage(
@@ -981,8 +994,25 @@ class _CreateCustomerPageState extends State<CreateCustomerPage> {
                             ),
                           );
                         } else {
+                          await addCustomer(
+                            idController.text,
+                            nameController.text,
+                            lastnameController.text, 
+                            selectedGender,
+                            birthdayController.text,
+                            phoneController.text,
+                            selectedItemIdtype,
+                            selectedIssuedCountry,
+                            selectedIssuedState,
+                            selectedIssuedCity, 
+                            emailController.text,
+                            addressController.text,
+                            selectedCountry, 
+                            selectedState,
+                            selectedCity,
+                            );
                           await addQuote(
-                            '${loteInfo[2]}${idController.text}${quoteDateController.text}',
+                            '${loteInfo[2]}${idController.text}${dateidGenerator(dateOnly(true, 0, DateTime.now()))}',
                             quoteDateController.text,
                             quoteDeadlineController.text, 
                             loteInfo[1],
@@ -1002,6 +1032,7 @@ class _CreateCustomerPageState extends State<CreateCustomerPage> {
                             int.parse(selectedNroCuotas), 
                             vlrCuotaController.text,  
                             idController.text,
+                            'EN ESPERA'
                             ).then((_) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
@@ -1043,6 +1074,12 @@ class _CreateCustomerPageState extends State<CreateCustomerPage> {
   DateTime dateConverter(String stringAConvertir){
     DateTime dateConverted = DateFormat('MM-dd-yyyy').parse(stringAConvertir);
     return dateConverted;
+  }
+
+  String dateidGenerator(String dateToUse){
+    String idGenerated = dateToUse.replaceAll(':', '');
+    idGenerated = idGenerated.replaceAll(' ', '');
+    return idGenerated;
   }
 
   Widget paymentMethod(String paymentMethodSelection){

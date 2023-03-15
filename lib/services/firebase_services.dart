@@ -81,7 +81,8 @@ Future<void> addQuote(
   String statementsStartDateLote,
   int nroCuotasLote,
   String vlrCuotasLote,
-  String clienteID) async {
+  String clienteID,
+  String quoteStage) async {
   await db.collection("quotes").doc(qid).set({
     "quoteDate": quoteDate,
     "quoteDLDate": quoteDLDate,
@@ -102,6 +103,42 @@ Future<void> addQuote(
     "nroCuotasLote": nroCuotasLote,
     "vlrCuotasLote": vlrCuotasLote,
     "clienteID": clienteID,
+    "quoteStage": quoteStage
+    }
+  );
+}
+
+Future<void> addCustomer(
+  String clienteID,
+  String nameCliente, 
+  String lastnameCliente, 
+  String genderCliente, 
+  String bdayCliente, 
+  String telCliente,
+  String idTypeCliente,
+  String idIssueCountryCliente,
+  String idIssueStateCliente,
+  String idIssueCityCliente, 
+  String emailCliente,
+  String addressCliente, 
+  String countryCliente,
+  String stateCliente,
+  String cityCliente) async {
+  await db.collection("customers").doc(clienteID).set({
+    "nameCliente": nameCliente,
+    "lastnameCliente": lastnameCliente, 
+    "genderCliente": genderCliente, 
+    "bdayCliente": bdayCliente, 
+    "telCliente": telCliente,
+    "idTypeCliente": idTypeCliente,
+    "idIssueCountryCliente": idIssueCountryCliente,
+    "idIssueStateCliente": idIssueStateCliente,
+    "idIssueCityCliente": idIssueCityCliente,
+    "emailCliente": emailCliente,
+    "addressCliente": addressCliente,
+    "countryCliente": countryCliente,
+    "stateCliente": stateCliente,
+    "cityCliente": cityCliente,
     }
   );
 }

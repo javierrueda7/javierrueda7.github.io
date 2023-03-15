@@ -282,7 +282,7 @@ String dateOnly(bool needTime, double n, DateTime dateSelected){
 
   DateFormat formatter;
   if(needTime == true){
-    formatter = DateFormat('MMM dd yyyy hh:mm aa');
+    formatter = DateFormat('MM dd yyyy hh:mm:ss');
   } else {
     formatter = DateFormat('MM-dd-yyyy');
   }  
