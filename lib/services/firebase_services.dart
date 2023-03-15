@@ -148,6 +148,10 @@ Future<List> getQuotes(String loteName) async {
   return quotes;
 }
 
+Future<void> deleteQuote(String qid) async {
+  await db.collection("quotes").doc(qid).delete();
+}
+
 Future<void> addCustomer(
   String clienteID,
   String nameCliente, 

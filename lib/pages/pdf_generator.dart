@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:albaterrapp/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:pdf/pdf.dart';
@@ -82,7 +85,17 @@ class PDFGenerator extends StatelessWidget {
   }
 
   Future<Uint8List> generatePdf(BuildContext context) async {
+
+    final ByteData photo1 = await rootBundle.load('assets/images/logo.png');
+    final Uint8List byteList1 = photo1.buffer.asUint8List();
+    final ByteData photo2 = await rootBundle.load('assets/images/invertaga.png');
+    final Uint8List byteList2 = photo2.buffer.asUint8List();
+    final ByteData photo3 = await rootBundle.load('assets/images/vision.png');
+    final Uint8List byteList3 = photo3.buffer.asUint8List();
+
+
     final pdf = pw.Document();
+    
 
     pdf.addPage(
       pw.Page(
@@ -97,62 +110,49 @@ class PDFGenerator extends StatelessWidget {
                   crossAxisAlignment: pw.CrossAxisAlignment.start,
                   children: [
                     pw.Column(
+                      mainAxisAlignment: pw.MainAxisAlignment.center,
                       crossAxisAlignment: pw.CrossAxisAlignment.start,
                       children: [
-                        pw.Text('VENDEDOR: $seller', style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
-                        pw.Text('COTIZACIÓN: $quoteId', style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
-                        pw.Text('FECHA: $date'),
+                        pw.Image(pw.MemoryImage(byteList1,), height: 60),
+                        pw.Text('COTIZACIÓN: $quoteId', style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),                        
                       ],
                     ),
-                    pw.Text('INVOICE', style: pw.TextStyle(fontSize: 20, fontWeight: pw.FontWeight.bold)),
+                    pw.Column(
+                      mainAxisAlignment: pw.MainAxisAlignment.center,
+                      crossAxisAlignment: pw.CrossAxisAlignment.end,
+                      children: [
+                        pw.Text('FECHA: ${dateOnly(false, 0, DateTime.now())}'),
+                        pw.Image(pw.MemoryImage(byteList2,), height: 20),
+                        pw.Image(pw.MemoryImage(byteList3,), height: 30),
+                      ],
+                    ),
                   ],
                 ),
+                pw.SizedBox(height: 20),
                 pw.Divider(thickness: 1),
                 pw.SizedBox(height: 20),
-                pw.Row(
-                  crossAxisAlignment: pw.CrossAxisAlignment.start,
-                  children: [
-                    pw.Expanded(
-                      child: pw.Column(
-                        crossAxisAlignment: pw.CrossAxisAlignment.start,
-                        children: [
-                          pw.Text('Información del cliente', style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
-                          pw.Text('Nombre: $name $lastname'),
-                          pw.Text('Teléfono: $phone'),
-                        ],
-                      ),
-                    ),
-                    pw.Expanded(
-                      child: pw.Column(
-                        crossAxisAlignment: pw.CrossAxisAlignment.start,
-                        children: [
-                          pw.Text('Información del inmueble', style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
-                          pw.Text('Lote: $lote'),
-                          pw.Text('Área: $area m²'),
-                          pw.Text('Precio: $price'),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-                pw.SizedBox(height: 20),
-                pw.Table.fromTextArray(
+                pw.Table.fromTextArray(headerCount: 0,
                   context: context,
                   data: [
                     ['Nombre', '$name $lastname', 'Teléfono', phone, 'Fecha de cotización', date],
-                    ['Inmueble Nº', lote, 'Área', area, '', ''],
-                    ['Precio', price, '', '', 'Valido hasta', dueDate],
-                    ['Cuota inicial $porcCuotaIni', 'Valor en pesos', vlrCuotaIni, '', '', ''],                    
+                    ['Inmueble Nº', lote, 'Área', area, 'Valido hasta', dueDate],
+                    ['Precio', price, 'Cuota inicial', '${(double.parse(porcCuotaIni).toInt()).toString()}%', 'Valor en pesos', vlrCuotaIni],
+                                        
                   ],
                 ),
                 pw.SizedBox(height: 20),
-                pw.Table.fromTextArray(
+                pw.Table.fromTextArray(cellAlignment: pw.Alignment.center,
                   context: context,
                   data: [
-                    ['PAGADERA ASÍ'],
-                    ['Cuota inicial', '', '', 'Tiempos'],
-                    ['Separación', '', vlrSeparacion, dueDateSeparacion],
-                    [plazoCI, 'Saldo restante de la cuota inicial', saldoCI, dueDateSaldoCI],                   
+                    ['PAGADERA ASÍ'],        
+                  ],
+                ),  
+                pw.Table.fromTextArray(headerCount: 0,
+                  context: context,
+                  data: [
+                    ['Cuota inicial ($plazoCI)', 'Valor', 'Tiempos'],
+                    ['Separación', vlrSeparacion, dueDateSeparacion],
+                    ['Saldo restante de la cuota inicial', saldoCI, dueDateSaldoCI],                   
                   ],
                 ),                
                 pw.SizedBox(height: 20),
@@ -172,36 +172,7 @@ class PDFGenerator extends StatelessWidget {
                     ['Asesor comercial', 'Teléfono', 'Correo electrónico'],                    
                     [sellerName, sellerPhone, sellerEmail],                   
                   ],
-                ),
-                pw.Row(
-                  crossAxisAlignment: pw.CrossAxisAlignment.start,
-                  children: [
-                    pw.Expanded(
-                      child: pw.Column(
-                        crossAxisAlignment: pw.CrossAxisAlignment.start,
-                        children: [
-                          pw.Text('Payment Information', style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
-                          pw.Text('Payment Method: $paymentMethod'),
-                          pw.Text('Financing Time: $tiempoFinanc months'),
-                          pw.Text('Monthly Payment: \$$vlrCuota'),
-                          pw.Text('Number of Payments: $nroCuotas'),
-                          pw.Text('Statement Start Date: $statementsStartDate'),
-                          pw.Text('Cash Payment Due: $pagoContadoDue'),
-                          pw.Text('TEM: $tem'),
-                        ],
-                      ),
-                    ),
-                    pw.Expanded(
-                      child: pw.Column(
-                        crossAxisAlignment: pw.CrossAxisAlignment.start,
-                        children: [
-                          pw.Text('Información adicional', style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
-                          pw.Text('Observaciones: $observaciones'),
-                        ]
-                      )
-                    )
-                  ]
-                )              
+                ),                            
               ],
             ),
           );
@@ -216,15 +187,15 @@ class PDFGenerator extends StatelessWidget {
 
   pw.Widget metodoPago(String evaluarMetodo, context){
     if(evaluarMetodo == 'Pago de contado'){
-      return pw.Table.fromTextArray(
+      return pw.Table.fromTextArray(headerCount: 0,
         context: context,
         data: [
-          ['PAGO DE CONTADO', 'Plazo hasta', pagoContadoDue],
-          ['Valor a pagar', porcPorPagar, vlrPorPagar],                        
+          ['Método de pago', 'Valor a pagar ($porcPorPagar)', 'Plazo de pago hasta'],
+          ['Pago de contado', vlrPorPagar, pagoContadoDue],                        
         ],
       );                
     } else{
-      return pw.Table.fromTextArray(
+      return pw.Table.fromTextArray(headerCount: 0,
         context: context,
         data: [
           ['FINANCIACIÓN DIRECTA', '', '', 'Financiado a', tiempoFinanc, 'A partir de', statementsStartDate],

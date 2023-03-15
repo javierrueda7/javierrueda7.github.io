@@ -1,3 +1,4 @@
+import 'package:albaterrapp/pages/pdf_generator.dart';
 import 'package:albaterrapp/services/firebase_services.dart';
 import 'package:albaterrapp/utils/color_utils.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -57,67 +58,107 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
                           final name = custData['nameCliente'] ?? '';
                           final lastName = custData['lastnameCliente'] ?? '';
                           final fullName = '$name $lastName';
-                          return Dismissible(
-                            onDismissed: (direction) async {
-                              await deleteUsers(snapshot.data?[index]['qid']);
-                              snapshot.data?.removeAt(index);
-                              setState(() {});
-                            },
-                            confirmDismiss: (direction) async {
-                              bool result = false;
-                              result = await showDialog(
-                                context: context, 
-                                builder: (context){
-                                  return AlertDialog(
-                                    title: Text("Esta seguro de eliminar la cotizacion #${snapshot.data?[index]['qid']}?"),
-                                    actions: [
-                                      TextButton(onPressed: (){
-                                        return Navigator.pop(
-                                          context, 
-                                          false,
+                          return FutureBuilder(
+                            future: db.collection('users').doc(snapshot.data?[index]['sellerID']).get(),
+                            builder: ((context, sellerSnapshot) {
+                              if(sellerSnapshot.hasData){
+                                final sellerData = sellerSnapshot.data?.data() as Map<String, dynamic>;                                
+                                return Dismissible(
+                                  onDismissed: (direction) async {
+                                    await deleteQuote(snapshot.data?[index]['qid']);
+                                    snapshot.data?.removeAt(index);
+                                    setState(() {});
+                                  },
+                                  confirmDismiss: (direction) async {
+                                    bool result = false;
+                                    result = await showDialog(
+                                      context: context, 
+                                      builder: (context){
+                                        return AlertDialog(
+                                          title: Text("Esta seguro de eliminar la cotizacion #${snapshot.data?[index]['qid']}?"),
+                                          actions: [
+                                            TextButton(onPressed: (){
+                                              return Navigator.pop(
+                                                context, 
+                                                false,
+                                              );
+                                            }, 
+                                            child: const Text("Cancelar",
+                                              style: TextStyle(color: Colors.red),
+                                            )
+                                            ),
+                                            TextButton(onPressed: (){
+                                              return Navigator.pop(
+                                                context, 
+                                                true
+                                              );
+                                            }, 
+                                            child: const Text("Si, estoy seguro"),
+                                            ),
+                                          ],
                                         );
-                                      }, 
-                                      child: const Text("Cancelar",
-                                        style: TextStyle(color: Colors.red),
-                                      )
-                                      ),
-                                      TextButton(onPressed: (){
-                                        return Navigator.pop(
-                                          context, 
-                                          true
-                                        );
-                                      }, 
-                                      child: const Text("Si, estoy seguro"),
-                                      ),
-                                    ],
-                                  );
-                                }
-                              );
-                              return result;
-                            },
-                            background: Container(
-                              color:Colors.red,
-                              child: const Icon(Icons.delete),
-                            ),
-                            direction: DismissDirection.endToStart,
-                            key: Key(snapshot.data?[index]['qid']),
-                            child: ListTile(
-                              leading: Text(snapshot.data?[index]['loteName']),
-                              title: Text(fullName),
-                              subtitle: Text('Cotización #${snapshot.data?[index]['qid']}'),
-                              onTap: (() async {
-                                await Navigator.pushNamed(context, "/edit", arguments: {
-                                  "username": snapshot.data?[index]['username'],
-                                  "uid": snapshot.data?[index]['uid'],
-                                  "name": snapshot.data?[index]['name'],
-                                  "email": snapshot.data?[index]['email'],
-                                  "phone": snapshot.data?[index]['phone'],
-                                  "role": snapshot.data?[index]['role'],
-                                });
-                                setState(() {});
+                                      }
+                                    );
+                                    return result;
+                                  },
+                                  background: Container(
+                                    color:Colors.red,
+                                    child: const Icon(Icons.delete),
+                                  ),
+                                  direction: DismissDirection.endToStart,
+                                  key: Key(snapshot.data?[index]['qid']),
+                                  child: ListTile(
+                                    leading: Text(snapshot.data?[index]['loteName']),
+                                    title: Text(fullName),
+                                    subtitle: Text('Cotización #${snapshot.data?[index]['qid']}'),
+                                    onTap: (() async {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => PDFGenerator(
+                                            seller: snapshot.data?[index]['sellerID'],
+                                            sellerName: '${sellerData['nameUser']} ${sellerData['lastnameUser']}',
+                                            sellerPhone: sellerData['phoneUser'],
+                                            sellerEmail: sellerData['emailUser'],
+                                            quoteId: snapshot.data?[index]['qid'],
+                                            name: custData['nameCliente'],
+                                            lastname: custData['lastnameCliente'],
+                                            phone: custData['telCliente'],
+                                            date: snapshot.data?[index]['quoteDate'],
+                                            dueDate: snapshot.data?[index]['quoteDLDate'],
+                                            lote: snapshot.data?[index]['loteName'],
+                                            area: snapshot.data?[index]['areaLote'],
+                                            price: snapshot.data?[index]['priceLote'],
+                                            porcCuotaIni: '${snapshot.data?[index]['perCILote'].toString()}',
+                                            vlrCuotaIni: snapshot.data?[index]['vlrCILote'],
+                                            vlrSeparacion: snapshot.data?[index]['vlrSepLote'],
+                                            dueDateSeparacion: snapshot.data?[index]['sepDLDate'],
+                                            plazoCI: '120 días',
+                                            saldoCI: snapshot.data?[index]['saldoCILote'],
+                                            dueDateSaldoCI: snapshot.data?[index]['saldoCIDLDate'],
+                                            porcPorPagar: '70%',
+                                            vlrPorPagar: snapshot.data?[index]['vlrPorPagarLote'],
+                                            paymentMethod: snapshot.data?[index]['metodoPagoLote'],
+                                            tiempoFinanc: '${((snapshot.data?[index]['nroCuotasLote'])/12).toString()} años',
+                                            vlrCuota: snapshot.data?[index]['vlrCuotasLote'],
+                                            statementsStartDate: snapshot.data?[index]['statementsStartDateLote'],
+                                            nroCuotas: '${snapshot.data?[index]['nroCuotasLote'].toString()}',
+                                            pagoContadoDue: snapshot.data?[index]['pagoContadoDLLote'],
+                                            tem: '0.0%',
+                                            observaciones: snapshot.data?[index]['observacionesLote'],
+                                          ),
+                                        ),
+                                      );                                      
+                                    }
+                                    ),
+                                  ),
+                                );
+                              } else {
+                                return const Center(
+                                  child: CircularProgressIndicator(),
+                                );
                               }
-                              ),
-                            ),
+                            })
                           );
                         } else {
                           return const Center(
