@@ -26,9 +26,8 @@ Future<List> getUsers() async {
       "nameUser": data['nameUser'],
       "uid": doc.id,
       "lastnameUser": data['lastnameUser'],
-      "email": data['email'],
-      "phone": data['phone'],
-      "role": data['role'],
+      "emailUser": data['emailUser'],
+      "phoneUser": data['phoneUser'],
     };
     users.add(person);
   }

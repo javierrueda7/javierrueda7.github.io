@@ -6,6 +6,9 @@ import 'package:printing/printing.dart';
 
 class PDFGenerator extends StatelessWidget {
   final String seller;
+  final String sellerName;
+  final String sellerPhone;
+  final String sellerEmail;
   final String quoteId;
   final String name;
   final String lastname;
@@ -38,6 +41,9 @@ class PDFGenerator extends StatelessWidget {
                                       
   const PDFGenerator({super.key, 
     required this.seller,
+    required this.sellerName,
+    required this.sellerPhone,
+    required this.sellerEmail,
     required this.quoteId,
     required this.name,
     required this.lastname,
@@ -69,13 +75,13 @@ class PDFGenerator extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return PdfPreview(
-      build: (format) => generatePdf(format as String, context),
+      build: (format) => generatePdf(context),
       // You can set the initial page format here
       initialPageFormat: PdfPageFormat.letter,
     );
   }
 
-  Future<Uint8List> generatePdf(String format, BuildContext context) async {
+  Future<Uint8List> generatePdf(BuildContext context) async {
     final pdf = pw.Document();
 
     pdf.addPage(
@@ -93,9 +99,9 @@ class PDFGenerator extends StatelessWidget {
                     pw.Column(
                       crossAxisAlignment: pw.CrossAxisAlignment.start,
                       children: [
-                        pw.Text('SELLER: $seller', style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
-                        pw.Text('QUOTE ID: $quoteId', style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
-                        pw.Text('DATE: $date'),
+                        pw.Text('VENDEDOR: $seller', style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
+                        pw.Text('COTIZACIÓN: $quoteId', style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
+                        pw.Text('FECHA: $date'),
                       ],
                     ),
                     pw.Text('INVOICE', style: pw.TextStyle(fontSize: 20, fontWeight: pw.FontWeight.bold)),
@@ -110,9 +116,9 @@ class PDFGenerator extends StatelessWidget {
                       child: pw.Column(
                         crossAxisAlignment: pw.CrossAxisAlignment.start,
                         children: [
-                          pw.Text('Customer Information', style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
-                          pw.Text('Name: $name $lastname'),
-                          pw.Text('Phone: $phone'),
+                          pw.Text('Información del cliente', style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
+                          pw.Text('Nombre: $name $lastname'),
+                          pw.Text('Teléfono: $phone'),
                         ],
                       ),
                     ),
@@ -120,10 +126,10 @@ class PDFGenerator extends StatelessWidget {
                       child: pw.Column(
                         crossAxisAlignment: pw.CrossAxisAlignment.start,
                         children: [
-                          pw.Text('Property Information', style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
+                          pw.Text('Información del inmueble', style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
                           pw.Text('Lote: $lote'),
-                          pw.Text('Area: $area m²'),
-                          pw.Text('Price: \$$price'),
+                          pw.Text('Área: $area m²'),
+                          pw.Text('Precio: $price'),
                         ],
                       ),
                     ),
@@ -132,21 +138,41 @@ class PDFGenerator extends StatelessWidget {
                 pw.SizedBox(height: 20),
                 pw.Table.fromTextArray(
                   context: context,
-                  headerStyle: pw.TextStyle(fontWeight: pw.FontWeight.bold),
                   data: [
-                    ['Initial Payment', ''],
-                    ['Percentage of Initial Payment', '$porcCuotaIni%'],
-                    ['Amount of Initial Payment', '\$$vlrCuotaIni'],
-                    ['Reservation Fee', '\$$vlrSeparacion'],
-                    ['Due Date Reservation Fee', dueDateSeparacion],
-                    ['Term of the Initial Payment', '$plazoCI months'],
-                    ['Balance of the Initial Payment', '\$$saldoCI'],
-                    ['Due Date Balance of the Initial Payment', dueDateSaldoCI],
-                    ['Percentage Pending to Pay', '$porcPorPagar%'],
-                    ['Amount Pending to Pay', '\$$vlrPorPagar'],
+                    ['Nombre', '$name $lastname', 'Teléfono', phone, 'Fecha de cotización', date],
+                    ['Inmueble Nº', lote, 'Área', area, '', ''],
+                    ['Precio', price, '', '', 'Valido hasta', dueDate],
+                    ['Cuota inicial $porcCuotaIni', 'Valor en pesos', vlrCuotaIni, '', '', ''],                    
                   ],
                 ),
                 pw.SizedBox(height: 20),
+                pw.Table.fromTextArray(
+                  context: context,
+                  data: [
+                    ['PAGADERA ASÍ'],
+                    ['Cuota inicial', '', '', 'Tiempos'],
+                    ['Separación', '', vlrSeparacion, dueDateSeparacion],
+                    [plazoCI, 'Saldo restante de la cuota inicial', saldoCI, dueDateSaldoCI],                   
+                  ],
+                ),                
+                pw.SizedBox(height: 20),
+                metodoPago(paymentMethod, context),
+                pw.SizedBox(height: 20),
+                pw.Table.fromTextArray(
+                  context: context,
+                  data: [
+                    ['OBSERVACIONES'],                    
+                    [observaciones],                   
+                  ],
+                ),
+                pw.SizedBox(height: 20),
+                pw.Table.fromTextArray(
+                  context: context,
+                  data: [
+                    ['Asesor comercial', 'Teléfono', 'Correo electrónico'],                    
+                    [sellerName, sellerPhone, sellerEmail],                   
+                  ],
+                ),
                 pw.Row(
                   crossAxisAlignment: pw.CrossAxisAlignment.start,
                   children: [
@@ -186,5 +212,26 @@ class PDFGenerator extends StatelessWidget {
     final bytes = await pdf.save();
 
     return bytes;
+  }
+
+  pw.Widget metodoPago(String evaluarMetodo, context){
+    if(evaluarMetodo == 'Pago de contado'){
+      return pw.Table.fromTextArray(
+        context: context,
+        data: [
+          ['PAGO DE CONTADO', 'Plazo hasta', pagoContadoDue],
+          ['Valor a pagar', porcPorPagar, vlrPorPagar],                        
+        ],
+      );                
+    } else{
+      return pw.Table.fromTextArray(
+        context: context,
+        data: [
+          ['FINANCIACIÓN DIRECTA', '', '', 'Financiado a', tiempoFinanc, 'A partir de', statementsStartDate],
+          ['Valor a pagar', porcPorPagar, vlrPorPagar, '', '', 'Valor cuota', vlrCuota],
+          ['Nº cuotas', nroCuotas, 'TEM', tem],              
+        ],
+      );
+    }
   }
 }

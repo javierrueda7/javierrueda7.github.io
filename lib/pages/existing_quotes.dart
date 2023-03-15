@@ -2,7 +2,6 @@ import 'package:albaterrapp/services/firebase_services.dart';
 import 'package:albaterrapp/utils/color_utils.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'dart:async';
 
 FirebaseFirestore db = FirebaseFirestore.instance;
 
@@ -145,33 +144,3 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
   }
 }
 
-Future<String> getSpecificCustomer(String idCliente) async {
-  List customers = [];
-  String temp = '';
-  QuerySnapshot? queryCustomers = await db.collection('customers').get();
-  for (var doc in queryCustomers.docs) {
-    final Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-    if(doc.id == idCliente){
-      final customer = {
-        "clienteID":doc.id,
-        "nameCliente":data["nameCliente"],
-        "lastnameCliente":data["lastnameCliente"],
-        "genderCliente":data["genderCliente"],
-        "bdayCliente":data["bdayCliente"],
-        "telCliente":data["telCliente"],
-        "idTypeCliente":data["idTypeCliente"],
-        "idIssueCountryCliente":data["idIssueCountryCliente"],
-        "idIssueStateCliente":data["idIssueStateCliente"],
-        "idIssueCityCliente":data["idIssueCityCliente"],
-        "emailCliente":data["emailCliente"],
-        "addressCliente":data["addressCliente"],
-        "countryCliente":data["countryCliente"],
-        "stateCliente":data["stateCliente"],
-        "cityCliente":data["cityCliente"]      
-      };
-      customers.add(customer);
-      temp = '${customer['nameCliente']} ${customer['lastnameCliente']}';
-    }
-  }
-  return temp;
-}

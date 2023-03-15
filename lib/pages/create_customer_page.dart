@@ -38,11 +38,13 @@ class _CreateCustomerPageState extends State<CreateCustomerPage> {
     timer; //clear the timer variable
     super.dispose();
 }
-  
+  List sellers = [];
   late int quoteCounter;
   late String qid;
   DateTime quotePickedDate = DateTime.now();
   List<dynamic> loteInfo = [];
+  List sellerList = [];
+
   String realtimeDateTime = '';
   double porcCuotaInicial = 30;
   double vlrSeparacion = 10000000;
@@ -62,10 +64,13 @@ class _CreateCustomerPageState extends State<CreateCustomerPage> {
   List<String> paymentMethodList= ['Pago de contado', 'Financiación directa'];
   String paymentMethodSelectedItem = 'Pago de contado';
   Stream<QuerySnapshot>? citiesStream;
+  Stream<QuerySnapshot>? sellerStream;
   final CollectionReference collectionReference = FirebaseFirestore.instance.collection('quotes');
 
-
-  String selectedSeller = 'Vendedor';
+  String selectedSeller = '';
+  String sellerName = '';
+  String sellerEmail = '';
+  String sellerPhone = '';
   TextEditingController quoteDateController = TextEditingController(text: DateFormat('MM-dd-yyyy').format(DateTime.now()));
   TextEditingController quoteDeadlineController = TextEditingController(text: dateOnly(false, 0.5, DateTime.now()));
   TextEditingController loteController = TextEditingController(text: "");
@@ -104,15 +109,6 @@ class _CreateCustomerPageState extends State<CreateCustomerPage> {
   String selectedState = 'Estado';
   String selectedCity = 'Ciudad';
 
-
-  void onSelectedState(String value) {
-  setState(() {
-    selectedIssuedState = value;
-    citiesStream = FirebaseFirestore.instance.collection('cities').where('stateName', isEqualTo: selectedIssuedState).orderBy('cityName', descending: true).snapshots();
-    selectedIssuedCity = 'Ciudad';
-  });
-}
-  
   @override
   Widget build(BuildContext context) {
     collectionReference.get().then((QuerySnapshot quotesSnapshot) {
@@ -170,7 +166,7 @@ class _CreateCustomerPageState extends State<CreateCustomerPage> {
                       child: Padding(
                         padding: const EdgeInsets.only(left: 10.0, right: 10),
                         child: StreamBuilder<QuerySnapshot>(
-                          stream: FirebaseFirestore.instance.collection('users').orderBy('uid').snapshots(),
+                          stream: FirebaseFirestore.instance.collection('users').snapshots(),
                           builder: (context, usersSnapshot) {
                             List<DropdownMenuItem> userItems = [];
                             if (!usersSnapshot.hasData) {
@@ -180,7 +176,7 @@ class _CreateCustomerPageState extends State<CreateCustomerPage> {
                               for (var users in usersList!) {
                                 userItems.add(
                                   DropdownMenuItem(
-                                    value: users['uid'],
+                                    value: users.id,
                                     child: Center(child: Text(users['nameUser'])),
                                   ),
                                 );
@@ -201,7 +197,7 @@ class _CreateCustomerPageState extends State<CreateCustomerPage> {
                           },
                         ),
                       ),
-                    ),           
+                    ),               
                     
                     
                     
@@ -1019,163 +1015,230 @@ class _CreateCustomerPageState extends State<CreateCustomerPage> {
                     const SizedBox(
                       height: 15,
                     ),                  
-                    ElevatedButton(
-                      style: ButtonStyle(fixedSize: MaterialStateProperty.all(const Size(250, 50))),
-                      onPressed: () async {                       
-                        setState(() {
-                          vlrSeparacion =  stringConverter(vlrSeparacionController.text);
-                          vlrSeparacionController.text = (currencyCOP((vlrSeparacion.toInt()).toString()));
-                          saldoCuotaIniController.text = (currencyCOP((saldoCI.toInt()).toString()));   
-                        });
-                        if(selectedSeller.isEmpty ||
-                          quoteDateController.text.isEmpty ||
-                          quoteDeadlineController.text.isEmpty || 
-                          priceloteController.text.isEmpty ||
-                          vlrCuotaIniController.text.isEmpty ||
-                          vlrSeparacionController.text.isEmpty ||
-                          separacionDeadlineController.text.isEmpty || 
-                          saldoCuotaIniController.text.isEmpty ||
-                          saldoCuotaIniDeadlineController.text.isEmpty ||
-                          vlrPorPagarController.text.isEmpty ||
-                          paymentMethodSelectedItem.isEmpty ||
-                          pagoContadoDeadlineController.text.isEmpty ||
-                          statementsStartDateController.text.isEmpty ||
-                          selectedNroCuotas.isEmpty || 
-                          vlrCuotaController.text.isEmpty ||  
-                          idController.text.isEmpty || 
-                          nameController.text.isEmpty || 
-                          lastnameController.text.isEmpty || 
-                          selectedGender.isEmpty || 
-                          birthdayController.text.isEmpty || 
-                          ocupacionController.text.isEmpty  || 
-                          phoneController.text.isEmpty || 
-                          selectedItemIdtype.isEmpty || 
-                          selectedIssuedCountry.isEmpty || 
-                          selectedIssuedState.isEmpty || 
-                          selectedIssuedCity.isEmpty ||  
-                          emailController.text.isEmpty || 
-                          addressController.text.isEmpty || 
-                          selectedCountry.isEmpty ||  
-                          selectedState.isEmpty || 
-                          selectedCity.isEmpty
-                          ){
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: CustomAlertMessage(
-                                errorTitle: "Oops!", 
-                                errorText: "Verifique que todos los campos se hayan llenado correctamente.",
-                                stateColor: dangerColor,
-                              ), 
-                              behavior: SnackBarBehavior.floating,
-                              backgroundColor: Colors.transparent,
-                              elevation: 0,
+                    Container(
+                      constraints: const BoxConstraints(maxWidth: 800),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            flex: 4,
+                            child: ElevatedButton(
+                              style: ButtonStyle(fixedSize: MaterialStateProperty.all(const Size(250, 50))),
+                              onPressed: () async {                       
+                                setState(() {
+                                  vlrSeparacion =  stringConverter(vlrSeparacionController.text);
+                                  vlrSeparacionController.text = (currencyCOP((vlrSeparacion.toInt()).toString()));
+                                  saldoCuotaIniController.text = (currencyCOP((saldoCI.toInt()).toString()));   
+                                });
+                                if(selectedSeller.isEmpty ||
+                                  quoteDateController.text.isEmpty ||
+                                  quoteDeadlineController.text.isEmpty || 
+                                  priceloteController.text.isEmpty ||
+                                  vlrCuotaIniController.text.isEmpty ||
+                                  vlrSeparacionController.text.isEmpty ||
+                                  separacionDeadlineController.text.isEmpty || 
+                                  saldoCuotaIniController.text.isEmpty ||
+                                  saldoCuotaIniDeadlineController.text.isEmpty ||
+                                  vlrPorPagarController.text.isEmpty ||
+                                  paymentMethodSelectedItem.isEmpty ||
+                                  pagoContadoDeadlineController.text.isEmpty ||
+                                  statementsStartDateController.text.isEmpty ||
+                                  selectedNroCuotas.isEmpty || 
+                                  vlrCuotaController.text.isEmpty ||  
+                                  idController.text.isEmpty || 
+                                  nameController.text.isEmpty || 
+                                  lastnameController.text.isEmpty || 
+                                  selectedGender.isEmpty || 
+                                  birthdayController.text.isEmpty || 
+                                  ocupacionController.text.isEmpty  || 
+                                  phoneController.text.isEmpty || 
+                                  selectedItemIdtype.isEmpty || 
+                                  selectedIssuedCountry.isEmpty || 
+                                  selectedIssuedState.isEmpty || 
+                                  selectedIssuedCity.isEmpty ||  
+                                  emailController.text.isEmpty || 
+                                  addressController.text.isEmpty || 
+                                  selectedCountry.isEmpty ||  
+                                  selectedState.isEmpty || 
+                                  selectedCity.isEmpty
+                                  ){
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: CustomAlertMessage(
+                                        errorTitle: "Oops!", 
+                                        errorText: "Verifique que todos los campos se hayan llenado correctamente.",
+                                        stateColor: dangerColor,
+                                      ), 
+                                      behavior: SnackBarBehavior.floating,
+                                      backgroundColor: Colors.transparent,
+                                      elevation: 0,
+                                    ),
+                                  );
+                                } else {                                
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => PDFGenerator(
+                                        seller: selectedSeller,
+                                        sellerName: sellerName,
+                                        sellerPhone: sellerPhone,
+                                        sellerEmail: sellerEmail,
+                                        quoteId: idGenerator(quoteCounter),
+                                        name: nameController.text,
+                                        lastname: lastnameController.text,
+                                        phone: phoneController.text,
+                                        date: quoteDateController.text,
+                                        dueDate: quoteDeadlineController.text,
+                                        lote: loteInfo[1],
+                                        area: '${((loteInfo[8].toInt()).toString())} m²',
+                                        price: priceloteController.text,
+                                        porcCuotaIni: '${((porcCuotaInicial.toInt()).toString())}%',
+                                        vlrCuotaIni: vlrCuotaIniController.text,
+                                        vlrSeparacion: vlrSeparacionController.text,
+                                        dueDateSeparacion: separacionDeadlineController.text,
+                                        plazoCI: '${(((plazoCI*30).toInt()).toString())} días',
+                                        saldoCI: saldoCuotaIniController.text,
+                                        dueDateSaldoCI: saldoCuotaIniDeadlineController.text,
+                                        porcPorPagar: '${(((100-porcCuotaInicial).toInt()).toString())}%',
+                                        vlrPorPagar: vlrPorPagarController.text,
+                                        paymentMethod: paymentMethodSelectedItem,
+                                        tiempoFinanc: '${(int.parse(selectedNroCuotas))/12} años',
+                                        vlrCuota: vlrCuotaController.text,
+                                        statementsStartDate: statementsStartDateController.text,
+                                        nroCuotas: selectedNroCuotas,
+                                        pagoContadoDue: pagoContadoDeadlineController.text,
+                                        tem: '${temController.text}%',
+                                        observaciones: observacionesController.text,
+                                      ),
+                                    ),
+                                  );
+                                }
+                              },
+                              child: const Text("Ver PDF"),
                             ),
-                          );
-                        } else {
-                          await addCustomer(
-                            idController.text,
-                            nameController.text,
-                            lastnameController.text, 
-                            selectedGender,
-                            birthdayController.text,
-                            ocupacionController.text,
-                            phoneController.text,
-                            selectedItemIdtype,
-                            selectedIssuedCountry,
-                            selectedIssuedState,
-                            selectedIssuedCity, 
-                            emailController.text,
-                            addressController.text,
-                            selectedCountry, 
-                            selectedState,
-                            selectedCity,
-                            );
-                          await addQuote(
-                            idGenerator(quoteCounter),
-                            selectedSeller,
-                            quoteDateController.text,
-                            quoteDeadlineController.text, 
-                            loteInfo[1],
-                            loteInfo[7],
-                            '${((loteInfo[8].toInt()).toString())} m²',
-                            priceloteController.text,
-                            porcCuotaInicial,
-                            vlrCuotaIniController.text,
-                            vlrSeparacionController.text,
-                            separacionDeadlineController.text, 
-                            saldoCuotaIniController.text,
-                            saldoCuotaIniDeadlineController.text,
-                            vlrPorPagarController.text, 
-                            paymentMethodSelectedItem,
-                            pagoContadoDeadlineController.text,
-                            statementsStartDateController.text,
-                            int.parse(selectedNroCuotas), 
-                            vlrCuotaController.text,
-                            observacionesController.text,
-                            idController.text,
-                            'EN ESPERA'
-                            ).then((_) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: CustomAlertMessage(
-                                    errorTitle: "Genial!", 
-                                    errorText: "Datos almacenados de manera satisfactoria.",
-                                    stateColor: successColor,
-                                  ), 
-                                  behavior: SnackBarBehavior.floating,
-                                  backgroundColor: Colors.transparent,
-                                  elevation: 0,
-                                ),
-                              );
-
-                              //Navigator.pop(context);
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => PDFGenerator(
-                                    seller: selectedSeller,
-                                    quoteId: idGenerator(quoteCounter),
-                                    name: nameController.text,
-                                    lastname: lastnameController.text,
-                                    phone: phoneController.text,
-                                    date: quoteDateController.text,
-                                    dueDate: quoteDeadlineController.text,
-                                    lote: loteInfo[1],
-                                    area: '${((loteInfo[8].toInt()).toString())} m²',
-                                    price: priceloteController.text,
-                                    porcCuotaIni: '${((porcCuotaInicial.toInt()).toString())}%',
-                                    vlrCuotaIni: vlrCuotaIniController.text,
-                                    vlrSeparacion: vlrSeparacionController.text,
-                                    dueDateSeparacion: separacionDeadlineController.text,
-                                    plazoCI: '${(((plazoCI*30).toInt()).toString())} días',
-                                    saldoCI: saldoCuotaIniController.text,
-                                    dueDateSaldoCI: saldoCuotaIniDeadlineController.text,
-                                    porcPorPagar: '${(((100-porcCuotaInicial).toInt()).toString())}%',
-                                    vlrPorPagar: vlrPorPagarController.text,
-                                    paymentMethod: paymentMethodSelectedItem,
-                                    tiempoFinanc: '${(int.parse(selectedNroCuotas))/12} años',
-                                    vlrCuota: vlrCuotaController.text,
-                                    statementsStartDate: statementsStartDateController.text,
-                                    nroCuotas: selectedNroCuotas,
-                                    pagoContadoDue: pagoContadoDeadlineController.text,
-                                    tem: '${temController.text}%',
-                                    observaciones: observacionesController.text,
-                                  ),
-                                ),
-                              );
-                              
-
-
-
-
-
-
-
-
-                          });
-                        }
-                      },
-                      child: const Text("Guardar"),
+                          ),
+                          Expanded(
+                            flex: 1,
+                            child: Container(),
+                          ),
+                          Expanded(
+                            flex: 4,
+                            child: ElevatedButton(
+                              style: ButtonStyle(fixedSize: MaterialStateProperty.all(const Size(250, 50))),
+                              onPressed: () async {                       
+                                setState(() {
+                                  vlrSeparacion =  stringConverter(vlrSeparacionController.text);
+                                  vlrSeparacionController.text = (currencyCOP((vlrSeparacion.toInt()).toString()));
+                                  saldoCuotaIniController.text = (currencyCOP((saldoCI.toInt()).toString()));   
+                                });
+                                if(selectedSeller.isEmpty ||
+                                  quoteDateController.text.isEmpty ||
+                                  quoteDeadlineController.text.isEmpty || 
+                                  priceloteController.text.isEmpty ||
+                                  vlrCuotaIniController.text.isEmpty ||
+                                  vlrSeparacionController.text.isEmpty ||
+                                  separacionDeadlineController.text.isEmpty || 
+                                  saldoCuotaIniController.text.isEmpty ||
+                                  saldoCuotaIniDeadlineController.text.isEmpty ||
+                                  vlrPorPagarController.text.isEmpty ||
+                                  paymentMethodSelectedItem.isEmpty ||
+                                  pagoContadoDeadlineController.text.isEmpty ||
+                                  statementsStartDateController.text.isEmpty ||
+                                  selectedNroCuotas.isEmpty || 
+                                  vlrCuotaController.text.isEmpty ||  
+                                  idController.text.isEmpty || 
+                                  nameController.text.isEmpty || 
+                                  lastnameController.text.isEmpty || 
+                                  selectedGender.isEmpty || 
+                                  birthdayController.text.isEmpty || 
+                                  ocupacionController.text.isEmpty  || 
+                                  phoneController.text.isEmpty || 
+                                  selectedItemIdtype.isEmpty || 
+                                  selectedIssuedCountry.isEmpty || 
+                                  selectedIssuedState.isEmpty || 
+                                  selectedIssuedCity.isEmpty ||  
+                                  emailController.text.isEmpty || 
+                                  addressController.text.isEmpty || 
+                                  selectedCountry.isEmpty ||  
+                                  selectedState.isEmpty || 
+                                  selectedCity.isEmpty
+                                  ){
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: CustomAlertMessage(
+                                        errorTitle: "Oops!", 
+                                        errorText: "Verifique que todos los campos se hayan llenado correctamente.",
+                                        stateColor: dangerColor,
+                                      ), 
+                                      behavior: SnackBarBehavior.floating,
+                                      backgroundColor: Colors.transparent,
+                                      elevation: 0,
+                                    ),
+                                  );
+                                } else {
+                                  await addCustomer(
+                                    idController.text,
+                                    nameController.text,
+                                    lastnameController.text, 
+                                    selectedGender,
+                                    birthdayController.text,
+                                    ocupacionController.text,
+                                    phoneController.text,
+                                    selectedItemIdtype,
+                                    selectedIssuedCountry,
+                                    selectedIssuedState,
+                                    selectedIssuedCity, 
+                                    emailController.text,
+                                    addressController.text,
+                                    selectedCountry, 
+                                    selectedState,
+                                    selectedCity,
+                                    );
+                                  await addQuote(
+                                    idGenerator(quoteCounter),
+                                    selectedSeller,
+                                    quoteDateController.text,
+                                    quoteDeadlineController.text, 
+                                    loteInfo[1],
+                                    loteInfo[7],
+                                    '${((loteInfo[8].toInt()).toString())} m²',
+                                    priceloteController.text,
+                                    porcCuotaInicial,
+                                    vlrCuotaIniController.text,
+                                    vlrSeparacionController.text,
+                                    separacionDeadlineController.text, 
+                                    saldoCuotaIniController.text,
+                                    saldoCuotaIniDeadlineController.text,
+                                    vlrPorPagarController.text, 
+                                    paymentMethodSelectedItem,
+                                    pagoContadoDeadlineController.text,
+                                    statementsStartDateController.text,
+                                    int.parse(selectedNroCuotas), 
+                                    vlrCuotaController.text,
+                                    observacionesController.text,
+                                    idController.text,
+                                    'EN ESPERA'
+                                    ).then((_) {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(
+                                          content: CustomAlertMessage(
+                                            errorTitle: "Genial!", 
+                                            errorText: "Datos almacenados de manera satisfactoria.",
+                                            stateColor: successColor,
+                                          ), 
+                                          behavior: SnackBarBehavior.floating,
+                                          backgroundColor: Colors.transparent,
+                                          elevation: 0,
+                                        ),
+                                      );                        
+                                      Navigator.pop(context);
+                                  });
+                                }
+                              },
+                              child: const Text("Guardar"),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),                    
                     const SizedBox(
                       height: 30,
@@ -1189,6 +1252,26 @@ class _CreateCustomerPageState extends State<CreateCustomerPage> {
       ),
     );
   }
+
+  Future<List> getSeller(String value) async {
+    
+    QuerySnapshot? querySellers = await db.collection('users').where(FieldPath.documentId, isEqualTo: selectedSeller).get();
+    for (var doc in querySellers.docs) {
+      final Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+      final person = {
+        "nameUser": data['nameUser'],
+        "uid": doc.id,
+        "lastnameUser": data['lastnameUser'],
+        "emailUser": data['emailUser'],
+        "phoneUser": data['phoneUser'],
+      };
+      sellers.add(person);
+    }
+    return sellers;
+  }
+
+
+
 
   double stringConverter(String valorAConvertir){
     String valorSinPuntos = valorAConvertir.replaceAll('\$', '').replaceAll('.', '');
