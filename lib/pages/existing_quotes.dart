@@ -46,7 +46,6 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
       body: Center(
         child: Container(
           constraints: const BoxConstraints(maxWidth: 1200),
-
           child: FutureBuilder(
             future: getQuotes(loteInfo[1], needAll),
             builder: ((context, snapshot){
