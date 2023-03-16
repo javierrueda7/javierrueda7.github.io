@@ -67,7 +67,7 @@ class _CreateCustomerPageState extends State<CreateCustomerPage> {
   Stream<QuerySnapshot>? sellerStream;
   final CollectionReference collectionReference = FirebaseFirestore.instance.collection('quotes');
 
-  String selectedSeller = '';
+  String selectedSeller = 'Seleccione un vendedor';
   String sellerName = '';
   String sellerEmail = '';
   String sellerPhone = '';
@@ -100,14 +100,14 @@ class _CreateCustomerPageState extends State<CreateCustomerPage> {
   TextEditingController phoneController = TextEditingController(text: "");
   TextEditingController idtypeController = TextEditingController(text: "");
   TextEditingController idController = TextEditingController(text: "");
-  String selectedIssuedCountry = 'País';
-  String selectedIssuedState = 'Estado';
-  String selectedIssuedCity = 'Ciudad';
+  String selectedIssuedCountry = 'Colombia';
+  String selectedIssuedState = 'Departamento';
+  String selectedIssuedCity = 'Municipio';
   TextEditingController emailController = TextEditingController(text: "");
   TextEditingController addressController = TextEditingController(text: "");
-  String selectedCountry = 'País';
-  String selectedState = 'Estado';
-  String selectedCity = 'Ciudad';
+  String selectedCountry = 'Colombia';
+  String selectedState = 'Departamento';
+  String selectedCity = 'Municipio';
 
   @override
   Widget build(BuildContext context) {
