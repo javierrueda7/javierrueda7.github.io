@@ -22,7 +22,8 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
   @override
   void initState() {
     super.initState();    
-    loteInfo = widget.loteInfo;    
+    loteInfo = widget.loteInfo;
+    needAll = widget.needAll;    
   }
 
   List<dynamic> loteInfo = [];

@@ -197,14 +197,7 @@ class _CreateCustomerPageState extends State<CreateCustomerPage> {
                           },
                         ),
                       ),
-                    ),               
-                    
-                    
-                    
-                    
-                    
-                    
-                    
+                    ),
                     const SizedBox(
                       height: 15,
                       child: Center(child: Text('Vigencia cotización', style: TextStyle(fontSize: 12),)),
