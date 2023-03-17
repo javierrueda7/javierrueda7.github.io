@@ -34,14 +34,14 @@ Future<List> getUsers() async {
   return users;
 }
 
-Future<void> addUsers(String uid, String nameUser, String lastnameUser, String email, String phone, String address, String id) async {
+Future<void> addUsers(String uid, String nameUser, String lastnameUser, String emailUser, String phoneUser, String addressUser, String idUser) async {
   await db.collection("users").doc(uid).set({
     "nameUser": nameUser, 
     "lastnameUser": lastnameUser, 
-    "email": email, 
-    "phone": phone,
-    "address": address,
-    "id": id
+    "emailUser": emailUser, 
+    "phoneUser": phoneUser,
+    "addressUser": addressUser,
+    "idUser": idUser
     }
   );
 }
@@ -187,7 +187,8 @@ Future<void> addCustomer(
   String nameCliente, 
   String lastnameCliente, 
   String genderCliente, 
-  String bdayCliente, 
+  String bdayCliente,
+  String ocupacionCliente,
   String telCliente,
   String idTypeCliente,
   String idIssueCountryCliente,
@@ -196,8 +197,7 @@ Future<void> addCustomer(
   String emailCliente,
   String addressCliente, 
   String countryCliente,
-  String stateCliente,
-  String ocupacionCliente,
+  String stateCliente,  
   String cityCliente) async {
   await db.collection("customers").doc(clienteID).set({
     "nameCliente": nameCliente,
