@@ -136,6 +136,8 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
                                             vlrCuotaIni: snapshot.data?[index]['vlrCILote'],
                                             vlrSeparacion: snapshot.data?[index]['vlrSepLote'],
                                             dueDateSeparacion: snapshot.data?[index]['sepDLDate'],
+                                            saldoSeparacion: snapshot.data?[index]['saldoSepLote'],
+                                            dueDateSaldoSeparacion: snapshot.data?[index]['saldoSepDLDate'],
                                             plazoCI: '120 días',
                                             saldoCI: snapshot.data?[index]['saldoCILote'],
                                             dueDateSaldoCI: snapshot.data?[index]['saldoCIDLDate'],

@@ -24,6 +24,8 @@ class PDFGenerator extends StatelessWidget {
   final String vlrCuotaIni;
   final String vlrSeparacion;
   final String dueDateSeparacion;
+  final String saldoSeparacion;
+  final String dueDateSaldoSeparacion;
   final String plazoCI;
   final String saldoCI;
   final String dueDateSaldoCI;
@@ -59,6 +61,8 @@ class PDFGenerator extends StatelessWidget {
     required this.vlrCuotaIni,
     required this.vlrSeparacion,
     required this.dueDateSeparacion,
+    required this.saldoSeparacion,
+    required this.dueDateSaldoSeparacion,
     required this.plazoCI,
     required this.saldoCI,
     required this.dueDateSaldoCI,
@@ -120,7 +124,7 @@ class PDFGenerator extends StatelessWidget {
                       mainAxisAlignment: pw.MainAxisAlignment.center,
                       crossAxisAlignment: pw.CrossAxisAlignment.end,
                       children: [
-                        pw.Text('FECHA: ${dateOnly(false, 0, DateTime.now())}'),
+                        pw.Text('FECHA: ${dateOnly(false, 0, DateTime.now(), false)}'),
                         pw.Image(pw.MemoryImage(byteList2,), height: 20),
                         pw.Image(pw.MemoryImage(byteList3,), height: 30),
                       ],

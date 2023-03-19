@@ -25,9 +25,10 @@ class _CreateCustomerPageState extends State<CreateCustomerPage> {
   void initState() {
     super.initState();    
     loteInfo = widget.loteInfo;
+    initPagos();
     timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       setState(() {
-        realtimeDateTime = dateOnly(true, 0, DateTime.now());
+        realtimeDateTime = dateOnly(true, 0, DateTime.now(), false);
       });
     });
   }
@@ -37,22 +38,38 @@ class _CreateCustomerPageState extends State<CreateCustomerPage> {
     timer.cancel(); //cancel the periodic task
     timer; //clear the timer variable
     super.dispose();
-}
+  }
+
+  
+  Map<String, dynamic> infoPagos = {};
   List sellers = [];
   late int quoteCounter;
   late String qid;
   DateTime quotePickedDate = DateTime.now();
   List<dynamic> loteInfo = [];
   List sellerList = [];
-
   String realtimeDateTime = '';
-  double porcCuotaInicial = 30;
-  double vlrSeparacion = 10000000;
-  double plazoCI = 4;
-  double vlrTEM = 0.0;
+  
+  double vlrSeparacion = 0;
+  double vlrFijoSeparacion = 0;
+  double porcCuotaInicial = 0;  
+  double plazoCI = 0;
+  double vlrTEM = 0;
+  double dctoContado = 0;
+
+  Future<void> initPagos() async {
+    infoPagos = await getInfoProyecto();
+    vlrFijoSeparacion = infoPagos['valorSeparacion'].toDouble();
+    porcCuotaInicial = infoPagos['cuotaInicial'].toDouble();
+    plazoCI = infoPagos['plazoCuotaInicial'].toDouble();
+    vlrTEM = infoPagos['tem'].toDouble();
+    dctoContado = infoPagos['dctoContado'].toDouble();
+  }
+
   late double cuotaInicial;
   late double saldoCI;
   late double valorAPagar;
+  late double valorAPagarContado;
   late double valorCuota;
   List<String> nroCuotasList = ['12', '24', '36'];
   String selectedNroCuotas = '12';
@@ -71,8 +88,8 @@ class _CreateCustomerPageState extends State<CreateCustomerPage> {
   String sellerName = '';
   String sellerEmail = '';
   String sellerPhone = '';
-  TextEditingController quoteDateController = TextEditingController(text: DateFormat('MM-dd-yyyy').format(DateTime.now()));
-  TextEditingController quoteDeadlineController = TextEditingController(text: dateOnly(false, 0.5, DateTime.now()));
+  TextEditingController quoteDateController = TextEditingController(text: DateFormat('dd-MM-yyyy').format(DateTime.now()));
+  TextEditingController quoteDeadlineController = TextEditingController(text: dateOnly(false, 15, DateTime.now(), false));
   TextEditingController loteController = TextEditingController(text: "");
   TextEditingController etapaloteController = TextEditingController(text: "");
   TextEditingController arealoteController = TextEditingController(text: "");
@@ -80,13 +97,16 @@ class _CreateCustomerPageState extends State<CreateCustomerPage> {
   TextEditingController porcCuotaInicialController = TextEditingController(text: "");
   TextEditingController vlrCuotaIniController = TextEditingController(text: "");
   TextEditingController vlrSeparacionController = TextEditingController(text: "\$10.000.000");
-  TextEditingController separacionDeadlineController = TextEditingController(text: dateOnly(false, 0, DateTime.now()));
+  TextEditingController saldoSeparacionController = TextEditingController(text: "\$0");
+  TextEditingController separacionDeadlineController = TextEditingController(text: dateOnly(false, 0, DateTime.now(), false));
+  TextEditingController saldoSeparacionDeadlineController = TextEditingController(text: dateOnly(false, 7, DateTime.now(), false));
   TextEditingController saldoCuotaIniController = TextEditingController(text: "");
-  TextEditingController saldoCuotaIniDeadlineController = TextEditingController(text: dateOnly(false, 4, DateTime.now()));
+  TextEditingController saldoCuotaIniDeadlineController = TextEditingController(text: dateOnly(false, 120, DateTime.now(), true));
 
   TextEditingController vlrPorPagarController = TextEditingController(text: "");
-  TextEditingController pagoContadoDeadlineController = TextEditingController(text: dateOnly(false, 5, DateTime.now()));
-  TextEditingController statementsStartDateController = TextEditingController(text: dateOnly(false, 5, DateTime.now()));
+  TextEditingController vlrPorPagarContadoController = TextEditingController(text: "");
+  TextEditingController pagoContadoDeadlineController = TextEditingController(text: dateOnly(false, 150, DateTime.now(), true));
+  TextEditingController statementsStartDateController = TextEditingController(text: dateOnly(false, 150, DateTime.now(), true));
   TextEditingController vlrCuotaController = TextEditingController(text: "");
   TextEditingController temController = TextEditingController(text: "");
   TextEditingController observacionesController = TextEditingController(text: "");
@@ -114,11 +134,14 @@ class _CreateCustomerPageState extends State<CreateCustomerPage> {
     collectionReference.get().then((QuerySnapshot quotesSnapshot) {
       quoteCounter = quotesSnapshot.size;
     });
+    initPagos();
     int vlrBaseLote = loteInfo[9].toInt();
     cuotaInicial = vlrBaseLote * (porcCuotaInicial/100);
-    saldoCI = cuotaInicial - vlrSeparacion;
+    saldoCI = cuotaInicial - vlrFijoSeparacion;
     valorAPagar = vlrBaseLote - cuotaInicial;
+    valorAPagarContado = (vlrBaseLote*((100-dctoContado)/100)) - vlrFijoSeparacion;
     valorCuota = valorAPagar/(double.parse(selectedNroCuotas));
+    double saldoSeparacion = vlrFijoSeparacion-vlrSeparacion;
 
     priceloteController.text = (currencyCOP((vlrBaseLote.toInt()).toString()));
     vlrCuotaIniController.text = (currencyCOP((cuotaInicial.toInt()).toString()));
@@ -245,11 +268,11 @@ class _CreateCustomerPageState extends State<CreateCustomerPage> {
                                         if(quotePickedDate != null) {
                                           setState(() {
                                             quoteDateController.text = DateFormat('MM-dd-yyyy').format(quotePickedDate);
-                                            quoteDeadlineController.text = dateOnly(false, 0.5, quotePickedDate);
-                                            separacionDeadlineController.text = dateOnly(false, 0, quotePickedDate);
-                                            saldoCuotaIniDeadlineController.text = dateOnly(false, plazoCI, quotePickedDate);
-                                            pagoContadoDeadlineController.text = dateOnly(false, plazoCI+1, quotePickedDate);
-                                            statementsStartDateController.text = dateOnly(false, plazoCI+1, quotePickedDate);
+                                            quoteDeadlineController.text = dateOnly(false, 15, quotePickedDate, true);
+                                            separacionDeadlineController.text = dateOnly(false, 0, quotePickedDate, false);
+                                            saldoCuotaIniDeadlineController.text = dateOnly(false, plazoCI*30, quotePickedDate, true);
+                                            pagoContadoDeadlineController.text = dateOnly(false, (plazoCI*30)+30, quotePickedDate, true);
+                                            statementsStartDateController.text = dateOnly(false, (plazoCI*30)+30, quotePickedDate, true);
                                           });
                                         }
                                       },
@@ -268,7 +291,7 @@ class _CreateCustomerPageState extends State<CreateCustomerPage> {
                                   child: Text('Hasta', style: TextStyle(fontSize: 10),),
                                 ),
                                 textFieldWidget(
-                                  dateOnly(false, 0.5, quotePickedDate), Icons.date_range_outlined, false, quoteDeadlineController, false, 'date', (){}
+                                  dateOnly(false, 15, quotePickedDate, false), Icons.date_range_outlined, false, quoteDeadlineController, false, 'date', (){}
                                 ),
                               ],
                             ),
@@ -422,10 +445,16 @@ class _CreateCustomerPageState extends State<CreateCustomerPage> {
                                           if (value.isEmpty || stringConverter(value) <= 10000000) {
                                             setState(() {
                                               vlrSeparacion = stringConverter(value);
+                                              saldoSeparacion = 10000000 - stringConverter(value);
+                                              saldoSeparacionController.text = (currencyCOP((saldoSeparacion.toInt()).toString()));
                                               saldoCuotaIniController.text = (currencyCOP((saldoCI.toInt()).toString()));
                                             });
                                           } else {
                                             vlrSeparacionController.text = "10000000";
+                                            setState(() {                                              
+                                              saldoSeparacion = 10000000 - stringConverter(vlrSeparacionController.text);
+                                              saldoSeparacionController.text = (currencyCOP((saldoSeparacion.toInt()).toString()));
+                                              });
                                           }
                                         },
                                       ),
@@ -440,7 +469,7 @@ class _CreateCustomerPageState extends State<CreateCustomerPage> {
                                       height: 15,
                                       child: Text('Fecha límite', style: TextStyle(fontSize: 10),)),
                                       textFieldWidget(
-                                        dateOnly(false, 0, quotePickedDate), Icons.date_range_outlined, false, separacionDeadlineController, false, 'date', (){}),
+                                        dateOnly(false, 0, quotePickedDate, false), Icons.date_range_outlined, false, separacionDeadlineController, false, 'date', (){}),
                                     ],
                                   ),
                                 ),
@@ -449,6 +478,38 @@ class _CreateCustomerPageState extends State<CreateCustomerPage> {
                           ),
                           const SizedBox(
                             height: 10,
+                          ),
+                          Container(
+                            constraints: const BoxConstraints(maxWidth: 800),
+                            child: Row(
+                              children: [                          
+                                Expanded(
+                                  flex: 1,
+                                  child: Column(
+                                    children: [
+                                      const SizedBox(
+                                      height: 15,
+                                      child: Text('Saldo separación', style: TextStyle(fontSize: 10),)),
+                                      textFieldWidget(
+                                        (currencyCOP((saldoSeparacion.toInt()).toString())), Icons.monetization_on_outlined, false, saldoSeparacionController, false, 'number', (){},
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 1,
+                                  child: Column(
+                                    children: [
+                                      const SizedBox(
+                                      height: 15,
+                                      child: Text('Fecha límite saldo separación', style: TextStyle(fontSize: 10),)),
+                                      textFieldWidget(
+                                        dateOnly(false, 7, dateConverter(separacionDeadlineController.text), false), Icons.date_range_outlined, false, saldoSeparacionDeadlineController, false, 'date', (){}),
+                                    ],
+                                  ),
+                                ),
+                              ]
+                            )
                           ),
                           const SizedBox(
                             height: 20,
@@ -478,7 +539,7 @@ class _CreateCustomerPageState extends State<CreateCustomerPage> {
                                       height: 15,
                                       child: Text('Fecha límite', style: TextStyle(fontSize: 10),)),
                                       textFieldWidget(
-                                        dateOnly(false, plazoCI, quotePickedDate), Icons.date_range_outlined, false, saldoCuotaIniDeadlineController, false, 'date', (){}),
+                                        dateOnly(false, plazoCI*30, quotePickedDate, true), Icons.date_range_outlined, false, saldoCuotaIniDeadlineController, false, 'date', (){}),
                                     ],
                                   ),
                                 ),
@@ -598,7 +659,7 @@ class _CreateCustomerPageState extends State<CreateCustomerPage> {
                                     );
                                     if(pickeddate != null) {
                                       setState(() {
-                                        birthdayController.text = DateFormat('yyyy-MM-dd').format(pickeddate);
+                                        birthdayController.text = DateFormat('dd-MM-yyyy').format(pickeddate);
                                       });
                                     }
                                   },
@@ -1098,6 +1159,8 @@ class _CreateCustomerPageState extends State<CreateCustomerPage> {
                                         vlrCuotaIni: vlrCuotaIniController.text,
                                         vlrSeparacion: vlrSeparacionController.text,
                                         dueDateSeparacion: separacionDeadlineController.text,
+                                        saldoSeparacion: saldoSeparacionController.text,
+                                        dueDateSaldoSeparacion: saldoSeparacionDeadlineController.text,
                                         plazoCI: '${(((plazoCI*30).toInt()).toString())} días',
                                         saldoCI: saldoCuotaIniController.text,
                                         dueDateSaldoCI: saldoCuotaIniDeadlineController.text,
@@ -1208,7 +1271,9 @@ class _CreateCustomerPageState extends State<CreateCustomerPage> {
                                     porcCuotaInicial,
                                     vlrCuotaIniController.text,
                                     vlrSeparacionController.text,
-                                    separacionDeadlineController.text, 
+                                    separacionDeadlineController.text,
+                                    saldoSeparacionController.text,
+                                    saldoSeparacionDeadlineController.text,
                                     saldoCuotaIniController.text,
                                     saldoCuotaIniDeadlineController.text,
                                     vlrPorPagarController.text, 
@@ -1273,16 +1338,13 @@ class _CreateCustomerPageState extends State<CreateCustomerPage> {
     return sellers;
   }
 
-
-
-
   double stringConverter(String valorAConvertir){
     String valorSinPuntos = valorAConvertir.replaceAll('\$', '').replaceAll('.', '');
     return double.parse(valorSinPuntos);
   }
 
   DateTime dateConverter(String stringAConvertir){
-    DateTime dateConverted = DateFormat('MM-dd-yyyy').parse(stringAConvertir);
+    DateTime dateConverted = DateFormat('dd-MM-yyyy').parse(stringAConvertir);
     return dateConverted;
   }
 
@@ -1301,11 +1363,11 @@ class _CreateCustomerPageState extends State<CreateCustomerPage> {
             flex: 1,
             child: Column(
               children: [
-                const SizedBox(
+                SizedBox(
                 height: 15,
-                child: Text('Valor a pagar', style: TextStyle(fontSize: 10),)),
+                child: Text('Valor a pagar (Descuento de ${dctoContado.toString()}%)', style: const TextStyle(fontSize: 10),)),
                 textFieldWidget(
-                  (currencyCOP(valorAPagar.toInt().toString())), Icons.monetization_on_outlined, false, vlrPorPagarController, false, 'number', (){}),
+                  (currencyCOP(valorAPagarContado.toInt().toString())), Icons.monetization_on_outlined, false, vlrPorPagarContadoController, false, 'number', (){}),
               ],
             ),
           ),
@@ -1317,7 +1379,7 @@ class _CreateCustomerPageState extends State<CreateCustomerPage> {
                 height: 15,
                 child: Text('Fecha límite', style: TextStyle(fontSize: 10),)),
                 textFieldWidget(
-                  dateOnly(false, plazoCI+1, quotePickedDate), Icons.date_range_outlined, false, pagoContadoDeadlineController, false, 'date', (){}),
+                  dateOnly(false, (plazoCI*30)+30, quotePickedDate, true), Icons.date_range_outlined, false, pagoContadoDeadlineController, false, 'date', (){}),
               ],
             ),
           ),                    
@@ -1388,7 +1450,7 @@ class _CreateCustomerPageState extends State<CreateCustomerPage> {
                     height: 15,
                     child: Text('A partir de', style: TextStyle(fontSize: 10),)),
                     textFieldWidget(
-                      dateOnly(false, plazoCI+1, quotePickedDate), Icons.date_range_outlined, false, statementsStartDateController, false, 'date', (){}
+                      dateOnly(false, (plazoCI*30)+30, quotePickedDate, true), Icons.date_range_outlined, false, statementsStartDateController, false, 'date', (){}
                     ),
                   ],
                 ),

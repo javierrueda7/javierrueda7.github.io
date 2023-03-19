@@ -330,54 +330,63 @@ String currencyCOP(String initValue){
   return '\$$newValue'; 
 }
 
-String dateOnly(bool needTime, double n, DateTime dateSelected){
+String dateOnly(bool needTime, double n, DateTime dateSelected, bool needBusinessDay){
   int tempDiff = 0;
-  var dayCount = n*30;
-  var now = dateSelected.add(Duration(days: dayCount.toInt()));
+  var finalDate = dateSelected.add(Duration(days: n.toInt()));
   DateFormat getDay = DateFormat('dd');
   DateFormat getWeekDay = DateFormat('E');
   String formattedInitDay = getDay.format(dateSelected);
-  String formattedFinalDay = getDay.format(now);
-  String formattedWeekDay = getWeekDay.format(now);
-  if(formattedInitDay == formattedFinalDay || n == 0.5){
-    if(formattedWeekDay == 'Sat'){
-      now = now.add(const Duration(days: 2));
-      formattedWeekDay = getWeekDay.format(now);
-    } if(formattedWeekDay == 'Sun'){
-      now = now.add(const Duration(days: 1));
-      formattedWeekDay = getWeekDay.format(now);
+  String formattedFinalDay = getDay.format(finalDate);
+  String formattedFinalWeekDay = getWeekDay.format(finalDate);
+  if(formattedInitDay == formattedFinalDay || n % 30 != 0){
+    if(needBusinessDay == true){
+      if(formattedFinalWeekDay == 'Sat'){
+        finalDate = finalDate.add(const Duration(days: 2));
+        formattedFinalWeekDay = getWeekDay.format(finalDate);
+      } if(formattedFinalWeekDay == 'Sun'){
+        finalDate = finalDate.add(const Duration(days: 1));
+        formattedFinalWeekDay = getWeekDay.format(finalDate);
+      } else {
+        finalDate = finalDate.add(const Duration(days: 0));
+        formattedFinalWeekDay = getWeekDay.format(finalDate);
+      }
     } else {
-      now = now.add(const Duration(days: 0));
-      formattedWeekDay = getWeekDay.format(now);
+      finalDate = finalDate.add(const Duration(days: 0));
+      formattedFinalWeekDay = getWeekDay.format(finalDate);
     }
   } else {
     tempDiff = int.parse(formattedFinalDay) - int.parse(formattedInitDay);
     if(tempDiff > 0){
-      now = now.subtract(Duration(days: tempDiff.abs()));
-      formattedWeekDay = getWeekDay.format(now);
+      finalDate = finalDate.subtract(Duration(days: tempDiff.abs()));
+      formattedFinalWeekDay = getWeekDay.format(finalDate);
     } else{
-      now = now.add(Duration(days: tempDiff.abs()));
-      formattedWeekDay = getWeekDay.format(now);
+      finalDate = finalDate.add(Duration(days: tempDiff.abs()));
+      formattedFinalWeekDay = getWeekDay.format(finalDate);
     }
-    if(formattedWeekDay == 'Sat'){
-      now = now.add(const Duration(days: 2));
-      formattedWeekDay = getWeekDay.format(now);
-    } if(formattedWeekDay == 'Sun'){
-      now = now.add(const Duration(days: 1));
-      formattedWeekDay = getWeekDay.format(now);
+    if(needBusinessDay == true){
+      if(formattedFinalWeekDay == 'Sat'){
+        finalDate = finalDate.add(const Duration(days: 2));
+        formattedFinalWeekDay = getWeekDay.format(finalDate);
+      } if(formattedFinalWeekDay == 'Sun'){
+        finalDate = finalDate.add(const Duration(days: 1));
+        formattedFinalWeekDay = getWeekDay.format(finalDate);
+      } else {
+        finalDate = finalDate.add(const Duration(days: 0));
+        formattedFinalWeekDay = getWeekDay.format(finalDate);
+      }
     } else {
-      now = now.add(const Duration(days: 0));
-      formattedWeekDay = getWeekDay.format(now);
+      finalDate = finalDate.add(const Duration(days: 0));
+      formattedFinalWeekDay = getWeekDay.format(finalDate);
     }
   }
 
   DateFormat formatter;
   if(needTime == true){
-    formatter = DateFormat('MM dd yyyy hh:mm:ss');
+    formatter = DateFormat('dd MM yyyy hh:mm:ss');
   } else {
-    formatter = DateFormat('MM-dd-yyyy');
+    formatter = DateFormat('dd-MM-yyyy');
   }  
-  String formattedDate = formatter.format(now);
+  String formattedDate = formatter.format(finalDate);
   return formattedDate;
 }
 

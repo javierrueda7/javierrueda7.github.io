@@ -46,6 +46,47 @@ Future<void> addUsers(String uid, String nameUser, String lastnameUser, String e
   );
 }
 
+Future<List> getCuotas() async {
+  List cuotas = [];
+  QuerySnapshot? queryCuotas = await db.collection('infoProyecto').doc('infopagos').collection('infoCuotas').get();
+  for (var docCuotas in queryCuotas.docs){
+    final Map<String, dynamic> dataCuotas = docCuotas.data() as Map<String, dynamic>;
+    final cuota = {
+      "periodos": docCuotas.id,
+      "dcto": dataCuotas['dcto'],
+    };
+    cuotas.add(cuota);
+  }
+  return cuotas;
+}
+
+Future<List> getPagoAdicional() async {
+  List pagos = [];
+  QuerySnapshot? queryPago = await db.collection('infoProyecto').doc('infopagos').collection('pagoAdicional').get();
+  for (var docPago in queryPago.docs){
+    final Map<String, dynamic> dataPago = docPago.data() as Map<String, dynamic>;
+    final pago = {
+      "pago": docPago.id,
+      "dcto": dataPago['dcto'],
+    };
+    pagos.add(pago);
+  }
+  return pagos;
+}
+
+Future<Map<String, dynamic>> getInfoProyecto() async {
+  DocumentSnapshot<Map<String, dynamic>> infoPagos = await db.collection('infoproyecto').doc('infopagos').get();
+  final Map<String, dynamic> data = infoPagos.data() as Map<String, dynamic>;
+  final proyectoInfo = {
+    "cuotaInicial": data['cuotaInicial'],
+    "dctoContado": data['dctoContado'],
+    "plazoCuotaInicial": data['plazoCuotaInicial'],
+    "tem": data['tem'],
+    "valorSeparacion": data['valorSeparacion'],
+  };
+  return proyectoInfo;
+}
+
 Future<void> updateUsers(String? uid, String? newUsername, String? newName, String? newEmail, String? newPhone, String? newRole) async {
   await db.collection("users").doc(uid).set({
     "username": newUsername,
@@ -74,6 +115,8 @@ Future<void> addQuote(
   String vlrCILote,
   String vlrSepLote,
   String sepDLDate, 
+  String saldoSepLote,
+  String saldoSepDLDate,
   String saldoCILote,
   String saldoCIDLDate, 
   String vlrPorPagarLote,
@@ -97,6 +140,8 @@ Future<void> addQuote(
     "vlrCILote": vlrCILote,
     "vlrSepLote": vlrSepLote,
     "sepDLDate": sepDLDate,
+    "saldoSepLote": saldoSepLote,
+    "saldoSepDLDate": saldoSepDLDate,
     "saldoCILote": saldoCILote,
     "saldoCIDLDate": saldoCIDLDate,
     "vlrPorPagarLote": vlrPorPagarLote,
@@ -132,6 +177,8 @@ Future<List> getQuotes(String loteName, bool allLotes) async {
           "vlrCILote": data['vlrCILote'],
           "vlrSepLote": data['vlrSepLote'],
           "sepDLDate": data['sepDLDate'],
+          "saldoSepLote": data['saldoSepLote'],
+          "saldoSepDLDate": data['saldoSepDLDate'],
           "saldoCILote": data['saldoCILote'],
           "saldoCIDLDate": data['saldoCIDLDate'],
           "vlrPorPagarLote": data['vlrPorPagarLote'],
@@ -160,6 +207,8 @@ Future<List> getQuotes(String loteName, bool allLotes) async {
           "vlrCILote": data['vlrCILote'],
           "vlrSepLote": data['vlrSepLote'],
           "sepDLDate": data['sepDLDate'],
+          "saldoSepLote": data['saldoSepLote'],
+          "saldoSepDLDate": data['saldoSepDLDate'],
           "saldoCILote": data['saldoCILote'],
           "saldoCIDLDate": data['saldoCIDLDate'],
           "vlrPorPagarLote": data['vlrPorPagarLote'],
