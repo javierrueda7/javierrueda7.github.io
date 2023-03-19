@@ -46,7 +46,7 @@ class _SignInPageState extends State<SignInPage> {
                     Container(
                       constraints: const BoxConstraints(maxWidth: 800),
                       child: textFieldWidget(
-                        "Ingresa tu correo electronico", Icons.person_outline, false, _emailTextController, true
+                        "Ingresa tu correo electronico", Icons.person_outline, false, _emailTextController, true, 'email', (){}
                       ),
                     ),
                     const SizedBox(
@@ -55,7 +55,7 @@ class _SignInPageState extends State<SignInPage> {
                     Container(
                       constraints: const BoxConstraints(maxWidth: 800),
                       child: textFieldWidget(
-                        "Ingresa tu contraseña", Icons.lock_outline, true, _passwordTextcontroller, true
+                        "Ingresa tu contraseña", Icons.lock_outline, true, _passwordTextcontroller, true, 'password', (){}
                       ),
                     ),
                     const SizedBox(

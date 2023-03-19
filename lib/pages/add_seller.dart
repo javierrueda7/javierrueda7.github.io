@@ -66,7 +66,7 @@ class _AddSellerPageState extends State<AddSellerPage> {
                     Container(
                       constraints: const BoxConstraints(maxWidth: 800),
                       child: textFieldWidget(
-                        "Ingrese su nombre", Icons.person_outline, false, _nameTextController, true
+                        "Ingrese su nombre", Icons.person_outline, false, _nameTextController, true, 'name', (){}
                       ),
                     ),
                     const SizedBox(
@@ -75,7 +75,7 @@ class _AddSellerPageState extends State<AddSellerPage> {
                     Container(
                       constraints: const BoxConstraints(maxWidth: 800),
                       child: textFieldWidget(
-                        "Ingrese su apellido", Icons.person_outline, false, _lastnameTextController, true
+                        "Ingrese su apellido", Icons.person_outline, false, _lastnameTextController, true, 'lastname', (){}
                       ),
                     ),
                     const SizedBox(
@@ -84,7 +84,7 @@ class _AddSellerPageState extends State<AddSellerPage> {
                     Container(
                       constraints: const BoxConstraints(maxWidth: 800),
                       child: textFieldWidget(
-                        "Ingrese su número de teléfono", Icons.person_outline, false, _phoneTextController, true
+                        "Ingrese su número de teléfono", Icons.person_outline, false, _phoneTextController, true, 'phone', (){}
                       ),
                     ),
                     const SizedBox(
@@ -93,7 +93,7 @@ class _AddSellerPageState extends State<AddSellerPage> {
                     Container(
                       constraints: const BoxConstraints(maxWidth: 800),
                       child: textFieldWidget(
-                        "Ingrese su correo electrónico", Icons.person_outline, false, _emailTextController, true
+                        "Ingrese su correo electrónico", Icons.person_outline, false, _emailTextController, true, 'email', (){}
                       ),
                     ),
                     const SizedBox(
@@ -102,7 +102,7 @@ class _AddSellerPageState extends State<AddSellerPage> {
                     Container(
                       constraints: const BoxConstraints(maxWidth: 800),
                       child: textFieldWidget(
-                        "Ingrese su dirección", Icons.mail_outline, false, _addressTextController, true
+                        "Ingrese su dirección", Icons.mail_outline, false, _addressTextController, true, 'address', (){}
                       ),
                     ),
                     const SizedBox(
@@ -111,7 +111,7 @@ class _AddSellerPageState extends State<AddSellerPage> {
                     Container(
                       constraints: const BoxConstraints(maxWidth: 800),
                       child: textFieldWidget(
-                        "Ingrese su cédula", Icons.lock_outline, false, _idTextController, true
+                        "Ingrese su cédula", Icons.lock_outline, false, _idTextController, true, 'id', (){}
                       ),
                     ),
                     const SizedBox(

@@ -1,6 +1,7 @@
 
 import 'package:albaterrapp/utils/color_utils.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 
 bool isClosed = false;
@@ -28,7 +29,7 @@ Widget loteImg(String imageName, String loteState){
   }  
 }
 
-TextField textFieldWidget(String text, IconData? icon, bool isPasswordType, TextEditingController controller, bool isEnabled) {
+TextField textFieldWidget(String text, IconData? icon, bool isPasswordType, TextEditingController controller, bool isEnabled, String kbType, Function inputChanged) {
   return TextField (
     controller: controller,
     obscureText: isPasswordType,
@@ -51,10 +52,34 @@ TextField textFieldWidget(String text, IconData? icon, bool isPasswordType, Text
         borderRadius: BorderRadius.circular(30.0),
         borderSide: BorderSide(width: 2, style: BorderStyle.solid, color: fifthColor)),
     ),
-    keyboardType: isPasswordType 
-    ? TextInputType.visiblePassword 
-    : TextInputType.emailAddress,
+    keyboardType: kbTypeFinder(kbType),
+    inputFormatters: inputFormatFinder(kbType),
+    onChanged: (String value) {inputChanged(value);}
   );
+}
+
+List<TextInputFormatter> inputFormatFinder(String value){
+  List<TextInputFormatter> inputFormat = [];
+  if(value == 'number'){
+    inputFormat = <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly];
+  } else{
+    inputFormat = [];
+  }
+  return inputFormat;
+}
+
+TextInputType kbTypeFinder(String value){
+  if(value == 'password'){
+    return TextInputType.visiblePassword;
+  } if(value == 'date'){
+    return TextInputType.datetime;
+  } if(value == 'number'){
+    return TextInputType.number;
+  } if(value == 'phone'){
+    return TextInputType.phone;
+  } else{
+    return TextInputType.emailAddress;
+  }
 }
 
 Container firebaseButton(BuildContext context, String title, Function onTap) {

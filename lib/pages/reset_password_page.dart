@@ -50,7 +50,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                 Container(
                   constraints: const BoxConstraints(maxWidth: 800),
                   child: textFieldWidget(
-                    "Ingresa tu correo electrónico", Icons.mail_outline, false, _emailTextController, true
+                    "Ingresa tu correo electrónico", Icons.mail_outline, false, _emailTextController, true, 'email', (){}
                   ),
                 ),
                 const SizedBox(

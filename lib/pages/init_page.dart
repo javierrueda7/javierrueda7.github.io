@@ -138,7 +138,6 @@ class _InitPageState extends State<InitPage> {
                         minScale: 0.8,
                         maxScale: 4,
                         child: Stack(
-                          fit: StackFit.expand,
                           alignment: Alignment.center,
                           children: <Widget>[                                         
                             const LoteGeneral(),

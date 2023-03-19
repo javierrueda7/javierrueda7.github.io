@@ -114,13 +114,13 @@ class _CreateCustomerPageState extends State<CreateCustomerPage> {
     collectionReference.get().then((QuerySnapshot quotesSnapshot) {
       quoteCounter = quotesSnapshot.size;
     });
-    int intLotePrice = loteInfo[9].toInt();
-    cuotaInicial = intLotePrice * (porcCuotaInicial/100);
+    int vlrBaseLote = loteInfo[9].toInt();
+    cuotaInicial = vlrBaseLote * (porcCuotaInicial/100);
     saldoCI = cuotaInicial - vlrSeparacion;
-    valorAPagar = intLotePrice - cuotaInicial;
+    valorAPagar = vlrBaseLote - cuotaInicial;
     valorCuota = valorAPagar/(double.parse(selectedNroCuotas));
 
-    priceloteController.text = (currencyCOP((intLotePrice.toInt()).toString()));
+    priceloteController.text = (currencyCOP((vlrBaseLote.toInt()).toString()));
     vlrCuotaIniController.text = (currencyCOP((cuotaInicial.toInt()).toString()));
     saldoCuotaIniController.text = (currencyCOP((saldoCI.toInt()).toString()));
     vlrCuotaController.text = (currencyCOP((valorCuota.toInt()).toString()));
@@ -268,7 +268,7 @@ class _CreateCustomerPageState extends State<CreateCustomerPage> {
                                   child: Text('Hasta', style: TextStyle(fontSize: 10),),
                                 ),
                                 textFieldWidget(
-                                  dateOnly(false, 0.5, quotePickedDate), Icons.date_range_outlined, false, quoteDeadlineController, false
+                                  dateOnly(false, 0.5, quotePickedDate), Icons.date_range_outlined, false, quoteDeadlineController, false, 'date', (){}
                                 ),
                               ],
                             ),
@@ -291,7 +291,7 @@ class _CreateCustomerPageState extends State<CreateCustomerPage> {
                                 Container(
                                   constraints: const BoxConstraints(maxWidth: 800),
                                   child: textFieldWidget(
-                                    loteInfo[1], Icons.house_outlined, false, loteController, false)
+                                    loteInfo[1], Icons.house_outlined, false, loteController, false, 'email', (){})
                                 ),
                               ],
                             ),
@@ -307,7 +307,7 @@ class _CreateCustomerPageState extends State<CreateCustomerPage> {
                                 Container(
                                   constraints: const BoxConstraints(maxWidth: 800),
                                   child: textFieldWidget(
-                                    loteInfo[7].toString(), Icons.map_outlined, false, etapaloteController, false)
+                                    loteInfo[7].toString(), Icons.map_outlined, false, etapaloteController, false, 'email', (){})
                                 ),
                               ],
                             ),
@@ -330,7 +330,7 @@ class _CreateCustomerPageState extends State<CreateCustomerPage> {
                                 Container(
                                   constraints: const BoxConstraints(maxWidth: 800),
                                   child: textFieldWidget(
-                                    '${((loteInfo[8].toInt()).toString())} m²', Icons.terrain_outlined, false, arealoteController, false)
+                                    '${((loteInfo[8].toInt()).toString())} m²', Icons.terrain_outlined, false, arealoteController, false, 'number', (){})
                                 ),
                               ],
                             ),
@@ -346,7 +346,7 @@ class _CreateCustomerPageState extends State<CreateCustomerPage> {
                                 Container(
                                   constraints: const BoxConstraints(maxWidth: 800),
                                   child: textFieldWidget(
-                                    (currencyCOP((intLotePrice).toString())), Icons.monetization_on_outlined, false, priceloteController, false)
+                                    (currencyCOP((vlrBaseLote).toString())), Icons.monetization_on_outlined, false, priceloteController, false, 'number', (){})
                                 ),
                               ],
                             ),
@@ -396,7 +396,7 @@ class _CreateCustomerPageState extends State<CreateCustomerPage> {
                           Container(
                             constraints: const BoxConstraints(maxWidth: 800),
                             child: textFieldWidget(
-                              (currencyCOP(cuotaInicial.toInt().toString())), Icons.monetization_on_outlined, false, vlrCuotaIniController, false
+                              (currencyCOP(cuotaInicial.toInt().toString())), Icons.monetization_on_outlined, false, vlrCuotaIniController, false, 'number', (){}
                             ),
                           ),                          
                           const SizedBox(
@@ -418,7 +418,17 @@ class _CreateCustomerPageState extends State<CreateCustomerPage> {
                                       height: 15,
                                       child: Text('Valor', style: TextStyle(fontSize: 10),)),
                                       textFieldWidget(
-                                        (currencyCOP((vlrSeparacion.toInt()).toString())), Icons.monetization_on_outlined, false, vlrSeparacionController, true),
+                                        (currencyCOP((vlrSeparacion.toInt()).toString())), Icons.monetization_on_outlined, false, vlrSeparacionController, true, 'number', (String value) {
+                                          if (value.isEmpty || stringConverter(value) <= 10000000) {
+                                            setState(() {
+                                              vlrSeparacion = stringConverter(value);
+                                              saldoCuotaIniController.text = (currencyCOP((saldoCI.toInt()).toString()));
+                                            });
+                                          } else {
+                                            vlrSeparacionController.text = "10000000";
+                                          }
+                                        },
+                                      ),
                                     ],
                                   ),
                                 ),
@@ -430,7 +440,7 @@ class _CreateCustomerPageState extends State<CreateCustomerPage> {
                                       height: 15,
                                       child: Text('Fecha límite', style: TextStyle(fontSize: 10),)),
                                       textFieldWidget(
-                                        dateOnly(false, 0, quotePickedDate), Icons.date_range_outlined, false, separacionDeadlineController, false),
+                                        dateOnly(false, 0, quotePickedDate), Icons.date_range_outlined, false, separacionDeadlineController, false, 'date', (){}),
                                     ],
                                   ),
                                 ),
@@ -456,7 +466,7 @@ class _CreateCustomerPageState extends State<CreateCustomerPage> {
                                       height: 15,
                                       child: Text('Valor', style: TextStyle(fontSize: 10),)),
                                       textFieldWidget(
-                                        (currencyCOP((saldoCI.toInt()).toString())), Icons.monetization_on_outlined, false, saldoCuotaIniController, false),
+                                        (currencyCOP((saldoCI.toInt()).toString())), Icons.monetization_on_outlined, false, saldoCuotaIniController, false, 'number', (){}),
                                     ],
                                   ),
                                 ),
@@ -468,7 +478,7 @@ class _CreateCustomerPageState extends State<CreateCustomerPage> {
                                       height: 15,
                                       child: Text('Fecha límite', style: TextStyle(fontSize: 10),)),
                                       textFieldWidget(
-                                        dateOnly(false, plazoCI, quotePickedDate), Icons.date_range_outlined, false, saldoCuotaIniDeadlineController, false),
+                                        dateOnly(false, plazoCI, quotePickedDate), Icons.date_range_outlined, false, saldoCuotaIniDeadlineController, false, 'date', (){}),
                                     ],
                                   ),
                                 ),
@@ -499,7 +509,7 @@ class _CreateCustomerPageState extends State<CreateCustomerPage> {
                               Expanded(
                                 flex: 1,
                                 child: textFieldWidget(
-                                  (currencyCOP(valorAPagar.toInt().toString())), Icons.monetization_on_outlined, false, vlrPorPagarController, false
+                                  (currencyCOP(valorAPagar.toInt().toString())), Icons.monetization_on_outlined, false, vlrPorPagarController, false, 'number', (){}
                                 ),
                               ),
                               Expanded(
@@ -534,7 +544,7 @@ class _CreateCustomerPageState extends State<CreateCustomerPage> {
                     Container(
                       constraints: const BoxConstraints(maxWidth: 800),
                       child: textFieldWidget(
-                        "Nombres", Icons.person_outline, false, nameController, true
+                        "Nombres", Icons.person_outline, false, nameController, true, 'email', (){}
                       ),
                     ),
                     const SizedBox(
@@ -543,7 +553,7 @@ class _CreateCustomerPageState extends State<CreateCustomerPage> {
                     Container(
                       constraints: const BoxConstraints(maxWidth: 800),
                       child: textFieldWidget(
-                        "Apellidos", Icons.person_outline, false, lastnameController, true
+                        "Apellidos", Icons.person_outline, false, lastnameController, true, 'email', (){}
                       ),
                     ),
                     const SizedBox(
@@ -605,7 +615,7 @@ class _CreateCustomerPageState extends State<CreateCustomerPage> {
                     Container(
                       constraints: const BoxConstraints(maxWidth: 800),
                       child: textFieldWidget(
-                        "Ocupación o actividad económica", Icons.work_outline, false, ocupacionController, true
+                        "Ocupación o actividad económica", Icons.work_outline, false, ocupacionController, true, 'email', (){}
                       ),
                     ),       
                     const SizedBox(
@@ -614,7 +624,7 @@ class _CreateCustomerPageState extends State<CreateCustomerPage> {
                     Container(
                       constraints: const BoxConstraints(maxWidth: 800),
                       child: textFieldWidget(
-                        "Número telefónico", Icons.phone_android, false, phoneController, true
+                        "Número telefónico", Icons.phone_android, false, phoneController, true, 'phone', (){}
                       ),
                     ),
                     const SizedBox(
@@ -635,7 +645,7 @@ class _CreateCustomerPageState extends State<CreateCustomerPage> {
                           Expanded(
                             flex: 2,
                             child: textFieldWidget(
-                              "Nro documento", Icons.person_pin_outlined, false, idController, true
+                              "Nro documento", Icons.person_pin_outlined, false, idController, true, 'email', (){}
                             ),
                           ),                          
                         ],
@@ -816,7 +826,7 @@ class _CreateCustomerPageState extends State<CreateCustomerPage> {
                     Container(
                       constraints: const BoxConstraints(maxWidth: 800),
                       child: textFieldWidget(
-                        "Correo electrónico", Icons.email_outlined, false, emailController, true
+                        "Correo electrónico", Icons.email_outlined, false, emailController, true, 'email', (){}
                       ),
                     ),                    
                     const SizedBox(
@@ -825,7 +835,7 @@ class _CreateCustomerPageState extends State<CreateCustomerPage> {
                     Container(
                       constraints: const BoxConstraints(maxWidth: 800),
                       child: textFieldWidget(
-                        "Dirección", Icons.location_city_outlined, false, addressController, true
+                        "Dirección", Icons.location_city_outlined, false, addressController, true, 'email', (){}
                       ),
                     ),                    
                     const SizedBox(
@@ -1002,7 +1012,7 @@ class _CreateCustomerPageState extends State<CreateCustomerPage> {
                     Container(
                       constraints: const BoxConstraints(maxWidth: 800),
                       child: textFieldWidget(
-                        "Observaciones", Icons.search_outlined, false, observacionesController, true
+                        "Observaciones", Icons.search_outlined, false, observacionesController, true, 'email', (){}
                       ),
                     ),  
                     const SizedBox(
@@ -1295,7 +1305,7 @@ class _CreateCustomerPageState extends State<CreateCustomerPage> {
                 height: 15,
                 child: Text('Valor a pagar', style: TextStyle(fontSize: 10),)),
                 textFieldWidget(
-                  (currencyCOP(valorAPagar.toInt().toString())), Icons.monetization_on_outlined, false, vlrPorPagarController, false),
+                  (currencyCOP(valorAPagar.toInt().toString())), Icons.monetization_on_outlined, false, vlrPorPagarController, false, 'number', (){}),
               ],
             ),
           ),
@@ -1307,7 +1317,7 @@ class _CreateCustomerPageState extends State<CreateCustomerPage> {
                 height: 15,
                 child: Text('Fecha límite', style: TextStyle(fontSize: 10),)),
                 textFieldWidget(
-                  dateOnly(false, plazoCI+1, quotePickedDate), Icons.date_range_outlined, false, pagoContadoDeadlineController, false),
+                  dateOnly(false, plazoCI+1, quotePickedDate), Icons.date_range_outlined, false, pagoContadoDeadlineController, false, 'date', (){}),
               ],
             ),
           ),                    
@@ -1326,7 +1336,7 @@ class _CreateCustomerPageState extends State<CreateCustomerPage> {
                     height: 15,
                     child: Text('Valor de cada cuota', style: TextStyle(fontSize: 10),)),
                     textFieldWidget(
-                      (currencyCOP(valorCuota.toInt().toString())), Icons.monetization_on_outlined, false, vlrCuotaController, false),
+                      (currencyCOP(valorCuota.toInt().toString())), Icons.monetization_on_outlined, false, vlrCuotaController, false, 'number', (){}),
                   ],
                 ),
               ),
@@ -1366,7 +1376,7 @@ class _CreateCustomerPageState extends State<CreateCustomerPage> {
                     height: 15,
                     child: Text('TEM', style: TextStyle(fontSize: 10),)),
                     textFieldWidget(
-                      '${(vlrTEM.toString())} %', Icons.percent_outlined, false, temController, false),
+                      '${(vlrTEM.toString())} %', Icons.percent_outlined, false, temController, false, 'number', (){}),
                   ],
                 ),
               ),
@@ -1378,7 +1388,7 @@ class _CreateCustomerPageState extends State<CreateCustomerPage> {
                     height: 15,
                     child: Text('A partir de', style: TextStyle(fontSize: 10),)),
                     textFieldWidget(
-                      dateOnly(false, plazoCI+1, quotePickedDate), Icons.date_range_outlined, false, statementsStartDateController, false
+                      dateOnly(false, plazoCI+1, quotePickedDate), Icons.date_range_outlined, false, statementsStartDateController, false, 'date', (){}
                     ),
                   ],
                 ),

@@ -57,7 +57,7 @@ class _SignUpPageState extends State<SignUpPage> {
                     Container(
                       constraints: const BoxConstraints(maxWidth: 800),
                       child: textFieldWidget(
-                        "Ingrese su nombre de usuario", Icons.person_outline, false, _usernameTextController, true
+                        "Ingrese su nombre de usuario", Icons.person_outline, false, _usernameTextController, true, 'email', (){}
                       ),
                     ),
                     const SizedBox(
@@ -66,7 +66,7 @@ class _SignUpPageState extends State<SignUpPage> {
                     Container(
                       constraints: const BoxConstraints(maxWidth: 800),
                       child: textFieldWidget(
-                        "Ingrese su nombre completo", Icons.person_outline, false, _nameTextController, true
+                        "Ingrese su nombre completo", Icons.person_outline, false, _nameTextController, true, 'email', (){}
                       ),
                     ),
                     const SizedBox(
@@ -75,7 +75,7 @@ class _SignUpPageState extends State<SignUpPage> {
                     Container(
                       constraints: const BoxConstraints(maxWidth: 800),
                       child: textFieldWidget(
-                        "Ingrese su correo electrónico", Icons.mail_outline, false, _emailTextController, true
+                        "Ingrese su correo electrónico", Icons.mail_outline, false, _emailTextController, true, 'email', (){}
                       ),
                     ),
                     const SizedBox(
@@ -84,7 +84,7 @@ class _SignUpPageState extends State<SignUpPage> {
                     Container(
                       constraints: const BoxConstraints(maxWidth: 800),
                       child: textFieldWidget(
-                        "Ingrese su contraseña", Icons.lock_outline, true, _passwordTextController, true
+                        "Ingrese su contraseña", Icons.lock_outline, true, _passwordTextController, true, 'password', (){}
                       ),
                     ),
                     const SizedBox(
