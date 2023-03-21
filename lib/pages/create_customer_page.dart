@@ -66,6 +66,7 @@ class _CreateCustomerPageState extends State<CreateCustomerPage> {
     dctoContado = infoPagos['dctoContado'].toDouble();
   }
 
+  late int vlrBaseLote;
   late double cuotaInicial;
   late double saldoCI;
   late double valorAPagar;
@@ -105,7 +106,7 @@ class _CreateCustomerPageState extends State<CreateCustomerPage> {
 
   TextEditingController vlrPorPagarController = TextEditingController(text: "");
   TextEditingController vlrPorPagarContadoController = TextEditingController(text: "");
-  TextEditingController pagoContadoDeadlineController = TextEditingController(text: dateOnly(false, 150, DateTime.now(), true));
+  TextEditingController pagoContadoDeadlineController = TextEditingController(text: dateOnly(false, 60, DateTime.now(), true));
   TextEditingController statementsStartDateController = TextEditingController(text: dateOnly(false, 150, DateTime.now(), true));
   TextEditingController vlrCuotaController = TextEditingController(text: "");
   TextEditingController temController = TextEditingController(text: "");
@@ -135,7 +136,7 @@ class _CreateCustomerPageState extends State<CreateCustomerPage> {
       quoteCounter = quotesSnapshot.size;
     });
     initPagos();
-    int vlrBaseLote = loteInfo[9].toInt();
+    vlrBaseLote = loteInfo[9].toInt();
     cuotaInicial = vlrBaseLote * (porcCuotaInicial/100);
     saldoCI = cuotaInicial - vlrFijoSeparacion;
     valorAPagar = vlrBaseLote - cuotaInicial;
@@ -222,11 +223,14 @@ class _CreateCustomerPageState extends State<CreateCustomerPage> {
                       ),
                     ),
                     const SizedBox(
-                      height: 15,
-                      child: Center(child: Text('Vigencia cotización', style: TextStyle(fontSize: 12),)),
+                      height: 10,
                     ),
                     const SizedBox(
                       height: 15,
+                      child: Center(child: Text('Vigencia cotización', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold,))),
+                    ),
+                    const SizedBox(
+                      height: 10,
                     ),
                     Container(
                       constraints: const BoxConstraints(maxWidth: 800),
@@ -255,7 +259,7 @@ class _CreateCustomerPageState extends State<CreateCustomerPage> {
                                       decoration: InputDecoration(
                                         border: InputBorder.none,
                                         icon: Icon(Icons.date_range_outlined, color: fifthColor,),
-                                        hintText: DateFormat('MM-dd-yyyy').format(quotePickedDate),                                    
+                                        hintText: DateFormat('dd-MM-yyyy').format(quotePickedDate),                                    
                                       ),
                                       readOnly: true,
                                       onTap: () async{
@@ -267,7 +271,7 @@ class _CreateCustomerPageState extends State<CreateCustomerPage> {
                                         );
                                         if(quotePickedDate != null) {
                                           setState(() {
-                                            quoteDateController.text = DateFormat('MM-dd-yyyy').format(quotePickedDate);
+                                            quoteDateController.text = DateFormat('dd-MM-yyyy').format(quotePickedDate);
                                             quoteDeadlineController.text = dateOnly(false, 15, quotePickedDate, true);
                                             separacionDeadlineController.text = dateOnly(false, 0, quotePickedDate, false);
                                             saldoCuotaIniDeadlineController.text = dateOnly(false, plazoCI*30, quotePickedDate, true);
@@ -380,14 +384,17 @@ class _CreateCustomerPageState extends State<CreateCustomerPage> {
                     const SizedBox(
                       height: 5,
                     ),
-                    Container(
+                    Container( //Container de separación
                       constraints: const BoxConstraints(maxWidth: 800),
-                      color: fifthColor.withOpacity(0.1),
                       child: Column(
                         children: [
                           const SizedBox(
                             height: 10,
-                          ),                          
+                          ),
+                          Container(
+                            alignment: Alignment.center,
+                            child: const Text('Separación', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold,))
+                          ),
                           IconButton(onPressed: (){
                               setState(() {      
                                 vlrSeparacion =  stringConverter(vlrSeparacionController.text);
@@ -398,37 +405,6 @@ class _CreateCustomerPageState extends State<CreateCustomerPage> {
                             icon: Icon(Icons.refresh_outlined, color: fifthColor,),
                             alignment: Alignment.centerLeft
                           ),
-                          SizedBox(
-                            height: 20,
-                            child: Text('Cuota inicial: ${((porcCuotaInicial).toInt()).toString()}%', style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),)
-                          ),
-                          const SizedBox(
-                            height: 15,
-                            child: Padding(
-                              padding: EdgeInsets.only(left: 8.0),
-                              child: Text('Cuota inicial = Separación + Saldo de la cuota inicial', style: TextStyle(fontSize: 10,),),
-                            )
-                          ),
-                          SizedBox(
-                            height: 15,
-                            child: Padding(
-                              padding: const EdgeInsets.only(right: 8.0),
-                              child: Text("Plazo: ${((plazoCI*30).toInt()).toString()} días", style: const TextStyle(fontSize: 10,),),
-                            )
-                          ),
-                          Container(
-                            constraints: const BoxConstraints(maxWidth: 800),
-                            child: textFieldWidget(
-                              (currencyCOP(cuotaInicial.toInt().toString())), Icons.monetization_on_outlined, false, vlrCuotaIniController, false, 'number', (){}
-                            ),
-                          ),                          
-                          const SizedBox(
-                            height: 10,
-                          ),
-                          Container(
-                            alignment: Alignment.center,
-                            child: const Text('Separación', style: TextStyle(fontSize: 12),)
-                          ),                          
                           Container(
                             constraints: const BoxConstraints(maxWidth: 800),
                             child: Row(
@@ -511,6 +487,47 @@ class _CreateCustomerPageState extends State<CreateCustomerPage> {
                               ]
                             )
                           ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    Container(
+                      alignment: Alignment.center,
+                      child: const Text('Método de pago', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold,))
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    Container(
+                      constraints: const BoxConstraints(maxWidth: 800),
+                      child: easyDropdown(paymentMethodList, paymentMethodSelectedItem, (tempPaymentMethod){setState(() {
+                                  paymentMethodSelectedItem = tempPaymentMethod!;
+                                });}),
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    paymentMethod(paymentMethodSelectedItem),
+                    const SizedBox(
+                          height: 10,
+                    ),
+
+
+
+
+                    
+                    Container(
+                      constraints: const BoxConstraints(maxWidth: 800),
+                      color: fifthColor.withOpacity(0.1),
+                      child: Column(
+                        children: [
+                          const SizedBox(
+                            height: 10,
+                          ),                          
+                          
+                                         
                           const SizedBox(
                             height: 20,
                             child: Text('Saldo de la cuota inicial', style: TextStyle(fontSize: 12),)
@@ -590,7 +607,7 @@ class _CreateCustomerPageState extends State<CreateCustomerPage> {
                                 height: 20,
                                 child: Text(paymentMethodSelectedItem, style: const TextStyle(fontSize: 12),)
                               ),
-                              paymentMethod(paymentMethodSelectedItem),                              
+                              paymentMethod(paymentMethodSelectedItem),
                               const SizedBox(
                                     height: 10,
                               ),
@@ -1364,8 +1381,8 @@ class _CreateCustomerPageState extends State<CreateCustomerPage> {
             child: Column(
               children: [
                 SizedBox(
-                height: 15,
-                child: Text('Valor a pagar (Descuento de ${dctoContado.toString()}%)', style: const TextStyle(fontSize: 10),)),
+                height: 35,
+                child: Text('Valor a pagar (${dctoContado.toString()}% de dcto)\n-${(currencyCOP(((vlrBaseLote-(valorAPagarContado+vlrFijoSeparacion)).toInt()).toString()))}', style: const TextStyle(fontSize: 10), textAlign: TextAlign.center,)),
                 textFieldWidget(
                   (currencyCOP(valorAPagarContado.toInt().toString())), Icons.monetization_on_outlined, false, vlrPorPagarContadoController, false, 'number', (){}),
               ],
@@ -1376,10 +1393,10 @@ class _CreateCustomerPageState extends State<CreateCustomerPage> {
             child: Column(
               children: [
                 const SizedBox(
-                height: 15,
+                height: 35,
                 child: Text('Fecha límite', style: TextStyle(fontSize: 10),)),
                 textFieldWidget(
-                  dateOnly(false, (plazoCI*30)+30, quotePickedDate, true), Icons.date_range_outlined, false, pagoContadoDeadlineController, false, 'date', (){}),
+                  dateOnly(false, 0, dateConverter(separacionDeadlineController.text), true), Icons.date_range_outlined, false, pagoContadoDeadlineController, false, 'date', (){}),
               ],
             ),
           ),                    
@@ -1388,6 +1405,43 @@ class _CreateCustomerPageState extends State<CreateCustomerPage> {
     } else {
       return Column(
         children: [
+          SizedBox(
+            height: 20,
+            child: Text('Cuota inicial: ${((porcCuotaInicial).toInt()).toString()}%', style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),)
+          ),
+          const SizedBox(
+            height: 15,
+            child: Padding(
+              padding: EdgeInsets.only(left: 8.0),
+              child: Text('Cuota inicial = Separación + Saldo de la cuota inicial', style: TextStyle(fontSize: 10,),),
+            )
+          ),
+          SizedBox(
+            height: 15,
+            child: Padding(
+              padding: const EdgeInsets.only(right: 8.0),
+              child: Text("Plazo: ${((plazoCI*30).toInt()).toString()} días", style: const TextStyle(fontSize: 10,),),
+            )
+          ),
+          Container(
+            constraints: const BoxConstraints(maxWidth: 800),
+            child: textFieldWidget(
+              (currencyCOP(cuotaInicial.toInt().toString())), Icons.monetization_on_outlined, false, vlrCuotaIniController, false, 'number', (){}
+            ),
+          ),
+          const SizedBox(
+            height: 10,
+          ),
+          SizedBox(
+            height: 20,
+            child: Text('Valor por pagar (${((100-porcCuotaInicial).toInt()).toString()}%)', style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),)
+          ),  
+          textFieldWidget(
+            (currencyCOP(valorAPagar.toInt().toString())), Icons.monetization_on_outlined, false, vlrPorPagarController, false, 'number', (){}
+          ),                         
+          const SizedBox(
+            height: 10,
+          ),     
           Row(
             children: [                          
               Expanded(
