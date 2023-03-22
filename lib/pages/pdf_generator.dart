@@ -1,11 +1,12 @@
-
-import 'package:albaterrapp/widgets/widgets.dart';
+import 'package:albaterrapp/services/firebase_services.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 
+// ignore: must_be_immutable
 class PDFGenerator extends StatelessWidget {
   final String seller;
   final String sellerName;
@@ -20,6 +21,7 @@ class PDFGenerator extends StatelessWidget {
   final String lote;
   final String area;
   final String price;
+  final String finalPrice;
   final String porcCuotaIni;
   final String vlrCuotaIni;
   final String vlrSeparacion;
@@ -34,16 +36,16 @@ class PDFGenerator extends StatelessWidget {
   final String paymentMethod;
   final String tiempoFinanc;
   final String vlrCuota;
-  final String statementsStartDate;
+  final String saldoTotalDate;
   final String nroCuotas;
-  final String pagoContadoDue;
   final String tem;
   final String observaciones;
+  final String quoteStage;
 
 
   
                                       
-  const PDFGenerator({super.key, 
+  PDFGenerator({super.key, 
     required this.seller,
     required this.sellerName,
     required this.sellerPhone,
@@ -57,6 +59,7 @@ class PDFGenerator extends StatelessWidget {
     required this.lote,
     required this.area,
     required this.price,
+    required this.finalPrice,
     required this.porcCuotaIni,
     required this.vlrCuotaIni,
     required this.vlrSeparacion,
@@ -71,15 +74,43 @@ class PDFGenerator extends StatelessWidget {
     required this.paymentMethod,
     required this.tiempoFinanc,
     required this.vlrCuota,
-    required this.statementsStartDate,
+    required this.saldoTotalDate,
     required this.nroCuotas,
-    required this.pagoContadoDue,
     required this.tem,
-    required this.observaciones    
+    required this.observaciones,
+    required this.quoteStage  
   });
+
+  void initState() {      
+    initCont();   
+  }
+
+  Map<String, dynamic> infoCont = {};
+  String emailAlbaterra = '';
+  String phoneAlbaterra = '';
+  String webAlbaterra = '';
+
+  Future<Map<String, dynamic>> getInfoContacto() async {
+    DocumentSnapshot<Map<String, dynamic>> infoContacto = await db.collection('infoproyecto').doc('infoGeneral').get();
+    final Map<String, dynamic> data = infoContacto.data() as Map<String, dynamic>;
+    final contactoInfo = {
+      "email": data['email'],
+      "phone": data['phone'],
+      "web": data['web'],
+    };
+    return contactoInfo;
+  }
+
+  Future<void> initCont() async {    
+    infoCont = await getInfoContacto();
+    emailAlbaterra = infoCont['email'];
+    phoneAlbaterra = infoCont['phone'];
+    webAlbaterra = infoCont['web'];
+  }
 
   @override
   Widget build(BuildContext context) {
+    initCont();
     return PdfPreview(
       build: (format) => generatePdf(context),
       // You can set the initial page format here
@@ -117,16 +148,27 @@ class PDFGenerator extends StatelessWidget {
                       crossAxisAlignment: pw.CrossAxisAlignment.start,
                       children: [
                         pw.Image(pw.MemoryImage(byteList1,), height: 60),
-                        pw.Text('COTIZACIÓN: $quoteId', style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),                        
+                        pw.Text('COTIZACIÓN: $quoteId', style: pw.TextStyle(fontSize: 10, fontWeight: pw.FontWeight.bold)),
+                        pw.Text(quoteStage, style: const pw.TextStyle(fontSize: 10)),
                       ],
                     ),
                     pw.Column(
                       mainAxisAlignment: pw.MainAxisAlignment.center,
                       crossAxisAlignment: pw.CrossAxisAlignment.end,
                       children: [
-                        pw.Text('FECHA: ${dateOnly(false, 0, DateTime.now(), false)}'),
                         pw.Image(pw.MemoryImage(byteList2,), height: 20),
                         pw.Image(pw.MemoryImage(byteList3,), height: 30),
+                        pw.SizedBox(height: 10),
+                        pw.Row(
+                          children: [                            
+                            pw.Text(phoneAlbaterra, style: const pw.TextStyle(fontSize: 10)),
+                            pw.Text(' | '),
+                            pw.Text(emailAlbaterra, style: const pw.TextStyle(fontSize: 10)),
+                            pw.Text(' | '),
+                            pw.Text(webAlbaterra, style: const pw.TextStyle(fontSize: 10)),
+                          ]
+                          
+                          )
                       ],
                     ),
                   ],
@@ -139,8 +181,8 @@ class PDFGenerator extends StatelessWidget {
                   data: [
                     ['Nombre', '$name $lastname', 'Teléfono', phone, 'Fecha de cotización', date],
                     ['Inmueble Nº', lote, 'Área', area, 'Valido hasta', dueDate],
-                    ['Precio', price, 'Cuota inicial', '${(double.parse(porcCuotaIni).toInt()).toString()}%', 'Valor en pesos', vlrCuotaIni],
-                                        
+                    ['Valor inicial', price],
+                    ['Valor final', finalPrice],               
                   ],
                 ),
                 pw.SizedBox(height: 20),
@@ -149,15 +191,7 @@ class PDFGenerator extends StatelessWidget {
                   data: [
                     ['PAGADERA ASÍ'],        
                   ],
-                ),  
-                pw.Table.fromTextArray(headerCount: 0,
-                  context: context,
-                  data: [
-                    ['Cuota inicial ($plazoCI)', 'Valor', 'Tiempos'],
-                    ['Separación', vlrSeparacion, dueDateSeparacion],
-                    ['Saldo restante de la cuota inicial', saldoCI, dueDateSaldoCI],                   
-                  ],
-                ),                
+                ),
                 pw.SizedBox(height: 20),
                 metodoPago(paymentMethod, context),
                 pw.SizedBox(height: 20),
@@ -193,17 +227,33 @@ class PDFGenerator extends StatelessWidget {
       return pw.Table.fromTextArray(headerCount: 0,
         context: context,
         data: [
-          ['Método de pago', 'Valor a pagar ($porcPorPagar)', 'Plazo de pago hasta'],
-          ['Pago de contado', vlrPorPagar, pagoContadoDue],                        
+          ['Pago de contado', 'Valor', 'Plazo'],
+          ['Separación', vlrSeparacion, dueDateSeparacion],
+          ['Saldo separación', saldoSeparacion, dueDateSaldoSeparacion],
+          ['Saldo', vlrPorPagar, saldoTotalDate],                        
         ],
       );                
     } else{
-      return pw.Table.fromTextArray(headerCount: 0,
-        context: context,
-        data: [
-          ['FINANCIACIÓN DIRECTA', '', '', 'Financiado a', tiempoFinanc, 'A partir de', statementsStartDate],
-          ['Valor a pagar', porcPorPagar, vlrPorPagar, '', '', 'Valor cuota', vlrCuota],
-          ['Nº cuotas', nroCuotas, 'TEM', tem],              
+      return pw.Column(
+        children: [
+          pw.Table.fromTextArray(headerCount: 0,
+            context: context,
+            data: [
+              ['Cuota inicial ($porcCuotaIni)', vlrCuotaIni, 'Plazo'],
+              ['Separación', vlrSeparacion, dueDateSeparacion],
+              ['Saldo separación', saldoSeparacion, dueDateSaldoSeparacion],
+              ['Saldo cuota inicial ($plazoCI)', saldoCI, dueDateSaldoCI], 
+            ],
+          ),
+          pw.SizedBox(height: 20),
+          pw.Table.fromTextArray(headerCount: 0,
+            context: context,
+            data: [
+              ['Financiación directa', '', 'A partir de', saldoTotalDate],
+              ['Valor a pagar ($porcPorPagar)', vlrPorPagar, 'Valor cuota', vlrCuota],
+              ['Nº cuotas', nroCuotas, 'Intereses', tem],              
+            ],
+          )
         ],
       );
     }

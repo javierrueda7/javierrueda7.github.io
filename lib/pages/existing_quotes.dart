@@ -2,6 +2,7 @@ import 'package:albaterrapp/pages/add_seller.dart';
 import 'package:albaterrapp/pages/pdf_generator.dart';
 import 'package:albaterrapp/services/firebase_services.dart';
 import 'package:albaterrapp/utils/color_utils.dart';
+import 'package:albaterrapp/widgets/widgets.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
@@ -31,8 +32,6 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
   
     @override
   Widget build(BuildContext context) {
-    
-
     return Scaffold(
       extendBodyBehindAppBar: false,
       appBar: AppBar(
@@ -131,26 +130,27 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
                                             dueDate: snapshot.data?[index]['quoteDLDate'],
                                             lote: snapshot.data?[index]['loteName'],
                                             area: snapshot.data?[index]['areaLote'],
-                                            price: snapshot.data?[index]['priceLote'],
-                                            porcCuotaIni: '${snapshot.data?[index]['perCILote'].toString()}',
-                                            vlrCuotaIni: snapshot.data?[index]['vlrCILote'],
-                                            vlrSeparacion: snapshot.data?[index]['vlrSepLote'],
+                                            price: (currencyCOP((snapshot.data?[index]['priceLote'].toInt()).toString())),
+                                            finalPrice: (currencyCOP((snapshot.data?[index]['precioFinal'].toInt()).toString())),
+                                            porcCuotaIni: '${snapshot.data?[index]['perCILote'].toString()}%',
+                                            vlrCuotaIni: (currencyCOP((snapshot.data?[index]['vlrCILote'].toInt()).toString())),
+                                            vlrSeparacion: (currencyCOP((snapshot.data?[index]['vlrSepLote'].toInt()).toString())),
                                             dueDateSeparacion: snapshot.data?[index]['sepDLDate'],
-                                            saldoSeparacion: snapshot.data?[index]['saldoSepLote'],
+                                            saldoSeparacion: (currencyCOP((snapshot.data?[index]['saldoSepLote'].toInt()).toString())),
                                             dueDateSaldoSeparacion: snapshot.data?[index]['saldoSepDLDate'],
-                                            plazoCI: '120 días',
-                                            saldoCI: snapshot.data?[index]['saldoCILote'],
+                                            plazoCI: '${(snapshot.data?[index]['plazoCI'].toInt()).toString()} días',
+                                            saldoCI: (currencyCOP((snapshot.data?[index]['saldoCILote'].toInt()).toString())),
                                             dueDateSaldoCI: snapshot.data?[index]['saldoCIDLDate'],
-                                            porcPorPagar: '70%',
-                                            vlrPorPagar: snapshot.data?[index]['vlrPorPagarLote'],
+                                            porcPorPagar: '${(100-snapshot.data?[index]['perCILote']).toString()}%',
+                                            vlrPorPagar: (currencyCOP((snapshot.data?[index]['vlrPorPagarLote'].toInt()).toString())),
                                             paymentMethod: snapshot.data?[index]['metodoPagoLote'],
                                             tiempoFinanc: '${((snapshot.data?[index]['nroCuotasLote'])/12).toString()} años',
-                                            vlrCuota: snapshot.data?[index]['vlrCuotasLote'],
-                                            statementsStartDate: snapshot.data?[index]['statementsStartDateLote'],
-                                            nroCuotas: '${snapshot.data?[index]['nroCuotasLote'].toString()}',
-                                            pagoContadoDue: snapshot.data?[index]['pagoContadoDLLote'],
-                                            tem: '0.0%',
+                                            vlrCuota: (currencyCOP((snapshot.data?[index]['vlrCuotasLote'].toInt()).toString())),
+                                            saldoTotalDate: snapshot.data?[index]['saldoTotalDate'],
+                                            nroCuotas: (snapshot.data?[index]['nroCuotasLote'].toInt()).toString(),
+                                            tem: '${snapshot.data?[index]['tem'].toString()}%',
                                             observaciones: snapshot.data?[index]['observacionesLote'],
+                                            quoteStage: snapshot.data?[index]['quoteStage'],
                                           ),
                                         ),
                                       );                                      

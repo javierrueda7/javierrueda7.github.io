@@ -17,6 +17,7 @@ Future<List> getRoles() async {
   return roles;
 }
 
+
 Future<List> getUsers() async {
   List users = [];
   QuerySnapshot? queryUsers = await db.collection('users').get();
@@ -46,18 +47,13 @@ Future<void> addUsers(String uid, String nameUser, String lastnameUser, String e
   );
 }
 
-Future<List> getCuotas() async {
-  List cuotas = [];
-  QuerySnapshot? queryCuotas = await db.collection('infoProyecto').doc('infopagos').collection('infoCuotas').get();
-  for (var docCuotas in queryCuotas.docs){
-    final Map<String, dynamic> dataCuotas = docCuotas.data() as Map<String, dynamic>;
-    final cuota = {
-      "periodos": docCuotas.id,
+Future<double> getPeriodoDiscount(String periodo) async {
+  DocumentSnapshot<Map<String, dynamic>> infoDiscount = await db.collection('infoproyecto').doc('infopagos').collection('infoCuotas').doc(periodo).get();
+  final Map<String, dynamic> dataCuotas = infoDiscount.data() as Map<String, dynamic>;
+  final cuotaInfo = {
       "dcto": dataCuotas['dcto'],
-    };
-    cuotas.add(cuota);
-  }
-  return cuotas;
+  };
+  return (cuotaInfo['dcto'].toDouble());
 }
 
 Future<List> getPagoAdicional() async {
@@ -81,8 +77,10 @@ Future<Map<String, dynamic>> getInfoProyecto() async {
     "cuotaInicial": data['cuotaInicial'],
     "dctoContado": data['dctoContado'],
     "plazoCuotaInicial": data['plazoCuotaInicial'],
+    "plazoContado": data['plazoContado'],
     "tem": data['tem'],
     "valorSeparacion": data['valorSeparacion'],
+    "maxCuotas": data['maxCuotas'],
   };
   return proyectoInfo;
 }
@@ -110,21 +108,24 @@ Future<void> addQuote(
   String loteName, 
   String etapaLote, 
   String areaLote,
-  String priceLote,
+  double priceLote,
+  double precioFinal,
+  double dctoLote,
   double perCILote,
-  String vlrCILote,
-  String vlrSepLote,
+  double vlrCILote,
+  double vlrSepLote,
   String sepDLDate, 
-  String saldoSepLote,
+  double saldoSepLote,
   String saldoSepDLDate,
-  String saldoCILote,
+  double plazoCI,
+  double saldoCILote,
   String saldoCIDLDate, 
-  String vlrPorPagarLote,
+  double vlrPorPagarLote,
   String metodoPagoLote,
-  String pagoContadoDLLote,
-  String statementsStartDateLote,
+  String saldoTotalDate,
   int nroCuotasLote,
-  String vlrCuotasLote,
+  double vlrCuotasLote,
+  String tem,
   String observacionesLote,
   String clienteID,
   String quoteStage) async {
@@ -136,20 +137,23 @@ Future<void> addQuote(
     "etapaLote": etapaLote, 
     "areaLote": areaLote, 
     "priceLote": priceLote,
+    "precioFinal": precioFinal,
+    "dctoLote": dctoLote,
     "perCILote": perCILote,
     "vlrCILote": vlrCILote,
     "vlrSepLote": vlrSepLote,
     "sepDLDate": sepDLDate,
     "saldoSepLote": saldoSepLote,
     "saldoSepDLDate": saldoSepDLDate,
+    "plazoCI": plazoCI,
     "saldoCILote": saldoCILote,
     "saldoCIDLDate": saldoCIDLDate,
     "vlrPorPagarLote": vlrPorPagarLote,
     "metodoPagoLote": metodoPagoLote,
-    "pagoContadoDLLote": pagoContadoDLLote,
-    "statementsStartDateLote": statementsStartDateLote,
+    "saldoTotalDate": saldoTotalDate,
     "nroCuotasLote": nroCuotasLote,
     "vlrCuotasLote": vlrCuotasLote,
+    "tem": tem,
     "observacionesLote": observacionesLote,
     "clienteID": clienteID,
     "quoteStage": quoteStage
@@ -173,20 +177,23 @@ Future<List> getQuotes(String loteName, bool allLotes) async {
           "etapaLote": data['etapaLote'],
           "areaLote": data['areaLote'],
           "priceLote": data['priceLote'],
+          "precioFinal": data['precioFinal'],
+          "dctoLote": data['dctoLote'],
           "perCILote": data['perCILote'],
           "vlrCILote": data['vlrCILote'],
           "vlrSepLote": data['vlrSepLote'],
           "sepDLDate": data['sepDLDate'],
           "saldoSepLote": data['saldoSepLote'],
           "saldoSepDLDate": data['saldoSepDLDate'],
+          "plazoCI": data['plazoCI'],
           "saldoCILote": data['saldoCILote'],
           "saldoCIDLDate": data['saldoCIDLDate'],
           "vlrPorPagarLote": data['vlrPorPagarLote'],
           "metodoPagoLote": data['metodoPagoLote'],
-          "pagoContadoDLLote": data['pagoContadoDLLote'],
-          "statementsStartDateLote": data['statementsStartDateLote'],
+          "saldoTotalDate": data['saldoTotalDate'],
           "nroCuotasLote": data['nroCuotasLote'],
           "vlrCuotasLote": data['vlrCuotasLote'],
+          "tem": data['tem'],
           "observacionesLote": data['observacionesLote'],
           "clienteID": data['clienteID'],
           "quoteStage": data['quoteStage'],
