@@ -170,7 +170,7 @@ class _InitPageState extends State<InitPage> {
                                                       width: (constraits.maxHeight/7)*0.67,
                                                       child: Center(
                                                         child: ElevatedButton(                                                      
-                                                          onPressed: (){                                              
+                                                          onPressed: (){                                                                                                       
                                                             setState(() {
                                                               currentLote[0] = true;
                                                               currentLote[1] = snapshot.data?[index]['loteName'];
@@ -259,7 +259,7 @@ class _InitPageState extends State<InitPage> {
                               setState(() {
                               });
                             }
-                          }),
+                          }, checkLogin()),
                         ),
                       ),
                     ],

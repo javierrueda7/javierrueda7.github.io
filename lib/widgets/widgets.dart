@@ -230,7 +230,7 @@ bool getCloseButton(){
    
 
 
-Widget loteCard(List<dynamic> currentSelection, Function cancelOnPressed, Function quoteOnPressed, Function quoteExisting){
+Widget loteCard(List<dynamic> currentSelection, Function cancelOnPressed, Function quoteOnPressed, Function quoteExisting, bool userType){
   if(currentSelection[0] == true){
     return Card(
       elevation: 3,
@@ -273,7 +273,11 @@ Widget loteCard(List<dynamic> currentSelection, Function cancelOnPressed, Functi
                   Expanded(
                     flex: 1,
                     child: TextButton(onPressed: (){
-                      quoteExisting(true);                  
+                      if(userType == true){
+                        quoteExisting(true); 
+                      } else{
+                        
+                      }                
                     }, child: Text('Ver más', style: TextStyle(fontSize: 16, color: fifthColor.withOpacity(0.5),),)),
                   ),
                 ],
