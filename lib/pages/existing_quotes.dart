@@ -31,8 +31,7 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
   String loteNumber = '0';
   
     @override
-  Widget build(BuildContext context) {
-    loteNumber = getNumbers(loteInfo[1])!;
+  Widget build(BuildContext context) {    
     return Scaffold(
       extendBodyBehindAppBar: false,
       appBar: AppBar(
@@ -40,8 +39,7 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
         foregroundColor: primaryColor,
         elevation: 0,
         centerTitle: true,
-        title: Text('Cotizaciones existentes ${loteInfo[1]}', 
-          style: TextStyle(color: primaryColor,fontSize: 18, fontWeight: FontWeight.bold),),
+        title: Text('Cotizaciones existentes${loteVerifier(needAll)}', style: TextStyle(color: primaryColor,fontSize: 18, fontWeight: FontWeight.bold),),
       ),
       body: Center(
         child: Container(
@@ -53,6 +51,7 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
                 return ListView.builder(
                   itemCount: snapshot.data?.length,
                   itemBuilder: (context, index){
+                    loteNumber = getNumbers(snapshot.data?[index]['loteName'])!;  
                     return FutureBuilder(
                       future: db.collection('customers').doc(snapshot.data?[index]['clienteID']).get(),
                       builder: ((context, custSnapshot) {
@@ -65,7 +64,7 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
                             future: db.collection('sellers').doc(snapshot.data?[index]['sellerID']).get(),
                             builder: ((context, sellerSnapshot) {
                               if(sellerSnapshot.hasData){
-                                final sellerData = sellerSnapshot.data?.data() as Map<String, dynamic>;                                
+                                final sellerData = sellerSnapshot.data?.data() as Map<String, dynamic>;                                                            
                                 return Dismissible(
                                   onDismissed: (direction) async {
                                     await deleteQuote(snapshot.data?[index]['qid']);
@@ -111,7 +110,7 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
                                   direction: DismissDirection.endToStart,
                                   key: Key(snapshot.data?[index]['qid']),
                                   child: ListTile(
-                                    leading: CircleAvatar(backgroundColor: successColor, child: Text(loteNumber, textAlign: TextAlign.center, style: TextStyle(color: primaryColor, fontWeight: FontWeight.bold),)),
+                                    leading: CircleAvatar(backgroundColor: stageColor(snapshot.data?[index]['quoteStage']), child: Text(loteNumber, textAlign: TextAlign.center, style: TextStyle(color: primaryColor, fontWeight: FontWeight.bold),)),
                                     title: Text('Cotización #${snapshot.data?[index]['qid']}'),
                                     subtitle: Text(fullName),
                                     trailing: PopupMenuButton<String>(
@@ -218,6 +217,26 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
         )
       ),
     );
+  }
+
+  Color stageColor(String value){
+    if(value == 'CREADA'){
+      return dangerColor;
+    } if(value == 'AUTORIZADA'){
+      return warningColor;
+    } if(value == 'APROBADA'){
+      return successColor;
+    } else{
+      return infoColor;
+    }
+  }
+
+  String loteVerifier(bool value){
+    if(value == true){
+      return  '';
+    } else {
+      return ' ${loteInfo[1]}';
+    }
   }
 
   String? getNumbers(String value){

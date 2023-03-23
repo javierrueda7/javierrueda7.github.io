@@ -114,7 +114,7 @@ Future<void> addQuote(
   String saldoTotalDate,
   int nroCuotasLote,
   double vlrCuotasLote,
-  String tem,
+  double tem,
   String observacionesLote,
   String clienteID,
   String quoteStage) async {

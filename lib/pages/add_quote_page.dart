@@ -168,6 +168,7 @@ class _AddQuotePageState extends State<AddQuotePage> {
     saldoCuotaIniController.text = (currencyCOP((saldoCI.toInt()).toString()));
     vlrCuotaController.text = (currencyCOP((valorCuota.toInt()).toString()));
     vlrPorPagarController.text = (currencyCOP((valorAPagar.toInt()).toString()));
+    temController.text = (currencyCOP(vlrTEM.toString()));
     saldoTotalDateController.text = dateSaldo;
 
     return Scaffold(      
@@ -1218,7 +1219,7 @@ class _AddQuotePageState extends State<AddQuotePage> {
                                     saldoTotalDateController.text,
                                     int.parse(selectedNroCuotas), 
                                     valorCuota,
-                                    temController.text,
+                                    vlrTEM,
                                     observacionesController.text,
                                     idController.text,
                                     'CREADA'
