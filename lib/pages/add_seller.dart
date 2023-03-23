@@ -18,13 +18,13 @@ class _AddSellerPageState extends State<AddSellerPage> {
   final TextEditingController _phoneTextController = TextEditingController();
   final TextEditingController _addressTextController = TextEditingController();
   final TextEditingController _idTextController = TextEditingController();
-  final CollectionReference collectionReference = FirebaseFirestore.instance.collection('users');
-  late int userCounter;  
+  final CollectionReference collectionReference = FirebaseFirestore.instance.collection('sellers');
+  late int sellersCounter;
 
   @override
   Widget build(BuildContext context) {
-    collectionReference.get().then((QuerySnapshot usersSnapshot) {
-      userCounter = usersSnapshot.size;
+    collectionReference.get().then((QuerySnapshot sellersSnapshot) {
+      sellersCounter = sellersSnapshot.size;
     });
     return Scaffold(
       extendBodyBehindAppBar: true,
@@ -141,7 +141,7 @@ class _AddSellerPageState extends State<AddSellerPage> {
                             );
                           } else {
                             await addSellers(
-                              idGenerator(userCounter),
+                              idGenerator(sellersCounter),
                               _nameTextController.text,
                               _lastnameTextController.text,
                               _emailTextController.text,

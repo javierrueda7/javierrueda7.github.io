@@ -28,9 +28,11 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
 
   List<dynamic> loteInfo = [];
   bool needAll = true;
+  String loteNumber = '0';
   
     @override
   Widget build(BuildContext context) {
+    loteNumber = getNumbers(loteInfo[1])!;
     return Scaffold(
       extendBodyBehindAppBar: false,
       appBar: AppBar(
@@ -109,13 +111,31 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
                                   direction: DismissDirection.endToStart,
                                   key: Key(snapshot.data?[index]['qid']),
                                   child: ListTile(
-                                    leading: Text(snapshot.data?[index]['loteName']),
-                                    title: Text(fullName),
-                                    subtitle: Text('Cotización #${snapshot.data?[index]['qid']}'),
-                                    onTap: (() async {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
+                                    leading: CircleAvatar(backgroundColor: successColor, child: Text(loteNumber, textAlign: TextAlign.center, style: TextStyle(color: primaryColor, fontWeight: FontWeight.bold),)),
+                                    title: Text('Cotización #${snapshot.data?[index]['qid']}'),
+                                    subtitle: Text(fullName),
+                                    trailing: PopupMenuButton<String>(
+                                      itemBuilder: (context) => [
+                                        const PopupMenuItem(
+                                          value: 'Opción 1',                                          
+                                          child: Text('Ver PDF'),                     
+                                        ),                      
+                                        const PopupMenuItem(
+                                          value: 'Opción 2',
+                                          child: Text('Asesores comerciales'),
+                                        ),
+                                        const PopupMenuItem(
+                                          value: 'Opción 3',
+                                          child: Text('Administradores'),                        
+                                        ),                      
+                                        const PopupMenuItem(
+                                          value: 'Opción 4',
+                                          child: Text('Información general'),
+                                        ),
+                                      ],
+                                      onSelected: (value) {
+                                        if(value == 'Opción 1'){                     
+                                         Navigator.push(context, MaterialPageRoute(
                                           builder: (context) => PDFGenerator(
                                             sellerID: snapshot.data?[index]['sellerID'],
                                             sellerName: '${sellerData['nameSeller']} ${sellerData['lastnameSeller']}',
@@ -151,9 +171,23 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
                                             observaciones: snapshot.data?[index]['observacionesLote'],
                                             quoteStage: snapshot.data?[index]['quoteStage'],
                                           ),
-                                        ),
-                                      );                                      
-                                    }
+                                        ));
+                                        } if(value == 'Opción 2'){
+                                          setState(() {                          
+                                          });
+                                        } if(value == 'Opción 3'){
+                                          setState(() {                          
+                                          });
+                                        } if(value == 'Opción 4'){
+                                          setState(() {                          
+                                          });
+                                        } else{
+                                          setState(() {                          
+                                          });
+                                        } 
+                                      },
+                                    ),
+                                    onTap: (() {}                      
                                     ),
                                   ),
                                 );
@@ -184,6 +218,12 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
         )
       ),
     );
+  }
+
+  String? getNumbers(String value){
+    final RegExp regex = RegExp(r'\d+');
+    final String? loteNumber = regex.stringMatch(value);
+    return loteNumber;
   }
 }
 

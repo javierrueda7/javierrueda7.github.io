@@ -92,7 +92,7 @@ class _InitPageState extends State<InitPage> {
                     ],
                     onSelected: (value) {
                       if(value == 'Opción 1'){                      
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => ExistingQuotes(loteInfo: currentLote, needAll: true,)));                      
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => ExistingQuotes(loteInfo: currentLote, needAll: true,)));
                       } if(value == 'Opción 2'){
                         Navigator.push(context, MaterialPageRoute(builder: (context) => const SellersPage()));
                       } if(value == 'Opción 3'){
