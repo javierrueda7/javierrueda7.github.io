@@ -1,14 +1,14 @@
 import 'package:albaterrapp/services/firebase_services.dart';
 import 'package:flutter/material.dart';
 
-class EditUserPage extends StatefulWidget {
-  const EditUserPage({super.key});
+class EditSellerPage extends StatefulWidget {
+  const EditSellerPage({super.key});
 
   @override
-  State<EditUserPage> createState() =>  _EditUserPageState();
+  State<EditSellerPage> createState() =>  _EditSellerPageState();
 }
 
-class _EditUserPageState extends State<EditUserPage> {
+class _EditSellerPageState extends State<EditSellerPage> {
 
   TextEditingController usernameController = TextEditingController(text: "");
   TextEditingController nameController = TextEditingController(text: "");
@@ -33,9 +33,9 @@ class _EditUserPageState extends State<EditUserPage> {
         title: const Text('Editar usuario'),
       ),
       body: 
-        Padding(
-          padding: const EdgeInsets.all(15.0),
-          child: Form(
+        Center(          
+          child: Container(
+            constraints: const BoxConstraints(maxWidth: 800),
             child: Column(
               children: <Widget>[
                 TextFormField(
@@ -71,13 +71,14 @@ class _EditUserPageState extends State<EditUserPage> {
                 ),
                 ElevatedButton(
                   onPressed: () async {
-                    await updateUsers(
+                    await addSellers(
                       arguments['uid'],
                       usernameController.text, 
                       nameController.text, 
                       emailController.text, 
                       phoneController.text, 
                       arguments['role'],
+                      phoneController.text,
                     ).then((_) {
                       Navigator.pop(context);
                     });

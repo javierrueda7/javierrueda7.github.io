@@ -1,26 +1,27 @@
+import 'package:albaterrapp/pages/add_seller.dart';
 import 'package:flutter/material.dart';
 import '../services/firebase_services.dart';
 
-class Home extends StatefulWidget {
-  const Home({
+class SellersPage extends StatefulWidget {
+  const SellersPage({
     Key? key,
   }) : super(key: key);
 
   @override
-  State<Home> createState() => _HomeState();
+  State<SellersPage> createState() => _SellersPageState();
 }
 
-class _HomeState extends State<Home> {
+class _SellersPageState extends State<SellersPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: const Text('INICIO'),
+        title: const Text('Asesores comerciales'),
         backgroundColor: const Color.fromARGB(255, 86, 135, 109),
       ),
       body: FutureBuilder(
-        future: getUsers(),
+        future: getSellers(),
         builder: ((context, snapshot){
           if(snapshot.hasData){
             return ListView.builder(
@@ -28,7 +29,7 @@ class _HomeState extends State<Home> {
               itemBuilder: (context, index){
                 return Dismissible(
                   onDismissed: (direction) async {
-                    await deleteUsers(snapshot.data?[index]['uid']);
+                    await deleteSeller(snapshot.data?[index]['sid']);
                     snapshot.data?.removeAt(index);
                     setState(() {});
                   },
@@ -38,7 +39,7 @@ class _HomeState extends State<Home> {
                       context: context, 
                       builder: (context){
                         return AlertDialog(
-                          title: Text("Esta seguro de eliminar a ${snapshot.data?[index]['name']}?"),
+                          title: Text("Esta seguro de eliminar a ${snapshot.data?[index]['nameSeller']}?"),
                           actions: [
                             TextButton(onPressed: (){
                               return Navigator.pop(
@@ -69,13 +70,13 @@ class _HomeState extends State<Home> {
                     child: const Icon(Icons.delete),
                   ),
                   direction: DismissDirection.endToStart,
-                  key: Key(snapshot.data?[index]['uid']),
+                  key: Key(snapshot.data?[index]['sid']),
                   child: ListTile(
-                    title: Text(snapshot.data?[index]['name']),
+                    title: Text(snapshot.data?[index]['nameSeller']),
                     onTap: (() async {
                         await Navigator.pushNamed(context, "/edit", arguments: {
                           "username": snapshot.data?[index]['username'],
-                          "uid": snapshot.data?[index]['uid'],
+                          "sid": snapshot.data?[index]['sid'],
                           "name": snapshot.data?[index]['name'],
                           "email": snapshot.data?[index]['email'],
                           "phone": snapshot.data?[index]['phone'],
@@ -99,8 +100,7 @@ class _HomeState extends State<Home> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
-          await Navigator.pushNamed(context, '/create');
-          setState(() {});
+          await Navigator.push(context, MaterialPageRoute(builder: (context) => const AddSellerPage())); 
         },
         child: const Icon(Icons.add),
       ),

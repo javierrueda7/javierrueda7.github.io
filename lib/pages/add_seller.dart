@@ -19,9 +19,7 @@ class _AddSellerPageState extends State<AddSellerPage> {
   final TextEditingController _addressTextController = TextEditingController();
   final TextEditingController _idTextController = TextEditingController();
   final CollectionReference collectionReference = FirebaseFirestore.instance.collection('users');
-  late int userCounter;
-  
-  
+  late int userCounter;  
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +33,7 @@ class _AddSellerPageState extends State<AddSellerPage> {
         foregroundColor: primaryColor,
         elevation: 0,
         title: Text(
-          "Crear vendedor", 
+          "Agregar asesor comercial", 
           style: TextStyle(color: primaryColor,fontSize: 18, fontWeight: FontWeight.bold),
         )
       ),
@@ -142,7 +140,7 @@ class _AddSellerPageState extends State<AddSellerPage> {
                               ),
                             );
                           } else {
-                            await addUsers(
+                            await addSellers(
                               idGenerator(userCounter),
                               _nameTextController.text,
                               _lastnameTextController.text,

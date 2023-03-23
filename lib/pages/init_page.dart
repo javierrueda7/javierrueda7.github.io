@@ -1,5 +1,7 @@
-import 'package:albaterrapp/pages/create_customer_page.dart';
+import 'package:albaterrapp/pages/add_quote_page.dart';
 import 'package:albaterrapp/pages/existing_quotes.dart';
+import 'package:albaterrapp/pages/pictures_page.dart';
+import 'package:albaterrapp/pages/sellers_page.dart';
 import 'package:albaterrapp/pages/signin_page.dart';
 import 'package:albaterrapp/services/firebase_services.dart';
 import 'package:albaterrapp/utils/color_utils.dart';
@@ -48,7 +50,8 @@ class _InitPageState extends State<InitPage> {
   int currentItem = 0;
   List<dynamic> currentLote = [false, ' ', ' ', 0.0, 0.0, 0.0, 0.0, ' ', 0.0,  0.0, 'null', 'null'];
   List<dynamic> baseLote = [false, ' ', ' ', 0.0, 0.0, 0.0, 0.0, ' ', 0.0,  0.0, 'null', 'null'];
-  
+  String selectedOption = 'Option 1';
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -68,14 +71,46 @@ class _InitPageState extends State<InitPage> {
               visible: checkLogin(),
               child: Padding(
                 padding: const EdgeInsets.only(left: 20.0),
-                  child: GestureDetector(
-                    onTap: () {                      
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => ExistingQuotes(loteInfo: currentLote, needAll: true,)));                      
+                  child: PopupMenuButton<String>(
+                    itemBuilder: (context) => [
+                      const PopupMenuItem(
+                        value: 'Opción 1',
+                        child: Text('Cotizaciones'),                        
+                      ),                      
+                      const PopupMenuItem(
+                        value: 'Opción 2',
+                        child: Text('Asesores comerciales'),
+                      ),
+                      const PopupMenuItem(
+                        value: 'Opción 3',
+                        child: Text('Administradores'),                        
+                      ),                      
+                      const PopupMenuItem(
+                        value: 'Opción 4',
+                        child: Text('Información general'),
+                      ),
+                    ],
+                    onSelected: (value) {
+                      if(value == 'Opción 1'){                      
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => ExistingQuotes(loteInfo: currentLote, needAll: true,)));                      
+                      } if(value == 'Opción 2'){
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => const SellersPage()));
+                      } if(value == 'Opción 3'){
+                        setState(() {                          
+                        });
+                      } if(value == 'Opción 4'){
+                        setState(() {                          
+                        });
+                      } else{
+                        setState(() {                          
+                        });
+                      } 
                     },
-                    child: const Icon(
-                      Icons.add_outlined
-                    ),
-                  )
+                  ),
+                  
+                  
+                  
+                  
               ),
             ),
           actions: <Widget>[            
@@ -238,7 +273,7 @@ class _InitPageState extends State<InitPage> {
                               setState(() {
                                 Navigator.push(
                                   context,
-                                  MaterialPageRoute(builder: (context) => CreateCustomerPage(loteInfo: currentLote)),
+                                  MaterialPageRoute(builder: (context) => AddQuotePage(loteInfo: currentLote)),
                                 );
                                 
                               });
@@ -252,11 +287,14 @@ class _InitPageState extends State<InitPage> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(builder: (context) => ExistingQuotes(loteInfo: currentLote, needAll: false,)),
-                                );
-                                
+                                );                                
                               });
                             } else {
                               setState(() {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(builder: (context) => PicturesPage(loteInfo: currentLote)),
+                                );
                               });
                             }
                           }, checkLogin()),

@@ -18,31 +18,31 @@ Future<List> getRoles() async {
 }
 
 
-Future<List> getUsers() async {
-  List users = [];
-  QuerySnapshot? queryUsers = await db.collection('users').get();
-  for (var doc in queryUsers.docs) {
+Future<List> getSellers() async {
+  List sellers = [];
+  QuerySnapshot? querySellers = await db.collection('sellers').get();
+  for (var doc in querySellers.docs) {
     final Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
     final person = {
-      "nameUser": data['nameUser'],
-      "uid": doc.id,
-      "lastnameUser": data['lastnameUser'],
-      "emailUser": data['emailUser'],
-      "phoneUser": data['phoneUser'],
+      "nameSeller": data['nameSeller'],
+      "sid": doc.id,
+      "lastnameSeller": data['lastnameSeller'],
+      "emailSeller": data['emailSeller'],
+      "phoneSeller": data['phoneSeller'],
     };
-    users.add(person);
+    sellers.add(person);
   }
-  return users;
+  return sellers;
 }
 
-Future<void> addUsers(String uid, String nameUser, String lastnameUser, String emailUser, String phoneUser, String addressUser, String idUser) async {
-  await db.collection("users").doc(uid).set({
-    "nameUser": nameUser, 
-    "lastnameUser": lastnameUser, 
-    "emailUser": emailUser, 
-    "phoneUser": phoneUser,
-    "addressUser": addressUser,
-    "idUser": idUser
+Future<void> addSellers(String uid, String nameSeller, String lastnameSeller, String emailSeller, String phoneSeller, String addressSeller, String idSeller) async {
+  await db.collection("sellers").doc(uid).set({
+    "nameSeller": nameSeller, 
+    "lastnameSeller": lastnameSeller, 
+    "emailSeller": emailSeller, 
+    "phoneSeller": phoneSeller,
+    "addressSeller": addressSeller,
+    "idSeller": idSeller
     }
   );
 }
@@ -58,7 +58,7 @@ Future<double> getPeriodoDiscount(String periodo) async {
 
 Future<List> getPagoAdicional() async {
   List pagos = [];
-  QuerySnapshot? queryPago = await db.collection('infoProyecto').doc('infopagos').collection('pagoAdicional').get();
+  QuerySnapshot? queryPago = await db.collection('infoproyecto').doc('infopagos').collection('pagoAdicional').get();
   for (var docPago in queryPago.docs){
     final Map<String, dynamic> dataPago = docPago.data() as Map<String, dynamic>;
     final pago = {
@@ -85,18 +85,7 @@ Future<Map<String, dynamic>> getInfoProyecto() async {
   return proyectoInfo;
 }
 
-Future<void> updateUsers(String? uid, String? newUsername, String? newName, String? newEmail, String? newPhone, String? newRole) async {
-  await db.collection("users").doc(uid).set({
-    "username": newUsername,
-    "name": newName,
-    "email": newEmail, 
-    "phone": newPhone,
-    "role": newRole,
-    }
-  );
-}
-
-Future<void> deleteUsers(String uid) async {
+Future<void> deleteSeller(String uid) async {
   await db.collection("users").doc(uid).delete();
 }
 

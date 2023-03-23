@@ -1,11 +1,9 @@
-import 'package:albaterrapp/pages/edit_user_page.dart';
 import 'package:albaterrapp/pages/signin_page.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:albaterrapp/firebase_options.dart';
 
 // Pages
-import 'package:albaterrapp/pages/home_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -26,8 +24,6 @@ class MyApp extends StatelessWidget {
       initialRoute: '/',
       routes: {
         '/': (context) => const SignInPage(),
-        '/user': (context) => const Home(),
-        '/edit': (context) => const EditUserPage(),
       },
     );
   }

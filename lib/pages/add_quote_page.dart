@@ -9,15 +9,15 @@ import 'dart:async';
 
 FirebaseFirestore db = FirebaseFirestore.instance;
 
-class CreateCustomerPage extends StatefulWidget {
+class AddQuotePage extends StatefulWidget {
   final List<dynamic> loteInfo;
-  const CreateCustomerPage({Key? key, required this.loteInfo}) : super(key: key);
+  const AddQuotePage({Key? key, required this.loteInfo}) : super(key: key);
 
   @override
-  State<CreateCustomerPage> createState() => _CreateCustomerPageState();
+  State<AddQuotePage> createState() => _AddQuotePageState();
 }
 
-class _CreateCustomerPageState extends State<CreateCustomerPage> {
+class _AddQuotePageState extends State<AddQuotePage> {
   // ignore: prefer_typing_uninitialized_variables
   var timer;
 
@@ -209,31 +209,31 @@ class _CreateCustomerPageState extends State<CreateCustomerPage> {
                       child: Padding(
                         padding: const EdgeInsets.only(left: 10.0, right: 10),
                         child: StreamBuilder<QuerySnapshot>(
-                          stream: FirebaseFirestore.instance.collection('users').snapshots(),
-                          builder: (context, usersSnapshot) {
-                            List<DropdownMenuItem> userItems = [];
-                            if (!usersSnapshot.hasData) {
+                          stream: FirebaseFirestore.instance.collection('sellers').snapshots(),
+                          builder: (context, sellersSnapshot) {
+                            List<DropdownMenuItem> sellerItems = [];
+                            if (!sellersSnapshot.hasData) {
                               const CircularProgressIndicator();
                             } else {
-                              final usersList = usersSnapshot.data?.docs;
-                              for (var users in usersList!) {
-                                userItems.add(
+                              final sellersList = sellersSnapshot.data?.docs;
+                              for (var sellers in sellersList!) {
+                                sellerItems.add(
                                   DropdownMenuItem(
-                                    value: users.id,
-                                    child: Center(child: Text(users['nameUser'])),
+                                    value: sellers.id,
+                                    child: Center(child: Text(sellers['nameSeller'])),
                                   ),
                                 );
                               }
                             }
                             return DropdownButton(
-                              items: userItems,
+                              items: sellerItems,
                               hint: Center(child: Text(selectedSeller)),
                               underline: Container(),
                               style: TextStyle(color: fifthColor.withOpacity(0.9),),
-                              onChanged: (userValue) {
+                              onChanged: (sellerValue) {
                                 setState(() {
-                                  selectedSeller = userValue!;
-                                  getSeller(userValue);
+                                  selectedSeller = sellerValue!;
+                                  getSeller(sellerValue);
                                 });
                               },
                               isExpanded: true,
@@ -1076,9 +1076,9 @@ class _CreateCustomerPageState extends State<CreateCustomerPage> {
                                     MaterialPageRoute(
                                       builder: (context) => PDFGenerator(
                                         seller: selectedSeller,
-                                        sellerName: '${seller['nameUser']} ${seller['lastnameUser']}',
-                                        sellerPhone: seller['phoneUser'],
-                                        sellerEmail: seller['emailUser'],
+                                        sellerName: '${seller['nameSeller']} ${seller['lastnameSeller']}',
+                                        sellerPhone: seller['phoneSeller'],
+                                        sellerEmail: seller['emailSeller'],
                                         quoteId: idGenerator(quoteCounter),
                                         name: nameController.text,
                                         lastname: lastnameController.text,
@@ -1258,14 +1258,14 @@ class _CreateCustomerPageState extends State<CreateCustomerPage> {
   }
 
   Future<Map<String, dynamic>> getSeller(String value) async {
-    DocumentSnapshot? doc = await db.collection('users').doc(selectedSeller).get();    
+    DocumentSnapshot? doc = await db.collection('sellers').doc(selectedSeller).get();    
     final Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
     final temp = {
-      "nameUser": data['nameUser'],
-      "uid": doc.id,
-      "lastnameUser": data['lastnameUser'],
-      "emailUser": data['emailUser'],
-      "phoneUser": data['phoneUser'],
+      "nameSeller": data['nameSeller'],
+      "sid": doc.id,
+      "lastnameSeller": data['lastnameSeller'],
+      "emailSeller": data['emailSeller'],
+      "phoneSeller": data['phoneSeller'],
     };
     return temp;
   }
@@ -1365,241 +1365,246 @@ class _CreateCustomerPageState extends State<CreateCustomerPage> {
 
   Widget paymentMethod(String paymentMethodSelection){
     if(paymentMethodSelection == 'Pago de contado'){
-      return Column(
-        children: [
-          SizedBox(
-            height: 20,
-            child: Text('Precio final${isDiscount(discountValue())}', style: const TextStyle(fontSize: 14),)
-          ),
-          SizedBox(
-            height: 20,
-            child: Padding(
-              padding: const EdgeInsets.only(left: 8.0),
-              child: discountText(discountValue()),
-            )
-          ),          
-          Container(
-            constraints: const BoxConstraints(maxWidth: 800),
-            child: textFieldWidget(
-              (currencyCOP(precioFinal.toInt().toString())), Icons.monetization_on_outlined, false, precioFinalController, false, 'number', (){}
+      return Container(
+        constraints: const BoxConstraints(maxWidth: 800),
+        child: Column(
+          children: [
+            SizedBox(
+              height: 20,
+              child: Text('Precio final${isDiscount(discountValue())}', style: const TextStyle(fontSize: 14),)
             ),
-          ),
-          const SizedBox(
-            height: 10,
-          ),
-          Row(
-            children: [                          
-              Expanded(
-                flex: 1,
-                child: Column(
-                  children: [                
-                    const SizedBox(
-                      height: 20,
-                      child: Text('Valor restante a pagar', style: TextStyle(fontSize: 10), textAlign: TextAlign.center,)
-                    ),
-                    textFieldWidget(
-                      (currencyCOP(valorAPagar.toInt().toString())), Icons.monetization_on_outlined, false, vlrPorPagarController, false, 'number', (){}
-                    ),
-                  ],
-                ),
+            SizedBox(
+              height: 20,
+              child: Padding(
+                padding: const EdgeInsets.only(left: 8.0),
+                child: discountText(discountValue()),
+              )
+            ),          
+            Container(
+              child: textFieldWidget(
+                (currencyCOP(precioFinal.toInt().toString())), Icons.monetization_on_outlined, false, precioFinalController, false, 'number', (){}
               ),
-              Expanded(
-                flex: 1,
-                child: Column(              
-                  children: [
-                    SizedBox(
-                      height: 20,
-                      child: Text('Fecha límite (${plazoContado.toInt().toString()} días)', style: const TextStyle(fontSize: 10), textAlign: TextAlign.center,)
-                    ),
-                    textFieldWidget(
-                      dateOnly(false, 0, dateConverter(separacionDeadlineController.text), true), Icons.date_range_outlined, false, saldoTotalDateController, false, 'date', (){}
-                    ),
-                  ],
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            Row(
+              children: [                          
+                Expanded(
+                  flex: 1,
+                  child: Column(
+                    children: [                
+                      const SizedBox(
+                        height: 20,
+                        child: Text('Valor restante a pagar', style: TextStyle(fontSize: 10), textAlign: TextAlign.center,)
+                      ),
+                      textFieldWidget(
+                        (currencyCOP(valorAPagar.toInt().toString())), Icons.monetization_on_outlined, false, vlrPorPagarController, false, 'number', (){}
+                      ),
+                    ],
+                  ),
                 ),
-              ),                    
-            ]
-          ),
-        ],
+                Expanded(
+                  flex: 1,
+                  child: Column(              
+                    children: [
+                      SizedBox(
+                        height: 20,
+                        child: Text('Fecha límite (${plazoContado.toInt().toString()} días)', style: const TextStyle(fontSize: 10), textAlign: TextAlign.center,)
+                      ),
+                      textFieldWidget(
+                        dateOnly(false, 0, dateConverter(separacionDeadlineController.text), true), Icons.date_range_outlined, false, saldoTotalDateController, false, 'date', (){}
+                      ),
+                    ],
+                  ),
+                ),                    
+              ]
+            ),
+          ],
+        ),
       );
     } else {
-      return Column(
-        children: [
-          SizedBox(
-            height: 20,
-            child: Text('Precio final${isDiscount(discountValue())}', style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),)
-          ),
-          SizedBox(
-            height: 20,
-            child: Padding(
-              padding: const EdgeInsets.only(left: 8.0),
-              child: discountText(discountValue()),
-            )
-          ),          
-          Container(
-            constraints: const BoxConstraints(maxWidth: 800),
-            child: textFieldWidget(
-              (currencyCOP(precioFinal.toInt().toString())), Icons.monetization_on_outlined, false, precioFinalController, false, 'number', (){}
+      return Container(
+        constraints: const BoxConstraints(maxWidth: 800),
+        child: Column(
+          children: [
+            SizedBox(
+              height: 20,
+              child: Text('Precio final${isDiscount(discountValue())}', style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),)
             ),
-          ),
-          const SizedBox(
-            height: 10,
-          ),
-          SizedBox(
-            height: 20,
-            child: Text('Cuota inicial (${((porcCuotaInicial).toInt()).toString()}%)', style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),)
-          ),
-          const SizedBox(
-            height: 20,
-            child: Padding(
-              padding: EdgeInsets.only(left: 8.0),
-              child: Text('Cuota inicial = Separación + Saldo cuota inicial', style: TextStyle(fontSize: 10,),),
-            )
-          ),          
-          Container(
-            constraints: const BoxConstraints(maxWidth: 800),
-            child: textFieldWidget(
-              (currencyCOP(cuotaInicial.toInt().toString())), Icons.monetization_on_outlined, false, vlrCuotaIniController, false, 'number', (){}
-            ),
-          ),
-          const SizedBox(
-            height: 10,
-          ),
-          Row(
-            children: [                          
-              Expanded(
-                flex: 1,
-                child: Column(
-                  children: [
-                    const SizedBox(
-                      height: 20,
-                      child: Text('Saldo cuota inicial', style: TextStyle(fontSize: 10), textAlign: TextAlign.center,)
-                    ),
-                    textFieldWidget(
-                      (currencyCOP(saldoCI.toInt().toString())), Icons.monetization_on_outlined, false, saldoCuotaIniController, false, 'number', (){}
-                    ),
-                  ],
-                ),
+            SizedBox(
+              height: 20,
+              child: Padding(
+                padding: const EdgeInsets.only(left: 8.0),
+                child: discountText(discountValue()),
+              )
+            ),          
+            Container(
+              constraints: const BoxConstraints(maxWidth: 800),
+              child: textFieldWidget(
+                (currencyCOP(precioFinal.toInt().toString())), Icons.monetization_on_outlined, false, precioFinalController, false, 'number', (){}
               ),
-              Expanded(
-                flex: 1,
-                child: Column(              
-                  children: [
-                    SizedBox(
-                      height: 20,
-                      child: Text('Fecha límite (${(plazoCI).toInt().toString()} días)', style: const TextStyle(fontSize: 10), textAlign: TextAlign.center,)
-                    ),
-                    textFieldWidget(
-                      dateOnly(false, 0, dateConverter(separacionDeadlineController.text), true), Icons.date_range_outlined, false, saldoCuotaIniDeadlineController, false, 'date', (){}
-                    ),
-                  ],
-                ),
-              ),                    
-            ]
-          ),
-          const SizedBox(
-            height: 10,
-          ),
-          SizedBox(
-            height: 20,
-            child: Text('Valor por pagar (${((100-porcCuotaInicial).toInt()).toString()}%)', style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),)
-          ),  
-          textFieldWidget(
-            (currencyCOP(valorAPagar.toInt().toString())), Icons.monetization_on_outlined, false, vlrPorPagarController, false, 'number', (){}
-          ),                         
-          const SizedBox(
-            height: 10,
-          ),     
-          Row(
-            children: [                          
-              Expanded(
-                flex: 4,
-                child: Column(
-                  children: [
-                    const SizedBox(
-                    height: 15,
-                    child: Text('Valor de cada cuota', style: TextStyle(fontSize: 10),)),
-                    textFieldWidget(
-                      (currencyCOP(valorCuota.toInt().toString())), Icons.monetization_on_outlined, false, vlrCuotaController, false, 'number', (){}),
-                  ],
-                ),
-              ),              
-              Expanded(
-                flex: 2,
-                child: Column(
-                  children: [
-                    const SizedBox(
-                      height: 15,
-                      child: Text('Nro periodos', style: TextStyle(fontSize: 10),)
-                    ),
-                    TextField (                      
-                      cursorColor: fifthColor,
-                      enabled: false,
-                      textAlign: TextAlign.center,
-                      style: TextStyle(color: fifthColor.withOpacity(0.9)),
-                      decoration: InputDecoration(
-                        hintText: periodoCuotas.toString(),
-                        hintStyle: TextStyle(color: fifthColor.withOpacity(0.9)),
-                        filled: true,
-                        floatingLabelBehavior: FloatingLabelBehavior.never,
-                        fillColor: primaryColor.withOpacity(0.2),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(30.0),
-                          borderSide: BorderSide(width: 1, style: BorderStyle.solid, color: fifthColor.withOpacity(0.1))),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(30.0),
-                          borderSide: BorderSide(width: 2, style: BorderStyle.solid, color: fifthColor)),
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            SizedBox(
+              height: 20,
+              child: Text('Cuota inicial (${((porcCuotaInicial).toInt()).toString()}%)', style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),)
+            ),
+            const SizedBox(
+              height: 20,
+              child: Padding(
+                padding: EdgeInsets.only(left: 8.0),
+                child: Text('Cuota inicial = Separación + Saldo cuota inicial', style: TextStyle(fontSize: 10,),),
+              )
+            ),          
+            Container(
+              constraints: const BoxConstraints(maxWidth: 800),
+              child: textFieldWidget(
+                (currencyCOP(cuotaInicial.toInt().toString())), Icons.monetization_on_outlined, false, vlrCuotaIniController, false, 'number', (){}
+              ),
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            Row(
+              children: [                          
+                Expanded(
+                  flex: 1,
+                  child: Column(
+                    children: [
+                      const SizedBox(
+                        height: 20,
+                        child: Text('Saldo cuota inicial', style: TextStyle(fontSize: 10), textAlign: TextAlign.center,)
                       ),
-                    ),                    
-                  ],
+                      textFieldWidget(
+                        (currencyCOP(saldoCI.toInt().toString())), Icons.monetization_on_outlined, false, saldoCuotaIniController, false, 'number', (){}
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              Expanded(
-                flex: 2,
-                child: Column(
-                  children: [
-                    const SizedBox(
-                    height: 15,
-                    child: Text('Nro Cuotas', style: TextStyle(fontSize: 10),)),
-                    easyDropdown(nroCuotasList, selectedNroCuotas, (tempNroCuotas){setState(() {
-                      selectedNroCuotas = tempNroCuotas!;
-                      periodoCalculator(stringConverter(selectedNroCuotas));
-                      initCuotas();
-                    });}),
-                  ],
+                Expanded(
+                  flex: 1,
+                  child: Column(              
+                    children: [
+                      SizedBox(
+                        height: 20,
+                        child: Text('Fecha límite (${(plazoCI).toInt().toString()} días)', style: const TextStyle(fontSize: 10), textAlign: TextAlign.center,)
+                      ),
+                      textFieldWidget(
+                        dateOnly(false, 0, dateConverter(separacionDeadlineController.text), true), Icons.date_range_outlined, false, saldoCuotaIniDeadlineController, false, 'date', (){}
+                      ),
+                    ],
+                  ),
+                ),                    
+              ]
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            SizedBox(
+              height: 20,
+              child: Text('Valor por pagar (${((100-porcCuotaInicial).toInt()).toString()}%)', style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),)
+            ),  
+            textFieldWidget(
+              (currencyCOP(valorAPagar.toInt().toString())), Icons.monetization_on_outlined, false, vlrPorPagarController, false, 'number', (){}
+            ),                         
+            const SizedBox(
+              height: 10,
+            ),     
+            Row(
+              children: [                          
+                Expanded(
+                  flex: 4,
+                  child: Column(
+                    children: [
+                      const SizedBox(
+                      height: 15,
+                      child: Text('Valor de cada cuota', style: TextStyle(fontSize: 10),)),
+                      textFieldWidget(
+                        (currencyCOP(valorCuota.toInt().toString())), Icons.monetization_on_outlined, false, vlrCuotaController, false, 'number', (){}),
+                    ],
+                  ),
+                ),              
+                Expanded(
+                  flex: 2,
+                  child: Column(
+                    children: [
+                      const SizedBox(
+                        height: 15,
+                        child: Text('Nro periodos', style: TextStyle(fontSize: 10),)
+                      ),
+                      TextField (                      
+                        cursorColor: fifthColor,
+                        enabled: false,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(color: fifthColor.withOpacity(0.9)),
+                        decoration: InputDecoration(
+                          hintText: periodoCuotas.toString(),
+                          hintStyle: TextStyle(color: fifthColor.withOpacity(0.9)),
+                          filled: true,
+                          floatingLabelBehavior: FloatingLabelBehavior.never,
+                          fillColor: primaryColor.withOpacity(0.2),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(30.0),
+                            borderSide: BorderSide(width: 1, style: BorderStyle.solid, color: fifthColor.withOpacity(0.1))),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(30.0),
+                            borderSide: BorderSide(width: 2, style: BorderStyle.solid, color: fifthColor)),
+                        ),
+                      ),                    
+                    ],
+                  ),
                 ),
-              ),
-            ]
-          ),
-          Row(
-            children: [                          
-              Expanded(
-                flex: 1,
-                child: Column(
-                  children: [
-                    const SizedBox(
-                    height: 15,
-                    child: Text('Intereses', style: TextStyle(fontSize: 10),)),
-                    textFieldWidget(
-                      '${(vlrTEM.toString())} %', Icons.percent_outlined, false, temController, false, 'number', (){}),
-                  ],
+                Expanded(
+                  flex: 2,
+                  child: Column(
+                    children: [
+                      const SizedBox(
+                      height: 15,
+                      child: Text('Nro Cuotas', style: TextStyle(fontSize: 10),)),
+                      easyDropdown(nroCuotasList, selectedNroCuotas, (tempNroCuotas){setState(() {
+                        selectedNroCuotas = tempNroCuotas!;
+                        periodoCalculator(stringConverter(selectedNroCuotas));
+                        initCuotas();
+                      });}),
+                    ],
+                  ),
                 ),
-              ),
-              Expanded(
-                flex: 1,
-                child: Column(
-                  children: [
-                    const SizedBox(
-                    height: 15,
-                    child: Text('A partir de', style: TextStyle(fontSize: 10),)),
-                    textFieldWidget(
-                      dateOnly(false, (plazoCI)+30, quotePickedDate, true), Icons.date_range_outlined, false, saldoTotalDateController, false, 'date', (){}
-                    ),
-                  ],
+              ]
+            ),
+            Row(
+              children: [                          
+                Expanded(
+                  flex: 1,
+                  child: Column(
+                    children: [
+                      const SizedBox(
+                      height: 15,
+                      child: Text('Intereses', style: TextStyle(fontSize: 10),)),
+                      textFieldWidget(
+                        '${(vlrTEM.toString())} %', Icons.percent_outlined, false, temController, false, 'number', (){}),
+                    ],
+                  ),
                 ),
-              ),                    
-            ]
-          ),
-        ],
+                Expanded(
+                  flex: 1,
+                  child: Column(
+                    children: [
+                      const SizedBox(
+                      height: 15,
+                      child: Text('A partir de', style: TextStyle(fontSize: 10),)),
+                      textFieldWidget(
+                        dateOnly(false, (plazoCI)+30, quotePickedDate, true), Icons.date_range_outlined, false, saldoTotalDateController, false, 'date', (){}
+                      ),
+                    ],
+                  ),
+                ),                    
+              ]
+            ),
+          ],
+        ),
       );
     }
     

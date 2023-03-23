@@ -262,7 +262,7 @@ Widget loteCard(List<dynamic> currentSelection, Function cancelOnPressed, Functi
             Container(
               width: 300,
               padding: const EdgeInsets.all(8.0),
-              child: Row(
+              child: userType ? Row(
                 children: [
                   Expanded(
                     flex: 1,
@@ -273,12 +273,23 @@ Widget loteCard(List<dynamic> currentSelection, Function cancelOnPressed, Functi
                   Expanded(
                     flex: 1,
                     child: TextButton(onPressed: (){
-                      if(userType == true){
-                        quoteExisting(true); 
-                      } else{
-                        
-                      }                
+                      quoteExisting(true);               
                     }, child: Text('Ver más', style: TextStyle(fontSize: 16, color: fifthColor.withOpacity(0.5),),)),
+                  ),
+                ],
+              ) : Row(
+                children: [
+                  Expanded(
+                    flex: 1,
+                    child: TextButton(onPressed: (){
+                      quoteOnPressed(true);
+                    }, child: Text('Cotizar', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: fifthColor),)),
+                  ),
+                  Expanded(
+                    flex: 1,
+                    child: TextButton(onPressed: (){                      
+                      quoteExisting(false);                                     
+                    }, child: Text('Ver fotos', style: TextStyle(fontSize: 16, color: fifthColor.withOpacity(0.5),),)),
                   ),
                 ],
               ),

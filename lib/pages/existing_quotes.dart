@@ -61,7 +61,7 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
                           final lastName = custData['lastnameCliente'] ?? '';
                           final fullName = '$name $lastName';
                           return FutureBuilder(
-                            future: db.collection('users').doc(snapshot.data?[index]['sellerID']).get(),
+                            future: db.collection('sellers').doc(snapshot.data?[index]['sellerID']).get(),
                             builder: ((context, sellerSnapshot) {
                               if(sellerSnapshot.hasData){
                                 final sellerData = sellerSnapshot.data?.data() as Map<String, dynamic>;                                
@@ -119,9 +119,9 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
                                         MaterialPageRoute(
                                           builder: (context) => PDFGenerator(
                                             seller: snapshot.data?[index]['sellerID'],
-                                            sellerName: '${sellerData['nameUser']} ${sellerData['lastnameUser']}',
-                                            sellerPhone: sellerData['phoneUser'],
-                                            sellerEmail: sellerData['emailUser'],
+                                            sellerName: '${sellerData['nameSeller']} ${sellerData['lastnameSeller']}',
+                                            sellerPhone: sellerData['phoneSeller'],
+                                            sellerEmail: sellerData['emailSeller'],
                                             quoteId: snapshot.data?[index]['qid'],
                                             name: custData['nameCliente'],
                                             lastname: custData['lastnameCliente'],
@@ -183,8 +183,8 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
             )
           ),
         )
-        ),
-        floatingActionButton: FloatingActionButton(
+      ),
+      floatingActionButton: FloatingActionButton(
         onPressed: () async {
           await Navigator.push(context, MaterialPageRoute(builder: (context) => const AddSellerPage())); 
         },
