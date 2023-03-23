@@ -156,7 +156,7 @@ Future<List> getQuotes(String loteName, bool allLotes) async {
   for (var doc in queryQuotes.docs) {
     final Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
     if (allLotes == false) {
-      if (data['loteName'] == loteName && data['quoteStage'] == 'EN ESPERA') {
+      if (data['loteName'] == loteName) {
         final quote = {
           "qid": doc.id,
           "sellerID": data['sellerID'],

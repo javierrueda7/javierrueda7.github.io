@@ -1,4 +1,3 @@
-import 'package:albaterrapp/pages/add_seller.dart';
 import 'package:albaterrapp/pages/pdf_generator.dart';
 import 'package:albaterrapp/services/firebase_services.dart';
 import 'package:albaterrapp/utils/color_utils.dart';
@@ -118,7 +117,7 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
                                         context,
                                         MaterialPageRoute(
                                           builder: (context) => PDFGenerator(
-                                            seller: snapshot.data?[index]['sellerID'],
+                                            sellerID: snapshot.data?[index]['sellerID'],
                                             sellerName: '${sellerData['nameSeller']} ${sellerData['lastnameSeller']}',
                                             sellerPhone: sellerData['phoneSeller'],
                                             sellerEmail: sellerData['emailSeller'],
@@ -183,12 +182,6 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
             )
           ),
         )
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          await Navigator.push(context, MaterialPageRoute(builder: (context) => const AddSellerPage())); 
-        },
-        child: const Icon(Icons.add),
       ),
     );
   }

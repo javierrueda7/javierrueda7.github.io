@@ -64,8 +64,7 @@ class _AddQuotePageState extends State<AddQuotePage> {
   double cuotaInicial = 0;
   int periodoCuotas = 1;
 
-  Future<void> initPagos() async {
-    seller = await getSeller(selectedSeller);
+  Future<void> initPagos() async {    
     infoPagos = await getInfoProyecto();
     vlrFijoSeparacion = infoPagos['valorSeparacion'].toDouble();
     porcCuotaInicial = infoPagos['cuotaInicial'].toDouble();
@@ -74,6 +73,8 @@ class _AddQuotePageState extends State<AddQuotePage> {
     dctoContado = infoPagos['dctoContado'].toDouble();
     plazoContado = infoPagos['plazoContado'].toDouble();
     maxCuotas = infoPagos['maxCuotas'].toInt();
+    
+    seller = await getSeller(selectedSeller);
   }
 
   Future<void> initCuotas() async {
@@ -1075,7 +1076,7 @@ class _AddQuotePageState extends State<AddQuotePage> {
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) => PDFGenerator(
-                                        seller: selectedSeller,
+                                        sellerID: selectedSeller,
                                         sellerName: '${seller['nameSeller']} ${seller['lastnameSeller']}',
                                         sellerPhone: seller['phoneSeller'],
                                         sellerEmail: seller['emailSeller'],

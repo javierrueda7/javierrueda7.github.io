@@ -8,7 +8,7 @@ import 'package:printing/printing.dart';
 
 // ignore: must_be_immutable
 class PDFGenerator extends StatelessWidget {
-  final String seller;
+  final String sellerID;
   final String sellerName;
   final String sellerPhone;
   final String sellerEmail;
@@ -46,7 +46,7 @@ class PDFGenerator extends StatelessWidget {
   
                                       
   PDFGenerator({super.key, 
-    required this.seller,
+    required this.sellerID,
     required this.sellerName,
     required this.sellerPhone,
     required this.sellerEmail,
