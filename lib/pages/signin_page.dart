@@ -100,20 +100,14 @@ class _SignInPageState extends State<SignInPage> {
                         });
                       }),
                     ),
-                    Container(
+                    /*Container(
                       constraints: const BoxConstraints(maxWidth: 800),
                       child: signUpOption()
-                    ),
+                    ),*/
                     const SizedBox(
                       height: 20,
-                    ), 
-                    Container(
-                      constraints: const BoxConstraints(maxWidth: 800),
-                      color: fourthColor.withOpacity(0.5),
-                      height: 50,
-                      width: 300,
-                      child: beAGuest(),
-                    )
+                    ),
+                    beAGuest(),
                   ],
                 ),
               ),
@@ -175,9 +169,17 @@ class _SignInPageState extends State<SignInPage> {
                 
               });
             },
-          child: Text( 
-            "CONTINUAR SIN INICIAR SESIÓN",
-            style: TextStyle(color: primaryColor, fontSize: 14,fontWeight: FontWeight.bold),
+          child: Container(
+            constraints: const BoxConstraints(maxWidth: 800),
+            color: fourthColor.withOpacity(0.5),
+            height: 50,
+            width: 300,
+            child: Center(
+              child: Text( 
+                "CONTINUAR SIN INICIAR SESIÓN",
+                style: TextStyle(color: primaryColor, fontSize: 14,fontWeight: FontWeight.bold),
+              ),
+            ),
           ),
         ),
       ]
