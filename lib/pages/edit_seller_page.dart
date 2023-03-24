@@ -69,7 +69,7 @@ class _EditSellerPageState extends State<EditSellerPage> {
                     hintText: 'Ingrese su nuevo rol',
                   ),
                 ),
-                ElevatedButton(
+                /*ElevatedButton(
                   onPressed: () async {
                     await addSellers(
                       arguments['uid'],
@@ -84,7 +84,7 @@ class _EditSellerPageState extends State<EditSellerPage> {
                     });
                   },
                   child: const Text("Actualizar"),
-                ),
+                ),*/
               ],
             ),
           ),
