@@ -186,15 +186,15 @@ class _AddQuotePageState extends State<AddQuotePage> {
           width: MediaQuery.of(context).size.width,            
           height: MediaQuery.of(context).size.height,
           decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  Color.fromARGB(255, 244, 246, 252),
-                  Color.fromARGB(255, 222, 224, 227),
-                  Color.fromARGB(255, 222, 224, 227)
-                ],
-                begin: Alignment.topCenter, end: Alignment.bottomCenter
-              )
-            ),
+            gradient: LinearGradient(
+              colors: [
+                Color.fromARGB(255, 244, 246, 252),
+                Color.fromARGB(255, 222, 224, 227),
+                Color.fromARGB(255, 222, 224, 227)
+              ],
+              begin: Alignment.topCenter, end: Alignment.bottomCenter
+            )
+          ),
           child: Container(
             constraints: const BoxConstraints(maxWidth: 1200),
             child: SingleChildScrollView(
@@ -202,7 +202,6 @@ class _AddQuotePageState extends State<AddQuotePage> {
                 padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
                 child: Column(
                   children: [                    
-                    
                     Container(
                       constraints: const BoxConstraints(maxWidth: 800),
                       alignment: Alignment.center,
