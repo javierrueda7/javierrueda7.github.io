@@ -60,6 +60,13 @@ Future<void> addSellers(String sid, String nameSeller, String lastnameSeller, St
   );
 }
 
+Future<void> statusChangerSellers(String sid, String statusSeller) async {
+  await db.collection("sellers").doc(sid).update({    
+    "statusSeller": statusSeller,
+    }
+  );
+}
+
 Future<double> getPeriodoDiscount(String periodo) async {
   DocumentSnapshot<Map<String, dynamic>> infoDiscount = await db.collection('infoproyecto').doc('infopagos').collection('infoCuotas').doc(periodo).get();
   final Map<String, dynamic> dataCuotas = infoDiscount.data() as Map<String, dynamic>;

@@ -22,12 +22,33 @@ class _InitPageState extends State<InitPage> {
 
   
   User? user = FirebaseAuth.instance.currentUser;
+  String loggedEmail = '';
   bool anon = FirebaseAuth.instance.currentUser!.isAnonymous;
   bool userLoggedIn = false;
 
-  bool checkLogin(){
+  void checkLoginState() async {
+    userLoggedIn = await checkLogin();
+    setState(() {});
+  }
+
+  Future<bool> checkLogin() async {
     if (user != null && anon == false) {
-      userLoggedIn = true;
+      loggedEmail = user!.email!;      
+      QuerySnapshot loggedSnapshot = await db.collection('sellers').where('emailSeller', isEqualTo: loggedEmail).get();
+      if (loggedSnapshot.docs.isNotEmpty) {
+        DocumentSnapshot doc = loggedSnapshot.docs.first;    
+        if(doc['role'] == 'Administrador'){
+          userLoggedIn = true;
+        } else{
+          userLoggedIn = false;
+        }
+      } else {
+        if(loggedEmail == 'javieruedase@gmail.com'){
+          userLoggedIn = true;
+        } else{
+          userLoggedIn = false;
+        }
+      }
     } else {
       userLoggedIn = false;
     }  
@@ -38,9 +59,7 @@ class _InitPageState extends State<InitPage> {
   void initState() {
     super.initState();
     initEtapas();
-    setState(() {
-      checkLogin; 
-    });       
+    checkLoginState();       
   } 
 
   Future<void> initEtapas() async {
@@ -75,7 +94,7 @@ class _InitPageState extends State<InitPage> {
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold,),
           ),
           leading: Visibility(
-              visible: checkLogin(),
+              visible: userLoggedIn,
               child: Padding(
                 padding: const EdgeInsets.only(left: 20.0),
                   child: PopupMenuButton<String>(
@@ -97,7 +116,7 @@ class _InitPageState extends State<InitPage> {
                       if(value == 'Opción 1'){                      
                         Navigator.push(context, MaterialPageRoute(builder: (context) => ExistingQuotes(loteInfo: currentLote, needAll: true,)));
                       } if(value == 'Opción 2'){
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => const SellersPage()));
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => SellersPage(allAccess: userLoggedIn)));
                       } if(value == 'Opción 3'){
                         setState(() {                          
                         });
@@ -300,7 +319,7 @@ class _InitPageState extends State<InitPage> {
                                 );
                               });
                             }
-                          }, checkLogin()),
+                          }, userLoggedIn),
                         ),
                       ),
                     ],
