@@ -6,9 +6,11 @@ import 'package:albaterrapp/pages/signin_page.dart';
 import 'package:albaterrapp/services/firebase_services.dart';
 import 'package:albaterrapp/utils/color_utils.dart';
 import 'package:albaterrapp/widgets/widgets.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
+FirebaseFirestore db = FirebaseFirestore.instance;
 class InitPage extends StatefulWidget {
   const InitPage({super.key});
 
@@ -35,12 +37,17 @@ class _InitPageState extends State<InitPage> {
   @override
   void initState() {
     super.initState();
+    initEtapas();
     setState(() {
       checkLogin; 
-    });
-       
+    });       
   } 
 
+  Future<void> initEtapas() async {
+    etapasInfo = await getEtapas();
+  }
+
+  List<dynamic> etapasInfo = [];
   List<String> etapasList = ['Seleccionar Etapa', 'Etapa 1', 'Etapa 2', 'Etapa Premium'];
   String selectedItemEtapa = 'Seleccionar Etapa';
   String imgEtapa = "E00.png";
@@ -79,15 +86,11 @@ class _InitPageState extends State<InitPage> {
                       ),                      
                       const PopupMenuItem(
                         value: 'Opción 2',
-                        child: Text('Asesores comerciales'),
+                        child: Text('Miembros del equipo'),
                       ),
                       const PopupMenuItem(
                         value: 'Opción 3',
-                        child: Text('Administradores'),                        
-                      ),                      
-                      const PopupMenuItem(
-                        value: 'Opción 4',
-                        child: Text('Información general'),
+                        child: Text('Información general'),                        
                       ),
                     ],
                     onSelected: (value) {
@@ -351,7 +354,7 @@ class _InitPageState extends State<InitPage> {
                       child: SingleChildScrollView(
                         padding: const EdgeInsets.only(left:10, right: 10),
                         scrollDirection: Axis.vertical,              
-                        child: Text(infoEtapa, style: const TextStyle(fontSize: 14)),                        
+                        child: Text(infoEtapa, textAlign: TextAlign.justify, style: const TextStyle(fontSize: 14)),                        
                       ),
                     ),                        
                   ),
@@ -414,4 +417,19 @@ class LoteGeneral extends StatelessWidget {
       fit: BoxFit.fitHeight,
     );
   }
+}
+
+Future<String> getInfo(String valueSelected) async {
+  String info = '';
+  QuerySnapshot? queryInfo = await db.collection('etapas').get();
+  for (var docInfo in queryInfo.docs){
+    final Map<String, dynamic> dataInfo = docInfo.data() as Map<String, dynamic>;
+    if (dataInfo['etapaName'] == valueSelected){
+      info = dataInfo['infoEtapa'];
+    }
+    else{
+      info = '';
+    }
+  }
+  return info;
 }

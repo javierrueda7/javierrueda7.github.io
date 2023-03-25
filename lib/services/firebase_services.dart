@@ -24,25 +24,38 @@ Future<List> getSellers() async {
   for (var doc in querySellers.docs) {
     final Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
     final person = {
-      "nameSeller": data['nameSeller'],
       "sid": doc.id,
+      "nameSeller": data['nameSeller'],     
       "lastnameSeller": data['lastnameSeller'],
       "emailSeller": data['emailSeller'],
       "phoneSeller": data['phoneSeller'],
+      "addressSeller": data['addressSeller'],
+      "bdSeller": data['bdSeller'],
+      "genderSeller": data['genderSeller'],
+      "idSeller": data['idSeller'],
+      "roleSeller": data['roleSeller'],
+      "startDateSeller": data['startDateSeller'],
+      "statusSeller": data['statusSeller'],
+
     };
     sellers.add(person);
   }
   return sellers;
 }
 
-Future<void> addSellers(String uid, String nameSeller, String lastnameSeller, String emailSeller, String phoneSeller, String addressSeller, String idSeller) async {
-  await db.collection("sellers").doc(uid).set({
+Future<void> addSellers(String sid, String nameSeller, String lastnameSeller, String emailSeller, String phoneSeller, String addressSeller, String idSeller, String bdSeller, String genderSeller, String startDateSeller, String roleSeller, String statusSeller) async {
+  await db.collection("sellers").doc(sid).set({
     "nameSeller": nameSeller, 
     "lastnameSeller": lastnameSeller, 
     "emailSeller": emailSeller, 
     "phoneSeller": phoneSeller,
     "addressSeller": addressSeller,
-    "idSeller": idSeller
+    "idSeller": idSeller,
+    "bdSeller": bdSeller,
+    "genderSeller": genderSeller,
+    "startDateSeller": startDateSeller,
+    "roleSeller": roleSeller,
+    "statusSeller": statusSeller,
     }
   );
 }
@@ -85,8 +98,8 @@ Future<Map<String, dynamic>> getInfoProyecto() async {
   return proyectoInfo;
 }
 
-Future<void> deleteSeller(String uid) async {
-  await db.collection("users").doc(uid).delete();
+Future<void> deleteSeller(String sid) async {
+  await db.collection("sellers").doc(sid).delete();
 }
 
 Future<void> addQuote(

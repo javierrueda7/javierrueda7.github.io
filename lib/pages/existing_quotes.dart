@@ -28,7 +28,6 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
 
   List<dynamic> loteInfo = [];
   bool needAll = true;
-  String loteNumber = '0';
   
     @override
   Widget build(BuildContext context) {    
@@ -50,8 +49,7 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
               if(snapshot.hasData){
                 return ListView.builder(
                   itemCount: snapshot.data?.length,
-                  itemBuilder: (context, index){
-                    loteNumber = getNumbers(snapshot.data?[index]['loteName'])!;  
+                  itemBuilder: (context, index){                      
                     return FutureBuilder(
                       future: db.collection('customers').doc(snapshot.data?[index]['clienteID']).get(),
                       builder: ((context, custSnapshot) {
@@ -110,7 +108,7 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
                                   direction: DismissDirection.endToStart,
                                   key: Key(snapshot.data?[index]['qid']),
                                   child: ListTile(
-                                    leading: CircleAvatar(backgroundColor: stageColor(snapshot.data?[index]['quoteStage']), child: Text(loteNumber, textAlign: TextAlign.center, style: TextStyle(color: primaryColor, fontWeight: FontWeight.bold),)),
+                                    leading: CircleAvatar(backgroundColor: stageColor(snapshot.data?[index]['quoteStage']), child: Text(getNumbers(snapshot.data?[index]['loteName'])!, textAlign: TextAlign.center, style: TextStyle(color: primaryColor, fontWeight: FontWeight.bold),)),
                                     title: Text('Cotización #${snapshot.data?[index]['qid']}'),
                                     subtitle: Text(fullName),
                                     trailing: PopupMenuButton<String>(

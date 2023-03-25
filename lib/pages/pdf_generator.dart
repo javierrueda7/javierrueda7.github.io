@@ -1,4 +1,5 @@
 import 'package:albaterrapp/services/firebase_services.dart';
+import 'package:albaterrapp/utils/color_utils.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -111,10 +112,20 @@ class PDFGenerator extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     initCont();
-    return PdfPreview(
-      build: (format) => generatePdf(context),
-      // You can set the initial page format here
-      initialPageFormat: PdfPageFormat.letter,
+    return Scaffold(
+      extendBodyBehindAppBar: false,
+      appBar: AppBar(
+        backgroundColor: fifthColor,
+        foregroundColor: primaryColor,
+        elevation: 0,
+        centerTitle: true,
+        title: Text('Vista previa cotización', style: TextStyle(color: primaryColor,fontSize: 18, fontWeight: FontWeight.bold),),
+      ),
+      body: PdfPreview(
+        build: (format) => generatePdf(context),
+        // You can set the initial page format here
+        initialPageFormat: PdfPageFormat.letter,
+      ),
     );
   }
 

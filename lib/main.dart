@@ -1,3 +1,4 @@
+import 'package:albaterrapp/pages/edit_seller_page.dart';
 import 'package:albaterrapp/pages/signin_page.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -24,6 +25,7 @@ class MyApp extends StatelessWidget {
       initialRoute: '/',
       routes: {
         '/': (context) => const SignInPage(),
+        '/editSeller': (context) => const EditSellerPage(),
       },
     );
   }

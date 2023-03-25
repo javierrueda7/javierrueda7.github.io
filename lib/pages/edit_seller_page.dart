@@ -1,5 +1,8 @@
 import 'package:albaterrapp/services/firebase_services.dart';
+import 'package:albaterrapp/utils/color_utils.dart';
+import 'package:albaterrapp/widgets/widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class EditSellerPage extends StatefulWidget {
   const EditSellerPage({super.key});
@@ -10,27 +13,55 @@ class EditSellerPage extends StatefulWidget {
 
 class _EditSellerPageState extends State<EditSellerPage> {
 
-  TextEditingController usernameController = TextEditingController(text: "");
+  
+  @override
+  void initState() {
+    super.initState();
+  }
+
   TextEditingController nameController = TextEditingController(text: "");
+  TextEditingController lastnameController = TextEditingController(text: "");
   TextEditingController emailController = TextEditingController(text: "");
   TextEditingController phoneController = TextEditingController(text: "");
+  TextEditingController addressController = TextEditingController(text: "");
+  TextEditingController bdController = TextEditingController(text: "");
+  TextEditingController genderController = TextEditingController(text: "");
+  TextEditingController idController = TextEditingController(text: "");
   TextEditingController roleController = TextEditingController(text: "");
+  TextEditingController startDateController = TextEditingController(text: "");
+  TextEditingController statusController = TextEditingController(text: "");
+
+  String selectedGender = '';
+  String selectedRole = '';
+  String selectedStatus = '';
+  String sid = '';
+  List<String> genderList = ['Masculino', 'Femenino', 'Otro'];
+  List<String> roleList = ['Asesor', 'Usuario', 'Administrador'];
+  List<String> statusList = ['Activo', 'Inactivo'];
+
+
 
   
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) {   
 
     final Map arguments = ModalRoute.of(context)!.settings.arguments as Map;
-
-    usernameController.text = arguments['username'];
-    nameController.text = arguments['name'];
-    emailController.text = arguments['email'];
-    phoneController.text = arguments['phone'];
-    roleController.text = arguments['role'];
+    sid = arguments['sid'];
+    nameController.text = arguments['nameSeller'];
+    lastnameController.text = arguments['lastnameSeller'];
+    emailController.text = arguments['emailSeller'];
+    phoneController.text = arguments['phoneSeller'];
+    addressController.text = arguments['addressSeller'];
+    bdController.text = arguments['bdSeller'];
+    idController.text = arguments['idSeller'];
+    startDateController.text = arguments['startDateSeller'];
+    selectedStatus = arguments['statusSeller'];
+    selectedGender = arguments['genderSeller'];
+    selectedRole = arguments['roleSeller'];
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Editar usuario'),
+        title: const Text('Editar usuario', textAlign: TextAlign.center,),
       ),
       body: 
         Center(          
@@ -38,53 +69,227 @@ class _EditSellerPageState extends State<EditSellerPage> {
             constraints: const BoxConstraints(maxWidth: 800),
             child: Column(
               children: <Widget>[
-                TextFormField(
-                  controller: usernameController,
-                  decoration: const InputDecoration(labelText: "Nombre de usuario:",
-                    hintText: 'Ingrese su nuevo username',
+                const SizedBox(
+                    height: 20,
+                  ),
+                  Container(
+                    constraints: const BoxConstraints(maxWidth: 800),
+                    decoration: BoxDecoration(
+                      color: primaryColor.withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(30.0),
+                      border: Border.all(width: 1, style: BorderStyle.solid, color: fifthColor.withOpacity(0.1)),                                
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 10),
+                      child: TextField(
+                        enabled: false,
+                        cursorColor: fifthColor,  
+                        textAlign: TextAlign.center,                            
+                        style: TextStyle(color: fifthColor.withOpacity(0.9)),
+                        controller: startDateController,
+                        decoration: InputDecoration(
+                          border: InputBorder.none,
+                          icon: Icon(Icons.date_range_outlined, color: fifthColor,),
+                          hintText: startDateController.text,                                    
+                        ),
+                        readOnly: true,
+                        onTap: () async{
+                          DateTime? startPickedDate = await showDatePicker(
+                            context: context, 
+                            initialDate: DateTime.now(), 
+                            firstDate: DateTime(1900), 
+                            lastDate: DateTime.now(),
+                          );
+                          if(startPickedDate != null) {
+                            setState(() {
+                              startDateController.text = DateFormat('dd-MM-yyyy').format(startPickedDate);
+                            }
+                          );
+                        }
+                      },
+                    ),
                   ),
                 ),
-                TextFormField(
-                  controller: nameController,
-                  decoration: const InputDecoration(labelText: "Nombre completo:",
-                    hintText: 'Ingrese su nombre completo',
+                const SizedBox(
+                  height: 20,
+                ),
+                Container(
+                  constraints: const BoxConstraints(maxWidth: 800),
+                  child: textFieldWidget(
+                    "Nombres", Icons.person_outline, false, nameController, false, 'name', (){}
                   ),
                 ),
-                TextFormField(
-                  controller: emailController,
-                  decoration: const InputDecoration(labelText: "Correo electronico:",
-                    hintText: 'Ingrese su nuevo correo electronico',
+                const SizedBox(
+                  height: 20,
+                ),   
+                Container(
+                  constraints: const BoxConstraints(maxWidth: 800),
+                  child: textFieldWidget(
+                    "Apellidos", Icons.person_outline, false, lastnameController, false, 'lastname', (){}
                   ),
                 ),
-                TextFormField(
-                  controller: phoneController,
-                  decoration: const InputDecoration(labelText: "Telefono:",
-                    hintText: 'Ingrese su nuevo telefono',
+                const SizedBox(
+                  height: 20,
+                ),
+                Container(
+                  constraints: const BoxConstraints(maxWidth: 800),
+                  decoration: BoxDecoration(
+                    color: primaryColor.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(30.0),
+                    border: Border.all(width: 1, style: BorderStyle.solid, color: fifthColor.withOpacity(0.1)),                                
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 10),
+                    child: TextField(
+                      enabled: false,
+                      textAlign: TextAlign.center,
+                      cursorColor: fifthColor,                              
+                      style: TextStyle(color: fifthColor.withOpacity(0.9)),
+                      controller: bdController,
+                      decoration: InputDecoration(
+                        border: InputBorder.none,
+                        icon: Icon(Icons.cake_outlined, color: fifthColor,),
+                        hintText: "Fecha de nacimiento",                                    
+                      ),
+                      readOnly: true,
+                      onTap: () async{
+                        DateTime? pickeddate = await showDatePicker(
+                          context: context, 
+                          initialDate: DateTime.now().subtract(const Duration(days: 6574)), 
+                          firstDate: DateTime(1900), 
+                          lastDate: DateTime.now().subtract(const Duration(days: 6574)),
+                        );
+                        if(pickeddate != null) {
+                          setState(() {
+                            bdController.text = DateFormat('dd-MM-yyyy').format(pickeddate);
+                          });
+                        }
+                      },
+                    ),
                   ),
                 ),
-                TextFormField(
-                  enabled: false,
-                  controller: roleController,
-                  decoration: const InputDecoration(labelText: "Rol:",
-                    hintText: 'Ingrese su nuevo rol',
+                const SizedBox(
+                  height: 20,
+                ),
+                Container(
+                  constraints: const BoxConstraints(maxWidth: 800),
+                  child: easyDropdown(genderList, selectedGender, (tempGender){setState(() {
+                    selectedGender = tempGender!;
+                  });}),
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                Container(
+                  constraints: const BoxConstraints(maxWidth: 800),
+                  child: textFieldWidget(
+                    "Teléfono", Icons.phone_android_outlined, false, phoneController, true, 'phone', (){}
                   ),
                 ),
-                /*ElevatedButton(
-                  onPressed: () async {
-                    await addSellers(
-                      arguments['uid'],
-                      usernameController.text, 
-                      nameController.text, 
-                      emailController.text, 
-                      phoneController.text, 
-                      arguments['role'],
-                      phoneController.text,
-                    ).then((_) {
-                      Navigator.pop(context);
-                    });
-                  },
-                  child: const Text("Actualizar"),
-                ),*/
+                const SizedBox(
+                  height: 20,
+                ),
+                Container(
+                  constraints: const BoxConstraints(maxWidth: 800),
+                  child: textFieldWidget(
+                    "Correo electrónico", Icons.email_outlined, false, emailController, false, 'email', (){}
+                  ),
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                Container(
+                  constraints: const BoxConstraints(maxWidth: 800),
+                  child: textFieldWidget(
+                    "Dirección", Icons.house_outlined, false, addressController, true, 'address', (){}
+                  ),
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                Container(
+                  constraints: const BoxConstraints(maxWidth: 800),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        flex: 1,
+                        child: easyDropdown(roleList, selectedRole, (tempRole){setState(() {
+                          selectedRole = tempRole!;
+                        });}),
+                      ),
+                      Expanded(
+                        flex: 1,
+                        child: easyDropdown(statusList, selectedStatus, (tempStatus){setState(() {
+                          selectedStatus = tempStatus!;
+                        });}),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(
+                  height: 20,
+                ),                
+                Container(
+                      constraints: const BoxConstraints(maxWidth: 800),
+                      child: ElevatedButton(
+                        style: ButtonStyle(fixedSize: MaterialStateProperty.all(const Size(250, 50))),
+                        onPressed: () async {    
+                          if(nameController.text.isEmpty ||
+                            lastnameController.text.isEmpty ||
+                            addressController.text.isEmpty ||
+                            phoneController.text.isEmpty ||
+                            emailController.text.isEmpty ||
+                            idController.text.isEmpty
+                            ){
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: CustomAlertMessage(
+                                  errorTitle: "Oops!", 
+                                  errorText: "Verifique que todos los campos se hayan llenado correctamente.",
+                                  stateColor: dangerColor,
+                                ), 
+                                behavior: SnackBarBehavior.floating,
+                                backgroundColor: Colors.transparent,
+                                elevation: 0,
+                              ),
+                            );
+                          } else {
+                            (_) async {
+                              await addSellers(
+                              sid,
+                              nameController.text,
+                              lastnameController.text,
+                              emailController.text,
+                              phoneController.text,                            
+                              addressController.text,
+                              idController.text,
+                              bdController.text,
+                              selectedGender,
+                              startDateController.text,
+                              selectedRole,
+                              selectedStatus,
+                              );
+                                // ignore: use_build_context_synchronously
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: CustomAlertMessage(
+                                      errorTitle: "Genial!", 
+                                      errorText: "Datos almacenados de manera satisfactoria.",
+                                      stateColor: successColor,
+                                    ), 
+                                    behavior: SnackBarBehavior.floating,
+                                    backgroundColor: Colors.transparent,
+                                    elevation: 0,
+                                  ),
+                                );                        
+                                // ignore: use_build_context_synchronously
+                                Navigator.pop(context);
+                            };                            
+                          }
+                        },
+                        child: const Text("Actualizar"),
+                      ),
+                    ),
               ],
             ),
           ),
