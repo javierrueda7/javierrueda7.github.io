@@ -10,7 +10,8 @@ FirebaseFirestore db = FirebaseFirestore.instance;
 class ExistingQuotes extends StatefulWidget {
   final List<dynamic> loteInfo;
   final bool needAll;
-  const ExistingQuotes({Key? key, required this.loteInfo, required this.needAll}) : super(key: key);
+  final String loggedEmail;
+  const ExistingQuotes({Key? key, required this.loteInfo, required this.needAll, required this.loggedEmail}) : super(key: key);
 
 
   @override
@@ -23,11 +24,13 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
   void initState() {
     super.initState();    
     loteInfo = widget.loteInfo;
-    needAll = widget.needAll;    
+    needAll = widget.needAll;
+    loggedEmail = widget.loggedEmail;
   }
 
   List<dynamic> loteInfo = [];
   bool needAll = true;
+  String loggedEmail = '';
   
     @override
   Widget build(BuildContext context) {    
@@ -109,7 +112,7 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
                                   key: Key(snapshot.data?[index]['qid']),
                                   child: ListTile(
                                     leading: CircleAvatar(backgroundColor: stageColor(snapshot.data?[index]['quoteStage']), child: Text(getNumbers(snapshot.data?[index]['loteName'])!, textAlign: TextAlign.center, style: TextStyle(color: primaryColor, fontWeight: FontWeight.bold),)),
-                                    title: Text('Cotización #${snapshot.data?[index]['qid']}'),
+                                    title: Text('${snapshot.data?[index]['loteName']} | Cotización #${snapshot.data?[index]['qid']}'),
                                     subtitle: Text(fullName),
                                     trailing: PopupMenuButton<String>(
                                       itemBuilder: (context) => [
@@ -117,9 +120,10 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
                                           value: 'Opción 1',                                          
                                           child: Text('Ver PDF'),                     
                                         ),                      
-                                        const PopupMenuItem(
+                                        PopupMenuItem(
+                                          enabled: true,
                                           value: 'Opción 2',
-                                          child: Text('Asesores comerciales'),
+                                          child: Text(changeState(snapshot.data?[index]['quoteStage'])),
                                         ),
                                         const PopupMenuItem(
                                           value: 'Opción 3',
@@ -215,6 +219,18 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
         )
       ),
     );
+  }
+
+  String changeState(String value){
+    if(value == 'CREADA'){
+      return 'Aprobar cotización';
+    } if(value == 'AUTORIZADA'){
+      return 'Cotización aceptada';
+    } if(value == 'APROBADA'){
+      return 'Aprobar separación';
+    } else {
+      return 'Lote separado';
+    }
   }
 
   Color stageColor(String value){

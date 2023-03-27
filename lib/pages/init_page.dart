@@ -114,13 +114,10 @@ class _InitPageState extends State<InitPage> {
                     ],
                     onSelected: (value) {
                       if(value == 'Opción 1'){                      
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => ExistingQuotes(loteInfo: currentLote, needAll: true,)));
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => ExistingQuotes(loteInfo: currentLote, needAll: true, loggedEmail: loggedEmail,)));
                       } if(value == 'Opción 2'){
                         Navigator.push(context, MaterialPageRoute(builder: (context) => SellersPage(allAccess: userLoggedIn)));
                       } if(value == 'Opción 3'){
-                        setState(() {                          
-                        });
-                      } if(value == 'Opción 4'){
                         setState(() {                          
                         });
                       } else{
@@ -308,7 +305,7 @@ class _InitPageState extends State<InitPage> {
                               setState(() {
                                 Navigator.push(
                                   context,
-                                  MaterialPageRoute(builder: (context) => ExistingQuotes(loteInfo: currentLote, needAll: false,)),
+                                  MaterialPageRoute(builder: (context) => ExistingQuotes(loteInfo: currentLote, needAll: false,loggedEmail: loggedEmail,)),
                                 );                                
                               });
                             } else {

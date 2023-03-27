@@ -38,26 +38,31 @@ class _EditSellerPageState extends State<EditSellerPage> {
   List<String> genderList = ['Masculino', 'Femenino', 'Otro'];
   List<String> roleList = ['Asesor', 'Usuario', 'Administrador'];
   List<String> statusList = ['Activo', 'Inactivo'];
-
+  bool isInitialized = false;
 
 
   
   @override
   Widget build(BuildContext context) {   
-
-    final Map arguments = ModalRoute.of(context)!.settings.arguments as Map;
-    sid = arguments['sid'];
-    nameController.text = arguments['nameSeller'];
-    lastnameController.text = arguments['lastnameSeller'];
-    emailController.text = arguments['emailSeller'];
-    phoneController.text = arguments['phoneSeller'];
-    addressController.text = arguments['addressSeller'];
-    bdController.text = arguments['bdSeller'];
-    idController.text = arguments['idSeller'];
-    startDateController.text = arguments['startDateSeller'];
-    selectedStatus = arguments['statusSeller'];
-    selectedGender = arguments['genderSeller'];
-    selectedRole = arguments['roleSeller'];
+  Map arguments = ModalRoute.of(context)!.settings.arguments as Map;
+    if(isInitialized==false){      
+      sid = arguments['sid'];
+      nameController.text = arguments['nameSeller'];
+      lastnameController.text = arguments['lastnameSeller'];
+      emailController.text = arguments['emailSeller'];
+      phoneController.text = arguments['phoneSeller'];
+      addressController.text = arguments['addressSeller'];
+      bdController.text = arguments['bdSeller'];
+      idController.text = arguments['idSeller'];
+      startDateController.text = arguments['startDateSeller'];
+      selectedStatus = arguments['statusSeller'];
+      selectedGender = arguments['genderSeller'];
+      selectedRole = arguments['roleSeller'];
+    } else {
+      isInitialized = true;
+    }
+    
+    isInitialized = true;
 
     return Scaffold(
       extendBodyBehindAppBar: false,
