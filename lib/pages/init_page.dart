@@ -37,7 +37,7 @@ class _InitPageState extends State<InitPage> {
       QuerySnapshot loggedSnapshot = await db.collection('sellers').where('emailSeller', isEqualTo: loggedEmail).get();
       if (loggedSnapshot.docs.isNotEmpty) {
         DocumentSnapshot doc = loggedSnapshot.docs.first;    
-        if(doc['role'] == 'Administrador'){
+        if(doc['roleSeller'] == 'Administrador'){
           userLoggedIn = true;
         } else{
           userLoggedIn = false;
