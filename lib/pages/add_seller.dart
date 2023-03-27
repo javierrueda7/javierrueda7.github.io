@@ -135,7 +135,7 @@ class _AddSellerPageState extends State<AddSellerPage> {
                     Container(
                       constraints: const BoxConstraints(maxWidth: 800),
                       child: textFieldWidget(
-                        "Apellidos", Icons.person_outline, false, _lastnameTextController, true, 'lastname', (){}
+                        "Apellidos", Icons.person_outline, false, _lastnameTextController, true, 'name', (){}
                       ),
                     ),
                     const SizedBox(
@@ -219,7 +219,7 @@ class _AddSellerPageState extends State<AddSellerPage> {
                     Container(
                       constraints: const BoxConstraints(maxWidth: 800),
                       child: textFieldWidget(
-                        "Dirección", Icons.house_outlined, false, _addressTextController, true, 'address', (){}
+                        "Dirección", Icons.house_outlined, false, _addressTextController, true, 'name', (){}
                       ),
                     ),
                     const SizedBox(

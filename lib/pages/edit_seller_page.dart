@@ -143,7 +143,7 @@ class _EditSellerPageState extends State<EditSellerPage> {
                       Container(
                         constraints: const BoxConstraints(maxWidth: 800),
                         child: textFieldWidget(
-                          "Nombres", Icons.person_outline, false, nameController, false, 'name', (){}
+                          "Nombres", Icons.person_outline, false, nameController, true, 'name', (){}
                         ),
                       ),
                       const SizedBox(
@@ -152,7 +152,7 @@ class _EditSellerPageState extends State<EditSellerPage> {
                       Container(
                         constraints: const BoxConstraints(maxWidth: 800),
                         child: textFieldWidget(
-                          "Apellidos", Icons.person_outline, false, lastnameController, false, 'lastname', (){}
+                          "Apellidos", Icons.person_outline, false, lastnameController, true, 'name', (){}
                         ),
                       ),
                       const SizedBox(
@@ -228,7 +228,7 @@ class _EditSellerPageState extends State<EditSellerPage> {
                       Container(
                         constraints: const BoxConstraints(maxWidth: 800),
                         child: textFieldWidget(
-                          "Dirección", Icons.house_outlined, false, addressController, true, 'address', (){}
+                          "Dirección", Icons.house_outlined, false, addressController, true, 'name', (){}
                         ),
                       ),
                       const SizedBox(
@@ -282,7 +282,7 @@ class _EditSellerPageState extends State<EditSellerPage> {
                                   );
                                 } else {
                                   (_) async {
-                                    await addSellers(
+                                    await updateSellers(
                                     sid,
                                     nameController.text,
                                     lastnameController.text,
@@ -301,7 +301,7 @@ class _EditSellerPageState extends State<EditSellerPage> {
                                         SnackBar(
                                           content: CustomAlertMessage(
                                             errorTitle: "Genial!", 
-                                            errorText: "Datos almacenados de manera satisfactoria.",
+                                            errorText: "Datos actualizados de manera satisfactoria.",
                                             stateColor: successColor,
                                           ), 
                                           behavior: SnackBarBehavior.floating,

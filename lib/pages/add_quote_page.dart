@@ -99,7 +99,7 @@ class _AddQuotePageState extends State<AddQuotePage> {
   Stream<QuerySnapshot>? sellerStream;
   final CollectionReference collectionReference = FirebaseFirestore.instance.collection('quotes');
 
-  String selectedSeller = 'Seleccione un vendedor';
+  String selectedSeller = '';
   String sellerName = '';
   String sellerEmail = '';
   String sellerPhone = '';
@@ -218,17 +218,19 @@ class _AddQuotePageState extends State<AddQuotePage> {
                             } else {
                               final sellersList = sellersSnapshot.data?.docs;
                               for (var sellers in sellersList!) {
-                                sellerItems.add(
-                                  DropdownMenuItem(
-                                    value: sellers.id,
-                                    child: Center(child: Text(sellers['nameSeller'])),
-                                  ),
-                                );
+                                if(sellers['roleSeller'] == 'Asesor' && sellers['statusSeller'] == 'Activo'){
+                                  sellerItems.add(
+                                    DropdownMenuItem(
+                                      value: sellers.id,
+                                      child: Center(child: Text(sellers['nameSeller'])),
+                                    ),
+                                  );
+                                }
                               }
                             }
                             return DropdownButton(
                               items: sellerItems,
-                              hint: Center(child: Text(selectedSeller)),
+                              hint: Center(child: Text(selectedSeller != '' ? '${seller['nameSeller']} ${seller['lastnameSeller']}' :'Seleccione un vendedor')),
                               underline: Container(),
                               style: TextStyle(color: fifthColor.withOpacity(0.9),),
                               onChanged: (sellerValue) {
@@ -540,7 +542,7 @@ class _AddQuotePageState extends State<AddQuotePage> {
                     Container(
                       constraints: const BoxConstraints(maxWidth: 800),
                       child: textFieldWidget(
-                        "Nombres", Icons.person_outline, false, nameController, true, 'email', (){}
+                        "Nombres", Icons.person_outline, false, nameController, true, 'name', (){}
                       ),
                     ),
                     const SizedBox(
@@ -549,7 +551,7 @@ class _AddQuotePageState extends State<AddQuotePage> {
                     Container(
                       constraints: const BoxConstraints(maxWidth: 800),
                       child: textFieldWidget(
-                        "Apellidos", Icons.person_outline, false, lastnameController, true, 'email', (){}
+                        "Apellidos", Icons.person_outline, false, lastnameController, true, 'name', (){}
                       ),
                     ),
                     const SizedBox(
@@ -611,7 +613,7 @@ class _AddQuotePageState extends State<AddQuotePage> {
                     Container(
                       constraints: const BoxConstraints(maxWidth: 800),
                       child: textFieldWidget(
-                        "Ocupación o actividad económica", Icons.work_outline, false, ocupacionController, true, 'email', (){}
+                        "Ocupación o actividad económica", Icons.work_outline, false, ocupacionController, true, 'name', (){}
                       ),
                     ),       
                     const SizedBox(
@@ -831,7 +833,7 @@ class _AddQuotePageState extends State<AddQuotePage> {
                     Container(
                       constraints: const BoxConstraints(maxWidth: 800),
                       child: textFieldWidget(
-                        "Dirección", Icons.location_city_outlined, false, addressController, true, 'email', (){}
+                        "Dirección", Icons.location_city_outlined, false, addressController, true, 'name', (){}
                       ),
                     ),                    
                     const SizedBox(

@@ -30,7 +30,18 @@ Widget loteImg(String imageName, String loteState){
 }
 
 TextField textFieldWidget(String text, IconData? icon, bool isPasswordType, TextEditingController controller, bool isEnabled, String kbType, Function inputChanged) {
-  return TextField (
+  if (kbType == 'name') {
+    controller.addListener(() {
+      final text = controller.text.toUpperCase();
+      if (controller.text != text) {
+        controller.value = controller.value.copyWith(
+          text: text,
+          selection: TextSelection.collapsed(offset: text.length),
+        );
+      }
+    });
+  }
+  return TextField(
     controller: controller,
     obscureText: isPasswordType,
     enableSuggestions: !isPasswordType,
@@ -39,7 +50,11 @@ TextField textFieldWidget(String text, IconData? icon, bool isPasswordType, Text
     enabled: isEnabled,
     textAlign: TextAlign.center,
     style: TextStyle(color: fifthColor.withOpacity(0.9)),
-    decoration: InputDecoration(prefixIcon: Icon(icon, color: fifthColor,),
+    decoration: InputDecoration(
+      prefixIcon: Icon(
+        icon,
+        color: fifthColor,
+      ),
       hintText: text,
       hintStyle: TextStyle(color: fifthColor.withOpacity(0.9)),
       filled: true,
@@ -47,14 +62,17 @@ TextField textFieldWidget(String text, IconData? icon, bool isPasswordType, Text
       fillColor: primaryColor.withOpacity(0.2),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(30.0),
-        borderSide: BorderSide(width: 1, style: BorderStyle.solid, color: fifthColor.withOpacity(0.1))),
+        borderSide: BorderSide(
+            width: 1, style: BorderStyle.solid, color: fifthColor.withOpacity(0.1))),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(30.0),
         borderSide: BorderSide(width: 2, style: BorderStyle.solid, color: fifthColor)),
     ),
     keyboardType: kbTypeFinder(kbType),
     inputFormatters: inputFormatFinder(kbType),
-    onChanged: (String value) {inputChanged(value);}
+    onChanged: (String value) {
+      inputChanged(value);
+    }
   );
 }
 

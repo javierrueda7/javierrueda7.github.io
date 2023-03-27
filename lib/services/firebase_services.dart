@@ -60,6 +60,23 @@ Future<void> addSellers(String sid, String nameSeller, String lastnameSeller, St
   );
 }
 
+Future<void> updateSellers(String sid, String nameSeller, String lastnameSeller, String emailSeller, String phoneSeller, String addressSeller, String idSeller, String bdSeller, String genderSeller, String startDateSeller, String roleSeller, String statusSeller) async {
+  await db.collection("sellers").doc(sid).update({
+    "nameSeller": nameSeller, 
+    "lastnameSeller": lastnameSeller, 
+    "emailSeller": emailSeller, 
+    "phoneSeller": phoneSeller,
+    "addressSeller": addressSeller,
+    "idSeller": idSeller,
+    "bdSeller": bdSeller,
+    "genderSeller": genderSeller,
+    "startDateSeller": startDateSeller,
+    "roleSeller": roleSeller,
+    "statusSeller": statusSeller,
+    }
+  );
+}
+
 Future<void> statusChangerSellers(String sid, String statusSeller) async {
   await db.collection("sellers").doc(sid).update({    
     "statusSeller": statusSeller,
