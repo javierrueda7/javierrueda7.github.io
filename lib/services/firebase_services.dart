@@ -107,6 +107,26 @@ Future<List> getPagoAdicional() async {
   return pagos;
 }
 
+Future<bool> isManager(String value) async {
+  String mainValue = await getGerenteEmail();
+  if (value == mainValue || value == 'javieruedase@gmail.com') {
+    return true;
+  } else {
+    return false;
+  }
+}
+
+Future<String> getGerenteEmail() async {  
+  String email = '';
+  DocumentSnapshot<Map<String, dynamic>> gerenteEmail = await db.collection('infoproyecto').doc('infoGeneral').collection('gerenteProyecto').doc('victorOrostegui').get();
+  final Map<String, dynamic> data = gerenteEmail.data() as Map<String, dynamic>;
+  final proyectoInfo = {
+    "email": data['email'],
+  };
+  email = proyectoInfo['email'];
+  return email;
+}
+
 Future<Map<String, dynamic>> getInfoProyecto() async {
   DocumentSnapshot<Map<String, dynamic>> infoPagos = await db.collection('infoproyecto').doc('infopagos').get();
   final Map<String, dynamic> data = infoPagos.data() as Map<String, dynamic>;
