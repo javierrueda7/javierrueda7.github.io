@@ -1108,7 +1108,7 @@ class _AddQuotePageState extends State<AddQuotePage> {
                                         vlrCuota: vlrCuotaController.text,
                                         saldoTotalDate: saldoTotalDateController.text,
                                         nroCuotas: selectedNroCuotas,                                        
-                                        tem: '${temController.text}%',
+                                        tem: temController.text,
                                         observaciones: observacionesController.text,
                                         quoteStage: 'CREADA',
                                       ),

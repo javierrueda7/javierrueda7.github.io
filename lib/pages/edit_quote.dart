@@ -124,7 +124,7 @@ class _EditQuotePageState extends State<EditQuotePage> {
   TextEditingController vlrCuotaController = TextEditingController(text: "");
   TextEditingController temController = TextEditingController(text: "");
   TextEditingController observacionesController = TextEditingController(text: "");
-
+  TextEditingController quoteStageController = TextEditingController(text: "");
 
   TextEditingController nameController = TextEditingController(text: "");
   TextEditingController lastnameController = TextEditingController(text: "");
@@ -145,9 +145,6 @@ class _EditQuotePageState extends State<EditQuotePage> {
 
   @override
   Widget build(BuildContext context) {
-    collectionReference.get().then((QuerySnapshot quotesSnapshot) {
-      quoteCounter = quotesSnapshot.size;
-    });
     Map arguments = ModalRoute.of(context)!.settings.arguments as Map;
     selectedSeller = arguments['selectedSeller'];
     sellerName = arguments['sellerName'];
@@ -176,6 +173,7 @@ class _EditQuotePageState extends State<EditQuotePage> {
     vlrCuotaController.text = arguments['vlrCuota'];
     temController.text = arguments['tem'];
     observacionesController.text = arguments['observaciones'];
+    quoteStageController.text = arguments['quoteStage'];
     nameController.text = arguments['name'];
     lastnameController.text = arguments['lastname'];
     selectedGender = arguments['gender'];

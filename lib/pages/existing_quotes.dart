@@ -33,6 +33,21 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
     managerLogged = await isManager(loggedEmail);
   }
 
+  Future<bool> isManager(String value) async {
+  String mainValue = await getGerenteEmail();
+  if (value == mainValue || value == 'javieruedase@gmail.com') {
+    return true;
+  } else {
+    return false;
+  }
+}
+
+Future<String> getGerenteEmail() async {  
+  final gerenteEmail = await db.collection('infoproyecto').doc('infoGeneral').collection('gerenteProyecto').doc('victorOrostegui').get();
+  return gerenteEmail.get('email') as String;
+}
+
+
   List<dynamic> loteInfo = [];
   bool needAll = true;
   String loggedEmail = '';
@@ -166,7 +181,7 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
                                             vlrCuota: (currencyCOP((snapshot.data?[index]['vlrCuotasLote'].toInt()).toString())),
                                             saldoTotalDate: snapshot.data?[index]['saldoTotalDate'],
                                             nroCuotas: (snapshot.data?[index]['nroCuotasLote'].toInt()).toString(),
-                                            tem: '${snapshot.data?[index]['tem'].toString()}%',
+                                            tem: '${snapshot.data?[index]['tem'].toString()}',
                                             observaciones: snapshot.data?[index]['observacionesLote'],
                                             quoteStage: snapshot.data?[index]['quoteStage'],
                                           ),
@@ -195,7 +210,7 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
                                           "sellerPhone": sellerData['phoneSeller'],
                                           "quoteId": snapshot.data?[index]['qid'],
                                           "quoteDate": snapshot.data?[index]['quoteDate'],
-                                          "quoteDeadline": snapshot.data?[index]['quoteDeadline'],
+                                          "quoteDeadline": snapshot.data?[index]['quoteDLDate'],
                                           "lote": snapshot.data?[index]['loteName'],
                                           "etapalote": snapshot.data?[index]['etapaLote'],
                                           "arealote": snapshot.data?[index]['areaLote'],
@@ -204,7 +219,7 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
                                           "paymentMethod": snapshot.data?[index]['metodoPagoLote'],
                                           "porcCuotaInicial": '${snapshot.data?[index]['perCILote'].toString()}%',
                                           "vlrCuotaIni": (currencyCOP((snapshot.data?[index]['vlrCILote'].toInt()).toString())),
-                                          "nroCuotas": snapshot.data?[index]['nroCuotasLote'],
+                                          "nroCuotas": '${snapshot.data?[index]['nroCuotasLote'].toString()}',
                                           "vlrSeparacion": (currencyCOP((snapshot.data?[index]['vlrSepLote'].toInt()).toString())),
                                           "saldoSeparacion": (currencyCOP((snapshot.data?[index]['saldoSepLote'].toInt()).toString())),
                                           "separacionDeadline": snapshot.data?[index]['sepDLDate'],
@@ -223,11 +238,11 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
                                           "birthday": custData['bdayCliente'],
                                           "ocupacion": custData['ocupacionCliente'],
                                           "phone": custData['telCliente'],
-                                          "idtype": custData['idtypeCliente'],
+                                          "idtype": custData['idTypeCliente'],
                                           "id": snapshot.data?[index]['clienteID'],
-                                          "issuedCountry": custData['issuedCountryCliente'],
-                                          "issuedState": custData['issuedStateCliente'],
-                                          "issuedCity": custData['issuedCityCliente'],
+                                          "issuedCountry": custData['idIssueCountryCliente'],
+                                          "issuedState": custData['idIssueStateCliente'],
+                                          "issuedCity": custData['idIssueCityCliente'],
                                           "email": custData['emailCliente'],
                                           "address": custData['addressCliente'],
                                           "country": custData['countryCliente'],
