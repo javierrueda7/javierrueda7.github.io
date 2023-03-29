@@ -101,6 +101,7 @@ class _EditQuotePageState extends State<EditQuotePage> {
   String sellerName = '';
   String sellerEmail = '';
   String sellerPhone = '';
+  TextEditingController quoteIdController = TextEditingController(text: "");
   TextEditingController quoteDateController = TextEditingController(text: "");
   TextEditingController quoteDeadlineController = TextEditingController(text: "");
   TextEditingController loteController = TextEditingController(text: "");
@@ -152,6 +153,7 @@ class _EditQuotePageState extends State<EditQuotePage> {
     sellerName = arguments['sellerName'];
     sellerEmail = arguments['sellerEmail'];
     sellerPhone = arguments['sellerPhone'];
+    quoteIdController.text = arguments['quoteId'];
     quoteDateController.text = arguments['quoteDate'];
     quoteDeadlineController.text = arguments['quoteDeadline'];
     loteController.text = arguments['lote'];
@@ -159,6 +161,7 @@ class _EditQuotePageState extends State<EditQuotePage> {
     arealoteController.text = arguments['arealote'];
     priceloteController.text = arguments['pricelote'];
     precioFinalController.text = arguments['precioFinal'];
+    paymentMethodSelectedItem = arguments['paymentMethod'];
     porcCuotaInicialController.text = arguments['porcCuotaInicial'];
     vlrCuotaIniController.text = arguments['vlrCuotaIni'];
     nroCuotasController.text = arguments['nroCuotas'];

@@ -1,3 +1,4 @@
+import 'package:albaterrapp/pages/edit_quote.dart';
 import 'package:albaterrapp/pages/edit_seller_page.dart';
 import 'package:albaterrapp/pages/signin_page.dart';
 import 'package:flutter/material.dart';
@@ -26,6 +27,7 @@ class MyApp extends StatelessWidget {
       routes: {
         '/': (context) => const SignInPage(),
         '/editSeller': (context) => const EditSellerPage(),
+        '/editQuote': (context) => const EditQuotePage(),
       },
     );
   }

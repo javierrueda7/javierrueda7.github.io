@@ -26,11 +26,17 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
     loteInfo = widget.loteInfo;
     needAll = widget.needAll;
     loggedEmail = widget.loggedEmail;
+    loggedManager();
+  }
+
+  void loggedManager() async{
+    managerLogged = await isManager(loggedEmail);
   }
 
   List<dynamic> loteInfo = [];
   bool needAll = true;
   String loggedEmail = '';
+  bool managerLogged = false;
   
     @override
   Widget build(BuildContext context) {    
@@ -121,17 +127,9 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
                                           child: Text('Ver PDF'),                     
                                         ),                      
                                         PopupMenuItem(
-                                          enabled: true,
+                                          enabled: managerLogged,
                                           value: 'Opción 2',
                                           child: Text(changeState(snapshot.data?[index]['quoteStage'])),
-                                        ),
-                                        const PopupMenuItem(
-                                          value: 'Opción 3',
-                                          child: Text('Administradores'),                        
-                                        ),                      
-                                        const PopupMenuItem(
-                                          value: 'Opción 4',
-                                          child: Text('Información general'),
                                         ),
                                       ],
                                       onSelected: (value) {
@@ -188,7 +186,59 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
                                         } 
                                       },
                                     ),
-                                    onTap: (() {}                      
+                                    onTap: (() async {
+                                      if(managerLogged == true){
+                                        await Navigator.pushNamed(context, "/editQuote", arguments: {
+                                          "selectedSeller": snapshot.data?[index]['sellerID'],
+                                          "sellerName": '${sellerData['nameSeller']} ${sellerData['lastnameSeller']}',
+                                          "sellerEmail": sellerData['emailSeller'],
+                                          "sellerPhone": sellerData['phoneSeller'],
+                                          "quoteId": snapshot.data?[index]['qid'],
+                                          "quoteDate": snapshot.data?[index]['quoteDate'],
+                                          "quoteDeadline": snapshot.data?[index]['quoteDeadline'],
+                                          "lote": snapshot.data?[index]['loteName'],
+                                          "etapalote": snapshot.data?[index]['etapaLote'],
+                                          "arealote": snapshot.data?[index]['areaLote'],
+                                          "pricelote": (currencyCOP((snapshot.data?[index]['priceLote'].toInt()).toString())),
+                                          "precioFinal": (currencyCOP((snapshot.data?[index]['precioFinal'].toInt()).toString())),
+                                          "paymentMethod": snapshot.data?[index]['metodoPagoLote'],
+                                          "porcCuotaInicial": '${snapshot.data?[index]['perCILote'].toString()}%',
+                                          "vlrCuotaIni": (currencyCOP((snapshot.data?[index]['vlrCILote'].toInt()).toString())),
+                                          "nroCuotas": snapshot.data?[index]['nroCuotasLote'],
+                                          "vlrSeparacion": (currencyCOP((snapshot.data?[index]['vlrSepLote'].toInt()).toString())),
+                                          "saldoSeparacion": (currencyCOP((snapshot.data?[index]['saldoSepLote'].toInt()).toString())),
+                                          "separacionDeadline": snapshot.data?[index]['sepDLDate'],
+                                          "saldoSeparacionDeadline": snapshot.data?[index]['saldoSepDLDate'],
+                                          "saldoCuotaIni": (currencyCOP((snapshot.data?[index]['saldoCILote'].toInt()).toString())),
+                                          "saldoCuotaIniDeadline": snapshot.data?[index]['saldoCIDLDate'],
+                                          "vlrPorPagar": (currencyCOP((snapshot.data?[index]['vlrPorPagarLote'].toInt()).toString())),
+                                          "saldoTotalDate": snapshot.data?[index]['saldoTotalDate'],
+                                          "vlrCuota": (currencyCOP((snapshot.data?[index]['vlrCuotasLote'].toInt()).toString())),
+                                          "tem": '${snapshot.data?[index]['tem'].toString()}%',
+                                          "observaciones": snapshot.data?[index]['observacionesLote'],
+                                          "quoteStage": snapshot.data?[index]['quoteStage'],
+                                          "name": custData['nameCliente'],
+                                          "lastname": custData['lastnameCliente'],
+                                          "gender": custData['genderCliente'],
+                                          "birthday": custData['bdayCliente'],
+                                          "ocupacion": custData['ocupacionCliente'],
+                                          "phone": custData['telCliente'],
+                                          "idtype": custData['idtypeCliente'],
+                                          "id": snapshot.data?[index]['clienteID'],
+                                          "issuedCountry": custData['issuedCountryCliente'],
+                                          "issuedState": custData['issuedStateCliente'],
+                                          "issuedCity": custData['issuedCityCliente'],
+                                          "email": custData['emailCliente'],
+                                          "address": custData['addressCliente'],
+                                          "country": custData['countryCliente'],
+                                          "state": custData['stateCliente'],
+                                          "city": custData['cityCliente'],
+                                        });
+                                        setState(() {});
+                                      } else {
+                                        setState(() {});
+                                      }
+                                    }                      
                                     ),
                                   ),
                                 );

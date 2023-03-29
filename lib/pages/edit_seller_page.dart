@@ -281,37 +281,35 @@ class _EditSellerPageState extends State<EditSellerPage> {
                                     ),
                                   );
                                 } else {
-                                  (_) async {
-                                    await updateSellers(
-                                    sid,
-                                    nameController.text,
-                                    lastnameController.text,
-                                    emailController.text,
-                                    phoneController.text,                            
-                                    addressController.text,
-                                    idController.text,
-                                    bdController.text,
-                                    selectedGender,
-                                    startDateController.text,
-                                    selectedRole,
-                                    selectedStatus,
-                                    );
-                                      // ignore: use_build_context_synchronously
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                        SnackBar(
-                                          content: CustomAlertMessage(
-                                            errorTitle: "Genial!", 
-                                            errorText: "Datos actualizados de manera satisfactoria.",
-                                            stateColor: successColor,
-                                          ), 
-                                          behavior: SnackBarBehavior.floating,
-                                          backgroundColor: Colors.transparent,
-                                          elevation: 0,
-                                        ),
-                                      );                        
-                                      // ignore: use_build_context_synchronously
-                                      Navigator.pop(context);
-                                  };                            
+                                  await updateSellers(
+                                  sid,
+                                  nameController.text,
+                                  lastnameController.text,
+                                  emailController.text,
+                                  phoneController.text,                            
+                                  addressController.text,
+                                  idController.text,
+                                  bdController.text,
+                                  selectedGender,
+                                  startDateController.text,
+                                  selectedRole,
+                                  selectedStatus,
+                                  );
+                                    // ignore: use_build_context_synchronously
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: CustomAlertMessage(
+                                        errorTitle: "Genial!", 
+                                        errorText: "Datos actualizados de manera satisfactoria.",
+                                        stateColor: successColor,
+                                      ), 
+                                      behavior: SnackBarBehavior.floating,
+                                      backgroundColor: Colors.transparent,
+                                      elevation: 0,
+                                    ),
+                                  );                  
+                                  // ignore: use_build_context_synchronously
+                                  Navigator.pop(context);                                                          
                                 }
                               },
                               child: const Text("Actualizar"),
