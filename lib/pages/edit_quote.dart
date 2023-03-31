@@ -51,6 +51,7 @@ class _EditQuotePageState extends State<EditQuotePage> {
   double precioFinal = 0;
   double vlrSeparacion = 0;
   double vlrFijoSeparacion = 0;
+  double saldoSeparacion = 0;
   double porcCuotaInicial = 0;  
   double plazoCI = 0;
   double plazoContado = 0;
@@ -111,7 +112,6 @@ class _EditQuotePageState extends State<EditQuotePage> {
   TextEditingController precioFinalController = TextEditingController(text: "");
   TextEditingController porcCuotaInicialController = TextEditingController(text: "");
   TextEditingController vlrCuotaIniController = TextEditingController(text: "");
-  TextEditingController nroCuotasController = TextEditingController(text: "");
   TextEditingController vlrSeparacionController = TextEditingController(text: "");
   TextEditingController saldoSeparacionController = TextEditingController(text: "");
   TextEditingController separacionDeadlineController = TextEditingController(text: "");
@@ -142,67 +142,72 @@ class _EditQuotePageState extends State<EditQuotePage> {
   String selectedCountry = '';
   String selectedState = '';
   String selectedCity = '';
+  bool isInitialized = false;
 
   @override
   Widget build(BuildContext context) {
-    Map arguments = ModalRoute.of(context)!.settings.arguments as Map;
-    selectedSeller = arguments['selectedSeller'];
-    sellerName = arguments['sellerName'];
-    sellerEmail = arguments['sellerEmail'];
-    sellerPhone = arguments['sellerPhone'];
-    quoteIdController.text = arguments['quoteId'];
-    quoteDateController.text = arguments['quoteDate'];
-    quoteDeadlineController.text = arguments['quoteDeadline'];
-    loteController.text = arguments['lote'];
-    etapaloteController.text = arguments['etapalote'];
-    arealoteController.text = arguments['arealote'];
-    priceloteController.text = arguments['pricelote'];
-    precioFinalController.text = arguments['precioFinal'];
-    paymentMethodSelectedItem = arguments['paymentMethod'];
-    porcCuotaInicialController.text = arguments['porcCuotaInicial'];
-    vlrCuotaIniController.text = arguments['vlrCuotaIni'];
-    nroCuotasController.text = arguments['nroCuotas'];
-    vlrSeparacionController.text = arguments['vlrSeparacion'];
-    saldoSeparacionController.text = arguments['saldoSeparacion'];
-    separacionDeadlineController.text = arguments['separacionDeadline'];
-    saldoSeparacionDeadlineController.text = arguments['saldoSeparacionDeadline'];
-    saldoCuotaIniController.text = arguments['saldoCuotaIni'];
-    saldoCuotaIniDeadlineController.text = arguments['saldoCuotaIniDeadline'];
-    vlrPorPagarController.text = arguments['vlrPorPagar'];
-    saldoTotalDateController.text = arguments['saldoTotalDate'];
-    vlrCuotaController.text = arguments['vlrCuota'];
-    temController.text = arguments['tem'];
-    observacionesController.text = arguments['observaciones'];
-    quoteStageController.text = arguments['quoteStage'];
-    nameController.text = arguments['name'];
-    lastnameController.text = arguments['lastname'];
-    selectedGender = arguments['gender'];
-    birthdayController.text = arguments['birthday'];
-    ocupacionController.text = arguments['ocupacion'];
-    phoneController.text = arguments['phone'];
-    idtypeController.text = arguments['idtype'];
-    idController.text = arguments['id'];
-    selectedIssuedCountry = arguments['issuedCountry'];
-    selectedIssuedState = arguments['issuedState'];
-    selectedIssuedCity = arguments['issuedCity'];
-    emailController.text = arguments['email'];
-    addressController.text = arguments['address'];
-    selectedCountry = arguments['country'];
-    selectedState = arguments['state'];
-    selectedCity = arguments['city'];
-
-
-    
     initPagos();
-    initCuotas();
+    initCuotas();    
+    Map arguments = ModalRoute.of(context)!.settings.arguments as Map;
+    if(isInitialized==false){   
+      selectedSeller = arguments['selectedSeller'];
+      sellerName = arguments['sellerName'];
+      sellerEmail = arguments['sellerEmail'];
+      sellerPhone = arguments['sellerPhone'];
+      quoteIdController.text = arguments['quoteId'];
+      quoteDateController.text = arguments['quoteDate'];
+      quoteDeadlineController.text = arguments['quoteDeadline'];
+      loteController.text = arguments['lote'];
+      etapaloteController.text = arguments['etapalote'];
+      arealoteController.text = arguments['arealote'];
+      priceloteController.text = arguments['pricelote'];
+      precioFinalController.text = arguments['precioFinal'];
+      paymentMethodSelectedItem = arguments['paymentMethod'];
+      porcCuotaInicialController.text = arguments['porcCuotaInicial'];
+      vlrCuotaIniController.text = arguments['vlrCuotaIni'];
+      selectedNroCuotas = arguments['nroCuotas'];
+      vlrSeparacionController.text = arguments['vlrSeparacion'];      
+      saldoSeparacionController.text = arguments['saldoSeparacion'];
+      saldoSeparacion = stringConverter(saldoSeparacionController.text);
+      separacionDeadlineController.text = arguments['separacionDeadline'];
+      saldoSeparacionDeadlineController.text = arguments['saldoSeparacionDeadline'];
+      saldoCuotaIniController.text = arguments['saldoCuotaIni'];
+      saldoCuotaIniDeadlineController.text = arguments['saldoCuotaIniDeadline'];
+      vlrPorPagarController.text = arguments['vlrPorPagar'];
+      saldoTotalDateController.text = arguments['saldoTotalDate'];
+      vlrCuotaController.text = arguments['vlrCuota'];
+      temController.text = arguments['tem'];
+      observacionesController.text = arguments['observaciones'];
+      quoteStageController.text = arguments['quoteStage'];
+      nameController.text = arguments['name'];
+      lastnameController.text = arguments['lastname'];
+      selectedGender = arguments['gender'];
+      birthdayController.text = arguments['birthday'];
+      ocupacionController.text = arguments['ocupacion'];
+      phoneController.text = arguments['phone'];
+      idtypeController.text = arguments['idtype'];
+      idController.text = arguments['id'];
+      selectedIssuedCountry = arguments['issuedCountry'];
+      selectedIssuedState = arguments['issuedState'];
+      selectedIssuedCity = arguments['issuedCity'];
+      emailController.text = arguments['email'];
+      addressController.text = arguments['address'];
+      selectedCountry = arguments['country'];
+      selectedState = arguments['state'];
+      selectedCity = arguments['city'];
+    } else {
+      isInitialized = true;
+    }
+    
+    isInitialized = true;
     nroCuotasList = nroCuotasGenerator(maxCuotas);
     periodoCalculator(stringConverter(selectedNroCuotas));
-    vlrBaseLote = loteInfo[9].toInt();    
+    vlrBaseLote = stringConverter(priceloteController.text).toInt();    
     precioFinal = vlrBaseLote*((100-discountValue())/100);   
     cuotaInicial = precioFinal * (porcCuotaInicial/100);
     saldoCI = cuotaInicial - vlrFijoSeparacion;
     valorCuota = valorAPagar/(double.parse(selectedNroCuotas));
-    double saldoSeparacion = vlrFijoSeparacion-vlrSeparacion;
+    
 
 
     priceloteController.text = (currencyCOP((vlrBaseLote.toInt()).toString()));
@@ -221,7 +226,7 @@ class _EditQuotePageState extends State<EditQuotePage> {
         foregroundColor: primaryColor,
         elevation: 0,
         centerTitle: true,
-        title: Text('Nueva cotización ${loteInfo[1]}', 
+        title: Text('Cotización ${quoteIdController.text}', 
           style: TextStyle(color: primaryColor,fontSize: 18, fontWeight: FontWeight.bold),),
       ),
       body: Center(
@@ -381,7 +386,7 @@ class _EditQuotePageState extends State<EditQuotePage> {
                                 Container(
                                   constraints: const BoxConstraints(maxWidth: 800),
                                   child: textFieldWidget(
-                                    loteInfo[1], Icons.house_outlined, false, loteController, false, 'email', (){})
+                                    loteController.text, Icons.house_outlined, false, loteController, false, 'email', (){})
                                 ),
                               ],
                             ),
@@ -397,7 +402,7 @@ class _EditQuotePageState extends State<EditQuotePage> {
                                 Container(
                                   constraints: const BoxConstraints(maxWidth: 800),
                                   child: textFieldWidget(
-                                    loteInfo[7].toString(), Icons.map_outlined, false, etapaloteController, false, 'email', (){})
+                                    etapaloteController.text, Icons.map_outlined, false, etapaloteController, false, 'email', (){})
                                 ),
                               ],
                             ),
@@ -420,7 +425,7 @@ class _EditQuotePageState extends State<EditQuotePage> {
                                 Container(
                                   constraints: const BoxConstraints(maxWidth: 800),
                                   child: textFieldWidget(
-                                    '${((loteInfo[8].toInt()).toString())} m²', Icons.terrain_outlined, false, arealoteController, false, 'number', (){})
+                                    arealoteController.text, Icons.terrain_outlined, false, arealoteController, false, 'number', (){})
                                 ),
                               ],
                             ),
@@ -462,7 +467,8 @@ class _EditQuotePageState extends State<EditQuotePage> {
                               setState(() {      
                                 vlrSeparacion =  stringConverter(vlrSeparacionController.text);
                                 vlrSeparacionController.text = (currencyCOP((vlrSeparacion.toInt()).toString()));
-                                saldoCuotaIniController.text = (currencyCOP((saldoCI.toInt()).toString()));                             
+                                saldoCuotaIniController.text = (currencyCOP((saldoCI.toInt()).toString()));
+                                saldoSeparacion = vlrFijoSeparacion-vlrSeparacion;                          
                               });
                             }, 
                             icon: Icon(Icons.refresh_outlined, color: fifthColor,),
@@ -1129,8 +1135,8 @@ class _EditQuotePageState extends State<EditQuotePage> {
                                         phone: phoneController.text,
                                         date: quoteDateController.text,
                                         dueDate: quoteDeadlineController.text,
-                                        lote: loteInfo[1],
-                                        area: '${((loteInfo[8].toInt()).toString())} m²',
+                                        lote: loteController.text,
+                                        area: arealoteController.text,
                                         price: priceloteController.text,
                                         finalPrice: precioFinalController.text,
                                         porcCuotaIni: '${((porcCuotaInicial.toInt()).toString())}%',

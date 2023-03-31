@@ -51,8 +51,9 @@ class _AddQuotePageState extends State<AddQuotePage> {
   String realtimeDateTime = '';
   
   double precioFinal = 0;
-  double vlrSeparacion = 0;
+  double vlrSeparacion = 10000000;
   double vlrFijoSeparacion = 0;
+  double saldoSeparacion = 0;
   double porcCuotaInicial = 0;  
   double plazoCI = 0;
   double plazoContado = 0;
@@ -159,7 +160,7 @@ class _AddQuotePageState extends State<AddQuotePage> {
     cuotaInicial = precioFinal * (porcCuotaInicial/100);
     saldoCI = cuotaInicial - vlrFijoSeparacion;
     valorCuota = valorAPagar/(double.parse(selectedNroCuotas));
-    double saldoSeparacion = vlrFijoSeparacion-vlrSeparacion;
+    saldoSeparacion = vlrFijoSeparacion-vlrSeparacion;
 
 
     priceloteController.text = (currencyCOP((vlrBaseLote.toInt()).toString()));
@@ -168,6 +169,8 @@ class _AddQuotePageState extends State<AddQuotePage> {
     saldoCuotaIniController.text = (currencyCOP((saldoCI.toInt()).toString()));
     vlrCuotaController.text = (currencyCOP((valorCuota.toInt()).toString()));
     vlrPorPagarController.text = (currencyCOP((valorAPagar.toInt()).toString()));
+    saldoSeparacionController.text = (currencyCOP((saldoSeparacion.toInt()).toString()));
+    
     temController.text = '${vlrTEM.toString()}%';
     saldoTotalDateController.text = dateSaldo;
 
@@ -421,7 +424,7 @@ class _AddQuotePageState extends State<AddQuotePage> {
                               setState(() {      
                                 vlrSeparacion =  stringConverter(vlrSeparacionController.text);
                                 vlrSeparacionController.text = (currencyCOP((vlrSeparacion.toInt()).toString()));
-                                saldoCuotaIniController.text = (currencyCOP((saldoCI.toInt()).toString()));                             
+                                saldoCuotaIniController.text = (currencyCOP((saldoCI.toInt()).toString()));                                
                               });
                             }, 
                             icon: Icon(Icons.refresh_outlined, color: fifthColor,),
@@ -440,18 +443,27 @@ class _AddQuotePageState extends State<AddQuotePage> {
                                       child: Text('Valor', style: TextStyle(fontSize: 10),)),
                                       textFieldWidget(
                                         (currencyCOP((vlrSeparacion.toInt()).toString())), Icons.monetization_on_outlined, false, vlrSeparacionController, true, 'number', (String value) {
-                                          if (value.isEmpty || stringConverter(value) <= 10000000) {
+                                          if (value.isEmpty || stringConverter(value) < 10000000) {
                                             setState(() {
                                               vlrSeparacion = stringConverter(value);
                                               saldoSeparacion = 10000000 - stringConverter(value);
                                               saldoSeparacionController.text = (currencyCOP((saldoSeparacion.toInt()).toString()));
                                               saldoCuotaIniController.text = (currencyCOP((saldoCI.toInt()).toString()));
+                                              vlrSeparacionController.value = TextEditingValue(
+                                                text: (currencyCOP((vlrSeparacion.toInt()).toString())),
+                                                selection: TextSelection.collapsed(offset: (currencyCOP((vlrSeparacion.toInt()).toString())).length),
+                                              );
                                             });
-                                          } else {
-                                            vlrSeparacionController.text = "10000000";
-                                            setState(() {                                              
-                                              saldoSeparacion = 10000000 - stringConverter(vlrSeparacionController.text);
+                                          } if(stringConverter(value) >= 10000000) {                                            
+                                            setState(() {
+                                              vlrSeparacion = 10000000;
+                                              vlrSeparacionController.text = "10000000";                                            
+                                              saldoSeparacion = 0;
                                               saldoSeparacionController.text = (currencyCOP((saldoSeparacion.toInt()).toString()));
+                                              vlrSeparacionController.value = TextEditingValue(
+                                                text: (currencyCOP((vlrSeparacion.toInt()).toString())),
+                                                selection: TextSelection.collapsed(offset: (currencyCOP((vlrSeparacion.toInt()).toString())).length),
+                                              );
                                               });
                                           }
                                         },

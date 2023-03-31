@@ -357,11 +357,15 @@ Widget easyDropdown(List tempList, String tempSelectedItem, Function tempOnChang
   );
 }
 
-String currencyCOP(String initValue){
-  NumberFormat formatoMonedaColombiana = NumberFormat.currency(locale: 'es_CO', symbol: '', decimalDigits: 0);
-  String newValue = formatoMonedaColombiana.format(int.parse(initValue));
-  return '\$$newValue'; 
+String currencyCOP(String initValue) {
+  NumberFormat formatoMonedaColombiana =
+      NumberFormat.currency(locale: 'es_CO', symbol: '', decimalDigits: 0);
+
+  String newValue = formatoMonedaColombiana.format(int.parse(initValue)).trim();
+
+  return '\$$newValue';
 }
+
 
 String dateOnly(bool needTime, double n, DateTime dateSelected, bool needBusinessDay){
   int tempDiff = 0;
