@@ -493,12 +493,21 @@ class _EditQuotePageState extends State<EditQuotePage> {
                                               saldoSeparacion = 10000000 - stringConverter(value);
                                               saldoSeparacionController.text = (currencyCOP((saldoSeparacion.toInt()).toString()));
                                               saldoCuotaIniController.text = (currencyCOP((saldoCI.toInt()).toString()));
+                                              vlrSeparacionController.value = TextEditingValue(
+                                                text: (currencyCOP((vlrSeparacion.toInt()).toString())),
+                                                selection: TextSelection.collapsed(offset: (currencyCOP((vlrSeparacion.toInt()).toString())).length),
+                                              );
                                             });
-                                          } else {
-                                            vlrSeparacionController.text = "10000000";
-                                            setState(() {                                              
-                                              saldoSeparacion = 10000000 - stringConverter(vlrSeparacionController.text);
+                                          } if(stringConverter(value) >= 10000000) {                                            
+                                            setState(() {
+                                              vlrSeparacion = 10000000;
+                                              vlrSeparacionController.text = "10000000";                                            
+                                              saldoSeparacion = 0;
                                               saldoSeparacionController.text = (currencyCOP((saldoSeparacion.toInt()).toString()));
+                                              vlrSeparacionController.value = TextEditingValue(
+                                                text: (currencyCOP((vlrSeparacion.toInt()).toString())),
+                                                selection: TextSelection.collapsed(offset: (currencyCOP((vlrSeparacion.toInt()).toString())).length),
+                                              );
                                               });
                                           }
                                         },
