@@ -126,6 +126,16 @@ Future<void> deleteSeller(String sid) async {
   await db.collection("sellers").doc(sid).delete();
 }
 
+Future<void> updateQuoteStage(
+  String qid,  
+  String quoteStage) async {
+  await db.collection("quotes").doc(qid).update({    
+    "quoteStage": quoteStage
+    }
+  );
+}
+
+
 Future<void> updateQuote(
   String qid, 
   String sellerID,
