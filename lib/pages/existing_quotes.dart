@@ -133,7 +133,7 @@ Future<String> getGerenteEmail() async {
                                   key: Key(snapshot.data?[index]['qid']),
                                   child: ListTile(
                                     leading: CircleAvatar(backgroundColor: stageColor(snapshot.data?[index]['quoteStage']), child: Text(getNumbers(snapshot.data?[index]['loteName'])!, textAlign: TextAlign.center, style: TextStyle(color: primaryColor, fontWeight: FontWeight.bold),)),
-                                    title: Text('${snapshot.data?[index]['loteName']} | Cotización #${snapshot.data?[index]['qid']}'),
+                                    title: Text('${snapshot.data?[index]['loteName']} | Cotización #${snapshot.data?[index]['qid']} | ${snapshot.data?[index]['quoteStage']}'),
                                     subtitle: Text(fullName),
                                     trailing: PopupMenuButton<String>(
                                       itemBuilder: (context) => [
@@ -187,7 +187,9 @@ Future<String> getGerenteEmail() async {
                                           ),
                                         ));
                                         } if(value == 'Opción 2'){
-                                          setState(() {                          
+                                          setState(() {
+                                            updateQuoteStage(snapshot.data?[index]['qid'], newState(snapshot.data?[index]['quoteStage']));
+
                                           });
                                         } if(value == 'Opción 3'){
                                           setState(() {                          
@@ -286,9 +288,21 @@ Future<String> getGerenteEmail() async {
     );
   }
 
+  String newState(String value){
+    if(value == 'CREADA'){
+      return 'AUTORIZADA';
+    } if(value == 'AUTORIZADA'){
+      return 'APROBADA';
+    } if(value == 'APROBADA'){
+      return 'LOTE SEPARADO';
+    } else {
+      return 'LOTE SEPARADO';
+    }
+  }
+
   String changeState(String value){
     if(value == 'CREADA'){
-      return 'Aprobar cotización';
+      return 'Autorizar cotización';
     } if(value == 'AUTORIZADA'){
       return 'Cotización aceptada';
     } if(value == 'APROBADA'){
