@@ -105,7 +105,7 @@ class _InitPageState extends State<InitPage> {
                       ),                      
                       const PopupMenuItem(
                         value: 'Opción 2',
-                        child: Text('Miembros del equipo'),
+                        child: Text('Usuarios'),
                       ),
                       const PopupMenuItem(
                         value: 'Opción 3',

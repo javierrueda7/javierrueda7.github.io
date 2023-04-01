@@ -36,7 +36,7 @@ class _EditSellerPageState extends State<EditSellerPage> {
   String selectedStatus = '';
   String sid = '';
   List<String> genderList = ['Masculino', 'Femenino', 'Otro'];
-  List<String> roleList = ['Asesor', 'Usuario', 'Administrador'];
+  List<String> roleList = ['Asesor comercial', 'Operativo', 'Administrador'];
   List<String> statusList = ['Activo', 'Inactivo'];
   bool isInitialized = false;
 

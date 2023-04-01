@@ -375,6 +375,8 @@ String dateOnly(bool needTime, double n, DateTime dateSelected, bool needBusines
   String formattedInitDay = getDay.format(dateSelected);
   String formattedFinalDay = getDay.format(finalDate);
   String formattedFinalWeekDay = getWeekDay.format(finalDate);
+  bool initOrFinal = false;
+  
   if(formattedInitDay == formattedFinalDay || n % 30 != 0){
     if(needBusinessDay == true){
       if(formattedFinalWeekDay == 'Sat'){
@@ -392,14 +394,34 @@ String dateOnly(bool needTime, double n, DateTime dateSelected, bool needBusines
       formattedFinalWeekDay = getWeekDay.format(finalDate);
     }
   } else {
-    tempDiff = int.parse(formattedFinalDay) - int.parse(formattedInitDay);
-    if(tempDiff > 0){
-      finalDate = finalDate.subtract(Duration(days: tempDiff.abs()));
-      formattedFinalWeekDay = getWeekDay.format(finalDate);
+
+
+    if(int.parse(formattedInitDay) > int.parse(formattedFinalDay)){
+      tempDiff = int.parse(formattedInitDay) - int.parse(formattedFinalDay);
+      initOrFinal = true;
     } else{
-      finalDate = finalDate.add(Duration(days: tempDiff.abs()));
+      tempDiff = int.parse(formattedFinalDay) - int.parse(formattedInitDay);
+      initOrFinal = false;
+    }
+    if(initOrFinal == true){
+      if(tempDiff > 7){
+        tempDiff = 30 - tempDiff;    
+        finalDate = finalDate.subtract(Duration(days: tempDiff));    
+      } else {
+        finalDate = finalDate.add(Duration(days: tempDiff));
+      }
+      formattedFinalWeekDay = getWeekDay.format(finalDate);
+    } else {
+      if(tempDiff > 7){
+        tempDiff = 30 - tempDiff;
+        finalDate = finalDate.add(Duration(days: tempDiff));  
+      } else {
+        finalDate = finalDate.subtract(Duration(days: tempDiff));
+      }      
       formattedFinalWeekDay = getWeekDay.format(finalDate);
     }
+
+
     if(needBusinessDay == true){
       if(formattedFinalWeekDay == 'Sat'){
         finalDate = finalDate.add(const Duration(days: 2));

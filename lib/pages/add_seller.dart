@@ -26,10 +26,10 @@ class _AddSellerPageState extends State<AddSellerPage> {
   final CollectionReference collectionReference = FirebaseFirestore.instance.collection('sellers');
   late int sellersCounter;
   String selectedGender = 'Masculino';
-  String selectedRole = 'Asesor';
+  String selectedRole = 'Asesor comercial';
   String selectedStatus = 'Activo';
   List<String> genderList = ['Masculino', 'Femenino', 'Otro'];
-  List<String> roleList = ['Asesor', 'Usuario', 'Administrador'];
+  List<String> roleList = ['Asesor comercial', 'Operativo', 'Administrador'];
   List<String> statusList = ['Activo', 'Inactivo'];
   DateTime startDate = DateTime.now();
 

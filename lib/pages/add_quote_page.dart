@@ -221,7 +221,7 @@ class _AddQuotePageState extends State<AddQuotePage> {
                             } else {
                               final sellersList = sellersSnapshot.data?.docs;
                               for (var sellers in sellersList!) {
-                                if(sellers['roleSeller'] == 'Asesor' && sellers['statusSeller'] == 'Activo'){
+                                if(sellers['roleSeller'] == 'Asesor comercial' && sellers['statusSeller'] == 'Activo'){
                                   sellerItems.add(
                                     DropdownMenuItem(
                                       value: sellers.id,
@@ -327,7 +327,10 @@ class _AddQuotePageState extends State<AddQuotePage> {
                           ),
                         ],
                       ),
-                    ), 
+                    ),
+                    const SizedBox(
+                      height: 5,
+                    ),
                     Container(
                       constraints: const BoxConstraints(maxWidth: 800),
                       child: Row(
@@ -366,6 +369,9 @@ class _AddQuotePageState extends State<AddQuotePage> {
                           ),
                         ],
                       ),
+                    ),
+                    const SizedBox(
+                      height: 5,
                     ),
                     Container(
                       constraints: const BoxConstraints(maxWidth: 800),
@@ -1428,7 +1434,7 @@ class _AddQuotePageState extends State<AddQuotePage> {
                         child: Text('Fecha límite (${plazoContado.toInt().toString()} días)', style: const TextStyle(fontSize: 10), textAlign: TextAlign.center,)
                       ),
                       textFieldWidget(
-                        dateOnly(false, 0, dateConverter(separacionDeadlineController.text), true), Icons.date_range_outlined, false, saldoTotalDateController, false, 'date', (){}
+                        dateOnly(false, plazoContado, quotePickedDate, true), Icons.date_range_outlined, false, saldoTotalDateController, false, 'date', (){}
                       ),
                     ],
                   ),
@@ -1508,7 +1514,7 @@ class _AddQuotePageState extends State<AddQuotePage> {
                         child: Text('Fecha límite (${(plazoCI).toInt().toString()} días)', style: const TextStyle(fontSize: 10), textAlign: TextAlign.center,)
                       ),
                       textFieldWidget(
-                        dateOnly(false, 0, dateConverter(separacionDeadlineController.text), true), Icons.date_range_outlined, false, saldoCuotaIniDeadlineController, false, 'date', (){}
+                        dateOnly(false, plazoCI, dateConverter(separacionDeadlineController.text), true), Icons.date_range_outlined, false, saldoCuotaIniDeadlineController, false, 'date', (){}
                       ),
                     ],
                   ),

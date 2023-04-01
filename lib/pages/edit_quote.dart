@@ -72,6 +72,7 @@ class _EditQuotePageState extends State<EditQuotePage> {
     dctoContado = infoPagos['dctoContado'].toDouble();
     plazoContado = infoPagos['plazoContado'].toDouble();
     maxCuotas = infoPagos['maxCuotas'].toInt();
+    nroCuotasList = nroCuotasGenerator(maxCuotas); 
     
     seller = await getSeller(selectedSeller);
   }
@@ -147,7 +148,7 @@ class _EditQuotePageState extends State<EditQuotePage> {
   @override
   Widget build(BuildContext context) {
     initPagos();
-    initCuotas();    
+    initCuotas();      
     Map arguments = ModalRoute.of(context)!.settings.arguments as Map;
     if(isInitialized==false){   
       selectedSeller = arguments['selectedSeller'];
@@ -155,6 +156,7 @@ class _EditQuotePageState extends State<EditQuotePage> {
       sellerEmail = arguments['sellerEmail'];
       sellerPhone = arguments['sellerPhone'];
       quoteIdController.text = arguments['quoteId'];
+      quotePickedDate = DateFormat("dd-MM-yyyy").parse(arguments['quoteDate']);
       quoteDateController.text = arguments['quoteDate'];
       quoteDeadlineController.text = arguments['quoteDeadline'];
       loteController.text = arguments['lote'];
@@ -200,7 +202,7 @@ class _EditQuotePageState extends State<EditQuotePage> {
     }
     
     isInitialized = true;
-    nroCuotasList = nroCuotasGenerator(maxCuotas);
+    
     periodoCalculator(stringConverter(selectedNroCuotas));
     vlrBaseLote = stringConverter(priceloteController.text).toInt();    
     precioFinal = vlrBaseLote*((100-discountValue())/100);   
@@ -226,7 +228,7 @@ class _EditQuotePageState extends State<EditQuotePage> {
         foregroundColor: primaryColor,
         elevation: 0,
         centerTitle: true,
-        title: Text('Cotización ${quoteIdController.text}', 
+        title: Text('Cotización ${quoteIdController.text} | ${quoteStageController.text}', 
           style: TextStyle(color: primaryColor,fontSize: 18, fontWeight: FontWeight.bold),),
       ),
       body: Center(
@@ -266,17 +268,19 @@ class _EditQuotePageState extends State<EditQuotePage> {
                             } else {
                               final sellersList = sellersSnapshot.data?.docs;
                               for (var sellers in sellersList!) {
-                                sellerItems.add(
-                                  DropdownMenuItem(
-                                    value: sellers.id,
-                                    child: Center(child: Text(sellers['nameSeller'])),
-                                  ),
-                                );
+                                if(sellers['roleSeller'] == 'Asesor comercial' && sellers['statusSeller'] == 'Activo'){
+                                  sellerItems.add(
+                                    DropdownMenuItem(
+                                      value: sellers.id,
+                                      child: Center(child: Text('${seller['nameSeller']} ${seller['lastnameSeller']}')),
+                                    ),
+                                  );
+                                }
                               }
                             }
                             return DropdownButton(
                               items: sellerItems,
-                              hint: Center(child: Text(selectedSeller)),
+                              hint: Center(child: Text(selectedSeller != '' ? '${seller['nameSeller']} ${seller['lastnameSeller']}' :'Seleccione un vendedor')),
                               underline: Container(),
                               style: TextStyle(color: fifthColor.withOpacity(0.9),),
                               onChanged: (sellerValue) {
@@ -332,18 +336,21 @@ class _EditQuotePageState extends State<EditQuotePage> {
                                       ),
                                       readOnly: true,
                                       onTap: () async{
-                                        DateTime? quotePickedDate = await showDatePicker(
+                                        DateTime? tempPickedDate = await showDatePicker(
                                           context: context, 
                                           initialDate: DateTime.now(), 
                                           firstDate: DateTime(1900), 
                                           lastDate: DateTime.now(),
                                         );
-                                        if(quotePickedDate != null) {
+                                        if(tempPickedDate != null) {
                                           setState(() {
-                                            quoteDateController.text = DateFormat('dd-MM-yyyy').format(quotePickedDate);
-                                            quoteDeadlineController.text = dateOnly(false, 15, quotePickedDate, true);
-                                            separacionDeadlineController.text = dateOnly(false, 0, quotePickedDate, false);
-                                            saldoCuotaIniDeadlineController.text = dateOnly(false, plazoCI, quotePickedDate, true);
+                                            quotePickedDate = tempPickedDate;
+                                            quoteDateController.text = DateFormat('dd-MM-yyyy').format(tempPickedDate);
+                                            quoteDeadlineController.text = dateOnly(false, 15, tempPickedDate, true);
+                                            separacionDeadlineController.text = dateOnly(false, 0, tempPickedDate, false);
+                                            saldoSeparacionDeadlineController.text = dateOnly(false, 7, tempPickedDate,false);
+                                            saldoCuotaIniDeadlineController.text = dateOnly(false, plazoCI, tempPickedDate, true);
+                                            saldoTotalDateController.text = dateSaldo;
                                             discountValue();
                                           });
                                         }
@@ -370,7 +377,10 @@ class _EditQuotePageState extends State<EditQuotePage> {
                           ),
                         ],
                       ),
-                    ), 
+                    ),
+                    const SizedBox(
+                      height: 5,
+                    ),
                     Container(
                       constraints: const BoxConstraints(maxWidth: 800),
                       child: Row(
@@ -409,6 +419,9 @@ class _EditQuotePageState extends State<EditQuotePage> {
                           ),
                         ],
                       ),
+                    ),
+                    const SizedBox(
+                      height: 5,
                     ),
                     Container(
                       constraints: const BoxConstraints(maxWidth: 800),
@@ -558,7 +571,7 @@ class _EditQuotePageState extends State<EditQuotePage> {
                                       height: 15,
                                       child: Text('Fecha límite saldo separación', style: TextStyle(fontSize: 10),)),
                                       textFieldWidget(
-                                        dateOnly(false, 7, dateConverter(separacionDeadlineController.text), false), Icons.date_range_outlined, false, saldoSeparacionDeadlineController, false, 'date', (){}),
+                                        dateOnly(false, 7, quotePickedDate, false), Icons.date_range_outlined, false, saldoSeparacionDeadlineController, false, 'date', (){}),
                                     ],
                                   ),
                                 ),
@@ -1138,7 +1151,7 @@ class _EditQuotePageState extends State<EditQuotePage> {
                                         sellerName: '${seller['nameSeller']} ${seller['lastnameSeller']}',
                                         sellerPhone: seller['phoneSeller'],
                                         sellerEmail: seller['emailSeller'],
-                                        quoteId: idGenerator(quoteCounter),
+                                        quoteId: quoteIdController.text,
                                         name: nameController.text,
                                         lastname: lastnameController.text,
                                         phone: phoneController.text,
@@ -1166,7 +1179,7 @@ class _EditQuotePageState extends State<EditQuotePage> {
                                         nroCuotas: selectedNroCuotas,                                        
                                         tem: '${temController.text}%',
                                         observaciones: observacionesController.text,
-                                        quoteStage: 'CREADA',
+                                        quoteStage: quoteStageController.text,
                                       ),
                                     ),
                                   );
@@ -1233,7 +1246,7 @@ class _EditQuotePageState extends State<EditQuotePage> {
                                     ),
                                   );
                                 } else {
-                                  await addCustomer(
+                                  await updateCustomer(
                                     idController.text,
                                     nameController.text,
                                     lastnameController.text, 
@@ -1251,14 +1264,14 @@ class _EditQuotePageState extends State<EditQuotePage> {
                                     selectedState,
                                     selectedCity,
                                     );
-                                  await addQuote(
-                                    idGenerator(quoteCounter),
+                                  await updateQuote(
+                                    quoteIdController.text,
                                     selectedSeller,
                                     quoteDateController.text,
                                     quoteDeadlineController.text, 
-                                    loteInfo[1],
-                                    loteInfo[7],
-                                    '${((loteInfo[8].toInt()).toString())} m²',
+                                    loteController.text,
+                                    etapaloteController.text,
+                                    arealoteController.text,
                                     vlrBaseLote.toDouble(),
                                     precioFinal,
                                     discountValue(),
@@ -1279,13 +1292,13 @@ class _EditQuotePageState extends State<EditQuotePage> {
                                     vlrTEM,
                                     observacionesController.text,
                                     idController.text,
-                                    'CREADA'
+                                    quoteStageController.text
                                     ).then((_) {
                                       ScaffoldMessenger.of(context).showSnackBar(
                                         SnackBar(
                                           content: CustomAlertMessage(
                                             errorTitle: "Genial!", 
-                                            errorText: "Datos almacenados de manera satisfactoria.",
+                                            errorText: "Datos actualizados de manera satisfactoria.",
                                             stateColor: successColor,
                                           ), 
                                           behavior: SnackBarBehavior.floating,
@@ -1472,7 +1485,7 @@ class _EditQuotePageState extends State<EditQuotePage> {
                         child: Text('Fecha límite (${plazoContado.toInt().toString()} días)', style: const TextStyle(fontSize: 10), textAlign: TextAlign.center,)
                       ),
                       textFieldWidget(
-                        dateOnly(false, 0, dateConverter(separacionDeadlineController.text), true), Icons.date_range_outlined, false, saldoTotalDateController, false, 'date', (){}
+                        dateOnly(false, plazoContado, quotePickedDate, true), Icons.date_range_outlined, false, saldoTotalDateController, false, 'date', (){}
                       ),
                     ],
                   ),
@@ -1552,7 +1565,7 @@ class _EditQuotePageState extends State<EditQuotePage> {
                         child: Text('Fecha límite (${(plazoCI).toInt().toString()} días)', style: const TextStyle(fontSize: 10), textAlign: TextAlign.center,)
                       ),
                       textFieldWidget(
-                        dateOnly(false, 0, dateConverter(separacionDeadlineController.text), true), Icons.date_range_outlined, false, saldoCuotaIniDeadlineController, false, 'date', (){}
+                        dateOnly(false, plazoCI, quotePickedDate, true), Icons.date_range_outlined, false, saldoCuotaIniDeadlineController, false, 'date', (){}
                       ),
                     ],
                   ),

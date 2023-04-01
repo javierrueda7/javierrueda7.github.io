@@ -126,6 +126,67 @@ Future<void> deleteSeller(String sid) async {
   await db.collection("sellers").doc(sid).delete();
 }
 
+Future<void> updateQuote(
+  String qid, 
+  String sellerID,
+  String quoteDate, 
+  String quoteDLDate, 
+  String loteName, 
+  String etapaLote, 
+  String areaLote,
+  double priceLote,
+  double precioFinal,
+  double dctoLote,
+  double perCILote,
+  double vlrCILote,
+  double vlrSepLote,
+  String sepDLDate, 
+  double saldoSepLote,
+  String saldoSepDLDate,
+  double plazoCI,
+  double saldoCILote,
+  String saldoCIDLDate, 
+  double vlrPorPagarLote,
+  String metodoPagoLote,
+  String saldoTotalDate,
+  int nroCuotasLote,
+  double vlrCuotasLote,
+  double tem,
+  String observacionesLote,
+  String clienteID,
+  String quoteStage) async {
+  await db.collection("quotes").doc(qid).update({
+    "sellerID": sellerID,
+    "quoteDate": quoteDate,
+    "quoteDLDate": quoteDLDate,
+    "loteName": loteName, 
+    "etapaLote": etapaLote, 
+    "areaLote": areaLote, 
+    "priceLote": priceLote,
+    "precioFinal": precioFinal,
+    "dctoLote": dctoLote,
+    "perCILote": perCILote,
+    "vlrCILote": vlrCILote,
+    "vlrSepLote": vlrSepLote,
+    "sepDLDate": sepDLDate,
+    "saldoSepLote": saldoSepLote,
+    "saldoSepDLDate": saldoSepDLDate,
+    "plazoCI": plazoCI,
+    "saldoCILote": saldoCILote,
+    "saldoCIDLDate": saldoCIDLDate,
+    "vlrPorPagarLote": vlrPorPagarLote,
+    "metodoPagoLote": metodoPagoLote,
+    "saldoTotalDate": saldoTotalDate,
+    "nroCuotasLote": nroCuotasLote,
+    "vlrCuotasLote": vlrCuotasLote,
+    "tem": tem,
+    "observacionesLote": observacionesLote,
+    "clienteID": clienteID,
+    "quoteStage": quoteStage
+    }
+  );
+}
+
 Future<void> addQuote(
   String qid, 
   String sellerID,
@@ -265,6 +326,43 @@ Future<List> getQuotes(String loteName, bool allLotes) async {
 
 Future<void> deleteQuote(String qid) async {
   await db.collection("quotes").doc(qid).delete();
+}
+
+Future<void> updateCustomer(
+  String clienteID,
+  String nameCliente, 
+  String lastnameCliente, 
+  String genderCliente, 
+  String bdayCliente,
+  String ocupacionCliente,
+  String telCliente,
+  String idTypeCliente,
+  String idIssueCountryCliente,
+  String idIssueStateCliente,
+  String idIssueCityCliente, 
+  String emailCliente,
+  String addressCliente, 
+  String countryCliente,
+  String stateCliente,  
+  String cityCliente) async {
+  await db.collection("customers").doc(clienteID).update({
+    "nameCliente": nameCliente,
+    "lastnameCliente": lastnameCliente, 
+    "genderCliente": genderCliente, 
+    "bdayCliente": bdayCliente, 
+    "ocupacionCliente": ocupacionCliente,
+    "telCliente": telCliente,
+    "idTypeCliente": idTypeCliente,
+    "idIssueCountryCliente": idIssueCountryCliente,
+    "idIssueStateCliente": idIssueStateCliente,
+    "idIssueCityCliente": idIssueCityCliente,
+    "emailCliente": emailCliente,
+    "addressCliente": addressCliente,
+    "countryCliente": countryCliente,
+    "stateCliente": stateCliente,    
+    "cityCliente": cityCliente,
+    }
+  );
 }
 
 Future<void> addCustomer(

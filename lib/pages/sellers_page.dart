@@ -31,7 +31,7 @@ class _SellersPageState extends State<SellersPage> {
         foregroundColor: primaryColor,
         elevation: 0,
         centerTitle: true,
-        title: Text('Miembros del equipo',
+        title: Text('Usuarios',
           style: TextStyle(color: primaryColor,fontSize: 18, fontWeight: FontWeight.bold),),
       ),
       body: Center(
