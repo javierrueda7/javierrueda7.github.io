@@ -105,22 +105,30 @@ class _InitPageState extends State<InitPage> {
                       ),                      
                       const PopupMenuItem(
                         value: 'Opción 2',
-                        child: Text('Usuarios'),
+                        child: Text('Lotes'),
                       ),
                       const PopupMenuItem(
                         value: 'Opción 3',
+                        child: Text('Usuarios'),                        
+                      ),
+                      const PopupMenuItem(
+                        value: 'Opción 4',
                         child: Text('Información general'),                        
                       ),
+                      
                     ],
                     onSelected: (value) {
                       if(value == 'Opción 1'){                      
                         Navigator.push(context, MaterialPageRoute(builder: (context) => ExistingQuotes(loteInfo: currentLote, needAll: true, loggedEmail: loggedEmail,)));
                       } if(value == 'Opción 2'){
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => SellersPage(allAccess: userLoggedIn)));
-                      } if(value == 'Opción 3'){
                         setState(() {                          
                         });
-                      } else{
+                      } if(value == 'Opción 3'){
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => SellersPage(allAccess: userLoggedIn)));
+                      } if(value == 'Opción 4'){
+                        setState(() {                          
+                        });
+                      }else{
                         setState(() {                          
                         });
                       } 

@@ -1,4 +1,4 @@
-import 'package:albaterrapp/pages/pdf_generator.dart';
+import 'package:albaterrapp/pages/pdf_separacion.dart';
 import 'package:albaterrapp/services/firebase_services.dart';
 import 'package:albaterrapp/utils/color_utils.dart';
 import 'package:albaterrapp/widgets/widgets.dart';
@@ -9,14 +9,14 @@ import 'dart:async';
 
 FirebaseFirestore db = FirebaseFirestore.instance;
 
-class EditQuotePage extends StatefulWidget {
-  const EditQuotePage({Key? key}) : super(key: key);
+class GenerarSeparacion extends StatefulWidget {
+  const GenerarSeparacion({Key? key}) : super(key: key);
 
   @override
-  State<EditQuotePage> createState() => _EditQuotePageState();
+  State<GenerarSeparacion> createState() => _GenerarSeparacionState();
 }
 
-class _EditQuotePageState extends State<EditQuotePage> {
+class _GenerarSeparacionState extends State<GenerarSeparacion> {
   // ignore: prefer_typing_uninitialized_variables
   var timer;
 
@@ -62,7 +62,6 @@ class _EditQuotePageState extends State<EditQuotePage> {
   int maxCuotas = 1;
   double cuotaInicial = 0;
   int periodoCuotas = 1;
-  late String buttonText;
 
   Future<void> initPagos() async {    
     infoPagos = await getInfoProyecto();
@@ -146,16 +145,13 @@ class _EditQuotePageState extends State<EditQuotePage> {
   String selectedState = '';
   String selectedCity = '';
   bool isInitialized = false;
-  bool cambioEstado = false;
 
   @override
-  Widget build(BuildContext context) {
-    infoEstado();    
+  Widget build(BuildContext context) {     
     Map arguments = ModalRoute.of(context)!.settings.arguments as Map;
     if(isInitialized==false){   
       initPagos();
       initCuotas(); 
-      
       selectedSeller = arguments['selectedSeller'];
       sellerName = arguments['sellerName'];
       sellerEmail = arguments['sellerEmail'];
@@ -202,7 +198,6 @@ class _EditQuotePageState extends State<EditQuotePage> {
       selectedCountry = arguments['country'];
       selectedState = arguments['state'];
       selectedCity = arguments['city'];
-      cambioEstado = arguments['cambioEstado'];     
       vlrFijoSeparacion = saldoSeparacion + stringConverter(vlrSeparacionController.text);
     } else {
       isInitialized = true;
@@ -210,7 +205,6 @@ class _EditQuotePageState extends State<EditQuotePage> {
     
     isInitialized = true;
     
-    infoEstado(); 
     periodoCalculator(stringConverter(selectedNroCuotas));
     vlrBaseLote = stringConverter(priceloteController.text).toInt();    
     precioFinal = vlrBaseLote*((100-discountValue())/100);   
@@ -219,7 +213,7 @@ class _EditQuotePageState extends State<EditQuotePage> {
     valorCuota = valorAPagar/(double.parse(selectedNroCuotas));
     
 
-    
+
     priceloteController.text = (currencyCOP((vlrBaseLote.toInt()).toString()));
     precioFinalController.text = (currencyCOP((precioFinal.toInt()).toString()));
     vlrCuotaIniController.text = (currencyCOP((cuotaInicial.toInt()).toString()));
@@ -236,7 +230,7 @@ class _EditQuotePageState extends State<EditQuotePage> {
         foregroundColor: primaryColor,
         elevation: 0,
         centerTitle: true,
-        title: Text('Cotización ${quoteIdController.text} | ${quoteStageController.text}', 
+        title: Text('Orden de separación', 
           style: TextStyle(color: primaryColor,fontSize: 18, fontWeight: FontWeight.bold),),
       ),
       body: Center(
@@ -259,7 +253,14 @@ class _EditQuotePageState extends State<EditQuotePage> {
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
                 child: Column(
-                  children: [                    
+                  children: [  
+                    SizedBox(
+                      height: 15,
+                      child: Center(child: Text('COTIZACIÓN #${quoteIdController.text}', style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold,))),
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
                     Container(
                       constraints: const BoxConstraints(maxWidth: 800),
                       alignment: Alignment.center,
@@ -485,9 +486,6 @@ class _EditQuotePageState extends State<EditQuotePage> {
                             child: const Text('Separación', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold,))
                           ),
                           const SizedBox(
-                            height: 5,
-                          ),
-                          const SizedBox(
                             height: 15,
                             child: Text('Valor total de separación', style: TextStyle(fontSize: 10),),
                           ),
@@ -511,9 +509,7 @@ class _EditQuotePageState extends State<EditQuotePage> {
                               })
                             )
                           ),
-                          const SizedBox(
-                            height: 5,
-                          ),                          
+                          
                           Container(
                             constraints: const BoxConstraints(maxWidth: 800),
                             child: Row(
@@ -541,7 +537,7 @@ class _EditQuotePageState extends State<EditQuotePage> {
                                           } if(stringConverter(value) >= vlrFijoSeparacion) {                                            
                                             setState(() {
                                               vlrSeparacion = vlrFijoSeparacion;
-                                              vlrSeparacionController.text = (currencyCOP((vlrFijoSeparacion.toInt()).toString()));                                          
+                                              vlrSeparacionController.text = vlrFijoSeparacion.toInt().toString();                                            
                                               saldoSeparacion = 0;
                                               saldoSeparacionController.text = (currencyCOP((saldoSeparacion.toInt()).toString()));
                                               vlrSeparacionController.value = TextEditingValue(
@@ -1173,15 +1169,20 @@ class _EditQuotePageState extends State<EditQuotePage> {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) => PDFGenerator(
+                                      builder: (context) => PDFSeparacion(
                                         sellerID: selectedSeller,
                                         sellerName: '${seller['nameSeller']} ${seller['lastnameSeller']}',
                                         sellerPhone: seller['phoneSeller'],
                                         sellerEmail: seller['emailSeller'],
                                         quoteId: quoteIdController.text,
                                         name: nameController.text,
+                                        idCust: idController.text,
+                                        idTypeCust: selectedItemIdtype,
                                         lastname: lastnameController.text,
                                         phone: phoneController.text,
+                                        address: addressController.text,
+                                        email: emailController.text,
+                                        city: selectedCity,
                                         date: quoteDateController.text,
                                         dueDate: quoteDeadlineController.text,
                                         lote: loteController.text,
@@ -1190,6 +1191,7 @@ class _EditQuotePageState extends State<EditQuotePage> {
                                         finalPrice: precioFinalController.text,
                                         porcCuotaIni: '${((porcCuotaInicial.toInt()).toString())}%',
                                         vlrCuotaIni: vlrCuotaIniController.text,
+                                        totalSeparacion: totalSeparacionController.text,
                                         vlrSeparacion: vlrSeparacionController.text,
                                         dueDateSeparacion: separacionDeadlineController.text,
                                         saldoSeparacion: saldoSeparacionController.text,
@@ -1332,12 +1334,12 @@ class _EditQuotePageState extends State<EditQuotePage> {
                                           backgroundColor: Colors.transparent,
                                           elevation: 0,
                                         ),
-                                      );                    
+                                      );                        
                                       Navigator.pop(context);
                                   });
                                 }
                               },
-                              child: Text(buttonText),
+                              child: const Text("Guardar"),
                             ),
                           ),
                         ],
@@ -1354,16 +1356,6 @@ class _EditQuotePageState extends State<EditQuotePage> {
         ),
       ),
     );
-  }
-
-  void infoEstado (){
-    if(cambioEstado == true){      
-      if(quoteStageController.text == 'AUTORIZADA'){
-        buttonText = 'Autorizar cotización';
-      }       
-    } else { 
-      buttonText = 'Guardar';    
-    }
   }
 
   Future<Map<String, dynamic>> getSeller(String value) async {

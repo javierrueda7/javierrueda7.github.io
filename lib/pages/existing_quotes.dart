@@ -147,7 +147,7 @@ Future<String> getGerenteEmail() async {
                                           child: Text(changeState(snapshot.data?[index]['quoteStage'])),
                                         ),
                                       ],
-                                      onSelected: (value) {
+                                      onSelected: (value) async {
                                         if(value == 'Opción 1'){                     
                                          Navigator.push(context, MaterialPageRoute(
                                           builder: (context) => PDFGenerator(
@@ -187,10 +187,109 @@ Future<String> getGerenteEmail() async {
                                           ),
                                         ));
                                         } if(value == 'Opción 2'){
-                                          setState(() {
-                                            updateQuoteStage(snapshot.data?[index]['qid'], newState(snapshot.data?[index]['quoteStage']));
-
-                                          });
+                                          if(snapshot.data?[index]['quoteStage'] == 'CREADA'){
+                                            await Navigator.pushNamed(context, "/editQuote", arguments: {
+                                              "selectedSeller": snapshot.data?[index]['sellerID'],
+                                              "sellerName": '${sellerData['nameSeller']} ${sellerData['lastnameSeller']}',
+                                              "sellerEmail": sellerData['emailSeller'],
+                                              "sellerPhone": sellerData['phoneSeller'],
+                                              "quoteId": snapshot.data?[index]['qid'],
+                                              "quoteDate": snapshot.data?[index]['quoteDate'],
+                                              "quoteDeadline": snapshot.data?[index]['quoteDLDate'],
+                                              "lote": snapshot.data?[index]['loteName'],
+                                              "etapalote": snapshot.data?[index]['etapaLote'],
+                                              "arealote": snapshot.data?[index]['areaLote'],
+                                              "pricelote": (currencyCOP((snapshot.data?[index]['priceLote'].toInt()).toString())),
+                                              "precioFinal": (currencyCOP((snapshot.data?[index]['precioFinal'].toInt()).toString())),
+                                              "paymentMethod": snapshot.data?[index]['metodoPagoLote'],
+                                              "porcCuotaInicial": '${snapshot.data?[index]['perCILote'].toString()}%',
+                                              "vlrCuotaIni": (currencyCOP((snapshot.data?[index]['vlrCILote'].toInt()).toString())),
+                                              "nroCuotas": '${snapshot.data?[index]['nroCuotasLote'].toString()}',
+                                              "vlrSeparacion": (currencyCOP((snapshot.data?[index]['vlrSepLote'].toInt()).toString())),
+                                              "saldoSeparacion": (currencyCOP((snapshot.data?[index]['saldoSepLote'].toInt()).toString())),
+                                              "separacionDeadline": snapshot.data?[index]['sepDLDate'],
+                                              "saldoSeparacionDeadline": snapshot.data?[index]['saldoSepDLDate'],
+                                              "saldoCuotaIni": (currencyCOP((snapshot.data?[index]['saldoCILote'].toInt()).toString())),
+                                              "saldoCuotaIniDeadline": snapshot.data?[index]['saldoCIDLDate'],
+                                              "vlrPorPagar": (currencyCOP((snapshot.data?[index]['vlrPorPagarLote'].toInt()).toString())),
+                                              "saldoTotalDate": snapshot.data?[index]['saldoTotalDate'],
+                                              "vlrCuota": (currencyCOP((snapshot.data?[index]['vlrCuotasLote'].toInt()).toString())),
+                                              "tem": '${snapshot.data?[index]['tem'].toString()}%',
+                                              "observaciones": snapshot.data?[index]['observacionesLote'],
+                                              "quoteStage": newState(snapshot.data?[index]['quoteStage']),
+                                              "name": custData['nameCliente'],
+                                              "lastname": custData['lastnameCliente'],
+                                              "gender": custData['genderCliente'],
+                                              "birthday": custData['bdayCliente'],
+                                              "ocupacion": custData['ocupacionCliente'],
+                                              "phone": custData['telCliente'],
+                                              "idtype": custData['idTypeCliente'],
+                                              "id": snapshot.data?[index]['clienteID'],
+                                              "issuedCountry": custData['idIssueCountryCliente'],
+                                              "issuedState": custData['idIssueStateCliente'],
+                                              "issuedCity": custData['idIssueCityCliente'],
+                                              "email": custData['emailCliente'],
+                                              "address": custData['addressCliente'],
+                                              "country": custData['countryCliente'],
+                                              "state": custData['stateCliente'],
+                                              "city": custData['cityCliente'],
+                                              "cambioEstado": true,
+                                            });
+                                          }
+                                          if(snapshot.data?[index]['quoteStage'] == 'AUTORIZADA'){
+                                            // ignore: use_build_context_synchronously
+                                            await Navigator.pushNamed(context, "/genSep", arguments: {
+                                              "selectedSeller": snapshot.data?[index]['sellerID'],
+                                              "sellerName": '${sellerData['nameSeller']} ${sellerData['lastnameSeller']}',
+                                              "sellerEmail": sellerData['emailSeller'],
+                                              "sellerPhone": sellerData['phoneSeller'],
+                                              "quoteId": snapshot.data?[index]['qid'],
+                                              "quoteDate": snapshot.data?[index]['quoteDate'],
+                                              "quoteDeadline": snapshot.data?[index]['quoteDLDate'],
+                                              "lote": snapshot.data?[index]['loteName'],
+                                              "etapalote": snapshot.data?[index]['etapaLote'],
+                                              "arealote": snapshot.data?[index]['areaLote'],
+                                              "pricelote": (currencyCOP((snapshot.data?[index]['priceLote'].toInt()).toString())),
+                                              "precioFinal": (currencyCOP((snapshot.data?[index]['precioFinal'].toInt()).toString())),
+                                              "paymentMethod": snapshot.data?[index]['metodoPagoLote'],
+                                              "porcCuotaInicial": '${snapshot.data?[index]['perCILote'].toString()}%',
+                                              "vlrCuotaIni": (currencyCOP((snapshot.data?[index]['vlrCILote'].toInt()).toString())),
+                                              "nroCuotas": '${snapshot.data?[index]['nroCuotasLote'].toString()}',
+                                              "vlrSeparacion": (currencyCOP((snapshot.data?[index]['vlrSepLote'].toInt()).toString())),
+                                              "saldoSeparacion": (currencyCOP((snapshot.data?[index]['saldoSepLote'].toInt()).toString())),
+                                              "separacionDeadline": snapshot.data?[index]['sepDLDate'],
+                                              "saldoSeparacionDeadline": snapshot.data?[index]['saldoSepDLDate'],
+                                              "saldoCuotaIni": (currencyCOP((snapshot.data?[index]['saldoCILote'].toInt()).toString())),
+                                              "saldoCuotaIniDeadline": snapshot.data?[index]['saldoCIDLDate'],
+                                              "vlrPorPagar": (currencyCOP((snapshot.data?[index]['vlrPorPagarLote'].toInt()).toString())),
+                                              "saldoTotalDate": snapshot.data?[index]['saldoTotalDate'],
+                                              "vlrCuota": (currencyCOP((snapshot.data?[index]['vlrCuotasLote'].toInt()).toString())),
+                                              "tem": '${snapshot.data?[index]['tem'].toString()}%',
+                                              "observaciones": snapshot.data?[index]['observacionesLote'],
+                                              "quoteStage": newState(snapshot.data?[index]['quoteStage']),
+                                              "name": custData['nameCliente'],
+                                              "lastname": custData['lastnameCliente'],
+                                              "gender": custData['genderCliente'],
+                                              "birthday": custData['bdayCliente'],
+                                              "ocupacion": custData['ocupacionCliente'],
+                                              "phone": custData['telCliente'],
+                                              "idtype": custData['idTypeCliente'],
+                                              "id": snapshot.data?[index]['clienteID'],
+                                              "issuedCountry": custData['idIssueCountryCliente'],
+                                              "issuedState": custData['idIssueStateCliente'],
+                                              "issuedCity": custData['idIssueCityCliente'],
+                                              "email": custData['emailCliente'],
+                                              "address": custData['addressCliente'],
+                                              "country": custData['countryCliente'],
+                                              "state": custData['stateCliente'],
+                                              "city": custData['cityCliente'],
+                                              "cambioEstado": true,
+                                            });
+                                          } else {
+                                            setState(() {                          
+                                            });
+                                          } 
+                                        
                                         } if(value == 'Opción 3'){
                                           setState(() {                          
                                           });
@@ -250,6 +349,7 @@ Future<String> getGerenteEmail() async {
                                           "country": custData['countryCliente'],
                                           "state": custData['stateCliente'],
                                           "city": custData['cityCliente'],
+                                          "cambioEstado": false,
                                         });
                                         setState(() {});
                                       } else {
@@ -292,8 +392,6 @@ Future<String> getGerenteEmail() async {
     if(value == 'CREADA'){
       return 'AUTORIZADA';
     } if(value == 'AUTORIZADA'){
-      return 'APROBADA';
-    } if(value == 'APROBADA'){
       return 'LOTE SEPARADO';
     } else {
       return 'LOTE SEPARADO';
@@ -304,9 +402,7 @@ Future<String> getGerenteEmail() async {
     if(value == 'CREADA'){
       return 'Autorizar cotización';
     } if(value == 'AUTORIZADA'){
-      return 'Cotización aceptada';
-    } if(value == 'APROBADA'){
-      return 'Aprobar separación';
+      return 'Generar separación';
     } else {
       return 'Lote separado';
     }
@@ -317,8 +413,6 @@ Future<String> getGerenteEmail() async {
       return dangerColor;
     } if(value == 'AUTORIZADA'){
       return warningColor;
-    } if(value == 'APROBADA'){
-      return successColor;
     } else{
       return infoColor;
     }
