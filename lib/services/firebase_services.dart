@@ -253,7 +253,8 @@ Future<void> addQuote(
     "tem": tem,
     "observacionesLote": observacionesLote,
     "clienteID": clienteID,
-    "quoteStage": quoteStage
+    "quoteStage": quoteStage,
+    "isActive": true,
     }
   );
 }
@@ -294,6 +295,7 @@ Future<List> getQuotes(String loteName, bool allLotes) async {
           "observacionesLote": data['observacionesLote'],
           "clienteID": data['clienteID'],
           "quoteStage": data['quoteStage'],
+          "isActive": data['isActive'],
         };
         quotes.add(quote);
       }
@@ -327,6 +329,7 @@ Future<List> getQuotes(String loteName, bool allLotes) async {
           "observacionesLote": data['observacionesLote'],
           "clienteID": data['clienteID'],
           "quoteStage": data['quoteStage'],
+          "isActive": data['isActive'],
         };
         quotes.add(quote);
     }
@@ -334,7 +337,7 @@ Future<List> getQuotes(String loteName, bool allLotes) async {
   return quotes;
 }
 
-Future<void> deleteQuote(String qid) async {
+Future<void> archiveQuote(String qid) async {
   await db.collection("quotes").doc(qid).delete();
 }
 

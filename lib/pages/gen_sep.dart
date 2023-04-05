@@ -99,6 +99,11 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
   Stream<QuerySnapshot>? sellerStream;
   final CollectionReference collectionReference = FirebaseFirestore.instance.collection('quotes');
 
+  TextEditingController letrasSepController = TextEditingController(text: "");
+  TextEditingController letrasSaldoCIController = TextEditingController(text: "");
+  TextEditingController letrasSaldoLoteController = TextEditingController(text: "");
+  TextEditingController letrasValorCuotasLoteController = TextEditingController(text: "");
+
   String selectedSeller = 'Seleccione un vendedor';
   String sellerName = '';
   String sellerEmail = '';
@@ -260,6 +265,98 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
                     ),
                     const SizedBox(
                       height: 20,
+                    ),
+
+
+
+                    const SizedBox(
+                      height: 15,
+                      child: Text('Valor de separación', style: TextStyle(fontSize: 10),),
+                    ),
+                    Container(
+                      constraints: const BoxConstraints(maxWidth: 800),
+                      child: textFieldWidget(
+                        (currencyCOP((vlrSeparacion.toInt()).toString())), Icons.monetization_on_outlined, false, vlrSeparacionController, false, 'number', () {},                                      ),
+                    ),
+                    const SizedBox(
+                      height: 5,
+                    ),
+                    Container(
+                      constraints: const BoxConstraints(maxWidth: 800),
+                      child: textFieldWidget(
+                        "Valor en letras", Icons.abc_outlined, false, letrasSepController, true, 'name', (){}
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+
+                    const SizedBox(
+                      height: 20,
+                      child: Text('Saldo cuota inicial', style: TextStyle(fontSize: 10), textAlign: TextAlign.center,)
+                    ),
+                    Container(
+                      constraints: const BoxConstraints(maxWidth: 800),
+                      child: textFieldWidget(
+                        (currencyCOP(saldoCI.toInt().toString())), Icons.monetization_on_outlined, false, saldoCuotaIniController, false, 'number', (){}
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 5,
+                    ),                    
+                    Container(
+                      constraints: const BoxConstraints(maxWidth: 800),
+                      child: textFieldWidget(
+                        "Valor en letras", Icons.abc_outlined, false, letrasSaldoCIController, true, 'name', (){}
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    SizedBox(
+                      height: 20,
+                      child: Text('Saldo del lote (${((100-porcCuotaInicial).toInt()).toString()}%)', style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),)
+                    ),  
+                    textFieldWidget(
+                      (currencyCOP(valorAPagar.toInt().toString())), Icons.monetization_on_outlined, false, vlrPorPagarController, false, 'number', (){}
+                    ),                    
+                    const SizedBox(
+                      height: 5,
+                    ),                    
+                    Container(
+                      constraints: const BoxConstraints(maxWidth: 800),
+                      child: textFieldWidget(
+                        "Valor en letras", Icons.abc_outlined, false, letrasSaldoLoteController, true, 'name', (){}
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    const SizedBox(
+                      height: 20,
+                      child: Text('Valor de cada cuota', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),)
+                    ),  
+                    textFieldWidget(
+                      (currencyCOP(valorCuota.toInt().toString())), Icons.monetization_on_outlined, false, vlrCuotaController, false, 'number', (){}
+                    ),                  
+                    const SizedBox(
+                      height: 5,
+                    ),                    
+                    Container(
+                      constraints: const BoxConstraints(maxWidth: 800),
+                      child: textFieldWidget(
+                        "Valor en letras", Icons.abc_outlined, false, letrasValorCuotasLoteController, true, 'name', (){}
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+
+
+
+                    
+                    const SizedBox(
+                      height: 5,
                     ),
                     Container(
                       constraints: const BoxConstraints(maxWidth: 800),

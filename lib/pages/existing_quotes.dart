@@ -89,7 +89,7 @@ Future<String> getGerenteEmail() async {
                                 final sellerData = sellerSnapshot.data?.data() as Map<String, dynamic>;                                                            
                                 return Dismissible(
                                   onDismissed: (direction) async {
-                                    await deleteQuote(snapshot.data?[index]['qid']);
+                                    await archiveQuote(snapshot.data?[index]['qid']);
                                     snapshot.data?.removeAt(index);
                                     setState(() {});
                                   },
@@ -99,7 +99,7 @@ Future<String> getGerenteEmail() async {
                                       context: context, 
                                       builder: (context){
                                         return AlertDialog(
-                                          title: Text("Esta seguro de eliminar la cotizacion #${snapshot.data?[index]['qid']}?"),
+                                          title: Text("Esta seguro de archivar la cotizacion #${snapshot.data?[index]['qid']}?"),
                                           actions: [
                                             TextButton(onPressed: (){
                                               return Navigator.pop(
