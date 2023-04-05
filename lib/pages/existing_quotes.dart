@@ -68,7 +68,7 @@ Future<String> getGerenteEmail() async {
         child: Container(
           constraints: const BoxConstraints(maxWidth: 1200),
           child: FutureBuilder(
-            future: getQuotes(loteInfo[1], needAll),
+            future: getQuotes(loteInfo[1], needAll, true),
             builder: ((context, snapshot){
               if(snapshot.hasData){
                 return ListView.builder(

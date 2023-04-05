@@ -44,6 +44,7 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
   late int quoteCounter;
   late String qid;
   DateTime quotePickedDate = DateTime.now();
+  DateTime sepPickedDate = DateTime.now();
   List<dynamic> loteInfo = [];
   Map<String, dynamic> seller = {};
   String realtimeDateTime = '';
@@ -62,6 +63,7 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
   int maxCuotas = 1;
   double cuotaInicial = 0;
   int periodoCuotas = 1;
+  int plazoSaldoSep = 0;
 
   Future<void> initPagos() async {    
     infoPagos = await getInfoProyecto();
@@ -72,6 +74,7 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
     dctoContado = infoPagos['dctoContado'].toDouble();
     plazoContado = infoPagos['plazoContado'].toDouble();
     maxCuotas = infoPagos['maxCuotas'].toInt();
+    plazoSaldoSep = infoPagos['plazoSaldoSep'].toInt();
     nroCuotasList = nroCuotasGenerator(maxCuotas); 
     
     seller = await getSeller(selectedSeller);
@@ -111,6 +114,7 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
   TextEditingController quoteIdController = TextEditingController(text: "");
   TextEditingController quoteDateController = TextEditingController(text: "");
   TextEditingController quoteDeadlineController = TextEditingController(text: "");
+  String loteId = "";
   TextEditingController loteController = TextEditingController(text: "");
   TextEditingController etapaloteController = TextEditingController(text: "");
   TextEditingController arealoteController = TextEditingController(text: "");
@@ -162,9 +166,10 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
       sellerEmail = arguments['sellerEmail'];
       sellerPhone = arguments['sellerPhone'];
       quoteIdController.text = arguments['quoteId'];
-      quotePickedDate = DateFormat("dd-MM-yyyy").parse(arguments['quoteDate']);
+      quotePickedDate = DateFormat("dd-MM-yyyy").parse(arguments['separacionDeadline']);
       quoteDateController.text = arguments['quoteDate'];
       quoteDeadlineController.text = arguments['quoteDeadline'];
+      loteId = arguments['loteId'];
       loteController.text = arguments['lote'];
       etapaloteController.text = arguments['etapalote'];
       arealoteController.text = arguments['arealote'];
@@ -266,86 +271,320 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
                     const SizedBox(
                       height: 20,
                     ),
-
-
-
-                    const SizedBox(
-                      height: 15,
-                      child: Text('Valor de separación', style: TextStyle(fontSize: 10),),
-                    ),
-                    Container(
-                      constraints: const BoxConstraints(maxWidth: 800),
-                      child: textFieldWidget(
-                        (currencyCOP((vlrSeparacion.toInt()).toString())), Icons.monetization_on_outlined, false, vlrSeparacionController, false, 'number', () {},                                      ),
-                    ),
-                    const SizedBox(
-                      height: 5,
-                    ),
-                    Container(
-                      constraints: const BoxConstraints(maxWidth: 800),
-                      child: textFieldWidget(
-                        "Valor en letras", Icons.abc_outlined, false, letrasSepController, true, 'name', (){}
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-
-                    const SizedBox(
-                      height: 20,
-                      child: Text('Saldo cuota inicial', style: TextStyle(fontSize: 10), textAlign: TextAlign.center,)
-                    ),
-                    Container(
-                      constraints: const BoxConstraints(maxWidth: 800),
-                      child: textFieldWidget(
-                        (currencyCOP(saldoCI.toInt().toString())), Icons.monetization_on_outlined, false, saldoCuotaIniController, false, 'number', (){}
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 5,
-                    ),                    
-                    Container(
-                      constraints: const BoxConstraints(maxWidth: 800),
-                      child: textFieldWidget(
-                        "Valor en letras", Icons.abc_outlined, false, letrasSaldoCIController, true, 'name', (){}
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 10,
+                    SizedBox(
+                      height: 25,
+                      child: Text('Precio final${isDiscount(discountValue())}', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),)
                     ),
                     SizedBox(
                       height: 20,
-                      child: Text('Saldo del lote (${((100-porcCuotaInicial).toInt()).toString()}%)', style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),)
-                    ),  
-                    textFieldWidget(
-                      (currencyCOP(valorAPagar.toInt().toString())), Icons.monetization_on_outlined, false, vlrPorPagarController, false, 'number', (){}
-                    ),                    
-                    const SizedBox(
-                      height: 5,
-                    ),                    
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: 8.0),
+                        child: discountText(discountValue()),
+                      )
+                    ),          
                     Container(
-                      constraints: const BoxConstraints(maxWidth: 800),
                       child: textFieldWidget(
-                        "Valor en letras", Icons.abc_outlined, false, letrasSaldoLoteController, true, 'name', (){}
+                        (currencyCOP(precioFinal.toInt().toString())), Icons.monetization_on_outlined, false, precioFinalController, false, 'number', (){}
                       ),
                     ),
                     const SizedBox(
                       height: 10,
                     ),
-                    const SizedBox(
-                      height: 20,
-                      child: Text('Valor de cada cuota', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),)
-                    ),  
-                    textFieldWidget(
-                      (currencyCOP(valorCuota.toInt().toString())), Icons.monetization_on_outlined, false, vlrCuotaController, false, 'number', (){}
-                    ),                  
-                    const SizedBox(
-                      height: 5,
-                    ),                    
+                    //Separacion
                     Container(
                       constraints: const BoxConstraints(maxWidth: 800),
-                      child: textFieldWidget(
-                        "Valor en letras", Icons.abc_outlined, false, letrasValorCuotasLoteController, true, 'name', (){}
+                      child: Column(
+                        children: [
+                          const SizedBox(
+                            height: 25,
+                            child: Text('Separación', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),)
+                          ),
+                          const SizedBox(
+                            height: 20,
+                            child: Text('Fecha de separación', style: TextStyle(fontSize: 14),)
+                          ),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          Container(
+                            decoration: BoxDecoration(
+                              color: primaryColor.withOpacity(0.2),
+                              borderRadius: BorderRadius.circular(30.0),
+                              border: Border.all(width: 1, style: BorderStyle.solid, color: fifthColor.withOpacity(0.1)),                                
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.only(left: 10),
+                              child: TextField(
+                                textAlign: TextAlign.center,
+                                cursorColor: fifthColor,                              
+                                style: TextStyle(color: fifthColor.withOpacity(0.9)),
+                                controller: separacionDeadlineController,
+                                decoration: InputDecoration(
+                                  border: InputBorder.none,
+                                  icon: Icon(Icons.date_range_outlined, color: fifthColor,),
+                                  hintText: dateOnly(false, 0, quotePickedDate, false),                                    
+                                ),
+                                readOnly: true,
+                                onTap: () async{
+                                  DateTime? tempPickedDate = await showDatePicker(
+                                    context: context, 
+                                    initialDate: DateTime.now(), 
+                                    firstDate: DateTime(1900), 
+                                    lastDate: DateTime(2050),
+                                  );
+                                  if(tempPickedDate != null) {
+                                    setState(() {
+                                      quotePickedDate = tempPickedDate;                                
+                                      separacionDeadlineController.text = dateOnly(false, 0, tempPickedDate, false);
+                                      saldoSeparacionDeadlineController.text = dateOnly(false, plazoSaldoSep.toDouble(), tempPickedDate, false);
+                                      saldoCuotaIniDeadlineController.text = dateOnly(false, plazoCI, tempPickedDate, true);
+                                      saldoTotalDateController.text = dateSaldo;
+                                      discountValue();
+                                    });
+                                  }
+                                },
+                              ),
+                            ),
+                          ),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          const SizedBox(
+                            height: 15,
+                            child: Text('Valor de separación', style: TextStyle(fontSize: 14),)
+                          ),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          Row(
+                            children: [
+                              Expanded(
+                                flex: 6,
+                                child: textFieldWidget(
+                                  (currencyCOP((vlrFijoSeparacion.toInt()).toString())), Icons.monetization_on_outlined, false, totalSeparacionController, false, 'number', () {},                                      ),
+                              ),
+                              Expanded(
+                                flex: 7,
+                                child: textFieldWidget(
+                                  "Valor en letras", Icons.abc_outlined, false, letrasSepController, true, 'name', (){}
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    const SizedBox(
+                      height: 10,
+                    ),
+
+                    //Financiación directa
+                    Container(
+                      constraints: const BoxConstraints(maxWidth: 800),
+                      child: Column(
+                        children: [
+                          const SizedBox(
+                            height: 25,
+                            child: Text('Cuota inicial', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),)
+                          ),
+                          SizedBox(
+                            height: 20,
+                            child: Text('Fecha límite (${(plazoCI).toInt().toString()} días)', style: const TextStyle(fontSize: 14),)
+                          ),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          Container(
+                            decoration: BoxDecoration(
+                              color: primaryColor.withOpacity(0.2),
+                              borderRadius: BorderRadius.circular(30.0),
+                              border: Border.all(width: 1, style: BorderStyle.solid, color: fifthColor.withOpacity(0.1)),                                
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.only(left: 10),
+                              child: TextField(
+                                textAlign: TextAlign.center,
+                                cursorColor: fifthColor,                              
+                                style: TextStyle(color: fifthColor.withOpacity(0.9)),
+                                controller: saldoCuotaIniDeadlineController,
+                                decoration: InputDecoration(
+                                  border: InputBorder.none,
+                                  icon: Icon(Icons.date_range_outlined, color: fifthColor,),
+                                  hintText: dateOnly(false, plazoCI, quotePickedDate, true),                                    
+                                ),
+                                readOnly: true,
+                                onTap: () async{
+                                  DateTime? tempPickedDate = await showDatePicker(
+                                    context: context, 
+                                    initialDate: DateTime.now(), 
+                                    firstDate: DateTime(1900), 
+                                    lastDate: DateTime(2050),
+                                  );
+                                  if(tempPickedDate != null) {
+                                    setState(() {                                                                    
+                                      saldoCuotaIniDeadlineController.text = dateOnly(false, 0, tempPickedDate, true);                                      
+                                    });
+                                  }
+                                },
+                              ),
+                            ),
+                          ),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          const SizedBox(
+                            height: 20,
+                            child: Text('Saldo cuota inicial', style: TextStyle(fontSize: 14),)
+                          ),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          Row(
+                            children: [
+                              Expanded(
+                              flex: 6,
+                                child: textFieldWidget(
+                                  (currencyCOP(saldoCI.toInt().toString())), Icons.monetization_on_outlined, false, saldoCuotaIniController, false, 'number', (){}
+                                ),
+                              ),               
+                              Expanded(
+                              flex: 7,
+                                child: textFieldWidget(
+                                  "Valor en letras", Icons.abc_outlined, false, letrasSaldoCIController, true, 'name', (){}
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          const SizedBox(
+                            height: 25,
+                            child: Text('Saldo total', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),)
+                          ),
+                          SizedBox(
+                            height: 20,
+                            child: Text('Valor a financiar (${((100-porcCuotaInicial).toInt()).toString()}%)', style: const TextStyle(fontSize: 14),)
+                          ),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          Row(
+                            children: [
+                              Expanded(
+                                flex: 6,
+                                child: textFieldWidget(
+                                  (currencyCOP(valorAPagar.toInt().toString())), Icons.monetization_on_outlined, false, vlrPorPagarController, false, 'number', (){}
+                                ),
+                              ),                 
+                              Expanded(
+                                flex: 7,
+                                child: textFieldWidget(
+                                  "Valor en letras", Icons.abc_outlined, false, letrasSaldoLoteController, true, 'name', (){}
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          Center(
+                            child: Row(
+                              children: [
+                                const Expanded(
+                                  flex: 3,
+                                  child: SizedBox(
+                                    height: 20,
+                                    child: Padding(
+                                      padding: EdgeInsets.only(right: 10),
+                                      child: Text('repartido en  ', style: TextStyle(fontSize: 14), textAlign: TextAlign.right,),
+                                    )
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 2,
+                                  child: easyDropdown(nroCuotasList, selectedNroCuotas, (tempNroCuotas){setState(() {
+                                    selectedNroCuotas = tempNroCuotas!;
+                                    periodoCalculator(stringConverter(selectedNroCuotas));
+                                    initCuotas();
+                                  });}),
+                                ),
+                                const Expanded(
+                                  flex: 3,
+                                  child: SizedBox(
+                                    height: 20,
+                                    child: Padding(
+                                      padding: EdgeInsets.only(left: 10),
+                                      child: Text('cuotas de', style: TextStyle(fontSize: 14),),
+                                    )
+                                  ),
+                                ),                                 
+                              ],
+                            ),
+                          ),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          Row(
+                            children: [
+                              Expanded(
+                                flex: 6,
+                                child: textFieldWidget(
+                                  (currencyCOP(valorCuota.toInt().toString())), Icons.monetization_on_outlined, false, vlrCuotaController, false, 'number', (){}
+                                ),
+                              ),
+                              Expanded(
+                                flex: 7,
+                                child: textFieldWidget(
+                                  "Valor en letras", Icons.abc_outlined, false, letrasValorCuotasLoteController, true, 'name', (){}
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(
+                            height: 20,
+                            child: Text('Con fecha de inicio', style: TextStyle(fontSize: 14),)
+                          ),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          Container(
+                            decoration: BoxDecoration(
+                              color: primaryColor.withOpacity(0.2),
+                              borderRadius: BorderRadius.circular(30.0),
+                              border: Border.all(width: 1, style: BorderStyle.solid, color: fifthColor.withOpacity(0.1)),                                
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.only(left: 10),
+                              child: TextField(
+                                textAlign: TextAlign.center,
+                                cursorColor: fifthColor,                              
+                                style: TextStyle(color: fifthColor.withOpacity(0.9)),
+                                controller: saldoTotalDateController,
+                                decoration: InputDecoration(
+                                  border: InputBorder.none,
+                                  icon: Icon(Icons.date_range_outlined, color: fifthColor,),
+                                  hintText: dateOnly(false, plazoCI+30, quotePickedDate, true),                                    
+                                ),
+                                readOnly: true,
+                                onTap: () async{
+                                  DateTime? tempPickedDate = await showDatePicker(
+                                    context: context, 
+                                    initialDate: DateTime.now(), 
+                                    firstDate: DateTime(1900), 
+                                    lastDate: DateTime(2050),
+                                  );
+                                  if(tempPickedDate != null) {
+                                    setState(() {                                                                    
+                                      saldoTotalDateController.text = dateOnly(false, 0, tempPickedDate, true);                                      
+                                    });
+                                  }
+                                },
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                     const SizedBox(
@@ -422,48 +661,10 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
                                 const SizedBox(
                                   height: 15,
                                   child: Text('Desde', style: TextStyle(fontSize: 10),),
+                                ),                                
+                                textFieldWidget(
+                                  quoteDateController.text, Icons.date_range_outlined, false, quoteDateController, false, 'date', (){}
                                 ),
-                                Container(
-                                  decoration: BoxDecoration(
-                                    color: primaryColor.withOpacity(0.2),
-                                    borderRadius: BorderRadius.circular(30.0),
-                                    border: Border.all(width: 1, style: BorderStyle.solid, color: fifthColor.withOpacity(0.1)),                                
-                                  ),
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(left: 10),
-                                    child: TextField(
-                                      cursorColor: fifthColor,                              
-                                      style: TextStyle(color: fifthColor.withOpacity(0.9)),
-                                      controller: quoteDateController,
-                                      decoration: InputDecoration(
-                                        border: InputBorder.none,
-                                        icon: Icon(Icons.date_range_outlined, color: fifthColor,),
-                                        hintText: DateFormat('dd-MM-yyyy').format(quotePickedDate),                                    
-                                      ),
-                                      readOnly: true,
-                                      onTap: () async{
-                                        DateTime? tempPickedDate = await showDatePicker(
-                                          context: context, 
-                                          initialDate: DateTime.now(), 
-                                          firstDate: DateTime(1900), 
-                                          lastDate: DateTime.now(),
-                                        );
-                                        if(tempPickedDate != null) {
-                                          setState(() {
-                                            quotePickedDate = tempPickedDate;
-                                            quoteDateController.text = DateFormat('dd-MM-yyyy').format(tempPickedDate);
-                                            quoteDeadlineController.text = dateOnly(false, 15, tempPickedDate, true);
-                                            separacionDeadlineController.text = dateOnly(false, 0, tempPickedDate, false);
-                                            saldoSeparacionDeadlineController.text = dateOnly(false, 7, tempPickedDate,false);
-                                            saldoCuotaIniDeadlineController.text = dateOnly(false, plazoCI, tempPickedDate, true);
-                                            saldoTotalDateController.text = dateSaldo;
-                                            discountValue();
-                                          });
-                                        }
-                                      },
-                                    ),
-                                  ),
-                                ),   
                               ],
                             ),
                           ),
@@ -476,7 +677,7 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
                                   child: Text('Hasta', style: TextStyle(fontSize: 10),),
                                 ),
                                 textFieldWidget(
-                                  dateOnly(false, 15, quotePickedDate, false), Icons.date_range_outlined, false, quoteDeadlineController, false, 'date', (){}
+                                  quoteDeadlineController.text, Icons.date_range_outlined, false, quoteDeadlineController, false, 'date', (){}
                                 ),
                               ],
                             ),
@@ -656,7 +857,7 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
                                       height: 15,
                                       child: Text('Fecha límite', style: TextStyle(fontSize: 10),)),
                                       textFieldWidget(
-                                        dateOnly(false, 0, quotePickedDate, false), Icons.date_range_outlined, false, separacionDeadlineController, false, 'date', (){}),
+                                        separacionDeadlineController.text, Icons.date_range_outlined, false, separacionDeadlineController, false, 'date', (){}),
                                     ],
                                   ),
                                 ),
@@ -688,10 +889,12 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
                                   child: Column(
                                     children: [
                                       const SizedBox(
-                                      height: 15,
-                                      child: Text('Fecha límite saldo separación', style: TextStyle(fontSize: 10),)),
+                                        height: 15,
+                                        child: Text('Fecha límite saldo separación', style: TextStyle(fontSize: 10),)
+                                      ),
                                       textFieldWidget(
-                                        dateOnly(false, 7, quotePickedDate, false), Icons.date_range_outlined, false, saldoSeparacionDeadlineController, false, 'date', (){}),
+                                        dateOnly(false, 0, quotePickedDate, false), Icons.date_range_outlined, false, saldoSeparacionDeadlineController, false, 'date', (){}
+                                      ),
                                     ],
                                   ),
                                 ),
@@ -1395,6 +1598,7 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
                                     selectedSeller,
                                     quoteDateController.text,
                                     quoteDeadlineController.text, 
+                                    loteId,
                                     loteController.text,
                                     etapaloteController.text,
                                     arealoteController.text,

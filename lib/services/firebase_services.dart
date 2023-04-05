@@ -118,6 +118,7 @@ Future<Map<String, dynamic>> getInfoProyecto() async {
     "tem": data['tem'],
     "valorSeparacion": data['valorSeparacion'],
     "maxCuotas": data['maxCuotas'],
+    "plazoSaldoSep": data['plazoSaldoSep'],
   };
   return proyectoInfo;
 }
@@ -259,13 +260,14 @@ Future<void> addQuote(
   );
 }
 
-Future<List> getQuotes(String loteName, bool allLotes) async {
+Future<List> getQuotes(String loteName, bool allLotes, bool archive) async {
   List quotes = [];
   QuerySnapshot? queryQuotes = await db.collection('quotes').get();
   for (var doc in queryQuotes.docs) {
     final Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
     if (allLotes == false) {
-      if (data['loteName'] == loteName) {
+      
+      if (data['loteName'] == loteName || data['isActive'] == archive) {
         final quote = {
           "qid": doc.id,
           "sellerID": data['sellerID'],
@@ -300,7 +302,8 @@ Future<List> getQuotes(String loteName, bool allLotes) async {
         quotes.add(quote);
       }
     } else {
-      final quote = {
+      if (data['isActive'] == archive) {
+        final quote = {
           "qid": doc.id,
           "sellerID": data['sellerID'],
           "quoteDate": data['quoteDate'],
@@ -332,13 +335,16 @@ Future<List> getQuotes(String loteName, bool allLotes) async {
           "isActive": data['isActive'],
         };
         quotes.add(quote);
+      }
     }
   }
   return quotes;
 }
 
 Future<void> archiveQuote(String qid) async {
-  await db.collection("quotes").doc(qid).delete();
+  await db.collection("quotes").doc(qid).update({
+    'isActive': false
+  });
 }
 
 Future<void> updateCustomer(
