@@ -102,10 +102,11 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
   Stream<QuerySnapshot>? sellerStream;
   final CollectionReference collectionReference = FirebaseFirestore.instance.collection('quotes');
 
+  TextEditingController letrasPrecioFinalController = TextEditingController(text: "");
   TextEditingController letrasSepController = TextEditingController(text: "");
   TextEditingController letrasSaldoCIController = TextEditingController(text: "");
   TextEditingController letrasSaldoLoteController = TextEditingController(text: "");
-  TextEditingController letrasValorCuotasLoteController = TextEditingController(text: "");
+  TextEditingController letrasValorCuotasController = TextEditingController(text: "");
 
   String selectedSeller = 'Seleccione un vendedor';
   String sellerName = '';
@@ -282,10 +283,21 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
                         child: discountText(discountValue()),
                       )
                     ),          
-                    Container(
-                      child: textFieldWidget(
-                        (currencyCOP(precioFinal.toInt().toString())), Icons.monetization_on_outlined, false, precioFinalController, false, 'number', (){}
-                      ),
+                    Row(
+                      children: [
+                        Expanded(
+                          flex: 6,
+                          child: textFieldWidget(
+                            (currencyCOP((precioFinal.toInt()).toString())), Icons.monetization_on_outlined, false, precioFinalController, false, 'number', () {},
+                          ),
+                        ),
+                        Expanded(
+                          flex: 7,
+                          child: textFieldWidget(
+                            "Valor en letras", Icons.abc_outlined, false, letrasPrecioFinalController, true, 'name', (){}
+                          ),
+                        ),
+                      ],
                     ),
                     const SizedBox(
                       height: 10,
@@ -537,10 +549,13 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
                               Expanded(
                                 flex: 7,
                                 child: textFieldWidget(
-                                  "Valor en letras", Icons.abc_outlined, false, letrasValorCuotasLoteController, true, 'name', (){}
+                                  "Valor en letras", Icons.abc_outlined, false, letrasValorCuotasController, true, 'name', (){}
                                 ),
                               ),
                             ],
+                          ),
+                          const SizedBox(
+                            height: 10,
                           ),
                           const SizedBox(
                             height: 20,
@@ -1451,7 +1466,11 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
                                   addressController.text.isEmpty || 
                                   selectedCountry.isEmpty ||  
                                   selectedState.isEmpty || 
-                                  selectedCity.isEmpty
+                                  selectedCity.isEmpty ||
+                                  letrasPrecioFinalController.text.isEmpty ||
+                                  letrasSepController.text.isEmpty ||
+                                  letrasSaldoLoteController.text.isEmpty ||
+                                  letrasValorCuotasController.text.isEmpty
                                   ){
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(
@@ -1489,21 +1508,26 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
                                         area: arealoteController.text,
                                         price: priceloteController.text,
                                         finalPrice: precioFinalController.text,
+                                        letrasFinalPrice: letrasPrecioFinalController.text,
                                         porcCuotaIni: '${((porcCuotaInicial.toInt()).toString())}%',
                                         vlrCuotaIni: vlrCuotaIniController.text,
                                         totalSeparacion: totalSeparacionController.text,
+                                        letrasSeparacion: letrasSepController.text,
                                         vlrSeparacion: vlrSeparacionController.text,
                                         dueDateSeparacion: separacionDeadlineController.text,
                                         saldoSeparacion: saldoSeparacionController.text,
                                         dueDateSaldoSeparacion: saldoSeparacionDeadlineController.text,
                                         plazoCI: '${(((plazoCI).toInt()).toString())} días',
+                                        letrasSaldoCI: letrasSaldoCIController.text,
                                         saldoCI: saldoCuotaIniController.text,
                                         dueDateSaldoCI: saldoCuotaIniDeadlineController.text,
                                         porcPorPagar: '${(((100-porcCuotaInicial).toInt()).toString())}%',
                                         vlrPorPagar: vlrPorPagarController.text,
+                                        letrasSaldoTotal: letrasSaldoLoteController.text,
                                         paymentMethod: paymentMethodSelectedItem,
                                         tiempoFinanc: '${(int.parse(selectedNroCuotas))/12} años',
                                         vlrCuota: vlrCuotaController.text,
+                                        letrasVlrCuota: letrasValorCuotasController.text,
                                         saldoTotalDate: saldoTotalDateController.text,
                                         nroCuotas: selectedNroCuotas,                                        
                                         tem: '${temController.text}%',
@@ -1623,6 +1647,32 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
                                     observacionesController.text,
                                     idController.text,
                                     quoteStageController.text
+                                    );
+                                    await addOrdenSep(
+                                    "SEP${quoteIdController.text}",
+                                    quoteIdController.text,
+                                    selectedSeller,
+                                    loteId,
+                                    vlrBaseLote.toDouble(),
+                                    precioFinal,
+                                    discountValue(),
+                                    porcCuotaInicial,
+                                    cuotaInicial,
+                                    vlrSeparacion,
+                                    separacionDeadlineController.text,
+                                    saldoSeparacion,
+                                    saldoSeparacionDeadlineController.text,
+                                    plazoCI,
+                                    saldoCI,
+                                    saldoCuotaIniDeadlineController.text,
+                                    valorAPagar, 
+                                    paymentMethodSelectedItem,
+                                    saldoTotalDateController.text,
+                                    int.parse(selectedNroCuotas), 
+                                    valorCuota,
+                                    vlrTEM,
+                                    observacionesController.text,
+                                    idController.text,
                                     ).then((_) {
                                       ScaffoldMessenger.of(context).showSnackBar(
                                         SnackBar(
@@ -1640,7 +1690,7 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
                                   });
                                 }
                               },
-                              child: const Text("Guardar"),
+                              child: const Text("Guardar orden de separación", textAlign: TextAlign.center,),
                             ),
                           ),
                         ],

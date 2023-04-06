@@ -127,6 +127,63 @@ Future<void> deleteSeller(String sid) async {
   await db.collection("sellers").doc(sid).delete();
 }
 
+Future<void> addOrdenSep(
+  String oid,
+  String quoteId, 
+  String sellerID, 
+  String loteId, 
+  double priceLote,
+  double precioFinal,
+  double dctoLote,
+  double perCILote,
+  double vlrCILote,
+  double vlrSepLote,
+  String separacionDate, 
+  double saldoSepLote,
+  String promesaDLDate,
+  double plazoCI,
+  double saldoCILote,
+  String saldoCIDLDate, 
+  double vlrPorPagarLote,
+  String metodoPagoLote,
+  String saldoTotalDate,
+  int nroCuotasLote,
+  double vlrCuotasLote,
+  double tem,
+  String observacionesLote,
+  String clienteID,
+  ) async {
+  await db.collection("ordSep").doc(oid).set({
+    "quoteId": quoteId,
+    "sellerID": sellerID,
+    "loteId": loteId, 
+    "priceLote": priceLote,
+    "precioFinal": precioFinal,
+    "dctoLote": dctoLote,
+    "perCILote": perCILote,
+    "vlrCILote": vlrCILote,
+    "vlrSepLote": vlrSepLote,
+    "separacionDate": separacionDate,
+    "saldoSepLote": saldoSepLote,
+    "promesaDLDate": promesaDLDate,
+    "plazoCI": plazoCI,
+    "saldoCILote": saldoCILote,
+    "saldoCIDLDate": saldoCIDLDate,
+    "vlrPorPagarLote": vlrPorPagarLote,
+    "metodoPagoLote": metodoPagoLote,
+    "saldoTotalDate": saldoTotalDate,
+    "nroCuotasLote": nroCuotasLote,
+    "vlrCuotasLote": vlrCuotasLote,
+    "tem": tem,
+    "observacionesLote": observacionesLote,
+    "clienteID": clienteID,
+    "stageSep": "ACTIVA"
+    }
+  );
+}
+
+
+
 Future<void> updateQuoteStage(
   String qid,  
   String quoteStage) async {
@@ -141,7 +198,8 @@ Future<void> updateQuote(
   String qid, 
   String sellerID,
   String quoteDate, 
-  String quoteDLDate, 
+  String quoteDLDate,
+  String loteId,
   String loteName, 
   String etapaLote, 
   String areaLote,
@@ -170,6 +228,7 @@ Future<void> updateQuote(
     "sellerID": sellerID,
     "quoteDate": quoteDate,
     "quoteDLDate": quoteDLDate,
+    "loteId": loteId,
     "loteName": loteName, 
     "etapaLote": etapaLote, 
     "areaLote": areaLote, 
@@ -203,6 +262,7 @@ Future<void> addQuote(
   String sellerID,
   String quoteDate, 
   String quoteDLDate, 
+  String loteId,
   String loteName, 
   String etapaLote, 
   String areaLote,
@@ -231,6 +291,7 @@ Future<void> addQuote(
     "sellerID": sellerID,
     "quoteDate": quoteDate,
     "quoteDLDate": quoteDLDate,
+    "loteId": loteId,
     "loteName": loteName, 
     "etapaLote": etapaLote, 
     "areaLote": areaLote, 
@@ -273,6 +334,7 @@ Future<List> getQuotes(String loteName, bool allLotes, bool archive) async {
           "sellerID": data['sellerID'],
           "quoteDate": data['quoteDate'],
           "quoteDLDate": data['quoteDLDate'],
+          "loteId": data['loteId'],
           "loteName": data['loteName'],
           "etapaLote": data['etapaLote'],
           "areaLote": data['areaLote'],
@@ -308,6 +370,7 @@ Future<List> getQuotes(String loteName, bool allLotes, bool archive) async {
           "sellerID": data['sellerID'],
           "quoteDate": data['quoteDate'],
           "quoteDLDate": data['quoteDLDate'],
+          "loteId": data['loteId'],
           "loteName": data['loteName'],
           "etapaLote": data['etapaLote'],
           "areaLote": data['areaLote'],

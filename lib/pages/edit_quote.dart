@@ -107,6 +107,7 @@ class _EditQuotePageState extends State<EditQuotePage> {
   TextEditingController quoteIdController = TextEditingController(text: "");
   TextEditingController quoteDateController = TextEditingController(text: "");
   TextEditingController quoteDeadlineController = TextEditingController(text: "");
+  String loteId = "";
   TextEditingController loteController = TextEditingController(text: "");
   TextEditingController etapaloteController = TextEditingController(text: "");
   TextEditingController arealoteController = TextEditingController(text: "");
@@ -164,6 +165,7 @@ class _EditQuotePageState extends State<EditQuotePage> {
       quotePickedDate = DateFormat("dd-MM-yyyy").parse(arguments['quoteDate']);
       quoteDateController.text = arguments['quoteDate'];
       quoteDeadlineController.text = arguments['quoteDeadline'];
+      loteId = arguments['loteId'];
       loteController.text = arguments['lote'];
       etapaloteController.text = arguments['etapalote'];
       arealoteController.text = arguments['arealote'];
@@ -1296,6 +1298,7 @@ class _EditQuotePageState extends State<EditQuotePage> {
                                     selectedSeller,
                                     quoteDateController.text,
                                     quoteDeadlineController.text, 
+                                    loteId,
                                     loteController.text,
                                     etapaloteController.text,
                                     arealoteController.text,

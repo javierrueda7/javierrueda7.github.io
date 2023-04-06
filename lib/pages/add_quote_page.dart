@@ -106,6 +106,7 @@ class _AddQuotePageState extends State<AddQuotePage> {
   String sellerPhone = '';
   TextEditingController quoteDateController = TextEditingController(text: DateFormat('dd-MM-yyyy').format(DateTime.now()));
   TextEditingController quoteDeadlineController = TextEditingController(text: dateOnly(false, 15, DateTime.now(), false));
+  String loteId = "";
   TextEditingController loteController = TextEditingController(text: "");
   TextEditingController etapaloteController = TextEditingController(text: "");
   TextEditingController arealoteController = TextEditingController(text: "");
@@ -1217,7 +1218,8 @@ class _AddQuotePageState extends State<AddQuotePage> {
                                     idGenerator(quoteCounter),
                                     selectedSeller,
                                     quoteDateController.text,
-                                    quoteDeadlineController.text, 
+                                    quoteDeadlineController.text,
+                                    loteInfo[2],
                                     loteInfo[1],
                                     loteInfo[7],
                                     '${((loteInfo[8].toInt()).toString())} m²',
