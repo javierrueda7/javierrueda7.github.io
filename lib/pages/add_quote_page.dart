@@ -214,7 +214,7 @@ class _AddQuotePageState extends State<AddQuotePage> {
                       child: Padding(
                         padding: const EdgeInsets.only(left: 10.0, right: 10),
                         child: StreamBuilder<QuerySnapshot>(
-                          stream: FirebaseFirestore.instance.collection('sellers').snapshots(),
+                          stream: FirebaseFirestore.instance.collection('sellers').orderBy('lastnameSeller').snapshots(),
                           builder: (context, sellersSnapshot) {
                             List<DropdownMenuItem> sellerItems = [];
                             if (!sellersSnapshot.hasData) {

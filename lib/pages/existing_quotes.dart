@@ -81,7 +81,7 @@ Future<String> getGerenteEmail() async {
                           final custData = custSnapshot.data?.data() as Map<String, dynamic>;
                           final name = custData['nameCliente'] ?? '';
                           final lastName = custData['lastnameCliente'] ?? '';
-                          final fullName = '$name $lastName';
+                          final fullName = '$lastName $name';
                           return FutureBuilder(
                             future: db.collection('sellers').doc(snapshot.data?[index]['sellerID']).get(),
                             builder: ((context, sellerSnapshot) {
@@ -133,8 +133,8 @@ Future<String> getGerenteEmail() async {
                                   key: Key(snapshot.data?[index]['qid']),
                                   child: ListTile(
                                     leading: CircleAvatar(backgroundColor: stageColor(snapshot.data?[index]['quoteStage']), child: Text(getNumbers(snapshot.data?[index]['loteName'])!, textAlign: TextAlign.center, style: TextStyle(color: primaryColor, fontWeight: FontWeight.bold),)),
-                                    title: Text('${snapshot.data?[index]['loteName']} | Cotización #${snapshot.data?[index]['qid']} | ${snapshot.data?[index]['quoteStage']}'),
-                                    subtitle: Text(fullName),
+                                    title: Text('Cotización #${snapshot.data?[index]['qid']} | ${snapshot.data?[index]['quoteStage']}'),
+                                    subtitle: Text('Cliente: $fullName'),
                                     trailing: PopupMenuButton<String>(
                                       itemBuilder: (context) => [
                                         const PopupMenuItem(

@@ -553,6 +553,18 @@ Future<void> addLotes(String idLote, String loteName, double loteLeft, double	lo
   );
 }
 
+Future<void> cambioEstadoLote(String idLote, String statusLote) async {
+  String tempState = 'Disponible';
+  if(statusLote == 'LOTE SEPARADO'){
+    tempState = 'Lote separado';
+  } else {
+    tempState = 'Lote vendido';
+  }  
+  await db.collection("lotes").doc(idLote).update({
+   "loteState": tempState
+  });
+}
+
 Future<void> addLoteImg(String idLote, String loteInfoIMG) async {
   await db.collection("lotes").doc(idLote).update({
     "loteInfoIMG": loteInfoIMG,
