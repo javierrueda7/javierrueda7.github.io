@@ -186,68 +186,6 @@ class CustomAlertMessage extends StatelessWidget {
   }
 }
 
-Widget adminMenuCard(bool adminCancelOnPressed, Function cancelOnPressed, Function sellerOnPressed, Function allQuotesExisting){
-  if(adminCancelOnPressed == false){
-    return Card(
-        elevation: 3,
-        color: primaryColor.withOpacity(0.9),
-        child: Padding(
-          padding: const EdgeInsets.all(1),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              const SizedBox(height: 8,),
-              Stack(
-                alignment: Alignment.center,
-                children: [
-                  const Text('Opciones de administrador', style: TextStyle(fontWeight: FontWeight.bold),),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 230),
-                    child: IconButton(onPressed: (){
-                          cancelOnPressed(false);                  
-                        }, icon: Icon(Icons.close_rounded, color: dangerColor,), alignment: Alignment.topRight,),
-                  )
-                ],
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              Container(
-                width: 300,
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  children: [
-                    Expanded(
-                      flex: 1,
-                      child: TextButton(onPressed: (){
-                        sellerOnPressed(true);
-                      }, child: Text('Agregar vendedor', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: fifthColor),)),
-                    ),
-                    Expanded(
-                      flex: 1,
-                      child: TextButton(onPressed: (){
-                        allQuotesExisting(true);                  
-                      }, child: Text('Ver más', style: TextStyle(fontSize: 16, color: fifthColor.withOpacity(0.5),),)),
-                    ),
-                  ],
-                ),
-              )
-            ],
-          ),
-        ),      
-      );
-    }
-  else {
-    return Container();
-  }
-}
-
-bool getCloseButton(){
-  return isClosed;
-}
-   
-
-
 Widget loteCard(List<dynamic> currentSelection, Function cancelOnPressed, Function quoteOnPressed, Function quoteExisting, bool userType){
   if(currentSelection[0] == true){
     return Card(
@@ -271,11 +209,16 @@ Widget loteCard(List<dynamic> currentSelection, Function cancelOnPressed, Functi
                 )
               ],
             ),
+            loteCardData('Etapa', currentSelection[7].toString()),
             const SizedBox(
               height: 10,
             ),
-            loteCardData('Etapa', currentSelection[7].toString()),
-            loteCardData('Area', '${(currentSelection[8].toInt()).toString()} m²'),
+            loteCardImg(
+              currentSelection[2].toString(), currentSelection[12].toString()
+            ),        
+            const SizedBox(
+              height: 10,
+            ),
             loteCardData('Precio', (currencyCOP((currentSelection[9].toInt()).toString()))),
             Container(
               width: 300,
@@ -321,16 +264,35 @@ Widget loteCard(List<dynamic> currentSelection, Function cancelOnPressed, Functi
   }
 }
 
+Widget loteCardImg(String loteId, String loteInfoImg) {
+  if(loteId != 'L67'){
+    return SizedBox(
+      height: 250,
+      child: InteractiveViewer(
+        panEnabled: true,
+        minScale: 0.8,
+        maxScale: 4,
+        child: Image.asset(
+          'assets/images/$loteInfoImg',
+          fit: BoxFit.fitHeight,    
+        ),
+      ),
+    ); 
+  } else {
+    return const SizedBox();
+  }
+}
+
 Row loteCardData(String loteInfo, String loteInfoAnswer) {
   return Row(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[ 
-              const Padding(padding: EdgeInsets.only(left: 5, right: 10)),
-              Text('$loteInfo:', style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),),
-              Text(" $loteInfoAnswer", style: const TextStyle(fontSize: 12)),
-              const Padding(padding: EdgeInsets.only(left: 5, right: 5)),
-            ],
-          );
+    mainAxisSize: MainAxisSize.min,
+    children: <Widget>[ 
+      const Padding(padding: EdgeInsets.only(left: 5, right: 10)),
+      Text('$loteInfo:', style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),),
+      Text(" $loteInfoAnswer", style: const TextStyle(fontSize: 12)),
+      const Padding(padding: EdgeInsets.only(left: 5, right: 5)),
+    ],
+  );
 }
 
 Widget easyDropdown(List tempList, String tempSelectedItem, Function tempOnChanged) {

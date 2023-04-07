@@ -226,7 +226,7 @@ class _AddQuotePageState extends State<AddQuotePage> {
                                   sellerItems.add(
                                     DropdownMenuItem(
                                       value: sellers.id,
-                                      child: Center(child: Text(sellers['nameSeller'])),
+                                      child: Center(child: Text('${seller['nameSeller']} ${seller['lastnameSeller']}')),
                                     ),
                                   );
                                 }

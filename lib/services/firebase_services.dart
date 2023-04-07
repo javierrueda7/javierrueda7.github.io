@@ -529,6 +529,7 @@ Future<List> getLotes() async {
       "lotePrice": data['lotePrice'],
       "loteState": data['loteState'],
       "loteImg": data['loteImg'],
+      "loteInfoIMG": data['loteInfoIMG'],
     };
     lotes.add(lote);
   }
@@ -548,6 +549,13 @@ Future<void> addLotes(String idLote, String loteName, double loteLeft, double	lo
     "loteArea": loteArea, 
     "lotePrice": lotePrice,    
     "loteImg": loteImg,
+    }
+  );
+}
+
+Future<void> addLoteImg(String idLote, String loteInfoIMG) async {
+  await db.collection("lotes").doc(idLote).update({
+    "loteInfoIMG": loteInfoIMG,
     }
   );
 }

@@ -74,8 +74,8 @@ class _InitPageState extends State<InitPage> {
   Color loteColor = Colors.transparent;
   Color etapaColor = Colors.transparent;
   int currentItem = 0;
-  List<dynamic> currentLote = [false, ' ', ' ', 0.0, 0.0, 0.0, 0.0, ' ', 0.0,  0.0, 'null', 'null'];
-  List<dynamic> baseLote = [false, ' ', ' ', 0.0, 0.0, 0.0, 0.0, ' ', 0.0,  0.0, 'null', 'null'];
+  List<dynamic> currentLote = [false, ' ', ' ', 0.0, 0.0, 0.0, 0.0, ' ', 0.0,  0.0, 'null', 'null', 'null'];
+  List<dynamic> baseLote = [false, ' ', ' ', 0.0, 0.0, 0.0, 0.0, ' ', 0.0,  0.0, 'null', 'null', 'null'];
   String selectedOption = 'Option 1';
 
   @override
@@ -245,7 +245,8 @@ class _InitPageState extends State<InitPage> {
                                                               currentLote[8] = snapshot.data?[index]['loteArea'];
                                                               currentLote[9] = snapshot.data?[index]['lotePrice'];
                                                               currentLote[10] = snapshot.data?[index]['loteState'];
-                                                              currentLote[11] = snapshot.data?[index]['loteImg'];                                                        
+                                                              currentLote[11] = snapshot.data?[index]['loteImg']; 
+                                                              currentLote[12] = snapshot.data?[index]['loteInfoIMG'];
                                                             });
                                                           },
                                                           style: ElevatedButton.styleFrom(
@@ -387,7 +388,8 @@ class _InitPageState extends State<InitPage> {
               Expanded(
                 flex: 1,
                 child: Container()
-              )
+              ),
+              addAllLotes()
             ],
           ),
         ),
@@ -400,33 +402,28 @@ class _InitPageState extends State<InitPage> {
 
 
 
-  /*TextButton addAllLotes() {
+  TextButton addAllLotes() {
     return TextButton(
       child: Text(
-        "Agregar lotes", 
+        "Agregar imagenes", 
         style: TextStyle(color: fifthColor.withOpacity(0.8), fontWeight: FontWeight.bold),
       ),
       onPressed: (){
-        for (int i = 1; i < 68; i++) {
-          String loteName = "Lote $i";
-          String loteEtapa = "";
-          double loteArea = 0;
-          double lotePrice = 0;
-          String loteState = "Disponible";
-          String loteImg = "$loteName.png";
-
-          if(i == 67){
-            loteEtapa = "Etapa Premium";
-          } else if(i < 18 || ( 25 < i && i < 36 )){
-            loteEtapa = "Etapa 2";
-          } else if(( i > 35 && i != 67 ) || ( 17 < i && i < 26 )){
-            loteEtapa = "Etapa 1";
+        String loteInfoIMG = '';
+        String tempValue = '';
+        for (int i = 1; i < 67; i++) {          
+          if(i < 10){
+            tempValue = '0${i.toString()}';
+            loteInfoIMG = 'ALBATERRA-ADS-RRSS-MARZ-AF-$tempValue.jpg';
+          } else {
+            tempValue = i.toString();
+            loteInfoIMG = 'ALBATERRA-ADS-RRSS-MARZ-AF-$tempValue.jpg';
           }
-          addLotes(loteName, loteEtapa, loteArea, lotePrice, loteState, loteImg);
+          addLoteImg('L$tempValue',loteInfoIMG);
         }
       },
     );
-  }*/
+  }
 }
 
 class LoteGeneral extends StatelessWidget {
