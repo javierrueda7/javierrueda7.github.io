@@ -389,7 +389,6 @@ class _InitPageState extends State<InitPage> {
                 flex: 1,
                 child: Container()
               ),
-              addAllLotes()
             ],
           ),
         ),
