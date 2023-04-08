@@ -17,6 +17,33 @@ Future<List> getRoles() async {
   return roles;
 }
 
+Future<void> addBanco(String bid, String banco, String nroCuenta, String tipoCuenta, String nit, String nameRep) async {
+  await db.collection("infobanco").doc(bid).set({
+    "banco": banco,
+    "nroCuenta": nroCuenta,
+    "tipoCuenta": tipoCuenta,
+    "nit": nit,
+    "nameRep": nameRep
+    }
+  );
+}
+
+Future<List> getCuentasBanco() async {
+  List bancos = [];
+  QuerySnapshot? queryBancos = await db.collection('infobanco').get();
+  for (var doc in queryBancos.docs) {
+    final Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+    final bank = {
+      "bid": doc.id,
+      "nroCuenta": data['nroCuenta'],
+      "tipoCuenta": data['tipoCuenta'],
+      "nit": data['nit'],
+      "nameRep": data['nameRep']
+    };
+    bancos.add(bank);
+  }
+  return bancos;
+}
 
 Future<List> getSellers() async {
   List sellers = [];
@@ -105,6 +132,35 @@ Future<List> getPagoAdicional() async {
     pagos.add(pago);
   }
   return pagos;
+}
+
+Future<void> updateInv(String inv, String name, String nit, String email, String nameRep, String idRep, String idLugar) async {
+  await db.collection("infoproyecto").doc(inv).update({ 
+    "name": name,
+    "nit": nit,
+    "email": email,
+    "nameRep": nameRep,
+    "idRep": idRep,
+    "idLugar": idLugar,
+    }
+  );
+}
+
+Future<Map<String, dynamic>> getInversionista(String inv) async {
+  DocumentSnapshot<Map<String, dynamic>> infoInversionista = await db.collection('infoproyecto').doc(inv).get();
+  final Map<String, dynamic> data = infoInversionista.data() as Map<String, dynamic>;
+  final inversionistaInfo = {
+    "banco": data['banco'],
+    "email": data['email'],
+    "idLugar": data['idLugar'],
+    "idRep": data['idRep'],
+    "name": data['name'],
+    "nameRep": data['nameRep'],
+    "nit": data['nit'],
+    "nroCuenta": data['nroCuenta'],
+    "tipoCuenta": data['tipoCuenta'],
+  };
+  return inversionistaInfo;
 }
 
 Future<Map<String, dynamic>> getInfoProyecto() async {

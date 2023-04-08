@@ -1050,7 +1050,7 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
                           Expanded(
                             flex: 2,
                             child: textFieldWidget(
-                              "Nro documento", Icons.person_pin_outlined, false, idController, true, 'email', (){}
+                              "Nro documento", Icons.badge_outlined, false, idController, true, 'email', (){}
                             ),
                           ),                          
                         ],
@@ -1673,7 +1673,8 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
                                     vlrTEM,
                                     observacionesController.text,
                                     idController.text,
-                                    ).then((_) {
+                                    );
+                                    cambioEstadoLote(loteId, quoteStageController.text).then((_) {
                                       ScaffoldMessenger.of(context).showSnackBar(
                                         SnackBar(
                                           content: CustomAlertMessage(

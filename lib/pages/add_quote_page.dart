@@ -74,7 +74,7 @@ class _AddQuotePageState extends State<AddQuotePage> {
     dctoContado = infoPagos['dctoContado'].toDouble();
     plazoContado = infoPagos['plazoContado'].toDouble();
     maxCuotas = infoPagos['maxCuotas'].toInt();
-    
+    sellerStream = FirebaseFirestore.instance.collection('sellers').orderBy('lastnameSeller').snapshots();
     seller = await getSeller(selectedSeller);
   }
 
@@ -96,7 +96,6 @@ class _AddQuotePageState extends State<AddQuotePage> {
   List countries = [];
   List<String> paymentMethodList= ['Pago de contado', 'Financiación directa'];
   String paymentMethodSelectedItem = 'Pago de contado';
-  Stream<QuerySnapshot>? citiesStream;
   Stream<QuerySnapshot>? sellerStream;
   final CollectionReference collectionReference = FirebaseFirestore.instance.collection('quotes');
 
@@ -174,6 +173,7 @@ class _AddQuotePageState extends State<AddQuotePage> {
     
     temController.text = '${vlrTEM.toString()}%';
     saldoTotalDateController.text = dateSaldo;
+    sellerStream = FirebaseFirestore.instance.collection('sellers').orderBy('lastnameSeller').snapshots();
 
     return Scaffold(      
       extendBodyBehindAppBar: false,
@@ -214,7 +214,7 @@ class _AddQuotePageState extends State<AddQuotePage> {
                       child: Padding(
                         padding: const EdgeInsets.only(left: 10.0, right: 10),
                         child: StreamBuilder<QuerySnapshot>(
-                          stream: FirebaseFirestore.instance.collection('sellers').orderBy('lastnameSeller').snapshots(),
+                          stream: sellerStream,
                           builder: (context, sellersSnapshot) {
                             List<DropdownMenuItem> sellerItems = [];
                             if (!sellersSnapshot.hasData) {
@@ -662,7 +662,7 @@ class _AddQuotePageState extends State<AddQuotePage> {
                           Expanded(
                             flex: 2,
                             child: textFieldWidget(
-                              "Nro documento", Icons.person_pin_outlined, false, idController, true, 'email', (){}
+                              "Nro documento", Icons.badge_outlined, false, idController, true, 'email', (){}
                             ),
                           ),                          
                         ],

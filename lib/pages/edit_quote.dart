@@ -741,7 +741,7 @@ class _EditQuotePageState extends State<EditQuotePage> {
                           Expanded(
                             flex: 2,
                             child: textFieldWidget(
-                              "Nro documento", Icons.person_pin_outlined, false, idController, true, 'email', (){}
+                              "Nro documento", Icons.badge_outlined, false, idController, true, 'email', (){}
                             ),
                           ),                          
                         ],

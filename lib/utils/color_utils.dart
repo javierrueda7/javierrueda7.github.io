@@ -18,7 +18,7 @@ Color setColorState (String loteState){
   if(loteState == "Disponible"){
     loteColor = infoColor;
   } else{ 
-    if(loteState == "Apartado"){
+    if(loteState == "Lote separado"){
     loteColor = warningColor;
     } else{
       if(loteState == "null"){

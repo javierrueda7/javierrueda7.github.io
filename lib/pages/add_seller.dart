@@ -117,7 +117,7 @@ class _AddSellerPageState extends State<AddSellerPage> {
                     Container(
                       constraints: const BoxConstraints(maxWidth: 800),
                       child: textFieldWidget(
-                        "Número de identificación", Icons.lock_outline, false, _idTextController, true, 'id', (){}
+                        "Número de identificación", Icons.badge_outlined, false, _idTextController, true, 'id', (){}
                       ),
                     ),
                     const SizedBox(
