@@ -3,7 +3,6 @@ import 'package:albaterrapp/services/firebase_services.dart';
 import 'package:albaterrapp/utils/color_utils.dart';
 import 'package:albaterrapp/widgets/widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 
 class InfoGeneral extends StatefulWidget {
   const InfoGeneral({super.key});
@@ -87,7 +86,7 @@ class _InfoGeneralState extends State<InfoGeneral> {
                   Navigator.push(context, MaterialPageRoute(builder: (context) => const InfoBancos()));                  
                 },
                 child: const Icon(
-                  Icons.apartment_outlined
+                  Icons.account_balance_outlined
                 ),
               )
           ),
