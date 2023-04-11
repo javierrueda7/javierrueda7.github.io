@@ -3,6 +3,8 @@ import 'package:albaterrapp/utils/color_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
+import 'package:number_to_character/number_to_character.dart';
+import 'package:translator/translator.dart';
 
 bool isClosed = false;
 
@@ -28,6 +30,15 @@ Widget loteImg(String imageName, String loteState){
     );
   }  
 }
+
+Future<String> numeroEnLetras (double value, String text) async {
+    var converter = NumberToCharacterConverter('en');
+    final translator = GoogleTranslator();
+    int valorEntero = value.toInt();
+    String valorIngles = converter.convertInt(valorEntero);
+    final valorFinal = await translator.translate('$valorIngles $text', from: 'en', to: 'es');
+    return valorFinal.text;
+  }
 
 TextField textFieldWidget(String text, IconData? icon, bool isPasswordType, TextEditingController controller, bool isEnabled, String kbType, Function inputChanged) {
   if (kbType == 'name') {

@@ -5,6 +5,7 @@ import 'package:albaterrapp/pages/signin_page.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:albaterrapp/firebase_options.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 // Pages
 
@@ -23,6 +24,13 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      localizationsDelegates: [
+         GlobalMaterialLocalizations.delegate
+       ],
+       supportedLocales: [
+         const Locale('es'),
+         const Locale('en')
+       ],
       title: 'Albaterrapp',
       initialRoute: '/',
       routes: {

@@ -6,8 +6,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'dart:async';
-import 'package:number_to_character/number_to_character.dart';
-import 'package:translator/translator.dart';
 
 FirebaseFirestore db = FirebaseFirestore.instance;
 
@@ -290,21 +288,24 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
                         child: discountText(discountValue()),
                       )
                     ),          
-                    Row(
-                      children: [
-                        Expanded(
-                          flex: 6,
-                          child: textFieldWidget(
-                            (currencyCOP((precioFinal.toInt()).toString())), Icons.monetization_on_outlined, false, precioFinalController, false, 'number', () {},
+                    Container(
+                      constraints: const BoxConstraints(maxWidth: 800),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            flex: 6,
+                            child: textFieldWidget(
+                              (currencyCOP((precioFinal.toInt()).toString())), Icons.monetization_on_outlined, false, precioFinalController, false, 'number', () {},
+                            ),
                           ),
-                        ),
-                        Expanded(
-                          flex: 7,
-                          child: textFieldWidget(
-                            "Valor en letras", Icons.abc_outlined, false, letrasPrecioFinalController, true, 'name', (){}
+                          Expanded(
+                            flex: 7,
+                            child: textFieldWidget(
+                              "Valor en letras", Icons.abc_outlined, false, letrasPrecioFinalController, true, 'name', (){}
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                     const SizedBox(
                       height: 10,
@@ -320,7 +321,7 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
                           ),
                           const SizedBox(
                             height: 20,
-                            child: Text('Fecha de separación', style: TextStyle(fontSize: 14),)
+                            child: Text('Fecha límite promesa de compra venta (Saldo Separacion)', style: TextStyle(fontSize: 14),)
                           ),
                           const SizedBox(
                             height: 10,
@@ -333,35 +334,38 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
                             ),
                             child: Padding(
                               padding: const EdgeInsets.only(left: 10),
-                              child: TextField(
-                                textAlign: TextAlign.center,
-                                cursorColor: fifthColor,                              
-                                style: TextStyle(color: fifthColor.withOpacity(0.9)),
-                                controller: separacionDeadlineController,
-                                decoration: InputDecoration(
-                                  border: InputBorder.none,
-                                  icon: Icon(Icons.date_range_outlined, color: fifthColor,),
-                                  hintText: dateOnly(false, 0, quotePickedDate, false),                                    
+                              child: SingleChildScrollView(
+                                child: TextField(
+                                  textAlign: TextAlign.center,
+                                  cursorColor: fifthColor,                              
+                                  style: TextStyle(color: fifthColor.withOpacity(0.9)),
+                                  controller: separacionDeadlineController,
+                                  decoration: InputDecoration(
+                                    border: InputBorder.none,
+                                    icon: Icon(Icons.date_range_outlined, color: fifthColor,),
+                                    hintText: dateOnly(false, 0, quotePickedDate, false),                                    
+                                  ),
+                                  readOnly: true,
+                                  onTap: () async{
+                                    DateTime? tempPickedDate = await showDatePicker(
+                                      locale: const Locale("es", "CO"),
+                                      context: context, 
+                                      initialDate: DateTime.now(), 
+                                      firstDate: DateTime(1900), 
+                                      lastDate: DateTime(2050),
+                                    );
+                                    if(tempPickedDate != null) {
+                                      setState(() {
+                                        quotePickedDate = tempPickedDate;                                
+                                        separacionDeadlineController.text = dateOnly(false, 0, tempPickedDate, false);
+                                        saldoSeparacionDeadlineController.text = dateOnly(false, plazoSaldoSep.toDouble(), tempPickedDate, false);
+                                        saldoCuotaIniDeadlineController.text = dateOnly(false, plazoCI, tempPickedDate, true);
+                                        saldoTotalDateController.text = dateSaldo;
+                                        discountValue();
+                                      });
+                                    }
+                                  },
                                 ),
-                                readOnly: true,
-                                onTap: () async{
-                                  DateTime? tempPickedDate = await showDatePicker(
-                                    context: context, 
-                                    initialDate: DateTime.now(), 
-                                    firstDate: DateTime(1900), 
-                                    lastDate: DateTime(2050),
-                                  );
-                                  if(tempPickedDate != null) {
-                                    setState(() {
-                                      quotePickedDate = tempPickedDate;                                
-                                      separacionDeadlineController.text = dateOnly(false, 0, tempPickedDate, false);
-                                      saldoSeparacionDeadlineController.text = dateOnly(false, plazoSaldoSep.toDouble(), tempPickedDate, false);
-                                      saldoCuotaIniDeadlineController.text = dateOnly(false, plazoCI, tempPickedDate, true);
-                                      saldoTotalDateController.text = dateSaldo;
-                                      discountValue();
-                                    });
-                                  }
-                                },
                               ),
                             ),
                           ),
@@ -2067,23 +2071,14 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
         ),
       );
     }    
-  }
-
-  Future<String> numeroEnLetras (double value) async {
-    var converter = NumberToCharacterConverter('en');
-    final translator = GoogleTranslator();
-    int valorEntero = value.toInt();
-    String valorIngles = converter.convertInt(valorEntero);
-    final valorFinal = await translator.translate('$valorIngles pesos', from: 'en', to: 'es');
-    return valorFinal.text;
-  }
+  }  
 
   void updateNumberWords() async {
-    letrasPrecioFinalController.text = await numeroEnLetras(precioFinal);
-    letrasSepController.text = await numeroEnLetras(vlrFijoSeparacion);
-    letrasSaldoCIController.text = await numeroEnLetras(saldoCI);
-    letrasSaldoLoteController.text = await numeroEnLetras(valorAPagar);
-    letrasValorCuotasController.text = await numeroEnLetras(valorCuota);
+    letrasPrecioFinalController.text = await numeroEnLetras(precioFinal, 'pesos');
+    letrasSepController.text = await numeroEnLetras(vlrFijoSeparacion, 'pesos');
+    letrasSaldoCIController.text = await numeroEnLetras(saldoCI, 'pesos');
+    letrasSaldoLoteController.text = await numeroEnLetras(valorAPagar, 'pesos');
+    letrasValorCuotasController.text = await numeroEnLetras(valorCuota, 'pesos');
     
   }
 

@@ -102,10 +102,14 @@ class PDFSeparacion extends StatelessWidget {
   });
 
   void initState() {      
-    initCont();   
+    initCont();    
+    initVision();
+    initInvertaga();
   }
 
   Map<String, dynamic> infoCont = {};
+  Map<String, dynamic> infoInvertaga = {};
+  Map<String, dynamic> infoVision = {};
   String emailAlbaterra = '';
   String phoneAlbaterra = '';
   String webAlbaterra = '';
@@ -121,8 +125,17 @@ class PDFSeparacion extends StatelessWidget {
     return contactoInfo;
   }
 
+  Future<void> initVision() async {
+    infoVision = await getInversionista('vision');
+  }
+
+  Future<void> initInvertaga() async {
+    infoInvertaga = await getInversionista('invertaga');
+  }
+
+
   Future<void> initCont() async {    
-    infoCont = await getInfoContacto();
+    infoCont = await getInfoContacto(); 
     emailAlbaterra = infoCont['email'];
     phoneAlbaterra = infoCont['phone'];
     webAlbaterra = infoCont['web'];
@@ -142,6 +155,8 @@ class PDFSeparacion extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     initCont();
+    initVision();
+    initInvertaga();
     return Scaffold(
       extendBodyBehindAppBar: false,
       appBar: AppBar(
@@ -192,7 +207,7 @@ class PDFSeparacion extends StatelessWidget {
               pw.Text('ORDEN DE SEPARACIÓN DE UN LOTE DE TERRENO EN EL PROYECTO "CONDOMINIO CAMPESTRE ALBATERRA"', style: pw.TextStyle(fontSize: 10, fontWeight: pw.FontWeight.bold), textAlign: pw.TextAlign.center),
               pw.SizedBox(height: 20),
               pw.RichText(
-                textAlign: pw.TextAlign.left,
+                textAlign: pw.TextAlign.justify,
                 text: pw.TextSpan(                    
                   children: <pw.TextSpan>[
                     const pw.TextSpan(text: 'Por medio del presente documento se realiza la separación de un lote de terreno en el proyecto ',),
@@ -204,8 +219,8 @@ class PDFSeparacion extends StatelessWidget {
                 ),
               ),
               pw.SizedBox(height: 20),
-              pw.Text('Número del lote: $lote', textAlign: pw.TextAlign.left),
-              pw.Text('Área del lote: $area', textAlign: pw.TextAlign.left),
+              pw.Text('Número del lote: $lote', textAlign: pw.TextAlign.justify),
+              pw.Text('Área del lote: $area', textAlign: pw.TextAlign.justify),
               pw.RichText(
                 textAlign: pw.TextAlign.justify,
                 text: pw.TextSpan(
@@ -225,13 +240,14 @@ class PDFSeparacion extends StatelessWidget {
                 ),
               ),
               pw.SizedBox(height: 20),
-              pw.Text('VALOR CUOTA INICIAL $porcCuotaIni: $vlrCuotaIni', textAlign: pw.TextAlign.left),
-              pw.Text('VALOR SALDO $porcPorPagar: $vlrPorPagar', textAlign: pw.TextAlign.left),
-              pw.Text('   1. La suma de $letrasSeparacion pesos ($totalSeparacion pesos) el día de hoy $dueDateSeparacion', textAlign: pw.TextAlign.left),
-              pw.Text('   2. La suma de $letrasSaldoCI pesos ($saldoCI pesos) que corresponde al saldo de la cuota inicial del lote ($porcCuotaIni del valor total), en menos de $plazoCI, teniendo como fecha límite el $dueDateSaldoCI', textAlign: pw.TextAlign.left),
-              pw.Text('   3. La suma de $letrasSaldoTotal pesos ($vlrPorPagar pesos) que corresponde al saldo del lote ($porcPorPagar del valor total), en $nroCuotas cuotas de $letrasVlrCuota pesos ($vlrCuota pesos) pagaderas el último día hábil del mes, iniciando el $saldoTotalDate', textAlign: pw.TextAlign.left),
+              pw.Text('VALOR CUOTA INICIAL $porcCuotaIni: $vlrCuotaIni', textAlign: pw.TextAlign.justify),
+              pw.Text('VALOR SALDO $porcPorPagar: $vlrPorPagar', textAlign: pw.TextAlign.justify),
+              pw.Text('   1. La suma de $letrasSeparacion pesos ($totalSeparacion pesos) el día $dueDateSeparacion', textAlign: pw.TextAlign.justify),
+              pw.Text('   2. La suma de $letrasSaldoCI pesos ($saldoCI pesos) que corresponde al saldo de la cuota inicial del lote ($porcCuotaIni del valor total), en menos de $plazoCI, teniendo como fecha límite el $dueDateSaldoCI', textAlign: pw.TextAlign.justify),
+              pw.Text('   3. La suma de $letrasSaldoTotal pesos ($vlrPorPagar pesos) que corresponde al saldo del lote ($porcPorPagar del valor total), en $nroCuotas cuotas de $letrasVlrCuota pesos ($vlrCuota pesos) pagaderas el último día hábil del mes, iniciando el $saldoTotalDate', textAlign: pw.TextAlign.justify),
               pw.SizedBox(height: 20),
               pw.RichText(
+                textAlign: pw.TextAlign.justify,
                 text: pw.TextSpan(
                   children: <pw.TextSpan>[
                     pw.TextSpan(text: 'Valor final del lote luego de definir forma de pago: ', style: pw.TextStyle(fontWeight: pw.FontWeight.bold),),
@@ -240,16 +256,17 @@ class PDFSeparacion extends StatelessWidget {
                 ),
               ),
               pw.SizedBox(height: 20),
-              pw.Text('El valor de la separación deberá ser consignado o trasferido a nombre ---Se trae de tabla de datos de promotores del proyecto--- con NIT ---Se trae de tabla de datos de promotores del proyecto---, en alguna de las siguientes cuentas:', textAlign: pw.TextAlign.left),
+              pw.Text('El valor de la separación deberá ser consignado o trasferido a nombre ---Se trae de tabla de datos de promotores del proyecto--- con NIT ---Se trae de tabla de datos de promotores del proyecto---, en alguna de las siguientes cuentas:', textAlign: pw.TextAlign.justify),
               pw.SizedBox(height: 20),
-              pw.Text('---Se trae de tabla de datos de promotores del proyecto---', textAlign: pw.TextAlign.left),
+              pw.Text('---Se trae de tabla de datos de promotores del proyecto---', textAlign: pw.TextAlign.justify),
               pw.SizedBox(height: 20),
-              pw.Text('Al momento del pago indicar como numero de referencia la cedula del comprador, quien deberá enviar soporte de pago al correo: ---Se trae de tabla de datos de promotores del proyecto---', textAlign: pw.TextAlign.left),
+              pw.Text('Al momento del pago indicar como numero de referencia la cedula del comprador, quien deberá enviar soporte de pago al correo: ---Se trae de tabla de datos de promotores del proyecto---', textAlign: pw.TextAlign.justify),
               pw.SizedBox(height: 20),
-              pw.Text('En el evento que se realice el pago con cheque, y éste sea devuelto por causas exclusivas del girador, se procederá de conformidad con el artículo 731 del Código de Comercio. En caso de los cheques de otra plaza y que requiera el pago de comisiones bancarias, estas serán asumidas por el comprador.', textAlign: pw.TextAlign.left),
+              pw.Text('En el evento que se realice el pago con cheque, y éste sea devuelto por causas exclusivas del girador, se procederá de conformidad con el artículo 731 del Código de Comercio. En caso de los cheques de otra plaza y que requiera el pago de comisiones bancarias, estas serán asumidas por el comprador.', textAlign: pw.TextAlign.justify),
               pw.SizedBox(height: 20),
               pw.RichText(
-                text: pw.TextSpan(
+                textAlign: pw.TextAlign.justify,
+                text: pw.TextSpan(                  
                   children: <pw.TextSpan>[
                     pw.TextSpan(text: 'PROMESA DE COMPRA VENTA: ', style: pw.TextStyle(fontWeight: pw.FontWeight.bold),),
                     pw.TextSpan(text: 'Una vez realizada la separación del lote, el comprador se compromete a firmar dentro de los siguientes 5 días calendario, la respectiva promesa de compraventa de lote de terreno del proyecto CONDOMINIO CAMPESTRE ALBATERRA, estableciendo como fecha límite para realizar esta diligencia el día $dueDateSaldoSeparacion. '),
@@ -260,6 +277,7 @@ class PDFSeparacion extends StatelessWidget {
               ),
               pw.SizedBox(height: 20),
               pw.RichText(
+                textAlign: pw.TextAlign.justify,
                 text: pw.TextSpan(
                   children: <pw.TextSpan>[
                     pw.TextSpan(text: 'DESISTIMIENTO: ', style: pw.TextStyle(fontWeight: pw.FontWeight.bold),),
@@ -271,6 +289,7 @@ class PDFSeparacion extends StatelessWidget {
               ),
               pw.SizedBox(height: 20),
               pw.RichText(
+                textAlign: pw.TextAlign.justify,
                 text: pw.TextSpan(
                   children: <pw.TextSpan>[
                     pw.TextSpan(text: 'NO ASISTENCIA A FIRMA DE PROMESA DE COMPRAVENTA: ', style: pw.TextStyle(fontWeight: pw.FontWeight.bold),),
@@ -282,6 +301,7 @@ class PDFSeparacion extends StatelessWidget {
               ),
               pw.SizedBox(height: 20),
               pw.RichText(
+                textAlign: pw.TextAlign.justify,
                 text: pw.TextSpan(
                   children: <pw.TextSpan>[
                     pw.TextSpan(text: 'CLÁUSULA DE NO CESIÓN DE DERECHOS: ', style: pw.TextStyle(fontWeight: pw.FontWeight.bold),),
@@ -291,6 +311,7 @@ class PDFSeparacion extends StatelessWidget {
               ),
               pw.SizedBox(height: 20),
               pw.RichText(
+                textAlign: pw.TextAlign.justify,
                 text: pw.TextSpan(
                   children: <pw.TextSpan>[
                     pw.TextSpan(text: 'DESCRIPCIÓN GENERAL DEL PROYECTO: ', style: pw.TextStyle(fontWeight: pw.FontWeight.bold),),
@@ -300,35 +321,38 @@ class PDFSeparacion extends StatelessWidget {
               ),
               pw.SizedBox(height: 20),
               pw.RichText(
+                textAlign: pw.TextAlign.justify,
                 text: pw.TextSpan(
                   children: <pw.TextSpan>[
                     pw.TextSpan(text: 'CONDOMINIO CAMPESTRE ALBATERRA ', style: pw.TextStyle(fontWeight: pw.FontWeight.bold),),
                     const pw.TextSpan(text: 'es un proyecto desarrollado por la sociedad comercial '),
-                    pw.TextSpan(text: 'INVERTAGA S.A.S.', style: pw.TextStyle(fontWeight: pw.FontWeight.bold),),
-                    const pw.TextSpan(text: ' identificada con NIT 900.429.080-7, representada legalmente por '),
-                    pw.TextSpan(text: 'LUIS FERNANDO GARCIA QUINTANILLA', style: pw.TextStyle(fontWeight: pw.FontWeight.bold),),
-                    const pw.TextSpan(text: ', identificado con cédula de ciudadanía número 91.106.047 expedida en Socorro; y la sociedad comercial '),
-                    pw.TextSpan(text: 'VISION AHORA S.A.S.', style: pw.TextStyle(fontWeight: pw.FontWeight.bold),),
-                    const pw.TextSpan(text: ' identificada con NIT 900.679.249-6, representada legalmente por '),
-                    pw.TextSpan(text: 'CESAR AUGUSTO GARCIA QUINTANILLA', style: pw.TextStyle(fontWeight: pw.FontWeight.bold),),
-                    const pw.TextSpan(text: ' identificado con cédula de ciudadanía número 72.144.717 expedida en Barranquilla.'),
+                    pw.TextSpan(text: infoInvertaga['name'], style: pw.TextStyle(fontWeight: pw.FontWeight.bold),),
+                    pw.TextSpan(text: ' identificada con NIT ${infoInvertaga['nit']}, representada legalmente por '),
+                    pw.TextSpan(text: infoInvertaga['nameRep'], style: pw.TextStyle(fontWeight: pw.FontWeight.bold),),
+                    pw.TextSpan(text: ', identificado con cédula de ciudadanía número ${infoInvertaga['idRep']} expedida en ${infoInvertaga['idLugar']}; y la sociedad comercial '),
+                    pw.TextSpan(text: infoVision['name'], style: pw.TextStyle(fontWeight: pw.FontWeight.bold),),
+                    pw.TextSpan(text: ' identificada con NIT ${infoVision['nit']}, representada legalmente por '),
+                    pw.TextSpan(text: infoVision['nameRep'], style: pw.TextStyle(fontWeight: pw.FontWeight.bold),),
+                    pw.TextSpan(text: ' identificado con cédula de ciudadanía número ${infoVision['idRep']} expedida en ${infoVision['idLugar']}.'),
                   ],
                 ),
               ),
               pw.SizedBox(height: 20),
-              pw.Text('Todas las notificaciones se harán al correo electrónico, móvil o dirección registrados en el presente documento.', textAlign: pw.TextAlign.left),
+              pw.Text('Todas las notificaciones se harán al correo electrónico, móvil o dirección registrados en el presente documento.', textAlign: pw.TextAlign.justify),
               pw.SizedBox(height: 20),
               pw.RichText(
+                textAlign: pw.TextAlign.justify,
                 text: pw.TextSpan(
                   children: <pw.TextSpan>[
                     pw.TextSpan(text: 'OBSERVACIONES: ', style: pw.TextStyle(fontWeight: pw.FontWeight.bold),),
-                    const pw.TextSpan(text: '----'),
+                    pw.TextSpan(text: observaciones),
                   ],
                 ),
               ),
               pw.SizedBox(height: 20),
               pw.Text('DATOS DEL COMPRADOR', textAlign: pw.TextAlign.left, style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
               pw.RichText(
+                textAlign: pw.TextAlign.justify,
                 text: pw.TextSpan(
                   children: <pw.TextSpan>[
                     pw.TextSpan(text: 'Nombre: ', style: pw.TextStyle(fontWeight: pw.FontWeight.bold),),
@@ -336,7 +360,9 @@ class PDFSeparacion extends StatelessWidget {
                   ],
                 ),
               ),
-              pw.Text('Firma y huella: _________________________________________', textAlign: pw.TextAlign.left, style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
+              pw.SizedBox(height: 60),
+              
+              pw.Text('Firma y huella: _______________________', textAlign: pw.TextAlign.left, style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
               pw.RichText(
                 text: pw.TextSpan(
                   children: <pw.TextSpan>[
@@ -387,13 +413,14 @@ class PDFSeparacion extends StatelessWidget {
               ),
               pw.SizedBox(height: 20),
               pw.Text('POR EL VENDEDOR', textAlign: pw.TextAlign.left, style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
-              pw.SizedBox(height: 40),
+              pw.SizedBox(height: 60),
               pw.Row(
                 children: [
                   pw.Expanded(
-                    flex: 1, 
-                    child: pw.Column(children: [
-                      pw.Text('_________________________________________', textAlign: pw.TextAlign.left, style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
+                    flex: 3, 
+                    child: pw.Column(
+                      mainAxisAlignment: pw.MainAxisAlignment.start,
+                      children: [
                       pw.Text('VICTOR ALFONSO OROSTEGUI', textAlign: pw.TextAlign.left, style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
                       pw.Text('GERENTE DEL PROYECTO', textAlign: pw.TextAlign.left, style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
                     ])
@@ -403,11 +430,12 @@ class PDFSeparacion extends StatelessWidget {
                     child: pw.SizedBox()
                   ),
                   pw.Expanded(
-                    flex: 1, 
-                    child: pw.Column(children: [
-                      pw.Text('_________________________________________', textAlign: pw.TextAlign.left, style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
-                      pw.Text(sellerName, textAlign: pw.TextAlign.left, style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
-                      pw.Text('ASESOR COMERCIAL', textAlign: pw.TextAlign.left, style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
+                    flex: 3, 
+                    child: pw.Column(
+                      mainAxisAlignment: pw.MainAxisAlignment.end,
+                      children: [
+                      pw.Text(sellerName, textAlign: pw.TextAlign.right, style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
+                      pw.Text('ASESOR COMERCIAL', textAlign: pw.TextAlign.right, style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
                     ])
                   )
 

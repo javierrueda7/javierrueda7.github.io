@@ -348,6 +348,7 @@ class _EditQuotePageState extends State<EditQuotePage> {
                                       readOnly: true,
                                       onTap: () async{
                                         DateTime? tempPickedDate = await showDatePicker(
+                                          locale: const Locale("es", "CO"),
                                           context: context, 
                                           initialDate: DateTime.now(), 
                                           firstDate: DateTime(1900), 
@@ -688,6 +689,7 @@ class _EditQuotePageState extends State<EditQuotePage> {
                                   readOnly: true,
                                   onTap: () async{
                                     DateTime? pickeddate = await showDatePicker(
+                                      locale: const Locale("es", "CO"),
                                       context: context, 
                                       initialDate: DateTime.now().subtract(const Duration(days: 6574)), 
                                       firstDate: DateTime(1900), 

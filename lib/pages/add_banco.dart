@@ -21,6 +21,7 @@ class _AddBancoPageState extends State<AddBancoPage> {
   @override
   Widget build(BuildContext context) {    
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         backgroundColor: fifthColor,

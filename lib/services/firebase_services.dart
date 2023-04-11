@@ -146,23 +146,6 @@ Future<void> updateInv(String inv, String name, String nit, String email, String
   );
 }
 
-Future<Map<String, dynamic>> getInversionista(String inv) async {
-  DocumentSnapshot<Map<String, dynamic>> infoInversionista = await db.collection('infoproyecto').doc(inv).get();
-  final Map<String, dynamic> data = infoInversionista.data() as Map<String, dynamic>;
-  final inversionistaInfo = {
-    "banco": data['banco'],
-    "email": data['email'],
-    "idLugar": data['idLugar'],
-    "idRep": data['idRep'],
-    "name": data['name'],
-    "nameRep": data['nameRep'],
-    "nit": data['nit'],
-    "nroCuenta": data['nroCuenta'],
-    "tipoCuenta": data['tipoCuenta'],
-  };
-  return inversionistaInfo;
-}
-
 Future<Map<String, dynamic>> getInfoProyecto() async {
   DocumentSnapshot<Map<String, dynamic>> infoPagos = await db.collection('infoproyecto').doc('infopagos').get();
   final Map<String, dynamic> data = infoPagos.data() as Map<String, dynamic>;
@@ -177,6 +160,20 @@ Future<Map<String, dynamic>> getInfoProyecto() async {
     "plazoSaldoSep": data['plazoSaldoSep'],
   };
   return proyectoInfo;
+}
+
+Future<Map<String, dynamic>> getInversionista(String inv) async {
+  DocumentSnapshot<Map<String, dynamic>> infoInversionista = await db.collection('infoproyecto').doc(inv).get();
+  final Map<String, dynamic> data = infoInversionista.data() as Map<String, dynamic>;
+  final inversionistaInfo = {
+    "email": data['email'],
+    "idLugar": data['idLugar'],
+    "idRep": data['idRep'],
+    "name": data['name'],
+    "nameRep": data['nameRep'],
+    "nit": data['nit'],
+  };
+  return inversionistaInfo;
 }
 
 Future<void> deleteSeller(String sid) async {

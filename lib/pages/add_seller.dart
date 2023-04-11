@@ -97,6 +97,7 @@ class _AddSellerPageState extends State<AddSellerPage> {
                           readOnly: true,
                           onTap: () async{
                             DateTime? startPickedDate = await showDatePicker(
+                              locale: const Locale("es", "CO"),
                               context: context, 
                               initialDate: DateTime.now(), 
                               firstDate: DateTime(1900), 
@@ -163,6 +164,7 @@ class _AddSellerPageState extends State<AddSellerPage> {
                           readOnly: true,
                           onTap: () async{
                             DateTime? pickeddate = await showDatePicker(
+                              locale: const Locale("es", "CO"),
                               context: context, 
                               initialDate: DateTime.now().subtract(const Duration(days: 6574)), 
                               firstDate: DateTime(1900), 

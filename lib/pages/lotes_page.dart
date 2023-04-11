@@ -56,12 +56,6 @@ class _LotesPageState extends State<LotesPage> {
                             "loteArea": snapshot.data?[index]['loteArea'],
                             "lotePrice": snapshot.data?[index]['lotePrice'],
                             "loteState": snapshot.data?[index]['loteState'],
-                            "bdSeller": snapshot.data?[index]['bdSeller'],
-                            "genderSeller": snapshot.data?[index]['genderSeller'],
-                            "idSeller": snapshot.data?[index]['idSeller'],
-                            "roleSeller": snapshot.data?[index]['roleSeller'],
-                            "startDateSeller": snapshot.data?[index]['startDateSeller'],
-                            "statusSeller": snapshot.data?[index]['statusSeller'],
                           });
                           setState(() {});
                         } else {
@@ -86,6 +80,8 @@ class _LotesPageState extends State<LotesPage> {
 
   Color setStatusColor(String value){
     if(value == "Disponible"){
+      return thirdColor.withOpacity(0);
+    } if(value == "Lote Separado"){
       return thirdColor.withOpacity(0);
     } else{
       return thirdColor.withOpacity(0.5);

@@ -291,6 +291,7 @@ class _AddQuotePageState extends State<AddQuotePage> {
                                       readOnly: true,
                                       onTap: () async{
                                         DateTime? quotePickedDate = await showDatePicker(
+                                          locale: const Locale("es", "CO"),
                                           context: context, 
                                           initialDate: DateTime.now(), 
                                           firstDate: DateTime(1900), 
@@ -608,6 +609,7 @@ class _AddQuotePageState extends State<AddQuotePage> {
                                   readOnly: true,
                                   onTap: () async{
                                     DateTime? pickeddate = await showDatePicker(
+                                      locale: const Locale("es", "CO"),
                                       context: context, 
                                       initialDate: DateTime.now().subtract(const Duration(days: 6574)), 
                                       firstDate: DateTime(1900), 

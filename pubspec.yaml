@@ -49,6 +49,7 @@ dependencies:
   font_awesome_flutter: ^10.4.0
   number_to_character: ^0.0.12
   translator: ^0.1.7
+  flutter_localization: ^0.1.10
   
 
 dev_dependencies:
