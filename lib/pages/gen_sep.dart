@@ -771,7 +771,7 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
                                 Container(
                                   constraints: const BoxConstraints(maxWidth: 800),
                                   child: textFieldWidget(
-                                    arealoteController.text, Icons.terrain_outlined, false, arealoteController, false, 'number', (){})
+                                    arealoteController.text, Icons.straighten_outlined, false, arealoteController, false, 'number', (){})
                                 ),
                               ],
                             ),

@@ -50,7 +50,7 @@ class _LotesPageState extends State<LotesPage> {
                       onTap: (() async {
                         if(allAccess == true){
                           await Navigator.pushNamed(context, "/editLote", arguments: {
-                            "lodeId": snapshot.data?[index]['lodeId'],
+                            "loteId": snapshot.data?[index]['loteId'],
                             "loteName": snapshot.data?[index]['loteName'],                              
                             "loteEtapa": snapshot.data?[index]['loteEtapa'],
                             "loteArea": snapshot.data?[index]['loteArea'],

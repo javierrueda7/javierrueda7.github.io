@@ -390,7 +390,7 @@ class _AddQuotePageState extends State<AddQuotePage> {
                                 Container(
                                   constraints: const BoxConstraints(maxWidth: 800),
                                   child: textFieldWidget(
-                                    '${((loteInfo[8].toInt()).toString())} m²', Icons.terrain_outlined, false, arealoteController, false, 'number', (){})
+                                    '${((loteInfo[8].toInt()).toString())} m²', Icons.straighten_outlined, false, arealoteController, false, 'number', (){})
                                 ),
                               ],
                             ),

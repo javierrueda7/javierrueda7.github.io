@@ -1,3 +1,4 @@
+import 'package:albaterrapp/pages/edit_lote.dart';
 import 'package:albaterrapp/pages/gen_sep.dart';
 import 'package:albaterrapp/pages/edit_quote.dart';
 import 'package:albaterrapp/pages/edit_seller_page.dart';
@@ -24,12 +25,12 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      localizationsDelegates: [
+      localizationsDelegates: const [
          GlobalMaterialLocalizations.delegate
        ],
-       supportedLocales: [
-         const Locale('es'),
-         const Locale('en')
+       supportedLocales: const [
+         Locale('es'),
+         Locale('en')
        ],
       title: 'Albaterrapp',
       initialRoute: '/',
@@ -37,6 +38,7 @@ class MyApp extends StatelessWidget {
         '/': (context) => const SignInPage(),
         '/editSeller': (context) => const EditSellerPage(),
         '/editQuote': (context) => const EditQuotePage(),
+        '/editLote': (context) => const EditLotePage(),
         '/genSep': (context) => const GenerarSeparacion(),
       },
     );

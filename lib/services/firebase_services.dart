@@ -558,7 +558,7 @@ Future<List> getCustomers() async {
       "addressCliente":data["addressCliente"],
       "countryCliente":data["countryCliente"],
       "stateCliente":data["stateCliente"],
-      "cityCliente":data["cityCliente"]      
+      "cityCliente":data["cityCliente"]
     };
     customers.add(customer);
   }
@@ -602,6 +602,14 @@ Future<void> addLotes(String idLote, String loteName, double loteLeft, double	lo
     "loteArea": loteArea, 
     "lotePrice": lotePrice,    
     "loteImg": loteImg,
+    }
+  );
+}
+
+Future<void> updateLote(String idLote, double lotePrice, String loteLinderos) async {
+  await db.collection("lotes").doc(idLote).set({
+    "lotePrice": lotePrice,       
+    "loteLinderos": loteLinderos,
     }
   );
 }
