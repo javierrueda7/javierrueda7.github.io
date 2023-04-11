@@ -1,3 +1,4 @@
+import 'package:albaterrapp/pages/add_banco.dart';
 import 'package:albaterrapp/services/firebase_services.dart';
 import 'package:albaterrapp/utils/color_utils.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -108,7 +109,7 @@ class _InfoBancosState extends State<InfoBancos> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          // Add your onPressed code here!
+          Navigator.push(context, MaterialPageRoute(builder: (context) => const AddBancoPage()));           
         },
         backgroundColor: Colors.green,
         child: const Icon(Icons.add),

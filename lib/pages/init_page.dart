@@ -1,6 +1,7 @@
 import 'package:albaterrapp/pages/add_quote_page.dart';
 import 'package:albaterrapp/pages/existing_quotes.dart';
 import 'package:albaterrapp/pages/info_gral.dart';
+import 'package:albaterrapp/pages/lotes_page.dart';
 import 'package:albaterrapp/pages/pictures_page.dart';
 import 'package:albaterrapp/pages/sellers_page.dart';
 import 'package:albaterrapp/pages/signin_page.dart';
@@ -122,8 +123,7 @@ class _InitPageState extends State<InitPage> {
                       if(value == 'Opción 1'){                      
                         Navigator.push(context, MaterialPageRoute(builder: (context) => ExistingQuotes(loteInfo: currentLote, needAll: true, loggedEmail: loggedEmail,)));
                       } if(value == 'Opción 2'){
-                        setState(() {                          
-                        });
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => LotesPage(allAccess: userLoggedIn)));
                       } if(value == 'Opción 3'){
                         Navigator.push(context, MaterialPageRoute(builder: (context) => SellersPage(allAccess: userLoggedIn)));
                       } if(value == 'Opción 4'){

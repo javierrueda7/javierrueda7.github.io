@@ -154,8 +154,7 @@ class _EditQuotePageState extends State<EditQuotePage> {
     infoEstado();    
     Map arguments = ModalRoute.of(context)!.settings.arguments as Map;
     if(isInitialized==false){   
-      initPagos();
-      initCuotas(); 
+      initPagos();      
       
       selectedSeller = arguments['selectedSeller'];
       sellerName = arguments['sellerName'];
@@ -206,6 +205,8 @@ class _EditQuotePageState extends State<EditQuotePage> {
       selectedCity = arguments['city'];
       cambioEstado = arguments['cambioEstado'];     
       vlrFijoSeparacion = saldoSeparacion + stringConverter(vlrSeparacionController.text);
+      periodoCalculator(stringConverter(selectedNroCuotas));
+      initCuotas(); 
     } else {
       isInitialized = true;
     }

@@ -175,10 +175,9 @@ class PDFSeparacion extends StatelessWidget {
     
 
     pdf.addPage(
-      pw.Page(
+      pw.MultiPage(
         build: (context) {
-          return pw.Column(
-            children: [
+          return [
               pw.SizedBox(height: 20),
               pw.Stack(
                 alignment: pw.Alignment.center,
@@ -414,8 +413,7 @@ class PDFSeparacion extends StatelessWidget {
 
                 ]
               ),
-            ],
-          );
+            ];
         },
       ),
     );

@@ -3,14 +3,14 @@ import 'package:albaterrapp/utils/color_utils.dart';
 import 'package:albaterrapp/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 
-class AddSellerPage extends StatefulWidget {
-  const AddSellerPage({super.key});
+class AddBancoPage extends StatefulWidget {
+  const AddBancoPage({super.key});
 
   @override
-  State<AddSellerPage> createState() => _AddSellerPageState();
+  State<AddBancoPage> createState() => _AddBancoPageState();
 }
 
-class _AddSellerPageState extends State<AddSellerPage> {
+class _AddBancoPageState extends State<AddBancoPage> {
   final TextEditingController nameController = TextEditingController();
   final TextEditingController bancoController = TextEditingController();
   final TextEditingController nroCuentaController = TextEditingController();

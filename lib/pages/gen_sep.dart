@@ -6,6 +6,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'dart:async';
+import 'package:number_to_character/number_to_character.dart';
+import 'package:translator/translator.dart';
 
 FirebaseFirestore db = FirebaseFirestore.instance;
 
@@ -155,13 +157,13 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
   String selectedState = '';
   String selectedCity = '';
   bool isInitialized = false;
+ 
 
   @override
   Widget build(BuildContext context) {     
     Map arguments = ModalRoute.of(context)!.settings.arguments as Map;
     if(isInitialized==false){   
       initPagos();
-      initCuotas(); 
       selectedSeller = arguments['selectedSeller'];
       sellerName = arguments['sellerName'];
       sellerEmail = arguments['sellerEmail'];
@@ -210,6 +212,8 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
       selectedState = arguments['state'];
       selectedCity = arguments['city'];
       vlrFijoSeparacion = saldoSeparacion + stringConverter(vlrSeparacionController.text);
+      periodoCalculator(stringConverter(selectedNroCuotas));
+      initCuotas(); 
     } else {
       isInitialized = true;
     }
@@ -222,6 +226,7 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
     cuotaInicial = precioFinal * (porcCuotaInicial/100);
     saldoCI = cuotaInicial - vlrFijoSeparacion;
     valorCuota = valorAPagar/(double.parse(selectedNroCuotas));
+
     
 
 
@@ -233,6 +238,8 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
     vlrPorPagarController.text = (currencyCOP((valorAPagar.toInt()).toString()));
     temController.text = '${vlrTEM.toString()}%';
     saldoTotalDateController.text = dateSaldo;
+    updateNumberWords();
+    
 
     return Scaffold(      
       extendBodyBehindAppBar: false,
@@ -2059,7 +2066,24 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
           ],
         ),
       );
-    }
+    }    
+  }
+
+  Future<String> numeroEnLetras (double value) async {
+    var converter = NumberToCharacterConverter('en');
+    final translator = GoogleTranslator();
+    int valorEntero = value.toInt();
+    String valorIngles = converter.convertInt(valorEntero);
+    final valorFinal = await translator.translate('$valorIngles pesos', from: 'en', to: 'es');
+    return valorFinal.text;
+  }
+
+  void updateNumberWords() async {
+    letrasPrecioFinalController.text = await numeroEnLetras(precioFinal);
+    letrasSepController.text = await numeroEnLetras(vlrFijoSeparacion);
+    letrasSaldoCIController.text = await numeroEnLetras(saldoCI);
+    letrasSaldoLoteController.text = await numeroEnLetras(valorAPagar);
+    letrasValorCuotasController.text = await numeroEnLetras(valorCuota);
     
   }
 
