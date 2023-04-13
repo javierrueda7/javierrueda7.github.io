@@ -450,7 +450,7 @@ class PDFGenerator extends StatelessWidget {
                   children: [
                     pw.Text('Saldo financiado ($porcPorPagar)', textAlign: pw.TextAlign.left, style: pw.TextStyle(fontWeight: pw.FontWeight.bold,),),
                     pw.SizedBox(height: 5),
-                    pw.Text('$nroCuotas cuota(s) $periodoCuotas', textAlign: pw.TextAlign.left),
+                    pw.Text('$nroCuotas cuota(s) ${periodoCuotas.toLowerCase()}(es)', textAlign: pw.TextAlign.left),
                     pw.SizedBox(height: 5),
                     pw.Text('Intereses $tem', textAlign: pw.TextAlign.left),
                     pw.SizedBox(height: 15),

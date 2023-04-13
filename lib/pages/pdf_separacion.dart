@@ -111,11 +111,13 @@ class PDFSeparacion extends StatelessWidget {
     initCont();    
     initVision();
     initInvertaga();
+    initBanco();
   }
 
   Map<String, dynamic> infoCont = {};
   Map<String, dynamic> infoInvertaga = {};
   Map<String, dynamic> infoVision = {};
+  List<String> bancos = [];
   String emailAlbaterra = '';
   String phoneAlbaterra = '';
   String webAlbaterra = '';
@@ -129,6 +131,31 @@ class PDFSeparacion extends StatelessWidget {
       "web": data['web'],
     };
     return contactoInfo;
+  }
+
+  Future<List<String>> getCuentasBanco() async {
+    List<String> bancosText = [];
+    QuerySnapshot? queryBancos = await db.collection('infobanco').get();
+    for (var doc in queryBancos.docs) {
+      if (doc.id.contains('VISION')) {  // filter by doc.id containing "Vision"
+        final Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+        final bank = {
+          "bid": doc.id,
+          "banco": data['banco'],
+          "nroCuenta": data['nroCuenta'],
+          "tipoCuenta": data['tipoCuenta'],
+          "nit": data['nit'],
+          "nameRep": data['nameRep']
+        };
+        String bankText = "Cuenta ${(bank['tipoCuenta']).toLowerCase()} del banco ${bank['banco']} No. ${bank['nroCuenta']}";
+        bancosText.add(bankText);
+      }
+    }
+    return bancosText;
+  }
+
+  Future<void> initBanco() async {
+    bancos = await getCuentasBanco();
   }
 
   Future<void> initVision() async {
@@ -163,6 +190,7 @@ class PDFSeparacion extends StatelessWidget {
     initCont();
     initVision();
     initInvertaga();
+    initBanco();
     return Scaffold(
       extendBodyBehindAppBar: false,
       appBar: AppBar(
@@ -200,15 +228,18 @@ class PDFSeparacion extends StatelessWidget {
         build: (context) {
           return [
               pw.SizedBox(height: 20),
-              pw.Stack(
-                alignment: pw.Alignment.center,
-                children: [
-                  pw.Image(pw.MemoryImage(byteList4,), height: 100),
-                  pw.Positioned(
-                    top: 55,
-                    child: pw.Text(lote, style: pw.TextStyle(fontSize: 20, fontWeight: pw.FontWeight.bold)),
-                  )
-              ]),
+              pw.Align(alignment: pw.Alignment.center,
+                child: pw.Stack(
+                  alignment: pw.Alignment.center,
+                  children: [
+                    pw.Image(pw.MemoryImage(byteList4,), height: 100),
+                    pw.Positioned(
+                      top: 55,
+                      child: pw.Text(lote, style: pw.TextStyle(fontSize: 20, fontWeight: pw.FontWeight.bold)),
+                    )
+                  ]
+                ),
+              ),              
               pw.SizedBox(height: 20),
               pw.Text('ORDEN DE SEPARACIÓN DE UN LOTE DE TERRENO EN EL PROYECTO "CONDOMINIO CAMPESTRE ALBATERRA"', style: pw.TextStyle(fontSize: 10, fontWeight: pw.FontWeight.bold), textAlign: pw.TextAlign.center),
               pw.SizedBox(height: 20),
@@ -253,16 +284,16 @@ class PDFSeparacion extends StatelessWidget {
                 text: pw.TextSpan(
                   children: <pw.TextSpan>[
                     pw.TextSpan(text: 'Valor final del lote luego de definir forma de pago: ', style: pw.TextStyle(fontWeight: pw.FontWeight.bold),),
-                    pw.TextSpan(text: "$letrasFinalPrice pesos ($finalPrice pesos)"),
+                    pw.TextSpan(text: "$letrasFinalPrice ($finalPrice)"),
                   ],
                 ),
               ),
               pw.SizedBox(height: 20),
-              pw.Text('El valor de la separación deberá ser consignado o trasferido a nombre ---Se trae de tabla de datos de promotores del proyecto--- con NIT ---Se trae de tabla de datos de promotores del proyecto---, en alguna de las siguientes cuentas:', textAlign: pw.TextAlign.justify),
+              pw.Text('El valor de la separación deberá ser consignado o trasferido a nombre ${infoVision['name']} con NIT ${infoVision['nit']}, en alguna de las siguientes cuentas:', textAlign: pw.TextAlign.justify),
               pw.SizedBox(height: 20),
-              pw.Text('---Se trae de tabla de datos de promotores del proyecto---', textAlign: pw.TextAlign.justify),
+              cuentasDisponibles(context),
               pw.SizedBox(height: 20),
-              pw.Text('Al momento del pago indicar como numero de referencia la cedula del comprador, quien deberá enviar soporte de pago al correo: ---Se trae de tabla de datos de promotores del proyecto---', textAlign: pw.TextAlign.justify),
+              pw.Text('Al momento del pago indicar como numero de referencia la cedula del comprador, quien deberá enviar soporte de pago al correo: $emailAlbaterra', textAlign: pw.TextAlign.justify),
               pw.SizedBox(height: 20),
               pw.Text('En el evento que se realice el pago con cheque, y éste sea devuelto por causas exclusivas del girador, se procederá de conformidad con el artículo 731 del Código de Comercio. En caso de los cheques de otra plaza y que requiera el pago de comisiones bancarias, estas serán asumidas por el comprador.', textAlign: pw.TextAlign.justify),
               pw.SizedBox(height: 20),
@@ -453,6 +484,17 @@ class PDFSeparacion extends StatelessWidget {
     return bytes;
   }
 
+  pw.Widget cuentasDisponibles(context){
+    int n = bancos.length;
+    return pw.Column(
+      crossAxisAlignment: pw.CrossAxisAlignment.start,
+      children: [
+        for(int i=0; i<n; i++)
+          pw.Text(bancos[i], textAlign: pw.TextAlign.justify)
+      ],
+    );
+  }
+
   pw.Widget metodoPago(String evaluarMetodo, context){
     if(evaluarMetodo == 'Pago de contado'){
       return pw.Column(
@@ -462,16 +504,16 @@ class PDFSeparacion extends StatelessWidget {
           pw.Text('   1. La suma de $letrasSeparacion ($totalSeparacion) el día $dueDateSeparacion', textAlign: pw.TextAlign.justify),
           pw.Text('   2. La suma de $letrasSaldoContado ($vlrPorPagar) que corresponde al saldo del lote, en menos de $plazoContado, teniendo como fecha límite el $saldoTotalDate', textAlign: pw.TextAlign.justify),
         ]
-      );                   
+      );
     } else{
       return pw.Column(
         crossAxisAlignment: pw.CrossAxisAlignment.stretch,
         children: [
           pw.Text('VALOR CUOTA INICIAL $porcCuotaIni: $vlrCuotaIni', textAlign: pw.TextAlign.justify),
           pw.Text('VALOR SALDO $porcPorPagar: $vlrPorPagar', textAlign: pw.TextAlign.justify),
-          pw.Text('   1. La suma de $letrasSeparacion pesos ($totalSeparacion pesos) el día $dueDateSeparacion', textAlign: pw.TextAlign.justify),
-          pw.Text('   2. La suma de $letrasSaldoCI pesos ($saldoCI pesos) que corresponde al saldo de la cuota inicial del lote ($porcCuotaIni del valor total), en menos de $plazoCI, teniendo como fecha límite el $dueDateSaldoCI', textAlign: pw.TextAlign.justify),
-          pw.Text('   3. La suma de $letrasSaldoTotal pesos ($vlrPorPagar pesos) que corresponde al saldo del lote ($porcPorPagar del valor total), en $nroCuotas cuotas con periodicidad ${periodoCuotas.toUpperCase()} por valor de $letrasVlrCuota pesos ($vlrCuota pesos) pagaderas el último día hábil del mes, iniciando el $saldoTotalDate', textAlign: pw.TextAlign.justify),
+          pw.Text('   1. La suma de $letrasSeparacion ($totalSeparacion) el día $dueDateSeparacion', textAlign: pw.TextAlign.justify),
+          pw.Text('   2. La suma de $letrasSaldoCI ($saldoCI) que corresponde al saldo de la cuota inicial del lote ($porcCuotaIni del valor total), en menos de $plazoCI, teniendo como fecha límite el $dueDateSaldoCI', textAlign: pw.TextAlign.justify),
+          pw.Text('   3. La suma de $letrasSaldoTotal ($vlrPorPagar) que corresponde al saldo del lote ($porcPorPagar del valor total), en $nroCuotas cuotas con periodicidad ${periodoCuotas.toUpperCase()} por valor de $letrasVlrCuota ($vlrCuota) pagaderas el último día hábil del mes, iniciando el $saldoTotalDate', textAlign: pw.TextAlign.justify),
         ]
       );
     }

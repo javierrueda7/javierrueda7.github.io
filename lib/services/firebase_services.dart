@@ -28,6 +28,10 @@ Future<void> addBanco(String bid, String banco, String nroCuenta, String tipoCue
   );
 }
 
+Future<void> deleteBank(String bid) async {
+  await db.collection("infobanco").doc(bid).delete();
+}
+
 Future<List> getCuentasBanco() async {
   List bancos = [];
   QuerySnapshot? queryBancos = await db.collection('infobanco').get();
@@ -35,6 +39,7 @@ Future<List> getCuentasBanco() async {
     final Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
     final bank = {
       "bid": doc.id,
+      "banco": data['banco'],
       "nroCuenta": data['nroCuenta'],
       "tipoCuenta": data['tipoCuenta'],
       "nit": data['nit'],

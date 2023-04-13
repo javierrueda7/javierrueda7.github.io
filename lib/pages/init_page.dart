@@ -82,6 +82,7 @@ class _InitPageState extends State<InitPage> {
 
   @override
   Widget build(BuildContext context) {
+    setState(() {});  
     return MaterialApp(
       home: Scaffold(
         resizeToAvoidBottomInset: false,
@@ -122,12 +123,16 @@ class _InitPageState extends State<InitPage> {
                     onSelected: (value) {
                       if(value == 'Opción 1'){                      
                         Navigator.push(context, MaterialPageRoute(builder: (context) => ExistingQuotes(loteInfo: currentLote, needAll: true, loggedEmail: loggedEmail,)));
+                        setState(() {}); 
                       } if(value == 'Opción 2'){
                         Navigator.push(context, MaterialPageRoute(builder: (context) => LotesPage(allAccess: userLoggedIn)));
+                        setState(() {}); 
                       } if(value == 'Opción 3'){
                         Navigator.push(context, MaterialPageRoute(builder: (context) => SellersPage(allAccess: userLoggedIn)));
+                        setState(() {}); 
                       } if(value == 'Opción 4'){
                         Navigator.push(context, MaterialPageRoute(builder: (context) => const InfoGeneral()));
+                        setState(() {}); 
                       }else{
                         setState(() {                          
                         });

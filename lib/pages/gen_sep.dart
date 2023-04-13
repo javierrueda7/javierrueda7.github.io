@@ -680,6 +680,7 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
                                                 text: (currencyCOP((vlrSeparacion.toInt()).toString())),
                                                 selection: TextSelection.collapsed(offset: (currencyCOP((vlrSeparacion.toInt()).toString())).length),
                                               );
+                                              updateNumberWords(); 
                                             });
                                           } if(stringConverter(value) >= vlrFijoSeparacion) {                                            
                                             setState(() {
@@ -691,7 +692,8 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
                                                 text: (currencyCOP((vlrSeparacion.toInt()).toString())),
                                                 selection: TextSelection.collapsed(offset: (currencyCOP((vlrSeparacion.toInt()).toString())).length),
                                               );
-                                              });
+                                              updateNumberWords(); 
+                                            });
                                           }
                                         },
                                       ),
@@ -755,14 +757,21 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
                     ),
                     const SizedBox(
                       height: 10,
-                    ),
-                    
+                    ),                    
                     paymentMethod(paymentMethodSelectedItem),
                     const SizedBox(
                           height: 10,
                     ),
+                    const Divider(thickness: 5,),
                     const SizedBox(
-                      height: 5,
+                      height: 10,
+                    ),
+                    Container(
+                      alignment: Alignment.center,
+                      child: const Text('Información del cliente', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold,))
+                    ),
+                    const SizedBox(
+                      height: 10,
                     ),
                     Container(
                       constraints: const BoxConstraints(maxWidth: 800),
@@ -1303,7 +1312,8 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
                                       elevation: 0,
                                     ),
                                   );
-                                } else {                                
+                                } else {         
+                                  updateNumberWords();                        
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(

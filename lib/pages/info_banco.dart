@@ -22,7 +22,8 @@ class _InfoBancosState extends State<InfoBancos> {
   }  
   
   @override
-  Widget build(BuildContext context) {    
+  Widget build(BuildContext context) {  
+    setState(() {});    
     return Scaffold(
       extendBodyBehindAppBar: false,
       appBar: AppBar(
@@ -44,7 +45,7 @@ class _InfoBancosState extends State<InfoBancos> {
                   itemBuilder: (context, index){                      
                     return Dismissible(
                       onDismissed: (direction) async {
-                        await archiveQuote(snapshot.data?[index]['bid']);
+                        await deleteBank(snapshot.data?[index]['bid']);
                         snapshot.data?.removeAt(index);
                         setState(() {});
                       },
@@ -89,10 +90,17 @@ class _InfoBancosState extends State<InfoBancos> {
                       child: ListTile(
                         leading: const Icon(Icons.monetization_on_outlined),
                         title: Text(snapshot.data?[index]['bid']),                        
-                        onTap: (() async {                          
+                        onTap: (() async {    
+                          await Navigator.pushNamed(context, "/editBanco", arguments: {
+                            "bid": snapshot.data?[index]['bid'],
+                            "banco": snapshot.data?[index]['banco'],                              
+                            "nroCuenta": snapshot.data?[index]['nroCuenta'],
+                            "nit": snapshot.data?[index]['nit'],
+                            "nameRep": snapshot.data?[index]['nameRep'],
+                            "tipoCuenta": snapshot.data?[index]['tipoCuenta'],
+                          });                   
                           setState(() {});                          
-                        }                      
-                        ),
+                        }),
                       ),                                
                     ); 
                   },
@@ -109,7 +117,8 @@ class _InfoBancosState extends State<InfoBancos> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.push(context, MaterialPageRoute(builder: (context) => const AddBancoPage()));           
+          Navigator.push(context, MaterialPageRoute(builder: (context) => const AddBancoPage())); 
+          setState(() {});            
         },
         backgroundColor: Colors.green,
         child: const Icon(Icons.add),

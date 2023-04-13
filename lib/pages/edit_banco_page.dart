@@ -3,43 +3,65 @@ import 'package:albaterrapp/utils/color_utils.dart';
 import 'package:albaterrapp/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 
-class AddBancoPage extends StatefulWidget {
-  const AddBancoPage({super.key});
+class EditBancoPage extends StatefulWidget {
+  const EditBancoPage({super.key});
 
   @override
-  State<AddBancoPage> createState() => _AddBancoPageState();
+  State<EditBancoPage> createState() =>  _EditBancoPageState();
 }
 
-class _AddBancoPageState extends State<AddBancoPage> {
-  final TextEditingController nameController = TextEditingController();
-  final TextEditingController bancoController = TextEditingController();
-  final TextEditingController nroCuentaController = TextEditingController();
-  String selectedTipoCuenta = 'Corriente';
-  final TextEditingController nitController = TextEditingController();
-  final TextEditingController nameRepController = TextEditingController();
-  List<String> tipoCuentaList = ['Corriente', 'Ahorros'];
+class _EditBancoPageState extends State<EditBancoPage> {
 
+  
   @override
-  Widget build(BuildContext context) {    
+  void initState() {
+    super.initState();
+  }
+
+  TextEditingController nameController = TextEditingController(text: "");
+  TextEditingController bancoController = TextEditingController(text: "");
+  TextEditingController nroCuentaController = TextEditingController(text: "");
+  TextEditingController nitController = TextEditingController(text: "");
+  TextEditingController nameRepController = TextEditingController(text: "");
+  String selectedTipoCuenta = '';
+  String bid = '';
+  List<String> tipoCuentaList = ['Corriente', 'Ahorros'];
+  bool isInitialized = false;
+
+
+  
+  @override
+  Widget build(BuildContext context) {   
+  Map arguments = ModalRoute.of(context)!.settings.arguments as Map;
+    if(isInitialized==false){      
+      nameController.text = arguments['bid'];
+      bancoController.text = arguments['banco'];
+      nroCuentaController.text = arguments['nroCuenta'];
+      nitController.text = arguments['nit'];
+      nameRepController.text = arguments['nameRep'];      
+      selectedTipoCuenta = arguments['tipoCuenta'];
+    } else {
+      isInitialized = true;
+    }
+    
+    isInitialized = true;
+
     return Scaffold(
-      resizeToAvoidBottomInset: false,
-      extendBodyBehindAppBar: true,
+      extendBodyBehindAppBar: false,
       appBar: AppBar(
         backgroundColor: fifthColor,
         foregroundColor: primaryColor,
         elevation: 0,
-        title: Center(
-          child: Text(
-            "Agregar cuenta bancaria", 
-            style: TextStyle(color: primaryColor,fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-        )
+        centerTitle: true,
+        title: Text('Editar cuenta bancaria', 
+          style: TextStyle(color: primaryColor,fontSize: 18, fontWeight: FontWeight.bold),),
       ),
-      body: Center(
-        child: Container(
-          width: MediaQuery.of(context).size.width,            
-          height: MediaQuery.of(context).size.height,
-          decoration: const BoxDecoration(
+      body: 
+        Center(          
+          child: Container(
+            width: MediaQuery.of(context).size.width,            
+            height: MediaQuery.of(context).size.height,
+            decoration: const BoxDecoration(
               gradient: LinearGradient(
                 colors: [
                   Color.fromARGB(255, 244, 246, 252),
@@ -49,32 +71,32 @@ class _AddBancoPageState extends State<AddBancoPage> {
                 begin: Alignment.topCenter, end: Alignment.bottomCenter
               )
             ),
-          child: Container(
-            constraints: const BoxConstraints(maxWidth: 1200),
-            child: SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(20, 120, 20, 0),
-                child: Column(
-                  children: <Widget>[
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    Container(
-                      constraints: const BoxConstraints(maxWidth: 800),
-                      child: textFieldWidget(
-                        "Apodo de la cuenta", Icons.abc_outlined, false, nameController, true, 'name', (){}
+            child: Container(
+              constraints: const BoxConstraints(maxWidth: 1200),
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+                  child: Column(
+                    children: <Widget>[
+                      const SizedBox(
+                        height: 20,
                       ),
-                    ),                    
-                    const SizedBox(
-                      height: 20,
-                    ),                     
-                    Container(
-                      constraints: const BoxConstraints(maxWidth: 800),
-                      child: textFieldWidget(
-                        "Banco", Icons.account_balance_outlined, false, bancoController, true, 'name', (){}
+                      Container(
+                        constraints: const BoxConstraints(maxWidth: 800),
+                        child: textFieldWidget(
+                          "Apodo de la cuenta", Icons.abc_outlined, false, nameController, true, 'name', (){}
+                        ),
+                      ), 
+                      const SizedBox(
+                        height: 20,
+                      ),                         
+                      Container(
+                        constraints: const BoxConstraints(maxWidth: 800),
+                        child: textFieldWidget(
+                          "Banco", Icons.person_outline, false, bancoController, true, 'name', (){}
+                        ),
                       ),
-                    ),
-                    const SizedBox(
+                      const SizedBox(
                       height: 20,
                     ),                    
                     Container(
@@ -158,21 +180,25 @@ class _AddBancoPageState extends State<AddBancoPage> {
                                   backgroundColor: Colors.transparent,
                                   elevation: 0,
                                 ),
-                              );                        
+                              );           
+                              setState(() {});               
                               // ignore: use_build_context_synchronously
                               Navigator.pop(context);
                           }                          
                         },
                         child: const Text("Guardar"),
                       ),
-                    ),  
-                  ]
+                    ), 
+                      const SizedBox(
+                        height: 30,
+                      ), 
+                    ],
+                  ),
                 ),
               ),
             ),
           ),
-        ),
-      )
+        )
     );
   }
 }

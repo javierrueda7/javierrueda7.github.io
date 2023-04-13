@@ -657,8 +657,16 @@ class _EditQuotePageState extends State<EditQuotePage> {
                     const SizedBox(
                           height: 10,
                     ),
+                    const Divider(thickness: 5,),
                     const SizedBox(
-                      height: 5,
+                      height: 10,
+                    ),
+                    Container(
+                      alignment: Alignment.center,
+                      child: const Text('Información del cliente', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold,))
+                    ),
+                    const SizedBox(
+                      height: 10,
                     ),
                     Container(
                       constraints: const BoxConstraints(maxWidth: 800),
