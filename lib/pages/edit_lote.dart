@@ -2,7 +2,6 @@ import 'package:albaterrapp/services/firebase_services.dart';
 import 'package:albaterrapp/utils/color_utils.dart';
 import 'package:albaterrapp/widgets/widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 
 class EditLotePage extends StatefulWidget {
   const EditLotePage({super.key});
@@ -190,12 +189,7 @@ class _EditLotePageState extends State<EditLotePage> {
                             child: ElevatedButton(
                               style: ButtonStyle(fixedSize: MaterialStateProperty.all(const Size(250, 50))),
                               onPressed: () async {    
-                                if(idController.text.isEmpty ||
-                                  loteNameController.text.isEmpty ||
-                                  priceController.text.isEmpty ||
-                                  areaController.text.isEmpty ||
-                                  etapaController.text.isEmpty ||
-                                  statusController.text.isEmpty ||
+                                if(priceController.text.isEmpty ||
                                   linderosController.text.isEmpty
                                   ){
                                   ScaffoldMessenger.of(context).showSnackBar(

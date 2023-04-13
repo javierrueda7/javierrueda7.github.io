@@ -6,6 +6,7 @@ import 'package:albaterrapp/pages/signin_page.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:albaterrapp/firebase_options.dart';
+// ignore: depend_on_referenced_packages
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 // Pages

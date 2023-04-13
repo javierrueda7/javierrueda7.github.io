@@ -146,6 +146,11 @@ Future<String> getGerenteEmail() async {
                                           value: 'Opción 2',
                                           child: Text(changeState(snapshot.data?[index]['quoteStage'])),
                                         ),
+                                        PopupMenuItem(
+                                          enabled: snapshot.data?[index]['quoteStage'] == 'LOTE SEPARADO',
+                                          value: 'Opción 3',
+                                          child: Text(snapshot.data?[index]['quoteStage'] == 'LOTE SEPARADO' ? 'Cancelar separación' : " "),
+                                        ),
                                       ],
                                       onSelected: (value) async {
                                         if(value == 'Opción 1'){                     
@@ -180,8 +185,9 @@ Future<String> getGerenteEmail() async {
                                             tiempoFinanc: '${((snapshot.data?[index]['nroCuotasLote'])/12).toString()} años',
                                             vlrCuota: (currencyCOP((snapshot.data?[index]['vlrCuotasLote'].toInt()).toString())),
                                             saldoTotalDate: snapshot.data?[index]['saldoTotalDate'],
+                                            periodoCuotas: snapshot.data?[index]['periodoCuotasLote'],
                                             nroCuotas: (snapshot.data?[index]['nroCuotasLote'].toInt()).toString(),
-                                            tem: '${snapshot.data?[index]['tem'].toString()}',
+                                            tem: '${snapshot.data?[index]['tem'].toString()}%',
                                             observaciones: snapshot.data?[index]['observacionesLote'],
                                             quoteStage: snapshot.data?[index]['quoteStage'],
                                           ),
@@ -205,6 +211,7 @@ Future<String> getGerenteEmail() async {
                                               "paymentMethod": snapshot.data?[index]['metodoPagoLote'],
                                               "porcCuotaInicial": '${snapshot.data?[index]['perCILote'].toString()}%',
                                               "vlrCuotaIni": (currencyCOP((snapshot.data?[index]['vlrCILote'].toInt()).toString())),
+                                              "periodoCuotas": snapshot.data?[index]['periodoCuotasLote'],
                                               "nroCuotas": '${snapshot.data?[index]['nroCuotasLote'].toString()}',
                                               "vlrSeparacion": (currencyCOP((snapshot.data?[index]['vlrSepLote'].toInt()).toString())),
                                               "saldoSeparacion": (currencyCOP((snapshot.data?[index]['saldoSepLote'].toInt()).toString())),
@@ -256,6 +263,7 @@ Future<String> getGerenteEmail() async {
                                               "paymentMethod": snapshot.data?[index]['metodoPagoLote'],
                                               "porcCuotaInicial": '${snapshot.data?[index]['perCILote'].toString()}%',
                                               "vlrCuotaIni": (currencyCOP((snapshot.data?[index]['vlrCILote'].toInt()).toString())),
+                                              "periodoCuotas": snapshot.data?[index]['periodoCuotasLote'],
                                               "nroCuotas": '${snapshot.data?[index]['nroCuotasLote'].toString()}',
                                               "vlrSeparacion": (currencyCOP((snapshot.data?[index]['vlrSepLote'].toInt()).toString())),
                                               "saldoSeparacion": (currencyCOP((snapshot.data?[index]['saldoSepLote'].toInt()).toString())),
@@ -293,6 +301,9 @@ Future<String> getGerenteEmail() async {
                                           } 
                                         
                                         } if(value == 'Opción 3'){
+                                          updateQuoteStage(snapshot.data?[index]['qid'], 'AUTORIZADA');
+                                          cancSepLote(snapshot.data?[index]['loteId']);
+                                          deleteSep("SEP${snapshot.data?[index]['qid']}");
                                           setState(() {                          
                                           });
                                         } if(value == 'Opción 4'){
@@ -323,6 +334,7 @@ Future<String> getGerenteEmail() async {
                                           "paymentMethod": snapshot.data?[index]['metodoPagoLote'],
                                           "porcCuotaInicial": '${snapshot.data?[index]['perCILote'].toString()}%',
                                           "vlrCuotaIni": (currencyCOP((snapshot.data?[index]['vlrCILote'].toInt()).toString())),
+                                          "periodoCuotas": snapshot.data?[index]['periodoCuotasLote'],
                                           "nroCuotas": '${snapshot.data?[index]['nroCuotasLote'].toString()}',
                                           "vlrSeparacion": (currencyCOP((snapshot.data?[index]['vlrSepLote'].toInt()).toString())),
                                           "saldoSeparacion": (currencyCOP((snapshot.data?[index]['saldoSepLote'].toInt()).toString())),
@@ -415,9 +427,11 @@ Future<String> getGerenteEmail() async {
     if(value == 'CREADA'){
       return dangerColor;
     } if(value == 'AUTORIZADA'){
-      return warningColor;
-    } else{
       return infoColor;
+    } if(value == 'LOTE SEPARADO'){
+      return separadoColor;
+    } else{
+      return vendidoColor;
     }
   }
 

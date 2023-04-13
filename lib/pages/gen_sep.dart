@@ -39,7 +39,7 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
     super.dispose();
   }
 
-  
+  double periodoNumValue = 0;
   Map<String, dynamic> infoPagos = {};
   late int quoteCounter;
   late String qid;
@@ -48,6 +48,7 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
   List<dynamic> loteInfo = [];
   Map<String, dynamic> seller = {};
   String realtimeDateTime = '';
+  int totalCuotas = 0;
   
   double precioFinal = 0;
   double vlrSeparacion = 0;
@@ -63,7 +64,7 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
   int maxCuotas = 1;
   double cuotaInicial = 0;
   int periodoCuotas = 1;
-  int plazoSaldoSep = 0;
+  double plazoSaldoSep = 0;
 
   Future<void> initPagos() async {    
     infoPagos = await getInfoProyecto();
@@ -74,7 +75,7 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
     dctoContado = infoPagos['dctoContado'].toDouble();
     plazoContado = infoPagos['plazoContado'].toDouble();
     maxCuotas = infoPagos['maxCuotas'].toInt();
-    plazoSaldoSep = infoPagos['plazoSaldoSep'].toInt();
+    plazoSaldoSep = infoPagos['plazoSaldoSep'];
     nroCuotasList = nroCuotasGenerator(maxCuotas); 
     
     seller = await getSeller(selectedSeller);
@@ -91,11 +92,13 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
   late String dateSaldo;
   List<String> nroCuotasList = [''];
   String selectedNroCuotas = '1';
+  String selectedPeriodoCuotas = 'Mensual';
   List<String> idtypeList = ['CC', 'CE', 'Pasaporte', 'NIT'];
   String selectedItemIdtype = 'CC';
   List<String> genderList = ['Masculino', 'Femenino', 'Otro'];
   bool countryBool = true;
   List countries = [];
+  List<String> periodoCuotasList= ['Semanal', 'Quincenal', 'Mensual', 'Bimestral', 'Trimestral', 'Cuatrimestral', 'Semestral', 'Anual'];
   List<String> paymentMethodList= ['Pago de contado', 'Financiación directa'];
   String paymentMethodSelectedItem = 'Pago de contado';
   Stream<QuerySnapshot>? citiesStream;
@@ -179,6 +182,7 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
       paymentMethodSelectedItem = arguments['paymentMethod'];
       porcCuotaInicialController.text = arguments['porcCuotaInicial'];
       vlrCuotaIniController.text = arguments['vlrCuotaIni'];
+      selectedPeriodoCuotas = arguments['periodoCuotas'];
       selectedNroCuotas = arguments['nroCuotas'];
       vlrSeparacionController.text = arguments['vlrSeparacion'];      
       saldoSeparacionController.text = arguments['saldoSeparacion'];
@@ -321,7 +325,7 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
                           ),
                           const SizedBox(
                             height: 20,
-                            child: Text('Fecha límite promesa de compra venta (Saldo Separacion)', style: TextStyle(fontSize: 14),)
+                            child: Text('Fecha de separacion)', style: TextStyle(fontSize: 14),)
                           ),
                           const SizedBox(
                             height: 10,
@@ -358,7 +362,7 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
                                       setState(() {
                                         quotePickedDate = tempPickedDate;                                
                                         separacionDeadlineController.text = dateOnly(false, 0, tempPickedDate, false);
-                                        saldoSeparacionDeadlineController.text = dateOnly(false, plazoSaldoSep.toDouble(), tempPickedDate, false);
+                                        saldoSeparacionDeadlineController.text = dateOnly(false, plazoSaldoSep, tempPickedDate, false);
                                         saldoCuotaIniDeadlineController.text = dateOnly(false, plazoCI, tempPickedDate, true);
                                         saldoTotalDateController.text = dateSaldo;
                                         discountValue();
@@ -919,7 +923,7 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
                                         child: Text('Fecha límite saldo separación', style: TextStyle(fontSize: 10),)
                                       ),
                                       textFieldWidget(
-                                        dateOnly(false, 0, quotePickedDate, false), Icons.date_range_outlined, false, saldoSeparacionDeadlineController, false, 'date', (){}
+                                        dateOnly(false, plazoSaldoSep, quotePickedDate, false), Icons.date_range_outlined, false, saldoSeparacionDeadlineController, false, 'date', (){}
                                       ),
                                     ],
                                   ),
@@ -1540,6 +1544,7 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
                                         vlrCuota: vlrCuotaController.text,
                                         letrasVlrCuota: letrasValorCuotasController.text,
                                         saldoTotalDate: saldoTotalDateController.text,
+                                        periodoCuotas: selectedPeriodoCuotas,
                                         nroCuotas: selectedNroCuotas,                                        
                                         tem: '${temController.text}%',
                                         observaciones: observacionesController.text,
@@ -1652,6 +1657,7 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
                                     valorAPagar, 
                                     paymentMethodSelectedItem,
                                     saldoTotalDateController.text,
+                                    selectedPeriodoCuotas,
                                     int.parse(selectedNroCuotas), 
                                     valorCuota,
                                     vlrTEM,
@@ -1679,6 +1685,7 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
                                     valorAPagar, 
                                     paymentMethodSelectedItem,
                                     saldoTotalDateController.text,
+                                    selectedPeriodoCuotas,
                                     int.parse(selectedNroCuotas), 
                                     valorCuota,
                                     vlrTEM,
@@ -1795,7 +1802,32 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
     }
   }
 
+  void getPeriodicidad(){
+    if(selectedPeriodoCuotas == 'Semanal'){
+      periodoNumValue = 0.25;
+    } if(selectedPeriodoCuotas == 'Quincenal'){
+      periodoNumValue = 0.5;
+    } if(selectedPeriodoCuotas == 'Mensual'){
+      periodoNumValue = 1;
+    } if(selectedPeriodoCuotas == 'Bimestral'){
+      periodoNumValue = 2;
+    } if(selectedPeriodoCuotas == 'Trimestral'){
+      periodoNumValue = 3;
+    } if(selectedPeriodoCuotas == 'Cuatrimestral'){
+      periodoNumValue = 4;
+    } if(selectedPeriodoCuotas == 'Semestral'){
+      periodoNumValue = 6;
+    } if(selectedPeriodoCuotas == 'Anual'){
+      periodoNumValue = 12;
+    } else {
+      periodoNumValue = periodoNumValue;
+    }
+  }
+
   List<String> nroCuotasGenerator(int n){
+    getPeriodicidad();
+    n = n~/periodoNumValue;
+    totalCuotas = n;
     List<String> tempList = [];
     for(int i = 1; i <= n; i++){
       tempList.add('$i');
@@ -1804,19 +1836,20 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
   }
 
   void periodoCalculator(double n){
-    if(n>0 && n<=6){
+    double value = n/totalCuotas;
+    if(value>0 && value<=0.17){
       periodoCuotas = 1;
     } else {
-      if(n>6 && n<=12){
+      if(value>0.17 && value<=0.34){
         periodoCuotas = 2;
       } else {
-        if(n>12 && n<=18){
+        if(value>0.34 && value<=0.53){
           periodoCuotas = 3;
         } else{
-          if(n>18 && n<=24){
+          if(value>0.53 && value<=0.67){
             periodoCuotas = 4;
           } else{
-            if(n>24 && n<=30){
+            if(value>0.67 && value<=0.84){
               periodoCuotas = 5;
             } else{
               periodoCuotas = 6;
@@ -1992,32 +2025,19 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
                   ),
                 ),              
                 Expanded(
-                  flex: 2,
+                  flex: 3,
                   child: Column(
                     children: [
                       const SizedBox(
-                        height: 15,
-                        child: Text('Nro periodos', style: TextStyle(fontSize: 10),)
-                      ),
-                      TextField (                      
-                        cursorColor: fifthColor,
-                        enabled: false,
-                        textAlign: TextAlign.center,
-                        style: TextStyle(color: fifthColor.withOpacity(0.9)),
-                        decoration: InputDecoration(
-                          hintText: periodoCuotas.toString(),
-                          hintStyle: TextStyle(color: fifthColor.withOpacity(0.9)),
-                          filled: true,
-                          floatingLabelBehavior: FloatingLabelBehavior.never,
-                          fillColor: primaryColor.withOpacity(0.2),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(30.0),
-                            borderSide: BorderSide(width: 1, style: BorderStyle.solid, color: fifthColor.withOpacity(0.1))),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(30.0),
-                            borderSide: BorderSide(width: 2, style: BorderStyle.solid, color: fifthColor)),
-                        ),
-                      ),                    
+                      height: 15,
+                      child: Text('Periodicidad', style: TextStyle(fontSize: 10),)),
+                      easyDropdown(periodoCuotasList, selectedPeriodoCuotas, (tempPeriodoCuotas){setState(() {
+                        selectedPeriodoCuotas = tempPeriodoCuotas!;
+                        nroCuotasGenerator(maxCuotas);
+                        selectedNroCuotas = "1";
+                        periodoCalculator(stringConverter(selectedNroCuotas));
+                        initCuotas();
+                      });}),
                     ],
                   ),
                 ),
@@ -2035,7 +2055,7 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
                       });}),
                     ],
                   ),
-                ),
+                ),    
               ]
             ),
             Row(

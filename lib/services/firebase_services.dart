@@ -200,6 +200,7 @@ Future<void> addOrdenSep(
   double vlrPorPagarLote,
   String metodoPagoLote,
   String saldoTotalDate,
+  String periodoCuotasLote,
   int nroCuotasLote,
   double vlrCuotasLote,
   double tem,
@@ -225,6 +226,7 @@ Future<void> addOrdenSep(
     "vlrPorPagarLote": vlrPorPagarLote,
     "metodoPagoLote": metodoPagoLote,
     "saldoTotalDate": saldoTotalDate,
+    "periodoCuotasLote": periodoCuotasLote,
     "nroCuotasLote": nroCuotasLote,
     "vlrCuotasLote": vlrCuotasLote,
     "tem": tem,
@@ -235,7 +237,9 @@ Future<void> addOrdenSep(
   );
 }
 
-
+Future<void> deleteSep(String oid) async {
+  await db.collection("ordSep").doc(oid).delete();
+}
 
 Future<void> updateQuoteStage(
   String qid,  
@@ -271,6 +275,7 @@ Future<void> updateQuote(
   double vlrPorPagarLote,
   String metodoPagoLote,
   String saldoTotalDate,
+  String periodoCuotasLote,
   int nroCuotasLote,
   double vlrCuotasLote,
   double tem,
@@ -300,6 +305,7 @@ Future<void> updateQuote(
     "vlrPorPagarLote": vlrPorPagarLote,
     "metodoPagoLote": metodoPagoLote,
     "saldoTotalDate": saldoTotalDate,
+    "periodoCuotasLote": periodoCuotasLote,
     "nroCuotasLote": nroCuotasLote,
     "vlrCuotasLote": vlrCuotasLote,
     "tem": tem,
@@ -334,6 +340,7 @@ Future<void> addQuote(
   double vlrPorPagarLote,
   String metodoPagoLote,
   String saldoTotalDate,
+  String periodoCuotasLote,
   int nroCuotasLote,
   double vlrCuotasLote,
   double tem,
@@ -363,6 +370,7 @@ Future<void> addQuote(
     "vlrPorPagarLote": vlrPorPagarLote,
     "metodoPagoLote": metodoPagoLote,
     "saldoTotalDate": saldoTotalDate,
+    "periodoCuotasLote": periodoCuotasLote,
     "nroCuotasLote": nroCuotasLote,
     "vlrCuotasLote": vlrCuotasLote,
     "tem": tem,
@@ -406,6 +414,7 @@ Future<List> getQuotes(String loteName, bool allLotes, bool archive) async {
           "vlrPorPagarLote": data['vlrPorPagarLote'],
           "metodoPagoLote": data['metodoPagoLote'],
           "saldoTotalDate": data['saldoTotalDate'],
+          "periodoCuotasLote": data['periodoCuotasLote'],
           "nroCuotasLote": data['nroCuotasLote'],
           "vlrCuotasLote": data['vlrCuotasLote'],
           "tem": data['tem'],
@@ -442,6 +451,7 @@ Future<List> getQuotes(String loteName, bool allLotes, bool archive) async {
           "vlrPorPagarLote": data['vlrPorPagarLote'],
           "metodoPagoLote": data['metodoPagoLote'],
           "saldoTotalDate": data['saldoTotalDate'],
+          "periodoCuotasLote": data['periodoCuotasLote'],
           "nroCuotasLote": data['nroCuotasLote'],
           "vlrCuotasLote": data['vlrCuotasLote'],
           "tem": data['tem'],
@@ -607,7 +617,7 @@ Future<void> addLotes(String idLote, String loteName, double loteLeft, double	lo
 }
 
 Future<void> updateLote(String idLote, double lotePrice, String loteLinderos) async {
-  await db.collection("lotes").doc(idLote).set({
+  await db.collection("lotes").doc(idLote).update({
     "lotePrice": lotePrice,       
     "loteLinderos": loteLinderos,
     }
@@ -623,6 +633,12 @@ Future<void> cambioEstadoLote(String idLote, String statusLote) async {
   }  
   await db.collection("lotes").doc(idLote).update({
    "loteState": tempState
+  });
+}
+
+Future<void> cancSepLote(String idLote) async {
+  await db.collection("lotes").doc(idLote).update({
+   "loteState": 'Disponible'
   });
 }
 

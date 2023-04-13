@@ -41,7 +41,7 @@ class _AddQuotePageState extends State<AddQuotePage> {
     super.dispose();
   }
 
-  
+  double periodoNumValue = 0;
   Map<String, dynamic> infoPagos = {};
   late int quoteCounter;
   late String qid;
@@ -49,6 +49,7 @@ class _AddQuotePageState extends State<AddQuotePage> {
   List<dynamic> loteInfo = [];
   Map<String, dynamic> seller = {};
   String realtimeDateTime = '';
+  int totalCuotas = 0;
   
   double precioFinal = 0;
   double vlrSeparacion = 10000000;
@@ -89,11 +90,13 @@ class _AddQuotePageState extends State<AddQuotePage> {
   late String dateSaldo;
   List<String> nroCuotasList = [''];
   String selectedNroCuotas = '1';
+  String selectedPeriodoCuotas = 'Mensual';
   List<String> idtypeList = ['CC', 'CE', 'Pasaporte', 'NIT'];
   String selectedItemIdtype = 'CC';
   List<String> genderList = ['Masculino', 'Femenino', 'Otro'];
   bool countryBool = true;
   List countries = [];
+  List<String> periodoCuotasList= ['Semanal', 'Quincenal', 'Mensual', 'Bimestral', 'Trimestral', 'Cuatrimestral', 'Semestral', 'Anual'];
   List<String> paymentMethodList= ['Pago de contado', 'Financiación directa'];
   String paymentMethodSelectedItem = 'Pago de contado';
   Stream<QuerySnapshot>? sellerStream;
@@ -1128,6 +1131,7 @@ class _AddQuotePageState extends State<AddQuotePage> {
                                         tiempoFinanc: '${(int.parse(selectedNroCuotas))/12} años',
                                         vlrCuota: vlrCuotaController.text,
                                         saldoTotalDate: saldoTotalDateController.text,
+                                        periodoCuotas: selectedPeriodoCuotas,
                                         nroCuotas: selectedNroCuotas,                                        
                                         tem: temController.text,
                                         observaciones: observacionesController.text,
@@ -1240,6 +1244,7 @@ class _AddQuotePageState extends State<AddQuotePage> {
                                     valorAPagar, 
                                     paymentMethodSelectedItem,
                                     saldoTotalDateController.text,
+                                    selectedPeriodoCuotas,
                                     int.parse(selectedNroCuotas), 
                                     valorCuota,
                                     vlrTEM,
@@ -1356,7 +1361,32 @@ class _AddQuotePageState extends State<AddQuotePage> {
     }
   }
 
+  void getPeriodicidad(){
+    if(selectedPeriodoCuotas == 'Semanal'){
+      periodoNumValue = 0.25;
+    } if(selectedPeriodoCuotas == 'Quincenal'){
+      periodoNumValue = 0.5;
+    } if(selectedPeriodoCuotas == 'Mensual'){
+      periodoNumValue = 1;
+    } if(selectedPeriodoCuotas == 'Bimestral'){
+      periodoNumValue = 2;
+    } if(selectedPeriodoCuotas == 'Trimestral'){
+      periodoNumValue = 3;
+    } if(selectedPeriodoCuotas == 'Cuatrimestral'){
+      periodoNumValue = 4;
+    } if(selectedPeriodoCuotas == 'Semestral'){
+      periodoNumValue = 6;
+    } if(selectedPeriodoCuotas == 'Anual'){
+      periodoNumValue = 12;
+    } else {
+      periodoNumValue = periodoNumValue;
+    }
+  }
+
   List<String> nroCuotasGenerator(int n){
+    getPeriodicidad();
+    n = n~/periodoNumValue;
+    totalCuotas = n;
     List<String> tempList = [];
     for(int i = 1; i <= n; i++){
       tempList.add('$i');
@@ -1365,19 +1395,20 @@ class _AddQuotePageState extends State<AddQuotePage> {
   }
 
   void periodoCalculator(double n){
-    if(n>0 && n<=6){
+    double value = n/totalCuotas;
+    if(value>0 && value<=0.17){
       periodoCuotas = 1;
     } else {
-      if(n>6 && n<=12){
+      if(value>0.17 && value<=0.34){
         periodoCuotas = 2;
       } else {
-        if(n>12 && n<=18){
+        if(value>0.34 && value<=0.53){
           periodoCuotas = 3;
         } else{
-          if(n>18 && n<=24){
+          if(value>0.53 && value<=0.67){
             periodoCuotas = 4;
           } else{
-            if(n>24 && n<=30){
+            if(value>0.67 && value<=0.84){
               periodoCuotas = 5;
             } else{
               periodoCuotas = 6;
@@ -1551,34 +1582,21 @@ class _AddQuotePageState extends State<AddQuotePage> {
                         (currencyCOP(valorCuota.toInt().toString())), Icons.monetization_on_outlined, false, vlrCuotaController, false, 'number', (){}),
                     ],
                   ),
-                ),              
+                ),
                 Expanded(
-                  flex: 2,
+                  flex: 3,
                   child: Column(
                     children: [
                       const SizedBox(
-                        height: 15,
-                        child: Text('Nro periodos', style: TextStyle(fontSize: 10),)
-                      ),
-                      TextField (                      
-                        cursorColor: fifthColor,
-                        enabled: false,
-                        textAlign: TextAlign.center,
-                        style: TextStyle(color: fifthColor.withOpacity(0.9)),
-                        decoration: InputDecoration(
-                          hintText: periodoCuotas.toString(),
-                          hintStyle: TextStyle(color: fifthColor.withOpacity(0.9)),
-                          filled: true,
-                          floatingLabelBehavior: FloatingLabelBehavior.never,
-                          fillColor: primaryColor.withOpacity(0.2),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(30.0),
-                            borderSide: BorderSide(width: 1, style: BorderStyle.solid, color: fifthColor.withOpacity(0.1))),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(30.0),
-                            borderSide: BorderSide(width: 2, style: BorderStyle.solid, color: fifthColor)),
-                        ),
-                      ),                    
+                      height: 15,
+                      child: Text('Periodicidad', style: TextStyle(fontSize: 10),)),
+                      easyDropdown(periodoCuotasList, selectedPeriodoCuotas, (tempPeriodoCuotas){setState(() {
+                        selectedPeriodoCuotas = tempPeriodoCuotas!;
+                        nroCuotasGenerator(maxCuotas);
+                        selectedNroCuotas = "1";
+                        periodoCalculator(stringConverter(selectedNroCuotas));
+                        initCuotas();
+                      });}),
                     ],
                   ),
                 ),
@@ -1596,7 +1614,7 @@ class _AddQuotePageState extends State<AddQuotePage> {
                       });}),
                     ],
                   ),
-                ),
+                ),                
               ]
             ),
             Row(

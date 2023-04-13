@@ -38,6 +38,7 @@ class PDFGenerator extends StatelessWidget {
   final String tiempoFinanc;
   final String vlrCuota;
   final String saldoTotalDate;
+  final String periodoCuotas;
   final String nroCuotas;
   final String tem;
   final String observaciones;
@@ -76,6 +77,7 @@ class PDFGenerator extends StatelessWidget {
     required this.tiempoFinanc,
     required this.vlrCuota,
     required this.saldoTotalDate,
+    required this.periodoCuotas,
     required this.nroCuotas,
     required this.tem,
     required this.observaciones,
@@ -200,7 +202,7 @@ class PDFGenerator extends StatelessWidget {
                 pw.Table.fromTextArray(cellAlignment: pw.Alignment.center,
                   context: context,
                   data: [
-                    ['PAGADERA ASÍ'],        
+                    ['FORMA DE PAGO'],        
                   ],
                 ),
                 pw.SizedBox(height: 20),
