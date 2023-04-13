@@ -325,7 +325,10 @@ class _AddSellerPageState extends State<AddSellerPage> {
                         },
                         child: const Text("Guardar"),
                       ),
-                    ),  
+                    ),
+                    const SizedBox(
+                      height: 30,
+                    ),   
                   ]
                 ),
               ),

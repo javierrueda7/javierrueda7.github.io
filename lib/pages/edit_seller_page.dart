@@ -259,64 +259,67 @@ class _EditSellerPageState extends State<EditSellerPage> {
                         height: 20,
                       ),                
                       Container(
-                            constraints: const BoxConstraints(maxWidth: 800),
-                            child: ElevatedButton(
-                              style: ButtonStyle(fixedSize: MaterialStateProperty.all(const Size(250, 50))),
-                              onPressed: () async {    
-                                if(nameController.text.isEmpty ||
-                                  lastnameController.text.isEmpty ||
-                                  addressController.text.isEmpty ||
-                                  phoneController.text.isEmpty ||
-                                  emailController.text.isEmpty ||
-                                  idController.text.isEmpty
-                                  ){
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: CustomAlertMessage(
-                                        errorTitle: "Oops!", 
-                                        errorText: "Verifique que todos los campos se hayan llenado correctamente.",
-                                        stateColor: dangerColor,
-                                      ), 
-                                      behavior: SnackBarBehavior.floating,
-                                      backgroundColor: Colors.transparent,
-                                      elevation: 0,
-                                    ),
-                                  );
-                                } else {
-                                  await updateSellers(
-                                  sid,
-                                  nameController.text,
-                                  lastnameController.text,
-                                  emailController.text,
-                                  phoneController.text,                            
-                                  addressController.text,
-                                  idController.text,
-                                  bdController.text,
-                                  selectedGender,
-                                  startDateController.text,
-                                  selectedRole,
-                                  selectedStatus,
-                                  );
-                                    // ignore: use_build_context_synchronously
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: CustomAlertMessage(
-                                        errorTitle: "Genial!", 
-                                        errorText: "Datos actualizados de manera satisfactoria.",
-                                        stateColor: successColor,
-                                      ), 
-                                      behavior: SnackBarBehavior.floating,
-                                      backgroundColor: Colors.transparent,
-                                      elevation: 0,
-                                    ),
-                                  );                  
-                                  // ignore: use_build_context_synchronously
-                                  Navigator.pop(context);                                                          
-                                }
-                              },
-                              child: const Text("Actualizar"),
-                            ),
-                          ),
+                        constraints: const BoxConstraints(maxWidth: 800),
+                        child: ElevatedButton(
+                          style: ButtonStyle(fixedSize: MaterialStateProperty.all(const Size(250, 50))),
+                          onPressed: () async {    
+                            if(nameController.text.isEmpty ||
+                              lastnameController.text.isEmpty ||
+                              addressController.text.isEmpty ||
+                              phoneController.text.isEmpty ||
+                              emailController.text.isEmpty ||
+                              idController.text.isEmpty
+                              ){
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: CustomAlertMessage(
+                                    errorTitle: "Oops!", 
+                                    errorText: "Verifique que todos los campos se hayan llenado correctamente.",
+                                    stateColor: dangerColor,
+                                  ), 
+                                  behavior: SnackBarBehavior.floating,
+                                  backgroundColor: Colors.transparent,
+                                  elevation: 0,
+                                ),
+                              );
+                            } else {
+                              await updateSellers(
+                              sid,
+                              nameController.text,
+                              lastnameController.text,
+                              emailController.text,
+                              phoneController.text,                            
+                              addressController.text,
+                              idController.text,
+                              bdController.text,
+                              selectedGender,
+                              startDateController.text,
+                              selectedRole,
+                              selectedStatus,
+                              );
+                                // ignore: use_build_context_synchronously
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: CustomAlertMessage(
+                                    errorTitle: "Genial!", 
+                                    errorText: "Datos actualizados de manera satisfactoria.",
+                                    stateColor: successColor,
+                                  ), 
+                                  behavior: SnackBarBehavior.floating,
+                                  backgroundColor: Colors.transparent,
+                                  elevation: 0,
+                                ),
+                              );                  
+                              // ignore: use_build_context_synchronously
+                              Navigator.pop(context);                                                          
+                            }
+                          },
+                          child: const Text("Actualizar"),
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 30,
+                      ), 
                     ],
                   ),
                 ),
