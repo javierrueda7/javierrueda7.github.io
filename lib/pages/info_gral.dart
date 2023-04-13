@@ -161,25 +161,28 @@ class _InfoGeneralState extends State<InfoGeneral> {
                         const SizedBox(
                           height: 5,
                         ),
-                        Row(
-                          children: [
-                            Expanded(
-                              flex: 10,
-                              child: textFieldWidget(
-                                "CÉDULA DEL REPRESENTANTE", Icons.badge_outlined, false, idRepIController, true, 'email', (){}
+                        Container(
+                          constraints: const BoxConstraints(maxWidth: 800),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                flex: 10,
+                                child: textFieldWidget(
+                                  "CÉDULA DEL REPRESENTANTE", Icons.badge_outlined, false, idRepIController, true, 'email', (){}
+                                ),
                               ),
-                            ),
-                            Expanded(
-                              flex: 1,
-                              child: Container()
-                            ),
-                            Expanded(
-                              flex: 10,
-                              child: textFieldWidget(
-                                "LUGAR DE EXPEDICIÓN", Icons.gps_fixed_outlined, false, lugarIdRepIController, true, 'email', (){}
+                              Expanded(
+                                flex: 1,
+                                child: Container()
                               ),
-                            ),
-                          ],
+                              Expanded(
+                                flex: 10,
+                                child: textFieldWidget(
+                                  "LUGAR DE EXPEDICIÓN", Icons.gps_fixed_outlined, false, lugarIdRepIController, true, 'email', (){}
+                                ),
+                              ),
+                            ],
+                          ),
                         ),                    
                         const SizedBox(
                           height: 5,
@@ -230,25 +233,28 @@ class _InfoGeneralState extends State<InfoGeneral> {
                         const SizedBox(
                           height: 5,
                         ),
-                        Row(
-                          children: [
-                            Expanded(
-                              flex: 10,
-                              child: textFieldWidget(
-                                "CÉDULA DEL REPRESENTANTE", Icons.badge_outlined, false, idRepVController, true, 'email', (){}
+                        Container(
+                          constraints: const BoxConstraints(maxWidth: 800),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                flex: 10,
+                                child: textFieldWidget(
+                                  "CÉDULA DEL REPRESENTANTE", Icons.badge_outlined, false, idRepVController, true, 'email', (){}
+                                ),
                               ),
-                            ),
-                            Expanded(
-                              flex: 1,
-                              child: Container()
-                            ),
-                            Expanded(
-                              flex: 10,
-                              child: textFieldWidget(
-                                "LUGAR DE EXPEDICIÓN", Icons.gps_fixed_outlined, false, lugarIdRepVController, true, 'email', (){}
+                              Expanded(
+                                flex: 1,
+                                child: Container()
                               ),
-                            ),
-                          ],
+                              Expanded(
+                                flex: 10,
+                                child: textFieldWidget(
+                                  "LUGAR DE EXPEDICIÓN", Icons.gps_fixed_outlined, false, lugarIdRepVController, true, 'email', (){}
+                                ),
+                              ),
+                            ],
+                          ),
                         ),                    
                         const SizedBox(
                           height: 25,
@@ -322,9 +328,8 @@ class _InfoGeneralState extends State<InfoGeneral> {
                     ),
                     const SizedBox(
                       height: 30,
-                    ),  
-
-                    ],
+                    ),
+                  ],
                 ),
               ),
             ),

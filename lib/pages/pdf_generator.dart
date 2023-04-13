@@ -23,6 +23,7 @@ class PDFGenerator extends StatelessWidget {
   final String area;
   final String price;
   final String finalPrice;
+  final String discount;
   final String porcCuotaIni;
   final String vlrCuotaIni;
   final String vlrSeparacion;
@@ -30,6 +31,7 @@ class PDFGenerator extends StatelessWidget {
   final String saldoSeparacion;
   final String dueDateSaldoSeparacion;
   final String plazoCI;
+  final String plazoContado;
   final String saldoCI;
   final String dueDateSaldoCI;
   final String porcPorPagar;
@@ -62,6 +64,7 @@ class PDFGenerator extends StatelessWidget {
     required this.area,
     required this.price,
     required this.finalPrice,
+    required this.discount,
     required this.porcCuotaIni,
     required this.vlrCuotaIni,
     required this.vlrSeparacion,
@@ -69,6 +72,7 @@ class PDFGenerator extends StatelessWidget {
     required this.saldoSeparacion,
     required this.dueDateSaldoSeparacion,
     required this.plazoCI,
+    required this.plazoContado,
     required this.saldoCI,
     required this.dueDateSaldoCI,
     required this.porcPorPagar,
@@ -187,42 +191,118 @@ class PDFGenerator extends StatelessWidget {
                   ],
                 ),
                 pw.SizedBox(height: 20),
+                pw.Row(
+                  children: [
+                    pw.Expanded(
+                      flex: 1,
+                      child: pw.Text('Fecha de cotización: $date', textAlign: pw.TextAlign.left),
+                    ),
+                    pw.Expanded(
+                      flex: 1,
+                      child: pw.Text('Valido hasta: $dueDate', textAlign: pw.TextAlign.right),
+                    ),
+                  ],
+                ),
                 pw.Divider(thickness: 1),
-                pw.SizedBox(height: 20),
-                pw.Table.fromTextArray(headerCount: 0,
-                  context: context,
-                  data: [
-                    ['Nombre', '$name $lastname', 'Teléfono', phone, 'Fecha de cotización', date],
-                    ['Inmueble Nº', lote, 'Área', area, 'Valido hasta', dueDate],
-                    ['Valor inicial', price],
-                    ['Valor final', finalPrice],               
+                pw.SizedBox(height: 20),                
+                pw.Row(
+                  children: [
+                    pw.Expanded(
+                      flex: 1,
+                      child: pw.Text('Nombre: $name $lastname', textAlign: pw.TextAlign.left),
+                    ),
+                    pw.Expanded(
+                      flex: 1,
+                      child: pw.Text('Teléfono: $phone', textAlign: pw.TextAlign.left),
+                    ),
                   ],
                 ),
-                pw.SizedBox(height: 20),
-                pw.Table.fromTextArray(cellAlignment: pw.Alignment.center,
-                  context: context,
-                  data: [
-                    ['FORMA DE PAGO'],        
+                pw.SizedBox(height: 5),
+                pw.Row(
+                  children: [
+                    pw.Expanded(
+                      flex: 1,
+                      child: pw.Column(
+                        crossAxisAlignment: pw.CrossAxisAlignment.start,
+                        children: [
+                          pw.Text('Inmueble Nº: $lote', textAlign: pw.TextAlign.left),
+                          pw.SizedBox(height: 5),
+                          pw.Text('Área: $area', textAlign: pw.TextAlign.left),
+                        ],
+                      ),
+                    ),
+                    pw.Expanded(
+                      flex: 1,
+                      child: pw.Column(
+                        crossAxisAlignment: pw.CrossAxisAlignment.start,
+                        children: [
+                          pw.Text('Valor inicial: $price', textAlign: pw.TextAlign.left),
+                          pw.SizedBox(height: 5),
+                          pw.RichText(
+                            textAlign: pw.TextAlign.left,
+                            text: pw.TextSpan(
+                              children: <pw.TextSpan>[
+                                pw.TextSpan(text: 'Valor final: $finalPrice '),
+                                pw.TextSpan(text: '($discount dcto)', style: pw.TextStyle(fontWeight: pw.FontWeight.bold,),),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ],
                 ),
-                pw.SizedBox(height: 20),
+                pw.SizedBox(height: 20),                
                 metodoPago(paymentMethod, context),
                 pw.SizedBox(height: 20),
-                pw.Table.fromTextArray(
-                  context: context,
-                  data: [
-                    ['OBSERVACIONES'],                    
-                    [observaciones],                   
-                  ],
-                ),
+                pw.Center(
+                  child: pw.Column(
+                    crossAxisAlignment: pw.CrossAxisAlignment.center,
+                    children: [
+                      pw.Text('OBSERVACIONES', textAlign: pw.TextAlign.center, style: pw.TextStyle(fontWeight: pw.FontWeight.bold,),),
+                            pw.SizedBox(height: 10),
+                            pw.Text(observaciones, textAlign: pw.TextAlign.left),
+                    ]
+                  ),
+                ),                
                 pw.SizedBox(height: 20),
-                pw.Table.fromTextArray(
-                  context: context,
-                  data: [
-                    ['Asesor comercial', 'Teléfono', 'Correo electrónico'],                    
-                    [sellerName, sellerPhone, sellerEmail],                   
-                  ],
-                ),                            
+                pw.Row(
+                  children: [
+                    pw.Expanded(
+                      flex: 1,
+                      child: pw.Column(
+                        crossAxisAlignment: pw.CrossAxisAlignment.center,
+                        children: [
+                          pw.Text('Asesor comercial', textAlign: pw.TextAlign.left, style: pw.TextStyle(fontWeight: pw.FontWeight.bold,),),
+                          pw.SizedBox(height: 5),
+                          pw.Text(sellerName, textAlign: pw.TextAlign.left),
+                        ],
+                      ),
+                    ),
+                    pw.Expanded(
+                      flex: 1,
+                      child: pw.Column(
+                        crossAxisAlignment: pw.CrossAxisAlignment.center,
+                        children: [
+                          pw.Text('Teléfono', textAlign: pw.TextAlign.left, style: pw.TextStyle(fontWeight: pw.FontWeight.bold,),),
+                          pw.SizedBox(height: 5),
+                          pw.Text(sellerPhone, textAlign: pw.TextAlign.center),
+                        ],
+                      ),
+                    ),
+                    pw.Expanded(
+                      flex: 1,
+                      child: pw.Column(
+                        crossAxisAlignment: pw.CrossAxisAlignment.center,
+                        children: [
+                          pw.Text('Correo electrónico', textAlign: pw.TextAlign.left, style: pw.TextStyle(fontWeight: pw.FontWeight.bold,),),
+                          pw.SizedBox(height: 5),
+                          pw.Text(sellerEmail, textAlign: pw.TextAlign.center),
+                        ],
+                      ),
+                    ),
+                  ],  
+                ),                          
               ],
             ),
           );
@@ -237,36 +317,176 @@ class PDFGenerator extends StatelessWidget {
 
   pw.Widget metodoPago(String evaluarMetodo, context){
     if(evaluarMetodo == 'Pago de contado'){
-      return pw.Table.fromTextArray(headerCount: 0,
-        context: context,
-        data: [
-          ['Pago de contado', 'Valor', 'Plazo'],
-          ['Separación', vlrSeparacion, dueDateSeparacion],
-          ['Saldo separación', saldoSeparacion, dueDateSaldoSeparacion],
-          ['Saldo', vlrPorPagar, saldoTotalDate],                        
-        ],
-      );                
+      return pw.Column(
+        children: [
+          pw.Text('FORMA DE PAGO', textAlign: pw.TextAlign.center, style: pw.TextStyle(fontWeight: pw.FontWeight.bold, fontSize: 16),),
+          pw.SizedBox(height: 10),
+          pw.Text('PAGO DE CONTADO', textAlign: pw.TextAlign.center, style: pw.TextStyle(fontWeight: pw.FontWeight.bold,),),
+          pw.SizedBox(height: 10),
+          pw.Row(
+            children: [
+              pw.Expanded(
+                flex: 1,
+                child: pw.Column(
+                  crossAxisAlignment: pw.CrossAxisAlignment.start,
+                  children: [
+                    pw.SizedBox(height: 15),
+                    pw.Text('Separación', textAlign: pw.TextAlign.left),
+                    pw.SizedBox(height: 5),
+                    pw.Text('Saldo separación', textAlign: pw.TextAlign.left),
+                    pw.SizedBox(height: 5),
+                    pw.Text('Saldo total ($plazoContado)', textAlign: pw.TextAlign.left),
+                    pw.SizedBox(height: 20),
+                    pw.Text('Total', textAlign: pw.TextAlign.left, style: pw.TextStyle(fontWeight: pw.FontWeight.bold,),),
+                  ],
+                ),
+              ),
+              pw.Expanded(
+                flex: 1,
+                child: pw.Column(
+                  crossAxisAlignment: pw.CrossAxisAlignment.center,
+                  children: [
+                    pw.Text('Valor', textAlign: pw.TextAlign.left, style: pw.TextStyle(fontWeight: pw.FontWeight.bold,),),
+                    pw.SizedBox(height: 5),
+                    pw.Text(vlrSeparacion, textAlign: pw.TextAlign.center),
+                    pw.SizedBox(height: 5),
+                    pw.Text(saldoSeparacion, textAlign: pw.TextAlign.center),
+                    pw.SizedBox(height: 5),
+                    pw.Text(vlrPorPagar, textAlign: pw.TextAlign.center),
+                    pw.Divider(thickness: 1),
+                    pw.Text(finalPrice, textAlign: pw.TextAlign.left, style: pw.TextStyle(fontWeight: pw.FontWeight.bold,),),
+                  ],
+                ),
+              ),
+              pw.Expanded(
+                flex: 1,
+                child: pw.Column(
+                  crossAxisAlignment: pw.CrossAxisAlignment.center,
+                  children: [
+                    pw.Text('Fecha límite de pago', textAlign: pw.TextAlign.left, style: pw.TextStyle(fontWeight: pw.FontWeight.bold,),),
+                    pw.SizedBox(height: 5),
+                    pw.Text(dueDateSeparacion, textAlign: pw.TextAlign.center),
+                    pw.SizedBox(height: 5),
+                    pw.Text(dueDateSaldoSeparacion, textAlign: pw.TextAlign.center),
+                    pw.SizedBox(height: 5),
+                    pw.Text(saldoTotalDate, textAlign: pw.TextAlign.center),
+                    pw.SizedBox(height: 30),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ]
+      );   
     } else{
       return pw.Column(
         children: [
-          pw.Table.fromTextArray(headerCount: 0,
-            context: context,
-            data: [
-              ['Cuota inicial ($porcCuotaIni)', vlrCuotaIni, 'Plazo'],
-              ['Separación', vlrSeparacion, dueDateSeparacion],
-              ['Saldo separación', saldoSeparacion, dueDateSaldoSeparacion],
-              ['Saldo cuota inicial ($plazoCI)', saldoCI, dueDateSaldoCI], 
+
+          pw.Text('FORMA DE PAGO', textAlign: pw.TextAlign.center, style: pw.TextStyle(fontWeight: pw.FontWeight.bold, fontSize: 16),),
+          pw.SizedBox(height: 10),
+          pw.Text('FINANCIACIÓN DIRECTA', textAlign: pw.TextAlign.center, style: pw.TextStyle(fontWeight: pw.FontWeight.bold,),),
+          pw.SizedBox(height: 10),
+          pw.Row(
+            children: [
+              pw.Expanded(
+                flex: 2,
+                child: pw.Column(
+                  crossAxisAlignment: pw.CrossAxisAlignment.start,
+                  children: [
+                    pw.Text('Cuota inicial ($porcCuotaIni)', textAlign: pw.TextAlign.left, style: pw.TextStyle(fontWeight: pw.FontWeight.bold,),),
+                    pw.SizedBox(height: 5),
+                    pw.Text('Separación', textAlign: pw.TextAlign.left),
+                    pw.SizedBox(height: 5),
+                    pw.Text('Saldo separación', textAlign: pw.TextAlign.left),
+                    pw.SizedBox(height: 5),
+                    pw.Text('Saldo cuota inicial ($plazoCI)', textAlign: pw.TextAlign.left),
+                    pw.SizedBox(height: 15),
+                    pw.Text('Total', textAlign: pw.TextAlign.left, style: pw.TextStyle(fontWeight: pw.FontWeight.bold,),),
+                  ],
+                ),
+              ),
+              pw.Expanded(
+                flex: 1,
+                child: pw.Column(
+                  crossAxisAlignment: pw.CrossAxisAlignment.center,
+                  children: [
+                    pw.Text('Valor', textAlign: pw.TextAlign.left, style: pw.TextStyle(fontWeight: pw.FontWeight.bold,),),
+                    pw.SizedBox(height: 5),
+                    pw.Text(vlrSeparacion, textAlign: pw.TextAlign.center),
+                    pw.SizedBox(height: 5),
+                    pw.Text(saldoSeparacion, textAlign: pw.TextAlign.center),
+                    pw.SizedBox(height: 5),
+                    pw.Text(saldoCI, textAlign: pw.TextAlign.center),
+                    pw.Divider(thickness: 1),
+                    pw.Text(vlrCuotaIni, textAlign: pw.TextAlign.left, style: pw.TextStyle(fontWeight: pw.FontWeight.bold,),),
+                  ],
+                ),
+              ),
+              pw.Expanded(
+                flex: 1,
+                child: pw.Column(
+                  crossAxisAlignment: pw.CrossAxisAlignment.center,
+                  children: [
+                    pw.Text('Fecha límite de pago', textAlign: pw.TextAlign.left, style: pw.TextStyle(fontWeight: pw.FontWeight.bold,),),
+                    pw.SizedBox(height: 5),
+                    pw.Text(dueDateSeparacion, textAlign: pw.TextAlign.center),
+                    pw.SizedBox(height: 5),
+                    pw.Text(dueDateSaldoSeparacion, textAlign: pw.TextAlign.center),
+                    pw.SizedBox(height: 5),
+                    pw.Text(dueDateSaldoCI, textAlign: pw.TextAlign.center),
+                    pw.SizedBox(height: 30),
+                  ],
+                ),
+              ),
             ],
           ),
           pw.SizedBox(height: 20),
-          pw.Table.fromTextArray(headerCount: 0,
-            context: context,
-            data: [
-              ['Financiación directa', '', 'A partir de', saldoTotalDate],
-              ['Valor a pagar ($porcPorPagar)', vlrPorPagar, 'Valor cuota', vlrCuota],
-              ['Nº cuotas', nroCuotas, 'Intereses', tem],              
+          pw.Row(
+            children: [
+              pw.Expanded(
+                flex: 2,
+                child: pw.Column(
+                  crossAxisAlignment: pw.CrossAxisAlignment.start,
+                  children: [
+                    pw.Text('Saldo financiado ($porcPorPagar)', textAlign: pw.TextAlign.left, style: pw.TextStyle(fontWeight: pw.FontWeight.bold,),),
+                    pw.SizedBox(height: 5),
+                    pw.Text('$nroCuotas cuota(s) $periodoCuotas', textAlign: pw.TextAlign.left),
+                    pw.SizedBox(height: 5),
+                    pw.Text('Intereses $tem', textAlign: pw.TextAlign.left),
+                    pw.SizedBox(height: 15),
+                    pw.Text('Total', textAlign: pw.TextAlign.left, style: pw.TextStyle(fontWeight: pw.FontWeight.bold,),),
+                  ],
+                ),
+              ),
+              pw.Expanded(
+                flex: 1,
+                child: pw.Column(
+                  crossAxisAlignment: pw.CrossAxisAlignment.center,
+                  children: [
+                    pw.Text('Valor', textAlign: pw.TextAlign.left, style: pw.TextStyle(fontWeight: pw.FontWeight.bold,),),
+                    pw.SizedBox(height: 5),
+                    pw.Text(vlrCuota, textAlign: pw.TextAlign.center),
+                    pw.SizedBox(height: 5),
+                    pw.Text('\$0', textAlign: pw.TextAlign.center),
+                    pw.Divider(thickness: 1),
+                    pw.Text(vlrPorPagar, textAlign: pw.TextAlign.center, style: pw.TextStyle(fontWeight: pw.FontWeight.bold,),),
+                  ],
+                ),
+              ),
+              pw.Expanded(
+                flex: 1,
+                child: pw.Column(
+                  crossAxisAlignment: pw.CrossAxisAlignment.center,
+                  children: [
+                    pw.Text('A partir de', textAlign: pw.TextAlign.left, style: pw.TextStyle(fontWeight: pw.FontWeight.bold,),),
+                    pw.SizedBox(height: 5),
+                    pw.Text(saldoTotalDate, textAlign: pw.TextAlign.center),
+                    pw.SizedBox(height: 50),
+                  ],
+                ),
+              ),
             ],
-          )
+          ),
         ],
       );
     }

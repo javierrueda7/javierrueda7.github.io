@@ -27,6 +27,7 @@ class _AddQuotePageState extends State<AddQuotePage> {
     loteInfo = widget.loteInfo;
     initPagos();
     initCuotas();
+    initSeller();
     timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       setState(() {
         realtimeDateTime = dateOnly(true, 0, DateTime.now(), false);
@@ -58,6 +59,7 @@ class _AddQuotePageState extends State<AddQuotePage> {
   double porcCuotaInicial = 0;  
   double plazoCI = 0;
   double plazoContado = 0;
+  double plazoSaldoSep = 0;
   double vlrTEM = 0;
   double dctoContado = 0;
   double dctoCuotas = 0;
@@ -75,8 +77,13 @@ class _AddQuotePageState extends State<AddQuotePage> {
     dctoContado = infoPagos['dctoContado'].toDouble();
     plazoContado = infoPagos['plazoContado'].toDouble();
     maxCuotas = infoPagos['maxCuotas'].toInt();
+    plazoSaldoSep = infoPagos['plazoSaldoSep'].toDouble();
     sellerStream = FirebaseFirestore.instance.collection('sellers').orderBy('lastnameSeller').snapshots();
-    seller = await getSeller(selectedSeller);
+  }
+
+  Future<void> initSeller() async {
+    sellerStream = FirebaseFirestore.instance.collection('sellers').orderBy('lastnameSeller').snapshots();
+    getSeller();
   }
 
   Future<void> initCuotas() async {
@@ -153,9 +160,11 @@ class _AddQuotePageState extends State<AddQuotePage> {
     collectionReference.get().then((QuerySnapshot quotesSnapshot) {
       quoteCounter = quotesSnapshot.size;
     });
+    getSeller();
     
     initPagos();
     initCuotas();
+    initSeller();
     nroCuotasList = nroCuotasGenerator(maxCuotas);
     periodoCalculator(stringConverter(selectedNroCuotas));
     vlrBaseLote = loteInfo[9].toInt();    
@@ -243,7 +252,7 @@ class _AddQuotePageState extends State<AddQuotePage> {
                               onChanged: (sellerValue) {
                                 setState(() {
                                   selectedSeller = sellerValue!;
-                                  getSeller(sellerValue);
+                                  getSeller();
                                 });
                               },
                               isExpanded: true,
@@ -283,6 +292,7 @@ class _AddQuotePageState extends State<AddQuotePage> {
                                   child: Padding(
                                     padding: const EdgeInsets.only(left: 10),
                                     child: TextField(
+                                      textAlign: TextAlign.center,
                                       cursorColor: fifthColor,                              
                                       style: TextStyle(color: fifthColor.withOpacity(0.9)),
                                       controller: quoteDateController,
@@ -305,6 +315,7 @@ class _AddQuotePageState extends State<AddQuotePage> {
                                             quoteDateController.text = DateFormat('dd-MM-yyyy').format(quotePickedDate);
                                             quoteDeadlineController.text = dateOnly(false, 15, quotePickedDate, true);
                                             separacionDeadlineController.text = dateOnly(false, 0, quotePickedDate, false);
+                                            saldoSeparacionDeadlineController.text = dateOnly(false, plazoSaldoSep, quotePickedDate, false);
                                             saldoCuotaIniDeadlineController.text = dateOnly(false, plazoCI, quotePickedDate, true);
                                             discountValue();
                                           });
@@ -525,7 +536,7 @@ class _AddQuotePageState extends State<AddQuotePage> {
                                       height: 15,
                                       child: Text('Fecha límite saldo separación', style: TextStyle(fontSize: 10),)),
                                       textFieldWidget(
-                                        dateOnly(false, 7, dateConverter(separacionDeadlineController.text), false), Icons.date_range_outlined, false, saldoSeparacionDeadlineController, false, 'date', (){}),
+                                        dateOnly(false, plazoSaldoSep, dateConverter(separacionDeadlineController.text), false), Icons.date_range_outlined, false, saldoSeparacionDeadlineController, false, 'date', (){}),
                                     ],
                                   ),
                                 ),
@@ -548,9 +559,13 @@ class _AddQuotePageState extends State<AddQuotePage> {
                     Container(
                       constraints: const BoxConstraints(maxWidth: 800),
                       child: easyDropdown(paymentMethodList, paymentMethodSelectedItem, (tempPaymentMethod){setState(() {
-                                  paymentMethodSelectedItem = tempPaymentMethod!;
-                                  discountValue();
-                                });}),
+                        paymentMethodSelectedItem = tempPaymentMethod!;
+                        nroCuotasGenerator(maxCuotas);
+                        selectedNroCuotas = "1";
+                        periodoCalculator(stringConverter(selectedNroCuotas));
+                        initCuotas();
+                        discountValue();
+                      });}),
                     ),
                     const SizedBox(
                       height: 10,
@@ -1116,6 +1131,7 @@ class _AddQuotePageState extends State<AddQuotePage> {
                                         area: '${((loteInfo[8].toInt()).toString())} m²',
                                         price: priceloteController.text,
                                         finalPrice: precioFinalController.text,
+                                        discount: '${discountValue().toString()}%',
                                         porcCuotaIni: '${((porcCuotaInicial.toInt()).toString())}%',
                                         vlrCuotaIni: vlrCuotaIniController.text,
                                         vlrSeparacion: vlrSeparacionController.text,
@@ -1123,6 +1139,7 @@ class _AddQuotePageState extends State<AddQuotePage> {
                                         saldoSeparacion: saldoSeparacionController.text,
                                         dueDateSaldoSeparacion: saldoSeparacionDeadlineController.text,
                                         plazoCI: '${(((plazoCI).toInt()).toString())} días',
+                                        plazoContado: '${(((plazoContado).toInt()).toString())} días',
                                         saldoCI: saldoCuotaIniController.text,
                                         dueDateSaldoCI: saldoCuotaIniDeadlineController.text,
                                         porcPorPagar: '${(((100-porcCuotaInicial).toInt()).toString())}%',
@@ -1239,6 +1256,7 @@ class _AddQuotePageState extends State<AddQuotePage> {
                                     saldoSeparacion,
                                     saldoSeparacionDeadlineController.text,
                                     plazoCI,
+                                    plazoContado,
                                     saldoCI,
                                     saldoCuotaIniDeadlineController.text,
                                     valorAPagar, 
@@ -1287,7 +1305,7 @@ class _AddQuotePageState extends State<AddQuotePage> {
     );
   }
 
-  Future<Map<String, dynamic>> getSeller(String value) async {
+  Future<void> getSeller() async {
     DocumentSnapshot? doc = await db.collection('sellers').doc(selectedSeller).get();    
     final Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
     final temp = {
@@ -1297,7 +1315,7 @@ class _AddQuotePageState extends State<AddQuotePage> {
       "emailSeller": data['emailSeller'],
       "phoneSeller": data['phoneSeller'],
     };
-    return temp;
+    seller = temp;
   }
 
   Future<List> getCuotas() async {

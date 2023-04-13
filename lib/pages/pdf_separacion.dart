@@ -38,6 +38,7 @@ class PDFSeparacion extends StatelessWidget {
   final String saldoSeparacion;
   final String dueDateSaldoSeparacion;
   final String plazoCI;
+  final String plazoContado;
   final String letrasSaldoCI;
   final String saldoCI;
   final String dueDateSaldoCI;
@@ -48,7 +49,9 @@ class PDFSeparacion extends StatelessWidget {
   final String tiempoFinanc;
   final String vlrCuota;
   final String letrasVlrCuota;
+  final String letrasSaldoContado;
   final String saldoTotalDate;
+  final String periodoCuotas;
   final String nroCuotas;
   final String tem;
   final String observaciones;
@@ -84,6 +87,7 @@ class PDFSeparacion extends StatelessWidget {
     required this.saldoSeparacion,
     required this.dueDateSaldoSeparacion,
     required this.plazoCI,
+    required this.plazoContado,
     required this.letrasSaldoCI,
     required this.saldoCI,
     required this.dueDateSaldoCI,
@@ -94,7 +98,9 @@ class PDFSeparacion extends StatelessWidget {
     required this.tiempoFinanc,
     required this.vlrCuota,
     required this.letrasVlrCuota,
+    required this.letrasSaldoContado,
     required this.saldoTotalDate,
+    required this.periodoCuotas,
     required this.nroCuotas,
     required this.tem,
     required this.observaciones,
@@ -240,11 +246,7 @@ class PDFSeparacion extends StatelessWidget {
                 ),
               ),
               pw.SizedBox(height: 20),
-              pw.Text('VALOR CUOTA INICIAL $porcCuotaIni: $vlrCuotaIni', textAlign: pw.TextAlign.justify),
-              pw.Text('VALOR SALDO $porcPorPagar: $vlrPorPagar', textAlign: pw.TextAlign.justify),
-              pw.Text('   1. La suma de $letrasSeparacion pesos ($totalSeparacion pesos) el día $dueDateSeparacion', textAlign: pw.TextAlign.justify),
-              pw.Text('   2. La suma de $letrasSaldoCI pesos ($saldoCI pesos) que corresponde al saldo de la cuota inicial del lote ($porcCuotaIni del valor total), en menos de $plazoCI, teniendo como fecha límite el $dueDateSaldoCI', textAlign: pw.TextAlign.justify),
-              pw.Text('   3. La suma de $letrasSaldoTotal pesos ($vlrPorPagar pesos) que corresponde al saldo del lote ($porcPorPagar del valor total), en $nroCuotas cuotas de $letrasVlrCuota pesos ($vlrCuota pesos) pagaderas el último día hábil del mes, iniciando el $saldoTotalDate', textAlign: pw.TextAlign.justify),
+              metodoPago(paymentMethod, context),
               pw.SizedBox(height: 20),
               pw.RichText(
                 textAlign: pw.TextAlign.justify,
@@ -453,37 +455,24 @@ class PDFSeparacion extends StatelessWidget {
 
   pw.Widget metodoPago(String evaluarMetodo, context){
     if(evaluarMetodo == 'Pago de contado'){
-      return pw.Table.fromTextArray(headerCount: 0,
-        context: context,
-        data: [
-          ['Pago de contado', 'Valor', 'Plazo'],
-          ['Separación', vlrSeparacion, dueDateSeparacion],
-          ['Saldo separación', saldoSeparacion, dueDateSaldoSeparacion],
-          ['Saldo', vlrPorPagar, saldoTotalDate],                        
-        ],
-      );                
+      return pw.Column(
+        crossAxisAlignment: pw.CrossAxisAlignment.stretch,
+        children: [
+          pw.Text('VALOR SALDO: $vlrPorPagar', textAlign: pw.TextAlign.justify),
+          pw.Text('   1. La suma de $letrasSeparacion ($totalSeparacion) el día $dueDateSeparacion', textAlign: pw.TextAlign.justify),
+          pw.Text('   2. La suma de $letrasSaldoContado ($vlrPorPagar) que corresponde al saldo del lote, en menos de $plazoContado, teniendo como fecha límite el $saldoTotalDate', textAlign: pw.TextAlign.justify),
+        ]
+      );                   
     } else{
       return pw.Column(
+        crossAxisAlignment: pw.CrossAxisAlignment.stretch,
         children: [
-          pw.Table.fromTextArray(headerCount: 0,
-            context: context,
-            data: [
-              ['Cuota inicial ($porcCuotaIni)', vlrCuotaIni, 'Plazo'],
-              ['Separación', vlrSeparacion, dueDateSeparacion],
-              ['Saldo separación', saldoSeparacion, dueDateSaldoSeparacion],
-              ['Saldo cuota inicial ($plazoCI)', saldoCI, dueDateSaldoCI], 
-            ],
-          ),
-          pw.SizedBox(height: 20),
-          pw.Table.fromTextArray(headerCount: 0,
-            context: context,
-            data: [
-              ['Financiación directa', '', 'A partir de', saldoTotalDate],
-              ['Valor a pagar ($porcPorPagar)', vlrPorPagar, 'Valor cuota', vlrCuota],
-              ['Nº cuotas', nroCuotas, 'Intereses', tem],              
-            ],
-          )
-        ],
+          pw.Text('VALOR CUOTA INICIAL $porcCuotaIni: $vlrCuotaIni', textAlign: pw.TextAlign.justify),
+          pw.Text('VALOR SALDO $porcPorPagar: $vlrPorPagar', textAlign: pw.TextAlign.justify),
+          pw.Text('   1. La suma de $letrasSeparacion pesos ($totalSeparacion pesos) el día $dueDateSeparacion', textAlign: pw.TextAlign.justify),
+          pw.Text('   2. La suma de $letrasSaldoCI pesos ($saldoCI pesos) que corresponde al saldo de la cuota inicial del lote ($porcCuotaIni del valor total), en menos de $plazoCI, teniendo como fecha límite el $dueDateSaldoCI', textAlign: pw.TextAlign.justify),
+          pw.Text('   3. La suma de $letrasSaldoTotal pesos ($vlrPorPagar pesos) que corresponde al saldo del lote ($porcPorPagar del valor total), en $nroCuotas cuotas con periodicidad ${periodoCuotas.toUpperCase()} por valor de $letrasVlrCuota pesos ($vlrCuota pesos) pagaderas el último día hábil del mes, iniciando el $saldoTotalDate', textAlign: pw.TextAlign.justify),
+        ]
       );
     }
   }

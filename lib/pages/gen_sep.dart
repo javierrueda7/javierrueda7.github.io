@@ -25,11 +25,13 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
     super.initState();
     initPagos();
     initCuotas();
+    initSeller();
     timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       setState(() {
         realtimeDateTime = dateOnly(true, 0, DateTime.now(), false);
       });
     });
+    updateNumberWords();
   }
   
   @override
@@ -68,17 +70,22 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
 
   Future<void> initPagos() async {    
     infoPagos = await getInfoProyecto();
-    totalSeparacionController.text = (currencyCOP((vlrFijoSeparacion.toInt()).toString()));
     porcCuotaInicial = infoPagos['cuotaInicial'].toDouble();
     plazoCI = infoPagos['plazoCuotaInicial'].toDouble();
     vlrTEM = infoPagos['tem'].toDouble();
     dctoContado = infoPagos['dctoContado'].toDouble();
     plazoContado = infoPagos['plazoContado'].toDouble();
     maxCuotas = infoPagos['maxCuotas'].toInt();
-    plazoSaldoSep = infoPagos['plazoSaldoSep'];
+    plazoSaldoSep = infoPagos['plazoSaldoSep'].toDouble();
     nroCuotasList = nroCuotasGenerator(maxCuotas); 
+    totalSeparacionController.text = (currencyCOP((vlrFijoSeparacion.toInt()).toString()));
     
-    seller = await getSeller(selectedSeller);
+    getSeller();
+  }
+
+  Future<void> initSeller() async {
+    sellerStream = FirebaseFirestore.instance.collection('sellers').orderBy('lastnameSeller').snapshots();
+    getSeller();
   }
 
   Future<void> initCuotas() async {
@@ -110,6 +117,7 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
   TextEditingController letrasSaldoCIController = TextEditingController(text: "");
   TextEditingController letrasSaldoLoteController = TextEditingController(text: "");
   TextEditingController letrasValorCuotasController = TextEditingController(text: "");
+  TextEditingController letrasVlrPorPagarController = TextEditingController(text: "");
 
   String selectedSeller = 'Seleccione un vendedor';
   String sellerName = '';
@@ -158,12 +166,12 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
   String selectedState = '';
   String selectedCity = '';
   bool isInitialized = false;
- 
+  int auxn = 0;
 
   @override
   Widget build(BuildContext context) {     
     Map arguments = ModalRoute.of(context)!.settings.arguments as Map;
-    if(isInitialized==false){   
+    if(isInitialized==false){      
       initPagos();
       selectedSeller = arguments['selectedSeller'];
       sellerName = arguments['sellerName'];
@@ -216,12 +224,14 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
       vlrFijoSeparacion = saldoSeparacion + stringConverter(vlrSeparacionController.text);
       periodoCalculator(stringConverter(selectedNroCuotas));
       initCuotas(); 
+      updateNumberWords();
     } else {
       isInitialized = true;
     }
-    
-    isInitialized = true;
-    
+    sellerStream = FirebaseFirestore.instance.collection('sellers').orderBy('lastnameSeller').snapshots();
+    getSeller();
+    initCuotas();
+    nroCuotasList = nroCuotasGenerator(maxCuotas); 
     periodoCalculator(stringConverter(selectedNroCuotas));
     vlrBaseLote = stringConverter(priceloteController.text).toInt();    
     precioFinal = vlrBaseLote*((100-discountValue())/100);   
@@ -239,9 +249,17 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
     vlrCuotaController.text = (currencyCOP((valorCuota.toInt()).toString()));
     vlrPorPagarController.text = (currencyCOP((valorAPagar.toInt()).toString()));
     temController.text = '${vlrTEM.toString()}%';
-    saldoTotalDateController.text = dateSaldo;
-    updateNumberWords();
+    saldoTotalDateController.text = dateSaldo;   
+     
     
+
+    
+    if(auxn<10){
+      updateNumberWords();
+      auxn++;
+    }
+    isInitialized = true;
+
 
     return Scaffold(      
       extendBodyBehindAppBar: false,
@@ -279,7 +297,129 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
                       child: Center(child: Text('COTIZACIÓN #${quoteIdController.text}', style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold,))),
                     ),
                     const SizedBox(
-                      height: 20,
+                      height: 15,
+                    ),
+                    Container(
+                      constraints: const BoxConstraints(maxWidth: 800),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            flex: 1,
+                            child: Column(
+                              children: [
+                                const SizedBox(
+                                  height: 15,
+                                  child: Text('Desde', style: TextStyle(fontSize: 10),),
+                                ),                                
+                                textFieldWidget(
+                                  quoteDateController.text, Icons.date_range_outlined, false, quoteDateController, false, 'date', (){}
+                                ),
+                              ],
+                            ),
+                          ),
+                          Expanded(
+                            flex: 1,
+                            child: Column(
+                              children: [
+                                const SizedBox(
+                                  height: 15,
+                                  child: Text('Hasta', style: TextStyle(fontSize: 10),),
+                                ),
+                                textFieldWidget(
+                                  quoteDeadlineController.text, Icons.date_range_outlined, false, quoteDeadlineController, false, 'date', (){}
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 5,
+                    ),
+                    Container(
+                      constraints: const BoxConstraints(maxWidth: 800),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            flex: 1,
+                            child: Column(
+                              children: [
+                                const SizedBox(
+                                  height: 15,
+                                  child: Text('Inmueble Nº', style: TextStyle(fontSize: 10),),
+                                ),
+                                Container(
+                                  constraints: const BoxConstraints(maxWidth: 800),
+                                  child: textFieldWidget(
+                                    loteController.text, Icons.house_outlined, false, loteController, false, 'email', (){})
+                                ),
+                              ],
+                            ),
+                          ),
+                          Expanded(
+                            flex: 1,
+                            child: Column(
+                              children: [
+                                const SizedBox(
+                                  height: 15,
+                                  child: Text('Etapa', style: TextStyle(fontSize: 10),),
+                                ),
+                                Container(
+                                  constraints: const BoxConstraints(maxWidth: 800),
+                                  child: textFieldWidget(
+                                    etapaloteController.text, Icons.map_outlined, false, etapaloteController, false, 'email', (){})
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 5,
+                    ),
+                    Container(
+                      constraints: const BoxConstraints(maxWidth: 800),
+                      child: Row(
+                        children: [                          
+                          Expanded(
+                            flex: 1,
+                            child: Column(
+                              children: [
+                                const SizedBox(
+                                  height: 15,
+                                  child: Text('Área', style: TextStyle(fontSize: 10),),
+                                ),
+                                Container(
+                                  constraints: const BoxConstraints(maxWidth: 800),
+                                  child: textFieldWidget(
+                                    arealoteController.text, Icons.straighten_outlined, false, arealoteController, false, 'number', (){})
+                                ),
+                              ],
+                            ),
+                          ),
+                          Expanded(
+                            flex: 1,
+                            child: Column(
+                              children: [
+                                const SizedBox(
+                                  height: 15,
+                                  child: Text('Precio', style: TextStyle(fontSize: 10),),
+                                ),
+                                Container(
+                                  constraints: const BoxConstraints(maxWidth: 800),
+                                  child: textFieldWidget(
+                                    (currencyCOP((vlrBaseLote).toString())), Icons.monetization_on_outlined, false, priceloteController, false, 'number', (){})
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 5,
                     ),
                     SizedBox(
                       height: 25,
@@ -405,227 +545,37 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
                     const SizedBox(
                       height: 10,
                     ),
-
-                    //Financiación directa
                     Container(
                       constraints: const BoxConstraints(maxWidth: 800),
-                      child: Column(
-                        children: [
-                          const SizedBox(
-                            height: 25,
-                            child: Text('Cuota inicial', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),)
-                          ),
-                          SizedBox(
-                            height: 20,
-                            child: Text('Fecha límite (${(plazoCI).toInt().toString()} días)', style: const TextStyle(fontSize: 14),)
-                          ),
-                          const SizedBox(
-                            height: 10,
-                          ),
-                          Container(
-                            decoration: BoxDecoration(
-                              color: primaryColor.withOpacity(0.2),
-                              borderRadius: BorderRadius.circular(30.0),
-                              border: Border.all(width: 1, style: BorderStyle.solid, color: fifthColor.withOpacity(0.1)),                                
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.only(left: 10),
-                              child: TextField(
-                                textAlign: TextAlign.center,
-                                cursorColor: fifthColor,                              
-                                style: TextStyle(color: fifthColor.withOpacity(0.9)),
-                                controller: saldoCuotaIniDeadlineController,
-                                decoration: InputDecoration(
-                                  border: InputBorder.none,
-                                  icon: Icon(Icons.date_range_outlined, color: fifthColor,),
-                                  hintText: dateOnly(false, plazoCI, quotePickedDate, true),                                    
-                                ),
-                                readOnly: true,
-                                onTap: () async{
-                                  DateTime? tempPickedDate = await showDatePicker(
-                                    context: context, 
-                                    initialDate: DateTime.now(), 
-                                    firstDate: DateTime(1900), 
-                                    lastDate: DateTime(2050),
-                                  );
-                                  if(tempPickedDate != null) {
-                                    setState(() {                                                                    
-                                      saldoCuotaIniDeadlineController.text = dateOnly(false, 0, tempPickedDate, true);                                      
-                                    });
-                                  }
-                                },
-                              ),
-                            ),
-                          ),
-                          const SizedBox(
-                            height: 10,
-                          ),
-                          const SizedBox(
-                            height: 20,
-                            child: Text('Saldo cuota inicial', style: TextStyle(fontSize: 14),)
-                          ),
-                          const SizedBox(
-                            height: 10,
-                          ),
-                          Row(
-                            children: [
-                              Expanded(
-                              flex: 6,
-                                child: textFieldWidget(
-                                  (currencyCOP(saldoCI.toInt().toString())), Icons.monetization_on_outlined, false, saldoCuotaIniController, false, 'number', (){}
-                                ),
-                              ),               
-                              Expanded(
-                              flex: 7,
-                                child: textFieldWidget(
-                                  "Valor en letras", Icons.abc_outlined, false, letrasSaldoCIController, true, 'name', (){}
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(
-                            height: 10,
-                          ),
-                          const SizedBox(
-                            height: 25,
-                            child: Text('Saldo total', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),)
-                          ),
-                          SizedBox(
-                            height: 20,
-                            child: Text('Valor a financiar (${((100-porcCuotaInicial).toInt()).toString()}%)', style: const TextStyle(fontSize: 14),)
-                          ),
-                          const SizedBox(
-                            height: 10,
-                          ),
-                          Row(
-                            children: [
-                              Expanded(
-                                flex: 6,
-                                child: textFieldWidget(
-                                  (currencyCOP(valorAPagar.toInt().toString())), Icons.monetization_on_outlined, false, vlrPorPagarController, false, 'number', (){}
-                                ),
-                              ),                 
-                              Expanded(
-                                flex: 7,
-                                child: textFieldWidget(
-                                  "Valor en letras", Icons.abc_outlined, false, letrasSaldoLoteController, true, 'name', (){}
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(
-                            height: 10,
-                          ),
-                          Center(
-                            child: Row(
-                              children: [
-                                const Expanded(
-                                  flex: 3,
-                                  child: SizedBox(
-                                    height: 20,
-                                    child: Padding(
-                                      padding: EdgeInsets.only(right: 10),
-                                      child: Text('repartido en  ', style: TextStyle(fontSize: 14), textAlign: TextAlign.right,),
-                                    )
-                                  ),
-                                ),
-                                Expanded(
-                                  flex: 2,
-                                  child: easyDropdown(nroCuotasList, selectedNroCuotas, (tempNroCuotas){setState(() {
-                                    selectedNroCuotas = tempNroCuotas!;
-                                    periodoCalculator(stringConverter(selectedNroCuotas));
-                                    initCuotas();
-                                  });}),
-                                ),
-                                const Expanded(
-                                  flex: 3,
-                                  child: SizedBox(
-                                    height: 20,
-                                    child: Padding(
-                                      padding: EdgeInsets.only(left: 10),
-                                      child: Text('cuotas de', style: TextStyle(fontSize: 14),),
-                                    )
-                                  ),
-                                ),                                 
-                              ],
-                            ),
-                          ),
-                          const SizedBox(
-                            height: 10,
-                          ),
-                          Row(
-                            children: [
-                              Expanded(
-                                flex: 6,
-                                child: textFieldWidget(
-                                  (currencyCOP(valorCuota.toInt().toString())), Icons.monetization_on_outlined, false, vlrCuotaController, false, 'number', (){}
-                                ),
-                              ),
-                              Expanded(
-                                flex: 7,
-                                child: textFieldWidget(
-                                  "Valor en letras", Icons.abc_outlined, false, letrasValorCuotasController, true, 'name', (){}
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(
-                            height: 10,
-                          ),
-                          const SizedBox(
-                            height: 20,
-                            child: Text('Con fecha de inicio', style: TextStyle(fontSize: 14),)
-                          ),
-                          const SizedBox(
-                            height: 10,
-                          ),
-                          Container(
-                            decoration: BoxDecoration(
-                              color: primaryColor.withOpacity(0.2),
-                              borderRadius: BorderRadius.circular(30.0),
-                              border: Border.all(width: 1, style: BorderStyle.solid, color: fifthColor.withOpacity(0.1)),                                
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.only(left: 10),
-                              child: TextField(
-                                textAlign: TextAlign.center,
-                                cursorColor: fifthColor,                              
-                                style: TextStyle(color: fifthColor.withOpacity(0.9)),
-                                controller: saldoTotalDateController,
-                                decoration: InputDecoration(
-                                  border: InputBorder.none,
-                                  icon: Icon(Icons.date_range_outlined, color: fifthColor,),
-                                  hintText: dateOnly(false, plazoCI+30, quotePickedDate, true),                                    
-                                ),
-                                readOnly: true,
-                                onTap: () async{
-                                  DateTime? tempPickedDate = await showDatePicker(
-                                    context: context, 
-                                    initialDate: DateTime.now(), 
-                                    firstDate: DateTime(1900), 
-                                    lastDate: DateTime(2050),
-                                  );
-                                  if(tempPickedDate != null) {
-                                    setState(() {                                                                    
-                                      saldoTotalDateController.text = dateOnly(false, 0, tempPickedDate, true);                                      
-                                    });
-                                  }
-                                },
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
+                      alignment: Alignment.center,
+                      child: const Text('Método de pago', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold,))
                     ),
                     const SizedBox(
                       height: 10,
                     ),
-
-
-
-                    
+                    Container(
+                      constraints: const BoxConstraints(maxWidth: 800),
+                      child: easyDropdown(paymentMethodList, paymentMethodSelectedItem, (tempPaymentMethod){setState(() {
+                        paymentMethodSelectedItem = tempPaymentMethod!;
+                        discountValue();
+                        updateNumberWords();
+                      });}),
+                    ),
                     const SizedBox(
-                      height: 5,
+                      height: 10,
+                    ),
+                    //Financiación directa
+                    paymentMethodSeparacion(paymentMethodSelectedItem),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    Container(
+                      constraints: const BoxConstraints(maxWidth: 800),
+                      alignment: Alignment.center,
+                      child: const Text('Asesor comercial', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold,))
+                    ),
+                    const SizedBox(
+                      height: 10,
                     ),
                     Container(
                       constraints: const BoxConstraints(maxWidth: 800),
@@ -635,7 +585,7 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
                       child: Padding(
                         padding: const EdgeInsets.only(left: 10.0, right: 10),
                         child: StreamBuilder<QuerySnapshot>(
-                          stream: FirebaseFirestore.instance.collection('sellers').snapshots(),
+                          stream: sellerStream,
                           builder: (context, sellersSnapshot) {
                             List<DropdownMenuItem> sellerItems = [];
                             if (!sellersSnapshot.hasData) {
@@ -661,7 +611,7 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
                               onChanged: (sellerValue) {
                                 setState(() {
                                   selectedSeller = sellerValue!;
-                                  getSeller(sellerValue);
+                                  getSeller();
                                 });
                               },
                               isExpanded: true,
@@ -669,139 +619,7 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
                           },
                         ),
                       ),
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    const SizedBox(
-                      height: 15,
-                      child: Center(child: Text('Vigencia cotización', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold,))),
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    Container(
-                      constraints: const BoxConstraints(maxWidth: 800),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            flex: 1,
-                            child: Column(
-                              children: [
-                                const SizedBox(
-                                  height: 15,
-                                  child: Text('Desde', style: TextStyle(fontSize: 10),),
-                                ),                                
-                                textFieldWidget(
-                                  quoteDateController.text, Icons.date_range_outlined, false, quoteDateController, false, 'date', (){}
-                                ),
-                              ],
-                            ),
-                          ),
-                          Expanded(
-                            flex: 1,
-                            child: Column(
-                              children: [
-                                const SizedBox(
-                                  height: 15,
-                                  child: Text('Hasta', style: TextStyle(fontSize: 10),),
-                                ),
-                                textFieldWidget(
-                                  quoteDeadlineController.text, Icons.date_range_outlined, false, quoteDeadlineController, false, 'date', (){}
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 5,
-                    ),
-                    Container(
-                      constraints: const BoxConstraints(maxWidth: 800),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            flex: 1,
-                            child: Column(
-                              children: [
-                                const SizedBox(
-                                  height: 15,
-                                  child: Text('Inmueble Nº', style: TextStyle(fontSize: 10),),
-                                ),
-                                Container(
-                                  constraints: const BoxConstraints(maxWidth: 800),
-                                  child: textFieldWidget(
-                                    loteController.text, Icons.house_outlined, false, loteController, false, 'email', (){})
-                                ),
-                              ],
-                            ),
-                          ),
-                          Expanded(
-                            flex: 1,
-                            child: Column(
-                              children: [
-                                const SizedBox(
-                                  height: 15,
-                                  child: Text('Etapa', style: TextStyle(fontSize: 10),),
-                                ),
-                                Container(
-                                  constraints: const BoxConstraints(maxWidth: 800),
-                                  child: textFieldWidget(
-                                    etapaloteController.text, Icons.map_outlined, false, etapaloteController, false, 'email', (){})
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 5,
-                    ),
-                    Container(
-                      constraints: const BoxConstraints(maxWidth: 800),
-                      child: Row(
-                        children: [                          
-                          Expanded(
-                            flex: 1,
-                            child: Column(
-                              children: [
-                                const SizedBox(
-                                  height: 15,
-                                  child: Text('Área', style: TextStyle(fontSize: 10),),
-                                ),
-                                Container(
-                                  constraints: const BoxConstraints(maxWidth: 800),
-                                  child: textFieldWidget(
-                                    arealoteController.text, Icons.straighten_outlined, false, arealoteController, false, 'number', (){})
-                                ),
-                              ],
-                            ),
-                          ),
-                          Expanded(
-                            flex: 1,
-                            child: Column(
-                              children: [
-                                const SizedBox(
-                                  height: 15,
-                                  child: Text('Precio', style: TextStyle(fontSize: 10),),
-                                ),
-                                Container(
-                                  constraints: const BoxConstraints(maxWidth: 800),
-                                  child: textFieldWidget(
-                                    (currencyCOP((vlrBaseLote).toString())), Icons.monetization_on_outlined, false, priceloteController, false, 'number', (){})
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 5,
-                    ),
+                    ),                    
                     Container( //Container de separación
                       constraints: const BoxConstraints(maxWidth: 800),
                       child: Column(
@@ -832,7 +650,8 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
                                   totalSeparacionController.value = TextEditingValue(
                                     text: (currencyCOP((vlrFijoSeparacion.toInt()).toString())),
                                     selection: TextSelection.collapsed(offset: (currencyCOP((vlrFijoSeparacion.toInt()).toString())).length),
-                                  );                                  
+                                  );
+                                  updateNumberWords();                                  
                                 });                                
                               })
                             )
@@ -937,23 +756,7 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
                     const SizedBox(
                       height: 10,
                     ),
-                    Container(
-                      alignment: Alignment.center,
-                      child: const Text('Método de pago', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold,))
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    Container(
-                      constraints: const BoxConstraints(maxWidth: 800),
-                      child: easyDropdown(paymentMethodList, paymentMethodSelectedItem, (tempPaymentMethod){setState(() {
-                                  paymentMethodSelectedItem = tempPaymentMethod!;
-                                  discountValue();
-                                });}),
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
+                    
                     paymentMethod(paymentMethodSelectedItem),
                     const SizedBox(
                           height: 10,
@@ -1485,7 +1288,8 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
                                   letrasPrecioFinalController.text.isEmpty ||
                                   letrasSepController.text.isEmpty ||
                                   letrasSaldoLoteController.text.isEmpty ||
-                                  letrasValorCuotasController.text.isEmpty
+                                  letrasValorCuotasController.text.isEmpty ||
+                                  letrasVlrPorPagarController.text.isEmpty
                                   ){
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(
@@ -1533,6 +1337,7 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
                                         saldoSeparacion: saldoSeparacionController.text,
                                         dueDateSaldoSeparacion: saldoSeparacionDeadlineController.text,
                                         plazoCI: '${(((plazoCI).toInt()).toString())} días',
+                                        plazoContado: '${(((plazoContado).toInt()).toString())} días',
                                         letrasSaldoCI: letrasSaldoCIController.text,
                                         saldoCI: saldoCuotaIniController.text,
                                         dueDateSaldoCI: saldoCuotaIniDeadlineController.text,
@@ -1543,6 +1348,7 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
                                         tiempoFinanc: '${(int.parse(selectedNroCuotas))/12} años',
                                         vlrCuota: vlrCuotaController.text,
                                         letrasVlrCuota: letrasValorCuotasController.text,
+                                        letrasSaldoContado: letrasVlrPorPagarController.text,
                                         saldoTotalDate: saldoTotalDateController.text,
                                         periodoCuotas: selectedPeriodoCuotas,
                                         nroCuotas: selectedNroCuotas,                                        
@@ -1652,6 +1458,7 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
                                     saldoSeparacion,
                                     saldoSeparacionDeadlineController.text,
                                     plazoCI,
+                                    plazoContado,
                                     saldoCI,
                                     saldoCuotaIniDeadlineController.text,
                                     valorAPagar, 
@@ -1680,6 +1487,7 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
                                     saldoSeparacion,
                                     saldoSeparacionDeadlineController.text,
                                     plazoCI,
+                                    plazoContado,
                                     saldoCI,
                                     saldoCuotaIniDeadlineController.text,
                                     valorAPagar, 
@@ -1728,7 +1536,7 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
     );
   }
 
-  Future<Map<String, dynamic>> getSeller(String value) async {
+  Future<void> getSeller() async {
     DocumentSnapshot? doc = await db.collection('sellers').doc(selectedSeller).get();    
     final Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
     final temp = {
@@ -1738,7 +1546,7 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
       "emailSeller": data['emailSeller'],
       "phoneSeller": data['phoneSeller'],
     };
-    return temp;
+    seller = temp;
   }
 
   Future<List> getCuotas() async {
@@ -1859,6 +1667,342 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
       }
     }
   }
+
+  Widget paymentMethodSeparacion(String paymentMethodSelection){
+    if(paymentMethodSelection == 'Pago de contado'){
+      return Container(
+        constraints: const BoxConstraints(maxWidth: 800),
+        child: Column(
+          children: [
+            const SizedBox(
+              height: 25,
+              child: Text('Valor restante a pagar', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),)
+            ),
+            SizedBox(
+              height: 20,
+              child: Text('Fecha límite (${(plazoContado).toInt().toString()} días)', style: const TextStyle(fontSize: 14),)
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            Container(
+              decoration: BoxDecoration(
+                color: primaryColor.withOpacity(0.2),
+                borderRadius: BorderRadius.circular(30.0),
+                border: Border.all(width: 1, style: BorderStyle.solid, color: fifthColor.withOpacity(0.1)),                                
+              ),
+              child: Padding(
+                padding: const EdgeInsets.only(left: 10),
+                child: TextField(
+                  textAlign: TextAlign.center,
+                  cursorColor: fifthColor,                              
+                  style: TextStyle(color: fifthColor.withOpacity(0.9)),
+                  controller: saldoTotalDateController,
+                  decoration: InputDecoration(
+                    border: InputBorder.none,
+                    icon: Icon(Icons.date_range_outlined, color: fifthColor,),
+                    hintText: dateOnly(false, plazoContado, quotePickedDate, true),                                    
+                  ),
+                  readOnly: true,
+                  onTap: () async{
+                    DateTime? tempPickedDate = await showDatePicker(
+                      context: context, 
+                      initialDate: DateTime.now(), 
+                      firstDate: DateTime(1900), 
+                      lastDate: DateTime(2050),
+                    );
+                    if(tempPickedDate != null) {
+                      setState(() {                                                                    
+                        saldoTotalDateController.text = dateOnly(false, 0, tempPickedDate, true);                                      
+                      });
+                    }
+                  },
+                ),
+              ),
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            const SizedBox(
+              height: 20,
+              child: Text('Saldo total', style: TextStyle(fontSize: 14),)
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            Row(
+              children: [
+                Expanded(
+                flex: 6,
+                  child: textFieldWidget(
+                    (currencyCOP(valorAPagar.toInt().toString())), Icons.monetization_on_outlined, false, vlrPorPagarController, false, 'number', (){}
+                  ),
+                ),               
+                Expanded(
+                flex: 7,
+                  child: textFieldWidget(
+                    "Valor en letras", Icons.abc_outlined, false, letrasVlrPorPagarController, true, 'name', (){}
+                  ),
+                ),
+              ],
+            ),
+          ]
+        )
+      );
+    } else {
+      return Container(
+        constraints: const BoxConstraints(maxWidth: 800),
+        child: Column(
+          children: [
+            const SizedBox(
+              height: 25,
+              child: Text('Cuota inicial', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),)
+            ),
+            SizedBox(
+              height: 20,
+              child: Text('Fecha límite (${(plazoCI).toInt().toString()} días)', style: const TextStyle(fontSize: 14),)
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            Container(
+              decoration: BoxDecoration(
+                color: primaryColor.withOpacity(0.2),
+                borderRadius: BorderRadius.circular(30.0),
+                border: Border.all(width: 1, style: BorderStyle.solid, color: fifthColor.withOpacity(0.1)),                                
+              ),
+              child: Padding(
+                padding: const EdgeInsets.only(left: 10),
+                child: TextField(
+                  textAlign: TextAlign.center,
+                  cursorColor: fifthColor,                              
+                  style: TextStyle(color: fifthColor.withOpacity(0.9)),
+                  controller: saldoCuotaIniDeadlineController,
+                  decoration: InputDecoration(
+                    border: InputBorder.none,
+                    icon: Icon(Icons.date_range_outlined, color: fifthColor,),
+                    hintText: dateOnly(false, plazoCI, quotePickedDate, true),                                    
+                  ),
+                  readOnly: true,
+                  onTap: () async{
+                    DateTime? tempPickedDate = await showDatePicker(
+                      context: context, 
+                      initialDate: DateTime.now(), 
+                      firstDate: DateTime(1900), 
+                      lastDate: DateTime(2050),
+                    );
+                    if(tempPickedDate != null) {
+                      setState(() {                                                                    
+                        saldoCuotaIniDeadlineController.text = dateOnly(false, 0, tempPickedDate, true);                                      
+                      });
+                    }
+                  },
+                ),
+              ),
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            const SizedBox(
+              height: 20,
+              child: Text('Saldo cuota inicial', style: TextStyle(fontSize: 14),)
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            Row(
+              children: [
+                Expanded(
+                flex: 6,
+                  child: textFieldWidget(
+                    (currencyCOP(saldoCI.toInt().toString())), Icons.monetization_on_outlined, false, saldoCuotaIniController, false, 'number', (){}
+                  ),
+                ),               
+                Expanded(
+                flex: 7,
+                  child: textFieldWidget(
+                    "Valor en letras", Icons.abc_outlined, false, letrasSaldoCIController, true, 'name', (){}
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            const SizedBox(
+              height: 25,
+              child: Text('Saldo total', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),)
+            ),
+            SizedBox(
+              height: 20,
+              child: Text('Valor a financiar (${((100-porcCuotaInicial).toInt()).toString()}%)', style: const TextStyle(fontSize: 14),)
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            Row(
+              children: [
+                Expanded(
+                  flex: 6,
+                  child: textFieldWidget(
+                    (currencyCOP(valorAPagar.toInt().toString())), Icons.monetization_on_outlined, false, vlrPorPagarController, false, 'number', (){}
+                  ),
+                ),                 
+                Expanded(
+                  flex: 7,
+                  child: textFieldWidget(
+                    "Valor en letras", Icons.abc_outlined, false, letrasSaldoLoteController, true, 'name', (){}
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            Center(
+              child: Row(
+                children: [
+                  const Expanded(
+                    flex: 3,
+                    child: SizedBox(
+                      height: 20,
+                      child: Padding(
+                        padding: EdgeInsets.only(right: 10),
+                        child: Text('repartido en  ', style: TextStyle(fontSize: 14), textAlign: TextAlign.right,),
+                      )
+                    ),
+                  ),
+                  Expanded(
+                    flex: 2,
+                    child: easyDropdown(nroCuotasList, selectedNroCuotas, (tempNroCuotas){setState(() {
+                      selectedNroCuotas = tempNroCuotas!;
+                      periodoCalculator(stringConverter(selectedNroCuotas));
+                      initCuotas();
+                      updateNumberWords();
+                    });}),
+                  ),
+                  const Expanded(
+                    flex: 3,
+                    child: SizedBox(
+                      height: 20,
+                      child: Padding(
+                        padding: EdgeInsets.only(left: 10),
+                        child: Text('cuotas', style: TextStyle(fontSize: 14),),
+                      )
+                    ),
+                  ),                                 
+                ],
+              ),
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            Center(
+              child: Row(
+                children: [
+                  const Expanded(
+                    flex: 3,
+                    child: SizedBox(
+                      height: 20,
+                      child: Padding(
+                        padding: EdgeInsets.only(right: 10),
+                        child: Text('con periodicidad  ', style: TextStyle(fontSize: 14), textAlign: TextAlign.right,),
+                      )
+                    ),
+                  ),
+                  Expanded(
+                    flex: 3,
+                    child: easyDropdown(periodoCuotasList, selectedPeriodoCuotas, (tempPeriodoCuotas){setState(() {
+                      selectedPeriodoCuotas = tempPeriodoCuotas!;
+                      nroCuotasGenerator(maxCuotas);
+                      selectedNroCuotas = "1";
+                      periodoCalculator(stringConverter(selectedNroCuotas));
+                      initCuotas();
+                      updateNumberWords();
+                    });}),
+                  ),
+                  const Expanded(
+                    flex: 2,
+                    child: SizedBox(
+                      height: 20,
+                      child: Padding(
+                        padding: EdgeInsets.only(left: 10),
+                        child: Text('y valor de', style: TextStyle(fontSize: 14),),
+                      )
+                    ),
+                  ),                                 
+                ],
+              ),
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            Row(
+              children: [
+                Expanded(
+                  flex: 6,
+                  child: textFieldWidget(
+                    (currencyCOP(valorCuota.toInt().toString())), Icons.monetization_on_outlined, false, vlrCuotaController, false, 'number', (){}
+                  ),
+                ),
+                Expanded(
+                  flex: 7,
+                  child: textFieldWidget(
+                    "Valor en letras", Icons.abc_outlined, false, letrasValorCuotasController, true, 'name', (){}
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            const SizedBox(
+              height: 20,
+              child: Text('Con fecha de inicio', style: TextStyle(fontSize: 14),)
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            Container(
+              decoration: BoxDecoration(
+                color: primaryColor.withOpacity(0.2),
+                borderRadius: BorderRadius.circular(30.0),
+                border: Border.all(width: 1, style: BorderStyle.solid, color: fifthColor.withOpacity(0.1)),                                
+              ),
+              child: Padding(
+                padding: const EdgeInsets.only(left: 10),
+                child: TextField(
+                  textAlign: TextAlign.center,
+                  cursorColor: fifthColor,                              
+                  style: TextStyle(color: fifthColor.withOpacity(0.9)),
+                  controller: saldoTotalDateController,
+                  decoration: InputDecoration(
+                    border: InputBorder.none,
+                    icon: Icon(Icons.date_range_outlined, color: fifthColor,),
+                    hintText: dateOnly(false, plazoCI+30, quotePickedDate, true),                                    
+                  ),
+                  readOnly: true,
+                  onTap: () async{
+                    DateTime? tempPickedDate = await showDatePicker(
+                      context: context, 
+                      initialDate: DateTime.now(), 
+                      firstDate: DateTime(1900), 
+                      lastDate: DateTime(2050),
+                    );
+                    if(tempPickedDate != null) {
+                      setState(() {                                                                    
+                        saldoTotalDateController.text = dateOnly(false, 0, tempPickedDate, true);                                      
+                      });
+                    }
+                  },
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    }    
+  }  
 
   Widget paymentMethod(String paymentMethodSelection){
     if(paymentMethodSelection == 'Pago de contado'){
@@ -2037,6 +2181,7 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
                         selectedNroCuotas = "1";
                         periodoCalculator(stringConverter(selectedNroCuotas));
                         initCuotas();
+                        updateNumberWords();
                       });}),
                     ],
                   ),
@@ -2052,6 +2197,7 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
                         selectedNroCuotas = tempNroCuotas!;
                         periodoCalculator(stringConverter(selectedNroCuotas));
                         initCuotas();
+                        updateNumberWords();
                       });}),
                     ],
                   ),
@@ -2094,12 +2240,13 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
   }  
 
   void updateNumberWords() async {
-    letrasPrecioFinalController.text = await numeroEnLetras(precioFinal, 'pesos');
+    
     letrasSepController.text = await numeroEnLetras(vlrFijoSeparacion, 'pesos');
     letrasSaldoCIController.text = await numeroEnLetras(saldoCI, 'pesos');
     letrasSaldoLoteController.text = await numeroEnLetras(valorAPagar, 'pesos');
-    letrasValorCuotasController.text = await numeroEnLetras(valorCuota, 'pesos');
-    
+    letrasValorCuotasController.text = await numeroEnLetras(valorCuota, 'pesos'); 
+    letrasVlrPorPagarController.text = await numeroEnLetras(valorAPagar, 'pesos');
+    letrasPrecioFinalController.text = await numeroEnLetras(precioFinal, 'pesos');   
   }
 
   State<StatefulWidget> createState() => throw UnimplementedError();

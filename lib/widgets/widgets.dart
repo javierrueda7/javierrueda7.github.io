@@ -81,6 +81,10 @@ TextField textFieldWidget(String text, IconData? icon, bool isPasswordType, Text
     ),
     keyboardType: kbTypeFinder(kbType),
     inputFormatters: inputFormatFinder(kbType),
+    onTap: () {
+      // Set the cursor position to the end of the text when the user taps on the TextField
+      controller.selection = TextSelection.fromPosition(TextPosition(offset: controller.text.length));
+    },
     onChanged: (String value) {
       inputChanged(value);
     }

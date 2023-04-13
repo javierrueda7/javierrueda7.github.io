@@ -80,11 +80,11 @@ class _LotesPageState extends State<LotesPage> {
 
   Color setStatusColor(String value){
     if(value == "Disponible"){
-      return thirdColor.withOpacity(0);
-    } if(value == "Lote Separado"){
-      return thirdColor.withOpacity(0);
+      return Colors.white;
+    } if(value == "Lote separado"){
+      return separadoColor;
     } else{
-      return thirdColor.withOpacity(0.5);
+      return vendidoColor;
     }
   }
 

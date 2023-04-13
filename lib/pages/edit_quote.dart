@@ -25,6 +25,7 @@ class _EditQuotePageState extends State<EditQuotePage> {
     super.initState();
     initPagos();
     initCuotas();
+    initSeller();
     timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       setState(() {
         realtimeDateTime = dateOnly(true, 0, DateTime.now(), false);
@@ -56,6 +57,7 @@ class _EditQuotePageState extends State<EditQuotePage> {
   double porcCuotaInicial = 0;  
   double plazoCI = 0;
   double plazoContado = 0;
+  double plazoSaldoSep = 0;
   double vlrTEM = 0;
   double dctoContado = 0;
   double dctoCuotas = 0;
@@ -74,9 +76,15 @@ class _EditQuotePageState extends State<EditQuotePage> {
     dctoContado = infoPagos['dctoContado'].toDouble();
     plazoContado = infoPagos['plazoContado'].toDouble();
     maxCuotas = infoPagos['maxCuotas'].toInt();
+    plazoSaldoSep = infoPagos['plazoSaldoSep'].toDouble();
     nroCuotasList = nroCuotasGenerator(maxCuotas); 
     
-    seller = await getSeller(selectedSeller);
+    getSeller();
+  }
+
+  Future<void> initSeller() async {
+    sellerStream = FirebaseFirestore.instance.collection('sellers').orderBy('lastnameSeller').snapshots();
+    getSeller();
   }
 
   Future<void> initCuotas() async {
@@ -151,6 +159,7 @@ class _EditQuotePageState extends State<EditQuotePage> {
   String selectedCity = '';
   bool isInitialized = false;
   bool cambioEstado = false;
+  
 
   @override
   Widget build(BuildContext context) {
@@ -216,8 +225,12 @@ class _EditQuotePageState extends State<EditQuotePage> {
     }
     
     isInitialized = true;
-    
-    infoEstado(); 
+    sellerStream = FirebaseFirestore.instance.collection('sellers').orderBy('lastnameSeller').snapshots();
+    getSeller();
+
+    infoEstado();     
+    initCuotas();
+    nroCuotasList = nroCuotasGenerator(maxCuotas); 
     periodoCalculator(stringConverter(selectedNroCuotas));
     vlrBaseLote = stringConverter(priceloteController.text).toInt();    
     precioFinal = vlrBaseLote*((100-discountValue())/100);   
@@ -235,7 +248,7 @@ class _EditQuotePageState extends State<EditQuotePage> {
     vlrPorPagarController.text = (currencyCOP((valorAPagar.toInt()).toString()));
     temController.text = '${vlrTEM.toString()}%';
     saldoTotalDateController.text = dateSaldo;
-
+    
     return Scaffold(      
       extendBodyBehindAppBar: false,
       appBar: AppBar(
@@ -275,7 +288,7 @@ class _EditQuotePageState extends State<EditQuotePage> {
                       child: Padding(
                         padding: const EdgeInsets.only(left: 10.0, right: 10),
                         child: StreamBuilder<QuerySnapshot>(
-                          stream: FirebaseFirestore.instance.collection('sellers').snapshots(),
+                          stream: sellerStream,
                           builder: (context, sellersSnapshot) {
                             List<DropdownMenuItem> sellerItems = [];
                             if (!sellersSnapshot.hasData) {
@@ -301,7 +314,7 @@ class _EditQuotePageState extends State<EditQuotePage> {
                               onChanged: (sellerValue) {
                                 setState(() {
                                   selectedSeller = sellerValue!;
-                                  getSeller(sellerValue);
+                                  getSeller();
                                 });
                               },
                               isExpanded: true,
@@ -606,7 +619,7 @@ class _EditQuotePageState extends State<EditQuotePage> {
                                       height: 15,
                                       child: Text('Fecha límite saldo separación', style: TextStyle(fontSize: 10),)),
                                       textFieldWidget(
-                                        dateOnly(false, 7, quotePickedDate, false), Icons.date_range_outlined, false, saldoSeparacionDeadlineController, false, 'date', (){}),
+                                        dateOnly(false, plazoSaldoSep, quotePickedDate, false), Icons.date_range_outlined, false, saldoSeparacionDeadlineController, false, 'date', (){}),
                                     ],
                                   ),
                                 ),
@@ -629,9 +642,13 @@ class _EditQuotePageState extends State<EditQuotePage> {
                     Container(
                       constraints: const BoxConstraints(maxWidth: 800),
                       child: easyDropdown(paymentMethodList, paymentMethodSelectedItem, (tempPaymentMethod){setState(() {
-                                  paymentMethodSelectedItem = tempPaymentMethod!;
-                                  discountValue();
-                                });}),
+                        paymentMethodSelectedItem = tempPaymentMethod!;
+                        nroCuotasGenerator(maxCuotas);
+                        selectedNroCuotas = "1";
+                        periodoCalculator(stringConverter(selectedNroCuotas));
+                        initCuotas();
+                        discountValue();
+                      });}),
                     ),
                     const SizedBox(
                       height: 10,
@@ -1197,6 +1214,7 @@ class _EditQuotePageState extends State<EditQuotePage> {
                                         area: arealoteController.text,
                                         price: priceloteController.text,
                                         finalPrice: precioFinalController.text,
+                                        discount: '${discountValue().toString()}%',
                                         porcCuotaIni: '${((porcCuotaInicial.toInt()).toString())}%',
                                         vlrCuotaIni: vlrCuotaIniController.text,
                                         vlrSeparacion: vlrSeparacionController.text,
@@ -1204,6 +1222,7 @@ class _EditQuotePageState extends State<EditQuotePage> {
                                         saldoSeparacion: saldoSeparacionController.text,
                                         dueDateSaldoSeparacion: saldoSeparacionDeadlineController.text,
                                         plazoCI: '${(((plazoCI).toInt()).toString())} días',
+                                        plazoContado: '${(((plazoContado).toInt()).toString())} días',
                                         saldoCI: saldoCuotaIniController.text,
                                         dueDateSaldoCI: saldoCuotaIniDeadlineController.text,
                                         porcPorPagar: '${(((100-porcCuotaInicial).toInt()).toString())}%',
@@ -1320,6 +1339,7 @@ class _EditQuotePageState extends State<EditQuotePage> {
                                     saldoSeparacion,
                                     saldoSeparacionDeadlineController.text,
                                     plazoCI,
+                                    plazoContado,
                                     saldoCI,
                                     saldoCuotaIniDeadlineController.text,
                                     valorAPagar, 
@@ -1378,7 +1398,7 @@ class _EditQuotePageState extends State<EditQuotePage> {
     }
   }
 
-  Future<Map<String, dynamic>> getSeller(String value) async {
+  Future<void> getSeller() async {
     DocumentSnapshot? doc = await db.collection('sellers').doc(selectedSeller).get();    
     final Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
     final temp = {
@@ -1388,7 +1408,7 @@ class _EditQuotePageState extends State<EditQuotePage> {
       "emailSeller": data['emailSeller'],
       "phoneSeller": data['phoneSeller'],
     };
-    return temp;
+    seller = temp;
   }
 
   Future<List> getCuotas() async {
