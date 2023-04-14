@@ -1,4 +1,3 @@
-import 'package:albaterrapp/pages/archived_quotes.dart';
 import 'package:albaterrapp/pages/pdf_generator.dart';
 import 'package:albaterrapp/services/firebase_services.dart';
 import 'package:albaterrapp/utils/color_utils.dart';
@@ -8,18 +7,18 @@ import 'package:flutter/material.dart';
 
 FirebaseFirestore db = FirebaseFirestore.instance;
 
-class ExistingQuotes extends StatefulWidget {
+class ArchivedQuotes extends StatefulWidget {
   final List<dynamic> loteInfo;
   final bool needAll;
   final String loggedEmail;
-  const ExistingQuotes({Key? key, required this.loteInfo, required this.needAll, required this.loggedEmail}) : super(key: key);
+  const ArchivedQuotes({Key? key, required this.loteInfo, required this.needAll, required this.loggedEmail}) : super(key: key);
 
 
   @override
-  State<ExistingQuotes> createState() => _ExistingQuotesState();
+  State<ArchivedQuotes> createState() => _ArchivedQuotesState();
 }
 
-class _ExistingQuotesState extends State<ExistingQuotes> {
+class _ArchivedQuotesState extends State<ArchivedQuotes> {
   
   @override
   void initState() {
@@ -63,28 +62,13 @@ Future<String> getGerenteEmail() async {
         foregroundColor: primaryColor,
         elevation: 0,
         centerTitle: true,
-        title: Text('Cotizaciones existentes${loteVerifier(needAll)}', style: TextStyle(color: primaryColor,fontSize: 18, fontWeight: FontWeight.bold),),
-        actions: <Widget>[            
-          Padding(
-            padding: const EdgeInsets.only(right: 20.0),
-              child: GestureDetector(
-                onTap: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => ArchivedQuotes(loteInfo: loteInfo, needAll: true, loggedEmail: loggedEmail,)));
-                  setState(() {});                  
-                },
-                child: const Icon(
-                  Icons.archive_outlined
-                ),
-              )
-          ),
-        ],
+        title: Text('Cotizaciones archivadas${loteVerifier(needAll)}', style: TextStyle(color: primaryColor,fontSize: 18, fontWeight: FontWeight.bold),),
       ),
-      
       body: Center(
         child: Container(
           constraints: const BoxConstraints(maxWidth: 1200),
           child: FutureBuilder(
-            future: getQuotes(loteInfo[1], needAll, true),
+            future: getQuotes(loteInfo[1], needAll, false),
             builder: ((context, snapshot){
               if(snapshot.hasData){
                 return ListView.builder(
@@ -105,7 +89,7 @@ Future<String> getGerenteEmail() async {
                                 final sellerData = sellerSnapshot.data?.data() as Map<String, dynamic>;                                                            
                                 return Dismissible(
                                   onDismissed: (direction) async {
-                                    await archiveQuote(snapshot.data?[index]['qid']);
+                                    await activateQuote(snapshot.data?[index]['qid']);
                                     snapshot.data?.removeAt(index);
                                     setState(() {});
                                   },
@@ -115,7 +99,7 @@ Future<String> getGerenteEmail() async {
                                       context: context, 
                                       builder: (context){
                                         return AlertDialog(
-                                          title: Text("Esta seguro de archivar la cotizacion #${snapshot.data?[index]['qid']}?"),
+                                          title: Text("Esta seguro de activar la cotizacion #${snapshot.data?[index]['qid']}?"),
                                           actions: [
                                             TextButton(onPressed: (){
                                               return Navigator.pop(
@@ -318,34 +302,12 @@ Future<String> getGerenteEmail() async {
                                             });
                                           } 
                                         
-                                        } if (value == 'Opción 3') {
-                                          // ignore: use_build_context_synchronously
-                                          showDialog(
-                                            context: context,
-                                            builder: (BuildContext context) {
-                                              return AlertDialog(
-                                                title: Text('¿Estás seguro de que quieres cancelar la separación SEP${snapshot.data?[index]['qid']}?'),
-                                                actions: <Widget>[
-                                                  TextButton(
-                                                    child: const Text('Cancelar'),
-                                                    onPressed: () {
-                                                      Navigator.of(context).pop();
-                                                    },
-                                                  ),
-                                                  TextButton(
-                                                    child: const Text('Confirmar'),
-                                                    onPressed: () {
-                                                      updateQuoteStage(snapshot.data?[index]['qid'], 'AUTORIZADA');
-                                                      cancSepLote(snapshot.data?[index]['loteId']);
-                                                      deleteSep("SEP${snapshot.data?[index]['qid']}");
-                                                      setState(() {});
-                                                      Navigator.of(context).pop();
-                                                    },
-                                                  ),
-                                                ],
-                                              );
-                                            },
-                                          );                                        
+                                        } if(value == 'Opción 3'){
+                                          updateQuoteStage(snapshot.data?[index]['qid'], 'AUTORIZADA');
+                                          cancSepLote(snapshot.data?[index]['loteId']);
+                                          deleteSep("SEP${snapshot.data?[index]['qid']}");
+                                          setState(() {                          
+                                          });
                                         } if(value == 'Opción 4'){
                                           setState(() {                          
                                           });

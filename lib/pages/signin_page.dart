@@ -1,8 +1,8 @@
 import 'package:albaterrapp/pages/init_page.dart';
 import 'package:albaterrapp/pages/reset_password_page.dart';
-import 'package:albaterrapp/pages/signup_page.dart';
 import 'package:albaterrapp/utils/color_utils.dart';
 import 'package:albaterrapp/widgets/widgets.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -14,8 +14,16 @@ class SignInPage extends StatefulWidget {
 }
 
 class _SignInPageState extends State<SignInPage> {
+
+  @override
+  void initState() {
+    super.initState();  
+  } 
+
   final TextEditingController _passwordTextcontroller = TextEditingController();
   final TextEditingController _emailTextController = TextEditingController();
+  
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -69,13 +77,13 @@ class _SignInPageState extends State<SignInPage> {
 
                     Container(
                       constraints: const BoxConstraints(maxWidth: 800),
-                      child: firebaseButton(context, "INICIAR SESIÓN", (){
+                      child: firebaseButton(context, "INICIAR SESIÓN", () {
                         FirebaseAuth.instance.signInWithEmailAndPassword(email: _emailTextController.text , password: _passwordTextcontroller.text).then((value) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
                               content: CustomAlertMessage(
                                 errorTitle: "Genial!", 
-                                errorText: "Iniciaste sesión de manera satisfactoria",
+                                errorText: "Inicio de sesión satisfactorio",
                                 stateColor: Color.fromRGBO(52, 194, 64, 1),
                               ), 
                               behavior: SnackBarBehavior.floating,
@@ -89,7 +97,7 @@ class _SignInPageState extends State<SignInPage> {
                             const SnackBar(
                               content: CustomAlertMessage(
                                 errorTitle: "Oops!", 
-                                errorText: "Tus datos no coinciden con nuestra información, verificalos o crea una cuenta",
+                                errorText: "Sus datos no coinciden con nuestra información, verifíquelos o cree una cuenta",
                                 stateColor: Color.fromRGBO(214, 66, 66, 1),
                               ), 
                               behavior: SnackBarBehavior.floating,
@@ -100,10 +108,6 @@ class _SignInPageState extends State<SignInPage> {
                         });
                       }),
                     ),
-                    /*Container(
-                      constraints: const BoxConstraints(maxWidth: 800),
-                      child: signUpOption()
-                    ),*/
                     const SizedBox(
                       height: 20,
                     ),
@@ -116,23 +120,10 @@ class _SignInPageState extends State<SignInPage> {
       ),             
     );
   }
+  
 
-  Row signUpOption(){
-    return Row(mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Text("¿Aún no tienes una cuenta?", style: TextStyle(color: fifthColor.withOpacity(0.4))),
-        GestureDetector(
-          onTap: () {
-            Navigator.push(context, MaterialPageRoute(builder: (context) => const SignUpPage()));
-          },
-          child: Text( 
-            " Registrate aquí",
-            style: TextStyle(color: fifthColor.withOpacity(0.8), fontWeight: FontWeight.bold),
-          ),
-        ),
-      ]
-    );
-  }
+  
+
 
 
   Widget forgetPassword(BuildContext context) {

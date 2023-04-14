@@ -56,6 +56,7 @@ class _LotesPageState extends State<LotesPage> {
                             "loteArea": snapshot.data?[index]['loteArea'],
                             "lotePrice": snapshot.data?[index]['lotePrice'],
                             "loteState": snapshot.data?[index]['loteState'],
+                            "loteLinderos": snapshot.data?[index]['loteLinderos'],
                           });
                           setState(() {});
                         } else {

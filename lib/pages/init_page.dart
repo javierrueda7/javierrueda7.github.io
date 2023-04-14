@@ -409,21 +409,18 @@ class _InitPageState extends State<InitPage> {
   TextButton addAllLotes() {
     return TextButton(
       child: Text(
-        "Agregar imagenes", 
+        "Agregar linderos", 
         style: TextStyle(color: fifthColor.withOpacity(0.8), fontWeight: FontWeight.bold),
       ),
       onPressed: (){
-        String loteInfoIMG = '';
         String tempValue = '';
-        for (int i = 1; i < 67; i++) {          
+        for (int i = 1; i <= 67; i++) {          
           if(i < 10){
-            tempValue = '0${i.toString()}';
-            loteInfoIMG = 'ALBATERRA-ADS-RRSS-MARZ-AF-$tempValue.jpg';
+            tempValue = '0${i.toString()}';            
           } else {
             tempValue = i.toString();
-            loteInfoIMG = 'ALBATERRA-ADS-RRSS-MARZ-AF-$tempValue.jpg';
           }
-          addLoteImg('L$tempValue',loteInfoIMG);
+          addLoteImg('L$tempValue');
         }
       },
     );

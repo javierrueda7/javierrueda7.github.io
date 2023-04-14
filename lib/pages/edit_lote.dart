@@ -45,6 +45,7 @@ class _EditLotePageState extends State<EditLotePage> {
       priceController.text = (currencyCOP((arguments['lotePrice'].toInt()).toString()));
       stateController.text = arguments['loteState'];
       price = stringConverter(priceController.text);
+      linderosController.text = arguments['loteLinderos'];
     } else {
       isInitialized = true;
     }

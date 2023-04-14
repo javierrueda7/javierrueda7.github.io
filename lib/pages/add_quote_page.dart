@@ -6,6 +6,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'dart:async';
+import 'package:flutter_typeahead/flutter_typeahead.dart';
 
 FirebaseFirestore db = FirebaseFirestore.instance;
 
@@ -28,6 +29,7 @@ class _AddQuotePageState extends State<AddQuotePage> {
     initPagos();
     initCuotas();
     initSeller();
+    initOcup();
     timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       setState(() {
         realtimeDateTime = dateOnly(true, 0, DateTime.now(), false);
@@ -39,8 +41,33 @@ class _AddQuotePageState extends State<AddQuotePage> {
   void dispose() {
     timer.cancel(); //cancel the periodic task
     timer; //clear the timer variable
+    ocupacionController.dispose();
     super.dispose();
   }
+
+  final TextEditingController ocupacionController = TextEditingController();
+  final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+
+
+  Future<List<String>> getSuggestions(String query) async {
+    // Get the saved ocupaciones from Firebase
+    List<String>? savedOcupaciones = await getOcupaciones();
+    // Filter the suggestions based on the query
+    List<String> filteredOcupaciones = savedOcupaciones.where((ocupacion) =>
+        ocupacion.toLowerCase().contains(query.toLowerCase())).toList();
+    return filteredOcupaciones;
+  }
+
+
+  Future<void> saveOcupacion(String ocupacion) async {
+    // Save the new ocupacion to Firebase
+    await guardarOcupacion(ocupacion);
+  }
+
+  Future<void> initOcup() async {
+    ocupacionList = await getOcupaciones();
+  }
+
 
   double periodoNumValue = 0;
   Map<String, dynamic> infoPagos = {};
@@ -49,6 +76,7 @@ class _AddQuotePageState extends State<AddQuotePage> {
   DateTime quotePickedDate = DateTime.now();
   List<dynamic> loteInfo = [];
   Map<String, dynamic> seller = {};
+  List<dynamic> ocupacionList = [];
   String realtimeDateTime = '';
   int totalCuotas = 0;
   
@@ -142,7 +170,6 @@ class _AddQuotePageState extends State<AddQuotePage> {
   TextEditingController lastnameController = TextEditingController(text: "");
   String selectedGender = 'Masculino';
   TextEditingController birthdayController = TextEditingController(text: "");
-  TextEditingController ocupacionController = TextEditingController(text: "");
   TextEditingController phoneController = TextEditingController(text: "");
   TextEditingController idtypeController = TextEditingController(text: "");
   TextEditingController idController = TextEditingController(text: "");
@@ -161,7 +188,7 @@ class _AddQuotePageState extends State<AddQuotePage> {
       quoteCounter = quotesSnapshot.size;
     });
     getSeller();
-    
+    initOcup();
     initPagos();
     initCuotas();
     initSeller();
@@ -657,12 +684,65 @@ class _AddQuotePageState extends State<AddQuotePage> {
                     const SizedBox(
                       height: 5,
                     ),
+
+
+
                     Container(
                       constraints: const BoxConstraints(maxWidth: 800),
-                      child: textFieldWidget(
-                        "Ocupación o actividad económica", Icons.work_outline, false, ocupacionController, true, 'name', (){}
+                      child: Column(
+                        children: [
+                          TypeAheadFormField<String>(
+                            textFieldConfiguration: TextFieldConfiguration(
+                              controller: ocupacionController,
+                              textAlign: TextAlign.center,
+                              style: TextStyle(color: fifthColor.withOpacity(0.9)),
+                              decoration: InputDecoration(
+                                prefixIcon: Icon(Icons.work_outline, color: fifthColor),
+                                hintText: 'Ocupación o actividad económica',
+                                hintStyle: TextStyle(color: fifthColor.withOpacity(0.9)),
+                                filled: true,
+                                floatingLabelBehavior: FloatingLabelBehavior.never,
+                                fillColor: primaryColor.withOpacity(0.2),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(30.0),
+                                  borderSide: BorderSide(
+                                      width: 1, style: BorderStyle.solid, color: fifthColor.withOpacity(0.1))),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(30.0),
+                                  borderSide: BorderSide(width: 2, style: BorderStyle.solid, color: fifthColor)),
+                              ),                              
+                            ),
+                            suggestionsCallback: getSuggestions,
+                            onSuggestionSelected: (ocupacion) {
+                              ocupacionController.text = ocupacion;
+                            },
+                            onSaved: (ocupacion) async {
+                              // Save the ocupacion to Firebase if it's a new value
+                              if (!ocupacionList.contains(ocupacion)) {
+                                saveOcupacion(ocupacion!);
+                              }
+                            },
+                            itemBuilder: (context, ocupacion) {
+                              return ListTile(
+                                title: Text(ocupacion),
+                              );
+                            },
+                            noItemsFoundBuilder: (context) {
+                              return const SizedBox.shrink();
+                            },
+                          ),
+                        ],
                       ),
-                    ),       
+                    ),
+
+
+
+
+
+
+
+
+
                     const SizedBox(
                       height: 5,
                     ),
@@ -1227,6 +1307,9 @@ class _AddQuotePageState extends State<AddQuotePage> {
                                     ),
                                   );
                                 } else {
+                                  if (!ocupacionList.contains(ocupacionController.text)) {
+                                    saveOcupacion(ocupacionController.text);
+                                  }
                                   await addCustomer(
                                     idController.text,
                                     nameController.text,

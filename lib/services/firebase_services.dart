@@ -400,7 +400,7 @@ Future<List> getQuotes(String loteName, bool allLotes, bool archive) async {
     final Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
     if (allLotes == false) {
       
-      if (data['loteName'] == loteName || data['isActive'] == archive) {
+      if (data['loteName'] == loteName && data['isActive'] == archive) {
         final quote = {
           "qid": doc.id,
           "sellerID": data['sellerID'],
@@ -483,6 +483,12 @@ Future<List> getQuotes(String loteName, bool allLotes, bool archive) async {
 Future<void> archiveQuote(String qid) async {
   await db.collection("quotes").doc(qid).update({
     'isActive': false
+  });
+}
+
+Future<void> activateQuote(String qid) async {
+  await db.collection("quotes").doc(qid).update({
+    'isActive': true
   });
 }
 
@@ -606,6 +612,7 @@ Future<List> getLotes() async {
       "loteState": data['loteState'],
       "loteImg": data['loteImg'],
       "loteInfoIMG": data['loteInfoIMG'],
+      "loteLinderos": data['loteLinderos'],
     };
     lotes.add(lote);
   }
@@ -655,9 +662,9 @@ Future<void> cancSepLote(String idLote) async {
   });
 }
 
-Future<void> addLoteImg(String idLote, String loteInfoIMG) async {
+Future<void> addLoteImg(String idLote) async {
   await db.collection("lotes").doc(idLote).update({
-    "loteInfoIMG": loteInfoIMG,
+    "loteLinderos": 'Linderos',
     }
   );
 }
@@ -731,3 +738,18 @@ Future<List> getCities() async {
   return cities;
 }
 
+Future<List<String>> getOcupaciones() async {
+  List<String> ocupaciones = [];
+  QuerySnapshot? queryOcupaciones = await db.collection('ocupaciones').get();
+  for (var doc in queryOcupaciones.docs) {
+    ocupaciones.add(doc.id);
+  }
+  return ocupaciones;
+}
+
+
+Future<void> guardarOcupacion(String ocupacion) async {
+  await db.collection("ocupaciones").doc(ocupacion.toUpperCase()).set({
+    }
+  );
+}

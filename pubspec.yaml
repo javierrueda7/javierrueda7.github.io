@@ -50,6 +50,7 @@ dependencies:
   number_to_character: ^0.0.12
   translator: ^0.1.7
   flutter_localization: ^0.1.10
+  flutter_typeahead: ^4.3.7
   
 
 dev_dependencies:
