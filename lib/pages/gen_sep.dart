@@ -624,7 +624,7 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
                                   sellerItems.add(
                                     DropdownMenuItem(
                                       value: sellers.id,
-                                      child: Center(child: Text('${seller['nameSeller']} ${seller['lastnameSeller']}')),
+                                      child: Center(child: Text('${sellers['nameSeller']} ${sellers['lastnameSeller']}')),
                                     ),
                                   );
                                 }

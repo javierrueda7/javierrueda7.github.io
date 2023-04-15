@@ -88,6 +88,7 @@ Future<void> addSellers(String sid, String nameSeller, String lastnameSeller, St
     "startDateSeller": startDateSeller,
     "roleSeller": roleSeller,
     "statusSeller": statusSeller,
+    "isDeleted": false,
     }
   );
 }
@@ -112,6 +113,14 @@ Future<void> updateSellers(String sid, String nameSeller, String lastnameSeller,
 Future<void> statusChangerSellers(String sid, String statusSeller) async {
   await db.collection("sellers").doc(sid).update({    
     "statusSeller": statusSeller,
+    }
+  );
+}
+
+Future<void> deleteSellers(String sid) async {
+  await db.collection("sellers").doc(sid).update({    
+    "isDeleted": true,
+    "statusSeller": "Inactivo"
     }
   );
 }
