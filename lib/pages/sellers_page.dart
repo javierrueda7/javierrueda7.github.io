@@ -25,6 +25,7 @@ class _SellersPageState extends State<SellersPage> {
 
   @override
   Widget build(BuildContext context) {
+    setState(() {});
     return Scaffold(
       appBar: AppBar(
         backgroundColor: fifthColor,

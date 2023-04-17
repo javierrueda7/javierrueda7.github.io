@@ -509,16 +509,6 @@ class _AddQuotePageState extends State<AddQuotePage> {
                             alignment: Alignment.center,
                             child: const Text('Separación', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold,))
                           ),
-                          IconButton(onPressed: (){
-                              setState(() {      
-                                vlrSeparacion =  stringConverter(vlrSeparacionController.text);
-                                vlrSeparacionController.text = (currencyCOP((vlrSeparacion.toInt()).toString()));
-                                saldoCuotaIniController.text = (currencyCOP((saldoCI.toInt()).toString()));                                
-                              });
-                            }, 
-                            icon: Icon(Icons.refresh_outlined, color: fifthColor,),
-                            alignment: Alignment.centerLeft
-                          ),
                           Container(
                             constraints: const BoxConstraints(maxWidth: 800),
                             child: Row(
@@ -703,6 +693,7 @@ class _AddQuotePageState extends State<AddQuotePage> {
                         selectedNroCuotas = "1";
                         periodoCalculator(stringConverter(selectedNroCuotas));
                         initCuotas();
+                        updateDateSaldo(dateConverter(separacionDeadlineController.text));
                         discountValue();
                       });}),
                     ),
@@ -1695,11 +1686,42 @@ class _AddQuotePageState extends State<AddQuotePage> {
                         height: 20,
                         child: Text('Fecha límite (${plazoContado.toInt().toString()} días)', style: const TextStyle(fontSize: 10), textAlign: TextAlign.center,)
                       ),
-                        
-
-                      textFieldWidget(
-                        dateOnly(false, plazoContado, quotePickedDate, true), Icons.date_range_outlined, false, saldoTotalDateController, false, 'date', (){}
-                      ),
+                      Container(
+                        decoration: BoxDecoration(
+                          color: primaryColor.withOpacity(0.2),
+                          borderRadius: BorderRadius.circular(30.0),
+                          border: Border.all(width: 1, style: BorderStyle.solid, color: fifthColor.withOpacity(0.1)),                                
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.only(left: 10),
+                          child: TextField(
+                            textAlign: TextAlign.center,
+                            cursorColor: fifthColor,                              
+                            style: TextStyle(color: fifthColor.withOpacity(0.9)),
+                            controller: saldoTotalDateController,
+                            decoration: InputDecoration(
+                              border: InputBorder.none,
+                              icon: Icon(Icons.date_range_outlined, color: fifthColor,),
+                              hintText: DateFormat('dd-MM-yyyy').format(quotePickedDate),                                    
+                            ),
+                            readOnly: true,
+                            onTap: () async{
+                              DateTime? pickedDate = await showDatePicker(
+                                locale: const Locale("es", "CO"),
+                                context: context, 
+                                initialDate: dateConverter(saldoTotalDateController.text), 
+                                firstDate: DateTime(1900), 
+                                lastDate: DateTime(2050),
+                              );
+                              if(pickedDate != null) {
+                                setState(() {
+                                  dateSaldo = DateFormat('dd-MM-yyyy').format(pickedDate);                                            
+                                });
+                              }
+                            },
+                          ),
+                        ),
+                      ), 
                     ],
                   ),
                 ),                    
@@ -1777,9 +1799,43 @@ class _AddQuotePageState extends State<AddQuotePage> {
                         height: 20,
                         child: Text('Fecha límite (${(plazoCI).toInt().toString()} días)', style: const TextStyle(fontSize: 10), textAlign: TextAlign.center,)
                       ),
-                      textFieldWidget(
-                        dateOnly(false, plazoCI, dateConverter(separacionDeadlineController.text), true), Icons.date_range_outlined, false, saldoCuotaIniDeadlineController, false, 'date', (){}
-                      ),
+                      Container(
+                        decoration: BoxDecoration(
+                          color: primaryColor.withOpacity(0.2),
+                          borderRadius: BorderRadius.circular(30.0),
+                          border: Border.all(width: 1, style: BorderStyle.solid, color: fifthColor.withOpacity(0.1)),                                
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.only(left: 10),
+                          child: TextField(
+                            textAlign: TextAlign.center,
+                            cursorColor: fifthColor,                              
+                            style: TextStyle(color: fifthColor.withOpacity(0.9)),
+                            controller: saldoCuotaIniDeadlineController,
+                            decoration: InputDecoration(
+                              border: InputBorder.none,
+                              icon: Icon(Icons.date_range_outlined, color: fifthColor,),
+                              hintText: DateFormat('dd-MM-yyyy').format(quotePickedDate),                                    
+                            ),
+                            readOnly: true,
+                            onTap: () async{
+                              DateTime? pickedDate = await showDatePicker(
+                                locale: const Locale("es", "CO"),
+                                context: context, 
+                                initialDate: dateConverter(saldoCuotaIniDeadlineController.text), 
+                                firstDate: DateTime(1900), 
+                                lastDate: DateTime(2050),
+                              );
+                              if(pickedDate != null) {
+                                setState(() {
+                                  saldoCuotaIniDeadlineController.text = DateFormat('dd-MM-yyyy').format(pickedDate);
+                                  dateSaldo = dateOnly(false, 30, pickedDate, true);                                  
+                                });
+                              }
+                            },
+                          ),
+                        ),
+                      ),  
                     ],
                   ),
                 ),                    
@@ -1865,10 +1921,44 @@ class _AddQuotePageState extends State<AddQuotePage> {
                   child: Column(
                     children: [
                       const SizedBox(
-                      height: 15,
-                      child: Text('A partir de', style: TextStyle(fontSize: 10),)),
-                      textFieldWidget(
-                        dateOnly(false, (plazoCI)+30, quotePickedDate, true), Icons.date_range_outlined, false, saldoTotalDateController, false, 'date', (){}
+                        height: 15,
+                        child: Text('A partir de', style: TextStyle(fontSize: 10),)
+                      ),
+                      Container(
+                        decoration: BoxDecoration(
+                          color: primaryColor.withOpacity(0.2),
+                          borderRadius: BorderRadius.circular(30.0),
+                          border: Border.all(width: 1, style: BorderStyle.solid, color: fifthColor.withOpacity(0.1)),                                
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.only(left: 10),
+                          child: TextField(
+                            textAlign: TextAlign.center,
+                            cursorColor: fifthColor,                              
+                            style: TextStyle(color: fifthColor.withOpacity(0.9)),
+                            controller: saldoTotalDateController,
+                            decoration: InputDecoration(
+                              border: InputBorder.none,
+                              icon: Icon(Icons.date_range_outlined, color: fifthColor,),
+                              hintText: DateFormat('dd-MM-yyyy').format(quotePickedDate),                                    
+                            ),
+                            readOnly: true,
+                            onTap: () async{
+                              DateTime? pickedDate = await showDatePicker(
+                                locale: const Locale("es", "CO"),
+                                context: context, 
+                                initialDate: dateConverter(saldoTotalDateController.text), 
+                                firstDate: DateTime(1900), 
+                                lastDate: DateTime(2050),
+                              );
+                              if(pickedDate != null) {
+                                setState(() {
+                                  dateSaldo = DateFormat('dd-MM-yyyy').format(pickedDate);
+                                });
+                              }
+                            },
+                          ),
+                        ),
                       ),
                     ],
                   ),

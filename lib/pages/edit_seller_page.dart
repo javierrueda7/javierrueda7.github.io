@@ -1,3 +1,6 @@
+import 'dart:math';
+
+import 'package:albaterrapp/pages/sellers_page.dart';
 import 'package:albaterrapp/services/firebase_services.dart';
 import 'package:albaterrapp/utils/color_utils.dart';
 import 'package:albaterrapp/widgets/widgets.dart';
@@ -72,7 +75,46 @@ class _EditSellerPageState extends State<EditSellerPage> {
         elevation: 0,
         centerTitle: true,
         title: Text('Editar usuario', 
-          style: TextStyle(color: primaryColor,fontSize: 18, fontWeight: FontWeight.bold),),
+          style: TextStyle(color: primaryColor,fontSize: 18, fontWeight: FontWeight.bold),
+        ),
+        actions: <Widget>[            
+          Padding(
+            padding: const EdgeInsets.only(right: 20.0),
+              child: GestureDetector(
+                onTap: () {
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: Text('¿Está seguro de que quiere eliminar el usuario ${nameController.text} ${lastnameController.text}?'),
+                        actions: <Widget>[
+                          TextButton(
+                            child: const Text('Cancelar'),
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                          ),
+                          TextButton(
+                            child: const Text('Confirmar'),
+                            onPressed: () {
+                              statusChangerSellers(sid, 'Eliminado');                                                            
+                              Navigator.of(context).pop();
+                              setState(() {});
+                              Navigator.of(context).pop();
+                              setState(() {});
+                            },
+                          ),
+                        ],
+                      );
+                    },
+                  );                        
+                },
+                child: const Icon(
+                  Icons.delete_forever_outlined, color: Colors.red,
+                ),
+              )
+          ),
+        ],
       ),
       body: 
         Center(          

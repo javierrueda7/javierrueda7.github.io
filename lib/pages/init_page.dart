@@ -72,7 +72,6 @@ class _InitPageState extends State<InitPage> {
   List<String> etapasList = ['Seleccionar Etapa', 'Etapa 1', 'Etapa 2', 'Etapa Premium'];
   String selectedItemEtapa = 'Seleccionar Etapa';
   String imgEtapa = "E00.png";
-  String infoEtapa = "Condominio Campestre Albaterra es el lugar ideal para establecer su hogar, pues le brinda las comodidades, los lujos y los privilegios disponibles en la vivienda urbana, combinados con la tranquilidad, el ambiente libre de contaminación y la compañía de los sonidos, los colores, la arquitectura y la serenidad del campo, que ofrecen las parcelas en la Mesa de los Santos.  Todo esto hace del Condominio Campestre Albaterra el sitio ideal para aquellas personas que quieren disfrutar en familia de una vida pacífica, en una ubicación privilegiada a menos de 45 minutos de la ciudad capital, sin alejarse demasiado de sus seres queridos, viviendo cerca de la naturaleza y rodeados de zonas sociales de lujo que impulsan el desarrollo de emociones positivas, creando un ambiente totalmente agradable y propicio para vivir el día a día.";
   Color loteColor = Colors.transparent;
   Color etapaColor = Colors.transparent;
   int currentItem = 0;
@@ -292,45 +291,46 @@ class _InitPageState extends State<InitPage> {
                       SizedBox(
                         child: Container(
                           child: loteCard(currentLote, (bool cancelPressed){
-                            if(cancelPressed == false){
-                              setState(() {
-                                currentLote[0] = false;
-                                currentLote[10] = 'null';
-                              });
-                            } else {
-                              setState(() {
-                              });
-                            }
-                          }, (bool quotePressed){
-                            if(quotePressed == true && currentLote[10] == "Disponible"){
-                              setState(() {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(builder: (context) => AddQuotePage(loteInfo: currentLote)),
-                                );
-                                
-                              });
-                            } else {
-                              setState(() {
-                              });
-                            }
-                          }, (bool quoteExisting){
-                            if(quoteExisting == true){
-                              setState(() {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(builder: (context) => ExistingQuotes(loteInfo: currentLote, needAll: false,loggedEmail: loggedEmail,)),
-                                );                                
-                              });
-                            } else {
-                              setState(() {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(builder: (context) => PicturesPage(loteInfo: currentLote)),
-                                );
-                              });
-                            }
-                          }, userLoggedIn),
+                              if(cancelPressed == false){
+                                setState(() {
+                                  currentLote[0] = false;
+                                  currentLote[10] = 'null';
+                                });
+                              } else {
+                                setState(() {
+                                });
+                              }
+                            }, (bool quotePressed){
+                              if(quotePressed == true && currentLote[10] == "Disponible"){
+                                setState(() {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(builder: (context) => AddQuotePage(loteInfo: currentLote)),
+                                  );
+                                  
+                                });
+                              } else {
+                                setState(() {
+                                });
+                              }
+                            }, (bool quoteExisting){
+                              if(quoteExisting == true){
+                                setState(() {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(builder: (context) => ExistingQuotes(loteInfo: currentLote, needAll: false,loggedEmail: loggedEmail,)),
+                                  );                                
+                                });
+                              } else {
+                                setState(() {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(builder: (context) => PicturesPage(loteInfo: currentLote)),
+                                  );
+                                });
+                              }
+                            }, userLoggedIn
+                          ),
                         ),
                       ),
                     ],
@@ -348,19 +348,15 @@ class _InitPageState extends State<InitPage> {
                       if(selectedItemEtapa == "Etapa Premium"){
                         imgEtapa = "E0P.png";
                         etapaColor = fourthColor.withOpacity(0.8);
-                        infoEtapa = "Una hermosa y extensa parcela de siete mil ochocientos noventa (7.890) metros cuadrados que posee una bellísima casa campestre de más de cuatrocientos (400) metros cuadrados construidos con arquitectura clásica colonial colombiana, además de una casa auxiliar de más de ciento veinte (120) metros cuadrados, rodeadas de verdes praderas y un fastuoso lago.";
                       } else {if(selectedItemEtapa== "Etapa 1"){
                           imgEtapa = "E01.png";
                           etapaColor = fourthColor.withOpacity(0.8);
-                          infoEtapa = "El Condominio Campestre Albaterra está compuesto por parcelas en venta, que tienen entre mil doscientos cincuenta (1.250) a mil ochocientos dieciséis (1.816) metros cuadrados de área. Esta etapa cuenta con 38 unidades ubicadas en el sector sur del Condominio, que corresponde a un sector de praderas verdes y parcelas en su mayoría con topografías casi totalmente planas, más cercanas al acceso auxiliar exclusivo para residentes del Condominio.";
                         } else {if(selectedItemEtapa== "Etapa 2"){
                             imgEtapa = "E02.png";
                             etapaColor = fourthColor.withOpacity(0.8);
-                            infoEtapa = "Compuesta por lotes entre mi doscientos cincuenta (1.250) a mil novecientos cuarenta y seis (1.946) metros cuadrados de área, esta etapa cuenta con 28 unidades ubicadas en el sector norte del Condominio, en cercanía a las zonas sociales y la portería, con variedad de configuraciones y vegetación. Opción ideal para quien decida invertir en una parcela en la Mesa de los Santos.";
                           } else {
                             imgEtapa = "E00.png";
                             etapaColor = Colors.transparent;
-                            infoEtapa = "Condominio Campestre Albaterra es el lugar ideal para establecer su hogar, pues le brinda las comodidades, los lujos y los privilegios disponibles en la vivienda urbana, combinados con la tranquilidad, el ambiente libre de contaminación y la compañía de los sonidos, los colores, la arquitectura y la serenidad del campo, que ofrecen las parcelas en la Mesa de los Santos. Todo esto hace del Condominio Campestre Albaterra el sitio ideal para aquellas personas que quieren disfrutar en familia de una vida pacífica, en una ubicación privilegiada a menos de 45 minutos de la ciudad capital, sin alejarse demasiado de sus seres queridos, viviendo cerca de la naturaleza y rodeados de zonas sociales de lujo que impulsan el desarrollo de emociones positivas, creando un ambiente totalmente agradable y propicio para vivir el día a día.";
                             }
                           }
                         }
@@ -368,28 +364,7 @@ class _InitPageState extends State<InitPage> {
                     }),
                   ),
                 ),
-              ),
-              Expanded(
-                flex:7,                
-                child: Container(
-                  constraints: const BoxConstraints(maxWidth: 1200),
-                  padding: EdgeInsets.only(left: MediaQuery.of(context).size.width/20, right: MediaQuery.of(context).size.width/20),
-                  child: Card(
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                    margin: const EdgeInsets.only(top: 10),
-                    elevation: 10,
-                    color: primaryColor,                          
-                    child: Container(
-                      padding: const EdgeInsets.only(top: 10, left: 10, right: 10, bottom: 30),
-                      child: SingleChildScrollView(
-                        padding: const EdgeInsets.only(left:10, right: 10),
-                        scrollDirection: Axis.vertical,              
-                        child: Text(infoEtapa, textAlign: TextAlign.justify, style: const TextStyle(fontSize: 14)),                        
-                      ),
-                    ),                        
-                  ),
-                ),
-              ),
+              ),              
               Expanded(
                 flex: 1,
                 child: Container()
@@ -439,19 +414,4 @@ class LoteGeneral extends StatelessWidget {
       fit: BoxFit.fitHeight,
     );
   }
-}
-
-Future<String> getInfo(String valueSelected) async {
-  String info = '';
-  QuerySnapshot? queryInfo = await db.collection('etapas').get();
-  for (var docInfo in queryInfo.docs){
-    final Map<String, dynamic> dataInfo = docInfo.data() as Map<String, dynamic>;
-    if (dataInfo['etapaName'] == valueSelected){
-      info = dataInfo['infoEtapa'];
-    }
-    else{
-      info = '';
-    }
-  }
-  return info;
 }

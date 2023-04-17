@@ -55,22 +55,23 @@ Future<List> getSellers() async {
   QuerySnapshot? querySellers = await db.collection('sellers').get();
   for (var doc in querySellers.docs) {
     final Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-    final person = {
-      "sid": doc.id,
-      "nameSeller": data['nameSeller'],     
-      "lastnameSeller": data['lastnameSeller'],
-      "emailSeller": data['emailSeller'],
-      "phoneSeller": data['phoneSeller'],
-      "addressSeller": data['addressSeller'],
-      "bdSeller": data['bdSeller'],
-      "genderSeller": data['genderSeller'],
-      "idSeller": data['idSeller'],
-      "roleSeller": data['roleSeller'],
-      "startDateSeller": data['startDateSeller'],
-      "statusSeller": data['statusSeller'],
-
-    };
-    sellers.add(person);
+    if(data['statusSeller'] != 'Eliminado'){
+      final person = {
+        "sid": doc.id,
+        "nameSeller": data['nameSeller'],     
+        "lastnameSeller": data['lastnameSeller'],
+        "emailSeller": data['emailSeller'],
+        "phoneSeller": data['phoneSeller'],
+        "addressSeller": data['addressSeller'],
+        "bdSeller": data['bdSeller'],
+        "genderSeller": data['genderSeller'],
+        "idSeller": data['idSeller'],
+        "roleSeller": data['roleSeller'],
+        "startDateSeller": data['startDateSeller'],
+        "statusSeller": data['statusSeller'],
+      };
+      sellers.add(person);
+    }
   }
   return sellers;
 }
@@ -113,14 +114,6 @@ Future<void> updateSellers(String sid, String nameSeller, String lastnameSeller,
 Future<void> statusChangerSellers(String sid, String statusSeller) async {
   await db.collection("sellers").doc(sid).update({    
     "statusSeller": statusSeller,
-    }
-  );
-}
-
-Future<void> deleteSellers(String sid) async {
-  await db.collection("sellers").doc(sid).update({    
-    "isDeleted": true,
-    "statusSeller": "Inactivo"
     }
   );
 }

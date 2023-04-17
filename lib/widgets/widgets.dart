@@ -261,12 +261,6 @@ Widget loteCard(List<dynamic> currentSelection, Function cancelOnPressed, Functi
                       quoteOnPressed(true);
                     }, child: Text('Cotizar', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: fifthColor),)),
                   ),
-                  Expanded(
-                    flex: 1,
-                    child: TextButton(onPressed: (){                      
-                      quoteExisting(false);                                     
-                    }, child: Text('Ver fotos', style: TextStyle(fontSize: 16, color: fifthColor.withOpacity(0.5),),)),
-                  ),
                 ],
               ),
             )
@@ -289,7 +283,7 @@ Widget loteCardImg(String loteId, String loteInfoImg) {
         maxScale: 4,
         child: Image.asset(
           'assets/images/$loteInfoImg',
-          fit: BoxFit.fitHeight,    
+          fit: BoxFit.fitWidth,    
         ),
       ),
     ); 
