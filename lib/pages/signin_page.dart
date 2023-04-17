@@ -1,5 +1,6 @@
 import 'package:albaterrapp/pages/init_page.dart';
 import 'package:albaterrapp/pages/reset_password_page.dart';
+import 'package:albaterrapp/services/firebase_services.dart';
 import 'package:albaterrapp/utils/color_utils.dart';
 import 'package:albaterrapp/widgets/widgets.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -15,9 +16,16 @@ class SignInPage extends StatefulWidget {
 
 class _SignInPageState extends State<SignInPage> {
 
+  List sellers = [];
+
+  void obtainSellerList() async {
+    sellers = await getSellers();                        
+  }
+
   @override
   void initState() {
-    super.initState();  
+    super.initState();
+    obtainSellerList();
   } 
 
   final TextEditingController _passwordTextcontroller = TextEditingController();
@@ -26,6 +34,7 @@ class _SignInPageState extends State<SignInPage> {
   
   @override
   Widget build(BuildContext context) {
+    obtainSellerList();
     return Scaffold(
       body: Center(
         child: Container(
@@ -78,35 +87,59 @@ class _SignInPageState extends State<SignInPage> {
                     Container(
                       constraints: const BoxConstraints(maxWidth: 800),
                       child: firebaseButton(context, "INICIAR SESIÓN", () {
-                        FirebaseAuth.instance.signInWithEmailAndPassword(email: _emailTextController.text , password: _passwordTextcontroller.text).then((value) {
+                        final email = _emailTextController.text;
+                        final password = _passwordTextcontroller.text;
+                        const allowedEmail = 'javieruedase@gmail.com';
+                        final sellerWithEmail = sellers.firstWhere(
+                          (seller) => seller['emailSeller'] == email,
+                          orElse: () => null,
+                        );
+                        if (sellerWithEmail != null && sellerWithEmail['statusSeller'] == 'Activo' || email == allowedEmail) {
+                          // Allow login
+                          FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password).then((value) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: CustomAlertMessage(
+                                  errorTitle: "Genial!",
+                                  errorText: "Inicio de sesión satisfactorio",
+                                  stateColor: Color.fromRGBO(52, 194, 64, 1),
+                                ),
+                                behavior: SnackBarBehavior.floating,
+                                backgroundColor: Colors.transparent,
+                                elevation: 0,
+                              ),
+                            );
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => const InitPage()));
+                          }).onError((error, stackTrace) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: CustomAlertMessage(
+                                  errorTitle: "Oops!",
+                                  errorText: "Sus datos no coinciden con nuestra información, verifíquelos o cree una cuenta",
+                                  stateColor: Color.fromRGBO(214, 66, 66, 1),
+                                ),
+                                behavior: SnackBarBehavior.floating,
+                                backgroundColor: Colors.transparent,
+                                elevation: 0,
+                              ),
+                            );
+                          });
+                        } else {
+                          // Deny login
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
                               content: CustomAlertMessage(
-                                errorTitle: "Genial!", 
-                                errorText: "Inicio de sesión satisfactorio",
-                                stateColor: Color.fromRGBO(52, 194, 64, 1),
-                              ), 
-                              behavior: SnackBarBehavior.floating,
-                              backgroundColor: Colors.transparent,
-                              elevation: 0,
-                            ),
-                          ); 
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => const InitPage()));
-                        }).onError((error, stackTrace) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: CustomAlertMessage(
-                                errorTitle: "Oops!", 
+                                errorTitle: "Oops!",
                                 errorText: "Sus datos no coinciden con nuestra información, verifíquelos o cree una cuenta",
                                 stateColor: Color.fromRGBO(214, 66, 66, 1),
-                              ), 
+                              ),
                               behavior: SnackBarBehavior.floating,
                               backgroundColor: Colors.transparent,
                               elevation: 0,
                             ),
                           );
-                        });
-                      }),
+                        }
+                      })
                     ),
                     const SizedBox(
                       height: 20,
