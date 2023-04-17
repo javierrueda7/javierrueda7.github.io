@@ -77,7 +77,7 @@ class _SignInPageState extends State<SignInPage> {
 
                     Container(
                       constraints: const BoxConstraints(maxWidth: 800),
-                      child: firebaseButton(context, "INICIAR SESIÓN (PRUEBA)", () {
+                      child: firebaseButton(context, "INICIAR SESIÓN", () {
                         FirebaseAuth.instance.signInWithEmailAndPassword(email: _emailTextController.text , password: _passwordTextcontroller.text).then((value) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
