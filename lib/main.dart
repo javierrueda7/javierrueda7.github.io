@@ -16,7 +16,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
-    );
+  );
   runApp(const MyApp());
 }
 
@@ -27,13 +27,8 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      localizationsDelegates: const [
-         GlobalMaterialLocalizations.delegate
-       ],
-       supportedLocales: const [
-         Locale('es'),
-         Locale('en')
-       ],
+      localizationsDelegates: const [GlobalMaterialLocalizations.delegate],
+      supportedLocales: const [Locale('es'), Locale('en')],
       title: 'Albaterrapp',
       initialRoute: '/',
       routes: {
@@ -47,4 +42,3 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-

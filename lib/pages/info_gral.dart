@@ -12,14 +12,13 @@ class InfoGeneral extends StatefulWidget {
 }
 
 class _InfoGeneralState extends State<InfoGeneral> {
-
   @override
-  void initState() {    
+  void initState() {
     super.initState();
     initInfo();
   }
 
-  Future<void> initInfo() async {    
+  Future<void> initInfo() async {
     infoInvertaga = await getInversionista('invertaga');
     infoVision = await getInversionista('vision');
 
@@ -39,7 +38,7 @@ class _InfoGeneralState extends State<InfoGeneral> {
   }
 
   Map<String, dynamic> infoInvertaga = {};
-  Map<String, dynamic> infoVision = {};  
+  Map<String, dynamic> infoVision = {};
 
   TextEditingController nameIController = TextEditingController(text: "");
   TextEditingController nitIController = TextEditingController(text: "");
@@ -59,53 +58,49 @@ class _InfoGeneralState extends State<InfoGeneral> {
 
   @override
   Widget build(BuildContext context) {
-
-    if(!isInitialized) {
+    if (!isInitialized) {
       initInfo();
     } else {
       isInitialized = true;
     }
     isInitialized = true;
 
-
-    return Scaffold(      
+    return Scaffold(
       extendBodyBehindAppBar: false,
       appBar: AppBar(
         backgroundColor: fifthColor,
         foregroundColor: primaryColor,
         elevation: 0,
         centerTitle: true,
-        title: Text('Información general', 
-          style: TextStyle(color: primaryColor,fontSize: 18, fontWeight: FontWeight.bold),
+        title: Text(
+          'Información general',
+          style: TextStyle(
+              color: primaryColor, fontSize: 18, fontWeight: FontWeight.bold),
         ),
-        actions: <Widget>[            
+        actions: <Widget>[
           Padding(
-            padding: const EdgeInsets.only(right: 20.0),
+              padding: const EdgeInsets.only(right: 20.0),
               child: GestureDetector(
                 onTap: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => const InfoBancos()));                  
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const InfoBancos()));
                 },
-                child: const Icon(
-                  Icons.account_balance_outlined
-                ),
-              )
-          ),
+                child: const Icon(Icons.account_balance_outlined),
+              )),
         ],
       ),
       body: Center(
         child: Container(
-          width: MediaQuery.of(context).size.width,            
+          width: MediaQuery.of(context).size.width,
           height: MediaQuery.of(context).size.height,
           decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [
-                Color.fromARGB(255, 244, 246, 252),
-                Color.fromARGB(255, 222, 224, 227),
-                Color.fromARGB(255, 222, 224, 227)
-              ],
-              begin: Alignment.topCenter, end: Alignment.bottomCenter
-            )
-          ),
+              gradient: LinearGradient(colors: [
+            Color.fromARGB(255, 244, 246, 252),
+            Color.fromARGB(255, 222, 224, 227),
+            Color.fromARGB(255, 222, 224, 227)
+          ], begin: Alignment.topCenter, end: Alignment.bottomCenter)),
           child: Container(
             constraints: const BoxConstraints(maxWidth: 1200),
             child: SingleChildScrollView(
@@ -115,7 +110,12 @@ class _InfoGeneralState extends State<InfoGeneral> {
                   children: [
                     const SizedBox(
                       height: 25,
-                      child: Center(child: Text('PROMOTORES DEL PROYECTO', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold,))),
+                      child: Center(
+                          child: Text('PROMOTORES DEL PROYECTO',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ))),
                     ),
                     const SizedBox(
                       height: 10,
@@ -127,9 +127,16 @@ class _InfoGeneralState extends State<InfoGeneral> {
                         ),
                         Container(
                           constraints: const BoxConstraints(maxWidth: 800),
-                          child: textFieldWidget(
-                            "NOMBRE", Icons.abc_outlined, false, nameIController, true, 'name', (){}
-                          ),
+                          child: textFieldWidget("NOMBRE", Icons.abc_outlined,
+                              false, nameIController, true, 'name', () {}),
+                        ),
+                        const SizedBox(
+                          height: 5,
+                        ),
+                        Container(
+                          constraints: const BoxConstraints(maxWidth: 800),
+                          child: textFieldWidget("NIT", Icons.business_outlined,
+                              false, nitIController, true, 'email', () {}),
                         ),
                         const SizedBox(
                           height: 5,
@@ -137,8 +144,13 @@ class _InfoGeneralState extends State<InfoGeneral> {
                         Container(
                           constraints: const BoxConstraints(maxWidth: 800),
                           child: textFieldWidget(
-                            "NIT", Icons.business_outlined, false, nitIController, true, 'email', (){}
-                          ),
+                              "CORREO ELECTRÓNICO",
+                              Icons.email_outlined,
+                              false,
+                              emailIController,
+                              true,
+                              'email',
+                              () {}),
                         ),
                         const SizedBox(
                           height: 5,
@@ -146,17 +158,13 @@ class _InfoGeneralState extends State<InfoGeneral> {
                         Container(
                           constraints: const BoxConstraints(maxWidth: 800),
                           child: textFieldWidget(
-                            "CORREO ELECTRÓNICO", Icons.email_outlined, false, emailIController, true, 'email', (){}
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 5,
-                        ),
-                        Container(
-                          constraints: const BoxConstraints(maxWidth: 800),
-                          child: textFieldWidget(
-                            "NOMBRE DEL REPRESENTANTE", Icons.person_outline, false, nameRepIController, true, 'name', (){}
-                          ),
+                              "NOMBRE DEL REPRESENTANTE",
+                              Icons.person_outline,
+                              false,
+                              nameRepIController,
+                              true,
+                              'name',
+                              () {}),
                         ),
                         const SizedBox(
                           height: 5,
@@ -168,22 +176,29 @@ class _InfoGeneralState extends State<InfoGeneral> {
                               Expanded(
                                 flex: 10,
                                 child: textFieldWidget(
-                                  "CÉDULA DEL REPRESENTANTE", Icons.badge_outlined, false, idRepIController, true, 'email', (){}
-                                ),
+                                    "CÉDULA DEL REPRESENTANTE",
+                                    Icons.badge_outlined,
+                                    false,
+                                    idRepIController,
+                                    true,
+                                    'email',
+                                    () {}),
                               ),
-                              Expanded(
-                                flex: 1,
-                                child: Container()
-                              ),
+                              Expanded(flex: 1, child: Container()),
                               Expanded(
                                 flex: 10,
                                 child: textFieldWidget(
-                                  "LUGAR DE EXPEDICIÓN", Icons.gps_fixed_outlined, false, lugarIdRepIController, true, 'email', (){}
-                                ),
+                                    "LUGAR DE EXPEDICIÓN",
+                                    Icons.gps_fixed_outlined,
+                                    false,
+                                    lugarIdRepIController,
+                                    true,
+                                    'email',
+                                    () {}),
                               ),
                             ],
                           ),
-                        ),                    
+                        ),
                         const SizedBox(
                           height: 5,
                         ),
@@ -199,9 +214,16 @@ class _InfoGeneralState extends State<InfoGeneral> {
                         ),
                         Container(
                           constraints: const BoxConstraints(maxWidth: 800),
-                          child: textFieldWidget(
-                            "NOMBRE", Icons.abc_outlined, false, nameVController, true, 'name', (){}
-                          ),
+                          child: textFieldWidget("NOMBRE", Icons.abc_outlined,
+                              false, nameVController, true, 'name', () {}),
+                        ),
+                        const SizedBox(
+                          height: 5,
+                        ),
+                        Container(
+                          constraints: const BoxConstraints(maxWidth: 800),
+                          child: textFieldWidget("NIT", Icons.business_outlined,
+                              false, nitVController, true, 'email', () {}),
                         ),
                         const SizedBox(
                           height: 5,
@@ -209,8 +231,13 @@ class _InfoGeneralState extends State<InfoGeneral> {
                         Container(
                           constraints: const BoxConstraints(maxWidth: 800),
                           child: textFieldWidget(
-                            "NIT", Icons.business_outlined, false, nitVController, true, 'email', (){}
-                          ),
+                              "CORREO ELECTRÓNICO",
+                              Icons.email_outlined,
+                              false,
+                              emailVController,
+                              true,
+                              'email',
+                              () {}),
                         ),
                         const SizedBox(
                           height: 5,
@@ -218,17 +245,13 @@ class _InfoGeneralState extends State<InfoGeneral> {
                         Container(
                           constraints: const BoxConstraints(maxWidth: 800),
                           child: textFieldWidget(
-                            "CORREO ELECTRÓNICO", Icons.email_outlined, false, emailVController, true, 'email', (){}
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 5,
-                        ),
-                        Container(
-                          constraints: const BoxConstraints(maxWidth: 800),
-                          child: textFieldWidget(
-                            "NOMBRE DEL REPRESENTANTE", Icons.person_outline, false, nameRepVController, true, 'name', (){}
-                          ),
+                              "NOMBRE DEL REPRESENTANTE",
+                              Icons.person_outline,
+                              false,
+                              nameRepVController,
+                              true,
+                              'name',
+                              () {}),
                         ),
                         const SizedBox(
                           height: 5,
@@ -240,50 +263,59 @@ class _InfoGeneralState extends State<InfoGeneral> {
                               Expanded(
                                 flex: 10,
                                 child: textFieldWidget(
-                                  "CÉDULA DEL REPRESENTANTE", Icons.badge_outlined, false, idRepVController, true, 'email', (){}
-                                ),
+                                    "CÉDULA DEL REPRESENTANTE",
+                                    Icons.badge_outlined,
+                                    false,
+                                    idRepVController,
+                                    true,
+                                    'email',
+                                    () {}),
                               ),
-                              Expanded(
-                                flex: 1,
-                                child: Container()
-                              ),
+                              Expanded(flex: 1, child: Container()),
                               Expanded(
                                 flex: 10,
                                 child: textFieldWidget(
-                                  "LUGAR DE EXPEDICIÓN", Icons.gps_fixed_outlined, false, lugarIdRepVController, true, 'email', (){}
-                                ),
+                                    "LUGAR DE EXPEDICIÓN",
+                                    Icons.gps_fixed_outlined,
+                                    false,
+                                    lugarIdRepVController,
+                                    true,
+                                    'email',
+                                    () {}),
                               ),
                             ],
                           ),
-                        ),                    
+                        ),
                         const SizedBox(
                           height: 25,
                         ),
                       ],
                     ),
                     ElevatedButton(
-                      style: ButtonStyle(fixedSize: MaterialStateProperty.all(const Size(250, 50))),
+                      style: ButtonStyle(
+                          fixedSize:
+                              MaterialStateProperty.all(const Size(250, 50))),
                       onPressed: () async {
-                        if(nameIController.text.isEmpty ||
-                          nitIController.text.isEmpty ||
-                          emailIController.text.isEmpty || 
-                          nameRepIController.text.isEmpty ||
-                          idRepIController.text.isEmpty ||
-                          lugarIdRepIController.text.isEmpty ||
-                          nameRepVController.text.isEmpty ||
-                          nitVController.text.isEmpty ||
-                          emailVController.text.isEmpty ||
-                          nameRepVController.text.isEmpty ||
-                          idRepVController.text.isEmpty ||
-                          lugarIdRepVController.text.isEmpty
-                          ){
+                        if (nameIController.text.isEmpty ||
+                            nitIController.text.isEmpty ||
+                            emailIController.text.isEmpty ||
+                            nameRepIController.text.isEmpty ||
+                            idRepIController.text.isEmpty ||
+                            lugarIdRepIController.text.isEmpty ||
+                            nameRepVController.text.isEmpty ||
+                            nitVController.text.isEmpty ||
+                            emailVController.text.isEmpty ||
+                            nameRepVController.text.isEmpty ||
+                            idRepVController.text.isEmpty ||
+                            lugarIdRepVController.text.isEmpty) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               content: CustomAlertMessage(
-                                errorTitle: "Oops!", 
-                                errorText: "Verifique que todos los campos se hayan llenado correctamente.",
+                                errorTitle: "Oops!",
+                                errorText:
+                                    "Verifique que todos los campos se hayan llenado correctamente.",
                                 stateColor: dangerColor,
-                              ), 
+                              ),
                               behavior: SnackBarBehavior.floating,
                               backgroundColor: Colors.transparent,
                               elevation: 0,
@@ -293,34 +325,35 @@ class _InfoGeneralState extends State<InfoGeneral> {
                           await updateInv(
                             'invertaga',
                             nameIController.text,
-                            nitIController.text, 
+                            nitIController.text,
                             emailIController.text,
                             nameRepIController.text,
                             idRepIController.text,
                             lugarIdRepIController.text,
-                            );
+                          );
                           await updateInv(
                             'vision',
                             nameVController.text,
-                            nitVController.text, 
+                            nitVController.text,
                             emailVController.text,
                             nameRepVController.text,
                             idRepVController.text,
                             lugarIdRepVController.text,
-                            ).then((_) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: CustomAlertMessage(
-                                    errorTitle: "Genial!", 
-                                    errorText: "Datos actualizados de manera satisfactoria.",
-                                    stateColor: successColor,
-                                  ), 
-                                  behavior: SnackBarBehavior.floating,
-                                  backgroundColor: Colors.transparent,
-                                  elevation: 0,
+                          ).then((_) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: CustomAlertMessage(
+                                  errorTitle: "Genial!",
+                                  errorText:
+                                      "Datos actualizados de manera satisfactoria.",
+                                  stateColor: successColor,
                                 ),
-                              );                    
-                              Navigator.pop(context);
+                                behavior: SnackBarBehavior.floating,
+                                backgroundColor: Colors.transparent,
+                                elevation: 0,
+                              ),
+                            );
+                            Navigator.pop(context);
                           });
                         }
                       },
@@ -336,6 +369,6 @@ class _InfoGeneralState extends State<InfoGeneral> {
           ),
         ),
       ),
-    );  
+    );
   }
 }

@@ -9,12 +9,11 @@ class PicturesPage extends StatefulWidget {
 }
 
 class _PicturesPageState extends State<PicturesPage> {
-
   List<dynamic> loteInfo = [];
 
   @override
   void initState() {
-    super.initState();   
+    super.initState();
     loteInfo = widget.loteInfo;
   }
 

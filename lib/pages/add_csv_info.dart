@@ -16,60 +16,56 @@ class CsvReader extends StatefulWidget {
 class _CsvReaderState extends State<CsvReader> {
   List<List<dynamic>> _data = [];
 
-  void _loadCsvLotes() async{
+  void _loadCsvLotes() async {
     final rawData = await rootBundle.loadString("assets/images/lotes_data.csv");
-    List<List<dynamic>> listData =
-    const CsvToListConverter().convert(rawData);
+    List<List<dynamic>> listData = const CsvToListConverter().convert(rawData);
     setState(() {
       _data = listData;
     });
-    for(int i=0; i<_data.length; i++){      
+    for (int i = 0; i < _data.length; i++) {
       addLotes(
-        _data[i][0].toString(), 
-        _data[i][1].toString(), 
-        double.parse(_data[i][2].toString()), 
-        double.parse(_data[i][3].toString()), 
-        double.parse(_data[i][4].toString()), 
-        double.parse(_data[i][5].toString()), 
-        _data[i][6].toString(), 
-        _data[i][7].toString(), 
-        double.parse(_data[i][8].toString()), 
-        double.parse(_data[i][9].toString()),
-        "${_data[i][0].toString()}.png"
-      );
-      
-    }
-  }
-  
-  void _loadCsvCountries() async{
-    final rawData = await rootBundle.loadString("assets/images/world_countries.csv");
-    List<List<dynamic>> listData =
-    const CsvToListConverter().convert(rawData);
-    setState(() {
-      _data = listData;
-    });
-    for(int i=0; i<_data.length; i++){      
-      addCountries(
-        _data[i][0].toString(), 
-      );      
+          _data[i][0].toString(),
+          _data[i][1].toString(),
+          double.parse(_data[i][2].toString()),
+          double.parse(_data[i][3].toString()),
+          double.parse(_data[i][4].toString()),
+          double.parse(_data[i][5].toString()),
+          _data[i][6].toString(),
+          _data[i][7].toString(),
+          double.parse(_data[i][8].toString()),
+          double.parse(_data[i][9].toString()),
+          "${_data[i][0].toString()}.png");
     }
   }
 
-  void _loadCsvColombia() async{
-    final rawData = await rootBundle.loadString("assets/images/col_cities.csv");
-    List<List<dynamic>> listData =
-    const CsvToListConverter().convert(rawData);
+  void _loadCsvCountries() async {
+    final rawData =
+        await rootBundle.loadString("assets/images/world_countries.csv");
+    List<List<dynamic>> listData = const CsvToListConverter().convert(rawData);
     setState(() {
       _data = listData;
     });
-    for(int i=0; i<_data.length; i++){      
-      addCities(
-        _data[i][0].toString(),         
-        _data[i][1].toString(), 
-      );      
+    for (int i = 0; i < _data.length; i++) {
+      addCountries(
+        _data[i][0].toString(),
+      );
     }
   }
-  
+
+  void _loadCsvColombia() async {
+    final rawData = await rootBundle.loadString("assets/images/col_cities.csv");
+    List<List<dynamic>> listData = const CsvToListConverter().convert(rawData);
+    setState(() {
+      _data = listData;
+    });
+    for (int i = 0; i < _data.length; i++) {
+      addCities(
+        _data[i][0].toString(),
+        _data[i][1].toString(),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -91,7 +87,6 @@ class _CsvReaderState extends State<CsvReader> {
               onPressed: _loadCsvLotes,
               child: const Text('Agregar info lotes'),
             ),
-      
           ],
         ),
       ),

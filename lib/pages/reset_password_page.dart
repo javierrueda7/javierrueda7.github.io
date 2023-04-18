@@ -16,58 +16,57 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        backgroundColor: fifthColor,
-        foregroundColor: primaryColor,
-        elevation: 0,        
-        title: const Text(
-          "RECUPERAR CONTRASEÑA", 
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-        )
-      ),
-      body: Container(
-        width: MediaQuery.of(context).size.width,
-        height: MediaQuery.of(context).size.height,
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              Color.fromARGB(255, 244, 246, 252),
-              Color.fromARGB(255, 222, 224, 227),
-              Color.fromARGB(255, 222, 224, 227)
-            ],
-            begin: Alignment.topCenter, end: Alignment.bottomCenter
-          )
-        ),
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(20, 120, 20, 0),
-            child: Column(
-              children: <Widget>[
+        extendBodyBehindAppBar: true,
+        appBar: AppBar(
+            backgroundColor: fifthColor,
+            foregroundColor: primaryColor,
+            elevation: 0,
+            title: const Text(
+              "RECUPERAR CONTRASEÑA",
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            )),
+        body: Container(
+          width: MediaQuery.of(context).size.width,
+          height: MediaQuery.of(context).size.height,
+          decoration: const BoxDecoration(
+              gradient: LinearGradient(colors: [
+            Color.fromARGB(255, 244, 246, 252),
+            Color.fromARGB(255, 222, 224, 227),
+            Color.fromARGB(255, 222, 224, 227)
+          ], begin: Alignment.topCenter, end: Alignment.bottomCenter)),
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(20, 120, 20, 0),
+              child: Column(children: <Widget>[
                 const SizedBox(
                   height: 20,
-                ),              
+                ),
                 Container(
                   constraints: const BoxConstraints(maxWidth: 800),
                   child: textFieldWidget(
-                    "Ingresa tu correo electrónico", Icons.mail_outline, false, _emailTextController, true, 'email', (){}
-                  ),
+                      "Ingresa tu correo electrónico",
+                      Icons.mail_outline,
+                      false,
+                      _emailTextController,
+                      true,
+                      'email',
+                      () {}),
                 ),
                 const SizedBox(
                   height: 20,
                 ),
                 Container(
                   constraints: const BoxConstraints(maxWidth: 800),
-                  child: firebaseButton(context, "RECUPERAR CONTRASEÑA", (){
-                    FirebaseAuth.instance.sendPasswordResetEmail(email: _emailTextController.text).then(
-                      (value) => Navigator.of(context).pop());
+                  child: firebaseButton(context, "RECUPERAR CONTRASEÑA", () {
+                    FirebaseAuth.instance
+                        .sendPasswordResetEmail(
+                            email: _emailTextController.text)
+                        .then((value) => Navigator.of(context).pop());
                   }),
                 )
-              ]
+              ]),
             ),
           ),
-        ),
-      )
-    );
+        ));
   }
 }

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-
 Color primaryColor = const Color.fromARGB(255, 245, 242, 235);
 Color secondaryColor = const Color.fromARGB(255, 208, 175, 71);
 Color thirdColor = const Color.fromARGB(255, 253, 199, 39);
@@ -15,18 +14,17 @@ Color infoColor = const Color.fromARGB(255, 0, 146, 224);
 Color separadoColor = const Color.fromARGB(255, 239, 119, 6);
 Color vendidoColor = const Color.fromARGB(255, 242, 182, 2);
 
-
-Color setColorState (String loteState){
+Color setColorState(String loteState) {
   Color loteColor;
-  if(loteState == "Disponible"){
+  if (loteState == "Disponible") {
     loteColor = infoColor;
-  } else{ 
-    if(loteState == "Lote separado"){
-    loteColor = separadoColor;
-    } else{
-      if(loteState == "null"){
+  } else {
+    if (loteState == "Lote separado") {
+      loteColor = separadoColor;
+    } else {
+      if (loteState == "null") {
         loteColor = Colors.transparent;
-      } else{
+      } else {
         loteColor = vendidoColor;
       }
     }

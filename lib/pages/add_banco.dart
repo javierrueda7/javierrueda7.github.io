@@ -20,68 +20,52 @@ class _AddBancoPageState extends State<AddBancoPage> {
   List<String> tipoCuentaList = ['Corriente', 'Ahorros'];
 
   @override
-  Widget build(BuildContext context) {    
+  Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: false,
-      extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        backgroundColor: fifthColor,
-        foregroundColor: primaryColor,
-        elevation: 0,
-        title: Center(
-          child: Text(
-            "Agregar cuenta bancaria", 
-            style: TextStyle(color: primaryColor,fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-        )
-      ),
-      body: Center(
-        child: Container(
-          width: MediaQuery.of(context).size.width,            
-          height: MediaQuery.of(context).size.height,
-          decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  Color.fromARGB(255, 244, 246, 252),
-                  Color.fromARGB(255, 222, 224, 227),
-                  Color.fromARGB(255, 222, 224, 227)
-                ],
-                begin: Alignment.topCenter, end: Alignment.bottomCenter
-              )
-            ),
+        resizeToAvoidBottomInset: false,
+        extendBodyBehindAppBar: true,
+        appBar: AppBar(
+            backgroundColor: fifthColor,
+            foregroundColor: primaryColor,
+            elevation: 0,
+            title: Center(
+              child: Text(
+                "Agregar cuenta bancaria",
+                style: TextStyle(
+                    color: primaryColor,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold),
+              ),
+            )),
+        body: Center(
           child: Container(
-            constraints: const BoxConstraints(maxWidth: 1200),
-            child: SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(20, 120, 20, 0),
-                child: Column(
-                  children: <Widget>[
+            width: MediaQuery.of(context).size.width,
+            height: MediaQuery.of(context).size.height,
+            decoration: const BoxDecoration(
+                gradient: LinearGradient(colors: [
+              Color.fromARGB(255, 244, 246, 252),
+              Color.fromARGB(255, 222, 224, 227),
+              Color.fromARGB(255, 222, 224, 227)
+            ], begin: Alignment.topCenter, end: Alignment.bottomCenter)),
+            child: Container(
+              constraints: const BoxConstraints(maxWidth: 1200),
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 120, 20, 0),
+                  child: Column(children: <Widget>[
                     const SizedBox(
                       height: 20,
                     ),
                     Container(
                       constraints: const BoxConstraints(maxWidth: 800),
                       child: textFieldWidget(
-                        "Apodo de la cuenta", Icons.abc_outlined, false, nameController, true, 'name', (){}
-                      ),
-                    ),                    
-                    const SizedBox(
-                      height: 20,
-                    ),                     
-                    Container(
-                      constraints: const BoxConstraints(maxWidth: 800),
-                      child: textFieldWidget(
-                        "Banco", Icons.account_balance_outlined, false, bancoController, true, 'name', (){}
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 20,
-                    ),                    
-                    Container(
-                      constraints: const BoxConstraints(maxWidth: 800),
-                      child: easyDropdown(tipoCuentaList, selectedTipoCuenta, (tempTipoCuenta){setState(() {
-                        selectedTipoCuenta = tempTipoCuenta!;
-                      });}),
+                          "Apodo de la cuenta",
+                          Icons.abc_outlined,
+                          false,
+                          nameController,
+                          true,
+                          'name',
+                          () {}),
                     ),
                     const SizedBox(
                       height: 20,
@@ -89,8 +73,25 @@ class _AddBancoPageState extends State<AddBancoPage> {
                     Container(
                       constraints: const BoxConstraints(maxWidth: 800),
                       child: textFieldWidget(
-                        "Número de cuenta", Icons.numbers_outlined, false, nroCuentaController, true, 'number', (){}
-                      ),
+                          "Banco",
+                          Icons.account_balance_outlined,
+                          false,
+                          bancoController,
+                          true,
+                          'name',
+                          () {}),
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    Container(
+                      constraints: const BoxConstraints(maxWidth: 800),
+                      child: easyDropdown(tipoCuentaList, selectedTipoCuenta,
+                          (tempTipoCuenta) {
+                        setState(() {
+                          selectedTipoCuenta = tempTipoCuenta!;
+                        });
+                      }),
                     ),
                     const SizedBox(
                       height: 20,
@@ -98,40 +99,66 @@ class _AddBancoPageState extends State<AddBancoPage> {
                     Container(
                       constraints: const BoxConstraints(maxWidth: 800),
                       child: textFieldWidget(
-                        "Propietario de la cuenta", Icons.person_outline, false, nameRepController, true, 'name', (){}
-                      ),
+                          "Número de cuenta",
+                          Icons.numbers_outlined,
+                          false,
+                          nroCuentaController,
+                          true,
+                          'number',
+                          () {}),
                     ),
                     const SizedBox(
                       height: 20,
-                    ),  
+                    ),
                     Container(
                       constraints: const BoxConstraints(maxWidth: 800),
                       child: textFieldWidget(
-                        "NIT o Documento de identidad", Icons.badge_outlined, false, nitController, true, 'email', (){}
-                      ),
+                          "Propietario de la cuenta",
+                          Icons.person_outline,
+                          false,
+                          nameRepController,
+                          true,
+                          'name',
+                          () {}),
                     ),
                     const SizedBox(
                       height: 20,
-                    ),                    
+                    ),
+                    Container(
+                      constraints: const BoxConstraints(maxWidth: 800),
+                      child: textFieldWidget(
+                          "NIT o Documento de identidad",
+                          Icons.badge_outlined,
+                          false,
+                          nitController,
+                          true,
+                          'email',
+                          () {}),
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
                     Container(
                       constraints: const BoxConstraints(maxWidth: 800),
                       child: ElevatedButton(
-                        style: ButtonStyle(fixedSize: MaterialStateProperty.all(const Size(250, 50))),
-                        onPressed: () async {    
-                          if(nameController.text.isEmpty ||
-                            bancoController.text.isEmpty ||
-                            nitController.text.isEmpty ||
-                            selectedTipoCuenta.isEmpty ||
-                            nroCuentaController.text.isEmpty ||
-                            nameRepController.text.isEmpty
-                            ){
+                        style: ButtonStyle(
+                            fixedSize:
+                                MaterialStateProperty.all(const Size(250, 50))),
+                        onPressed: () async {
+                          if (nameController.text.isEmpty ||
+                              bancoController.text.isEmpty ||
+                              nitController.text.isEmpty ||
+                              selectedTipoCuenta.isEmpty ||
+                              nroCuentaController.text.isEmpty ||
+                              nameRepController.text.isEmpty) {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                 content: CustomAlertMessage(
-                                  errorTitle: "Oops!", 
-                                  errorText: "Verifique que todos los campos se hayan llenado correctamente.",
+                                  errorTitle: "Oops!",
+                                  errorText:
+                                      "Verifique que todos los campos se hayan llenado correctamente.",
                                   stateColor: dangerColor,
-                                ), 
+                                ),
                                 behavior: SnackBarBehavior.floating,
                                 backgroundColor: Colors.transparent,
                                 elevation: 0,
@@ -139,40 +166,39 @@ class _AddBancoPageState extends State<AddBancoPage> {
                             );
                           } else {
                             await addBanco(
-                            nameController.text,
-                            bancoController.text,                              
-                            nroCuentaController.text,
-                            selectedTipoCuenta,                            
-                            nitController.text,
-                            nameRepController.text,                              
+                              nameController.text,
+                              bancoController.text,
+                              nroCuentaController.text,
+                              selectedTipoCuenta,
+                              nitController.text,
+                              nameRepController.text,
                             );
-                              // ignore: use_build_context_synchronously
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: CustomAlertMessage(
-                                    errorTitle: "Genial!", 
-                                    errorText: "Datos almacenados de manera satisfactoria.",
-                                    stateColor: successColor,
-                                  ), 
-                                  behavior: SnackBarBehavior.floating,
-                                  backgroundColor: Colors.transparent,
-                                  elevation: 0,
+                            // ignore: use_build_context_synchronously
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: CustomAlertMessage(
+                                  errorTitle: "Genial!",
+                                  errorText:
+                                      "Datos almacenados de manera satisfactoria.",
+                                  stateColor: successColor,
                                 ),
-                              );                        
-                              // ignore: use_build_context_synchronously
-                              Navigator.pop(context);
-                          }                          
+                                behavior: SnackBarBehavior.floating,
+                                backgroundColor: Colors.transparent,
+                                elevation: 0,
+                              ),
+                            );
+                            // ignore: use_build_context_synchronously
+                            Navigator.pop(context);
+                          }
                         },
                         child: const Text("Guardar"),
                       ),
-                    ),  
-                  ]
+                    ),
+                  ]),
                 ),
               ),
             ),
           ),
-        ),
-      )
-    );
+        ));
   }
 }

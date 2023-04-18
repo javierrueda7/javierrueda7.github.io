@@ -70,7 +70,8 @@ class DefaultFirebaseOptions {
     projectId: 'albaterra-8f0bc',
     databaseURL: 'https://albaterra-8f0bc-default-rtdb.firebaseio.com',
     storageBucket: 'albaterra-8f0bc.appspot.com',
-    iosClientId: '635921344671-bba8iit1850je41sj10p017bfgi0n1gk.apps.googleusercontent.com',
+    iosClientId:
+        '635921344671-bba8iit1850je41sj10p017bfgi0n1gk.apps.googleusercontent.com',
     iosBundleId: 'com.condalbaterra.albaterrapp',
   );
 
@@ -81,7 +82,8 @@ class DefaultFirebaseOptions {
     projectId: 'albaterra-8f0bc',
     databaseURL: 'https://albaterra-8f0bc-default-rtdb.firebaseio.com',
     storageBucket: 'albaterra-8f0bc.appspot.com',
-    iosClientId: '635921344671-bba8iit1850je41sj10p017bfgi0n1gk.apps.googleusercontent.com',
+    iosClientId:
+        '635921344671-bba8iit1850je41sj10p017bfgi0n1gk.apps.googleusercontent.com',
     iosBundleId: 'com.condalbaterra.albaterrapp',
   );
 }

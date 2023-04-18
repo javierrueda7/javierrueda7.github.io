@@ -46,50 +46,47 @@ class PDFGenerator extends StatelessWidget {
   final String observaciones;
   final String quoteStage;
 
+  PDFGenerator(
+      {super.key,
+      required this.sellerID,
+      required this.sellerName,
+      required this.sellerPhone,
+      required this.sellerEmail,
+      required this.quoteId,
+      required this.name,
+      required this.lastname,
+      required this.phone,
+      required this.date,
+      required this.dueDate,
+      required this.lote,
+      required this.area,
+      required this.price,
+      required this.finalPrice,
+      required this.discount,
+      required this.porcCuotaIni,
+      required this.vlrCuotaIni,
+      required this.vlrSeparacion,
+      required this.dueDateSeparacion,
+      required this.saldoSeparacion,
+      required this.dueDateSaldoSeparacion,
+      required this.plazoCI,
+      required this.plazoContado,
+      required this.saldoCI,
+      required this.dueDateSaldoCI,
+      required this.porcPorPagar,
+      required this.vlrPorPagar,
+      required this.paymentMethod,
+      required this.tiempoFinanc,
+      required this.vlrCuota,
+      required this.saldoTotalDate,
+      required this.periodoCuotas,
+      required this.nroCuotas,
+      required this.tem,
+      required this.observaciones,
+      required this.quoteStage});
 
-  
-                                      
-  PDFGenerator({super.key, 
-    required this.sellerID,
-    required this.sellerName,
-    required this.sellerPhone,
-    required this.sellerEmail,
-    required this.quoteId,
-    required this.name,
-    required this.lastname,
-    required this.phone,
-    required this.date,
-    required this.dueDate,
-    required this.lote,
-    required this.area,
-    required this.price,
-    required this.finalPrice,
-    required this.discount,
-    required this.porcCuotaIni,
-    required this.vlrCuotaIni,
-    required this.vlrSeparacion,
-    required this.dueDateSeparacion,
-    required this.saldoSeparacion,
-    required this.dueDateSaldoSeparacion,
-    required this.plazoCI,
-    required this.plazoContado,
-    required this.saldoCI,
-    required this.dueDateSaldoCI,
-    required this.porcPorPagar,
-    required this.vlrPorPagar,
-    required this.paymentMethod,
-    required this.tiempoFinanc,
-    required this.vlrCuota,
-    required this.saldoTotalDate,
-    required this.periodoCuotas,
-    required this.nroCuotas,
-    required this.tem,
-    required this.observaciones,
-    required this.quoteStage  
-  });
-
-  void initState() {      
-    initCont();   
+  void initState() {
+    initCont();
   }
 
   Map<String, dynamic> infoCont = {};
@@ -98,8 +95,10 @@ class PDFGenerator extends StatelessWidget {
   String webAlbaterra = '';
 
   Future<Map<String, dynamic>> getInfoContacto() async {
-    DocumentSnapshot<Map<String, dynamic>> infoContacto = await db.collection('infoproyecto').doc('infoGeneral').get();
-    final Map<String, dynamic> data = infoContacto.data() as Map<String, dynamic>;
+    DocumentSnapshot<Map<String, dynamic>> infoContacto =
+        await db.collection('infoproyecto').doc('infoGeneral').get();
+    final Map<String, dynamic> data =
+        infoContacto.data() as Map<String, dynamic>;
     final contactoInfo = {
       "email": data['email'],
       "phone": data['phone'],
@@ -108,7 +107,7 @@ class PDFGenerator extends StatelessWidget {
     return contactoInfo;
   }
 
-  Future<void> initCont() async {    
+  Future<void> initCont() async {
     infoCont = await getInfoContacto();
     emailAlbaterra = infoCont['email'];
     phoneAlbaterra = infoCont['phone'];
@@ -125,7 +124,11 @@ class PDFGenerator extends StatelessWidget {
         foregroundColor: primaryColor,
         elevation: 0,
         centerTitle: true,
-        title: Text('Vista previa cotización', style: TextStyle(color: primaryColor,fontSize: 18, fontWeight: FontWeight.bold),),
+        title: Text(
+          'Vista previa cotización',
+          style: TextStyle(
+              color: primaryColor, fontSize: 18, fontWeight: FontWeight.bold),
+        ),
       ),
       body: PdfPreview(
         build: (format) => generatePdf(context),
@@ -136,17 +139,15 @@ class PDFGenerator extends StatelessWidget {
   }
 
   Future<Uint8List> generatePdf(BuildContext context) async {
-
     final ByteData photo1 = await rootBundle.load('assets/images/logo.png');
     final Uint8List byteList1 = photo1.buffer.asUint8List();
-    final ByteData photo2 = await rootBundle.load('assets/images/invertaga.png');
+    final ByteData photo2 =
+        await rootBundle.load('assets/images/invertaga.png');
     final Uint8List byteList2 = photo2.buffer.asUint8List();
     final ByteData photo3 = await rootBundle.load('assets/images/vision.png');
     final Uint8List byteList3 = photo3.buffer.asUint8List();
 
-
     final pdf = pw.Document();
-    
 
     pdf.addPage(
       pw.Page(
@@ -164,28 +165,43 @@ class PDFGenerator extends StatelessWidget {
                       mainAxisAlignment: pw.MainAxisAlignment.center,
                       crossAxisAlignment: pw.CrossAxisAlignment.start,
                       children: [
-                        pw.Image(pw.MemoryImage(byteList1,), height: 60),
-                        pw.Text('COTIZACIÓN: $quoteId', style: pw.TextStyle(fontSize: 10, fontWeight: pw.FontWeight.bold)),
-                        pw.Text(quoteStage, style: const pw.TextStyle(fontSize: 10)),
+                        pw.Image(
+                            pw.MemoryImage(
+                              byteList1,
+                            ),
+                            height: 60),
+                        pw.Text('COTIZACIÓN: $quoteId',
+                            style: pw.TextStyle(
+                                fontSize: 10, fontWeight: pw.FontWeight.bold)),
+                        pw.Text(quoteStage,
+                            style: const pw.TextStyle(fontSize: 10)),
                       ],
                     ),
                     pw.Column(
                       mainAxisAlignment: pw.MainAxisAlignment.center,
                       crossAxisAlignment: pw.CrossAxisAlignment.end,
                       children: [
-                        pw.Image(pw.MemoryImage(byteList2,), height: 20),
-                        pw.Image(pw.MemoryImage(byteList3,), height: 30),
+                        pw.Image(
+                            pw.MemoryImage(
+                              byteList2,
+                            ),
+                            height: 20),
+                        pw.Image(
+                            pw.MemoryImage(
+                              byteList3,
+                            ),
+                            height: 30),
                         pw.SizedBox(height: 10),
-                        pw.Row(
-                          children: [                            
-                            pw.Text(phoneAlbaterra, style: const pw.TextStyle(fontSize: 10)),
-                            pw.Text(' | '),
-                            pw.Text(emailAlbaterra, style: const pw.TextStyle(fontSize: 10)),
-                            pw.Text(' | '),
-                            pw.Text(webAlbaterra, style: const pw.TextStyle(fontSize: 10)),
-                          ]
-                          
-                          )
+                        pw.Row(children: [
+                          pw.Text(phoneAlbaterra,
+                              style: const pw.TextStyle(fontSize: 10)),
+                          pw.Text(' | '),
+                          pw.Text(emailAlbaterra,
+                              style: const pw.TextStyle(fontSize: 10)),
+                          pw.Text(' | '),
+                          pw.Text(webAlbaterra,
+                              style: const pw.TextStyle(fontSize: 10)),
+                        ])
                       ],
                     ),
                   ],
@@ -195,25 +211,29 @@ class PDFGenerator extends StatelessWidget {
                   children: [
                     pw.Expanded(
                       flex: 1,
-                      child: pw.Text('Fecha de cotización: $date', textAlign: pw.TextAlign.left),
+                      child: pw.Text('Fecha de cotización: $date',
+                          textAlign: pw.TextAlign.left),
                     ),
                     pw.Expanded(
                       flex: 1,
-                      child: pw.Text('Valido hasta: $dueDate', textAlign: pw.TextAlign.right),
+                      child: pw.Text('Valido hasta: $dueDate',
+                          textAlign: pw.TextAlign.right),
                     ),
                   ],
                 ),
                 pw.Divider(thickness: 1),
-                pw.SizedBox(height: 20),                
+                pw.SizedBox(height: 20),
                 pw.Row(
                   children: [
                     pw.Expanded(
                       flex: 1,
-                      child: pw.Text('Nombre: $name $lastname', textAlign: pw.TextAlign.left),
+                      child: pw.Text('Nombre: $name $lastname',
+                          textAlign: pw.TextAlign.left),
                     ),
                     pw.Expanded(
                       flex: 1,
-                      child: pw.Text('Teléfono: $phone', textAlign: pw.TextAlign.left),
+                      child: pw.Text('Teléfono: $phone',
+                          textAlign: pw.TextAlign.left),
                     ),
                   ],
                 ),
@@ -225,7 +245,8 @@ class PDFGenerator extends StatelessWidget {
                       child: pw.Column(
                         crossAxisAlignment: pw.CrossAxisAlignment.start,
                         children: [
-                          pw.Text('Inmueble Nº: $lote', textAlign: pw.TextAlign.left),
+                          pw.Text('Inmueble Nº: $lote',
+                              textAlign: pw.TextAlign.left),
                           pw.SizedBox(height: 5),
                           pw.Text('Área: $area', textAlign: pw.TextAlign.left),
                         ],
@@ -236,14 +257,20 @@ class PDFGenerator extends StatelessWidget {
                       child: pw.Column(
                         crossAxisAlignment: pw.CrossAxisAlignment.start,
                         children: [
-                          pw.Text('Valor inicial: $price', textAlign: pw.TextAlign.left),
+                          pw.Text('Valor inicial: $price',
+                              textAlign: pw.TextAlign.left),
                           pw.SizedBox(height: 5),
                           pw.RichText(
                             textAlign: pw.TextAlign.left,
                             text: pw.TextSpan(
                               children: <pw.TextSpan>[
                                 pw.TextSpan(text: 'Valor final: $finalPrice '),
-                                pw.TextSpan(text: '($discount dcto)', style: pw.TextStyle(fontWeight: pw.FontWeight.bold,),),
+                                pw.TextSpan(
+                                  text: '($discount dcto)',
+                                  style: pw.TextStyle(
+                                    fontWeight: pw.FontWeight.bold,
+                                  ),
+                                ),
                               ],
                             ),
                           ),
@@ -252,19 +279,24 @@ class PDFGenerator extends StatelessWidget {
                     ),
                   ],
                 ),
-                pw.SizedBox(height: 20),                
+                pw.SizedBox(height: 20),
                 metodoPago(paymentMethod, context),
                 pw.SizedBox(height: 20),
                 pw.Center(
                   child: pw.Column(
-                    crossAxisAlignment: pw.CrossAxisAlignment.center,
-                    children: [
-                      pw.Text('OBSERVACIONES', textAlign: pw.TextAlign.center, style: pw.TextStyle(fontWeight: pw.FontWeight.bold,),),
-                            pw.SizedBox(height: 10),
-                            pw.Text(observaciones, textAlign: pw.TextAlign.left),
-                    ]
-                  ),
-                ),                
+                      crossAxisAlignment: pw.CrossAxisAlignment.center,
+                      children: [
+                        pw.Text(
+                          'OBSERVACIONES',
+                          textAlign: pw.TextAlign.center,
+                          style: pw.TextStyle(
+                            fontWeight: pw.FontWeight.bold,
+                          ),
+                        ),
+                        pw.SizedBox(height: 10),
+                        pw.Text(observaciones, textAlign: pw.TextAlign.left),
+                      ]),
+                ),
                 pw.SizedBox(height: 20),
                 pw.Row(
                   children: [
@@ -273,7 +305,13 @@ class PDFGenerator extends StatelessWidget {
                       child: pw.Column(
                         crossAxisAlignment: pw.CrossAxisAlignment.center,
                         children: [
-                          pw.Text('Asesor comercial', textAlign: pw.TextAlign.left, style: pw.TextStyle(fontWeight: pw.FontWeight.bold,),),
+                          pw.Text(
+                            'Asesor comercial',
+                            textAlign: pw.TextAlign.left,
+                            style: pw.TextStyle(
+                              fontWeight: pw.FontWeight.bold,
+                            ),
+                          ),
                           pw.SizedBox(height: 5),
                           pw.Text(sellerName, textAlign: pw.TextAlign.left),
                         ],
@@ -284,7 +322,13 @@ class PDFGenerator extends StatelessWidget {
                       child: pw.Column(
                         crossAxisAlignment: pw.CrossAxisAlignment.center,
                         children: [
-                          pw.Text('Teléfono', textAlign: pw.TextAlign.left, style: pw.TextStyle(fontWeight: pw.FontWeight.bold,),),
+                          pw.Text(
+                            'Teléfono',
+                            textAlign: pw.TextAlign.left,
+                            style: pw.TextStyle(
+                              fontWeight: pw.FontWeight.bold,
+                            ),
+                          ),
                           pw.SizedBox(height: 5),
                           pw.Text(sellerPhone, textAlign: pw.TextAlign.center),
                         ],
@@ -295,14 +339,20 @@ class PDFGenerator extends StatelessWidget {
                       child: pw.Column(
                         crossAxisAlignment: pw.CrossAxisAlignment.center,
                         children: [
-                          pw.Text('Correo electrónico', textAlign: pw.TextAlign.left, style: pw.TextStyle(fontWeight: pw.FontWeight.bold,),),
+                          pw.Text(
+                            'Correo electrónico',
+                            textAlign: pw.TextAlign.left,
+                            style: pw.TextStyle(
+                              fontWeight: pw.FontWeight.bold,
+                            ),
+                          ),
                           pw.SizedBox(height: 5),
                           pw.Text(sellerEmail, textAlign: pw.TextAlign.center),
                         ],
                       ),
                     ),
-                  ],  
-                ),                          
+                  ],
+                ),
               ],
             ),
           );
@@ -315,76 +365,119 @@ class PDFGenerator extends StatelessWidget {
     return bytes;
   }
 
-  pw.Widget metodoPago(String evaluarMetodo, context){
-    if(evaluarMetodo == 'Pago de contado'){
-      return pw.Column(
-        children: [
-          pw.Text('FORMA DE PAGO', textAlign: pw.TextAlign.center, style: pw.TextStyle(fontWeight: pw.FontWeight.bold, fontSize: 16),),
-          pw.SizedBox(height: 10),
-          pw.Text('PAGO DE CONTADO', textAlign: pw.TextAlign.center, style: pw.TextStyle(fontWeight: pw.FontWeight.bold,),),
-          pw.SizedBox(height: 10),
-          pw.Row(
-            children: [
-              pw.Expanded(
-                flex: 1,
-                child: pw.Column(
-                  crossAxisAlignment: pw.CrossAxisAlignment.start,
-                  children: [
-                    pw.SizedBox(height: 15),
-                    pw.Text('Separación', textAlign: pw.TextAlign.left),
-                    pw.SizedBox(height: 5),
-                    pw.Text('Saldo separación', textAlign: pw.TextAlign.left),
-                    pw.SizedBox(height: 5),
-                    pw.Text('Saldo total ($plazoContado)', textAlign: pw.TextAlign.left),
-                    pw.SizedBox(height: 20),
-                    pw.Text('Total', textAlign: pw.TextAlign.left, style: pw.TextStyle(fontWeight: pw.FontWeight.bold,),),
-                  ],
-                ),
-              ),
-              pw.Expanded(
-                flex: 1,
-                child: pw.Column(
-                  crossAxisAlignment: pw.CrossAxisAlignment.center,
-                  children: [
-                    pw.Text('Valor', textAlign: pw.TextAlign.left, style: pw.TextStyle(fontWeight: pw.FontWeight.bold,),),
-                    pw.SizedBox(height: 5),
-                    pw.Text(vlrSeparacion, textAlign: pw.TextAlign.center),
-                    pw.SizedBox(height: 5),
-                    pw.Text(saldoSeparacion, textAlign: pw.TextAlign.center),
-                    pw.SizedBox(height: 5),
-                    pw.Text(vlrPorPagar, textAlign: pw.TextAlign.center),
-                    pw.Divider(thickness: 1),
-                    pw.Text(finalPrice, textAlign: pw.TextAlign.left, style: pw.TextStyle(fontWeight: pw.FontWeight.bold,),),
-                  ],
-                ),
-              ),
-              pw.Expanded(
-                flex: 1,
-                child: pw.Column(
-                  crossAxisAlignment: pw.CrossAxisAlignment.center,
-                  children: [
-                    pw.Text('Fecha límite de pago', textAlign: pw.TextAlign.left, style: pw.TextStyle(fontWeight: pw.FontWeight.bold,),),
-                    pw.SizedBox(height: 5),
-                    pw.Text(dueDateSeparacion, textAlign: pw.TextAlign.center),
-                    pw.SizedBox(height: 5),
-                    pw.Text(dueDateSaldoSeparacion, textAlign: pw.TextAlign.center),
-                    pw.SizedBox(height: 5),
-                    pw.Text(saldoTotalDate, textAlign: pw.TextAlign.center),
-                    pw.SizedBox(height: 30),
-                  ],
-                ),
-              ),
-            ],
+  pw.Widget metodoPago(String evaluarMetodo, context) {
+    if (evaluarMetodo == 'Pago de contado') {
+      return pw.Column(children: [
+        pw.Text(
+          'FORMA DE PAGO',
+          textAlign: pw.TextAlign.center,
+          style: pw.TextStyle(fontWeight: pw.FontWeight.bold, fontSize: 16),
+        ),
+        pw.SizedBox(height: 10),
+        pw.Text(
+          'PAGO DE CONTADO',
+          textAlign: pw.TextAlign.center,
+          style: pw.TextStyle(
+            fontWeight: pw.FontWeight.bold,
           ),
-        ]
-      );   
-    } else{
+        ),
+        pw.SizedBox(height: 10),
+        pw.Row(
+          children: [
+            pw.Expanded(
+              flex: 1,
+              child: pw.Column(
+                crossAxisAlignment: pw.CrossAxisAlignment.start,
+                children: [
+                  pw.SizedBox(height: 15),
+                  pw.Text('Separación', textAlign: pw.TextAlign.left),
+                  pw.SizedBox(height: 5),
+                  pw.Text('Saldo separación', textAlign: pw.TextAlign.left),
+                  pw.SizedBox(height: 5),
+                  pw.Text('Saldo total ($plazoContado)',
+                      textAlign: pw.TextAlign.left),
+                  pw.SizedBox(height: 20),
+                  pw.Text(
+                    'Total',
+                    textAlign: pw.TextAlign.left,
+                    style: pw.TextStyle(
+                      fontWeight: pw.FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            pw.Expanded(
+              flex: 1,
+              child: pw.Column(
+                crossAxisAlignment: pw.CrossAxisAlignment.center,
+                children: [
+                  pw.Text(
+                    'Valor',
+                    textAlign: pw.TextAlign.left,
+                    style: pw.TextStyle(
+                      fontWeight: pw.FontWeight.bold,
+                    ),
+                  ),
+                  pw.SizedBox(height: 5),
+                  pw.Text(vlrSeparacion, textAlign: pw.TextAlign.center),
+                  pw.SizedBox(height: 5),
+                  pw.Text(saldoSeparacion, textAlign: pw.TextAlign.center),
+                  pw.SizedBox(height: 5),
+                  pw.Text(vlrPorPagar, textAlign: pw.TextAlign.center),
+                  pw.Divider(thickness: 1),
+                  pw.Text(
+                    finalPrice,
+                    textAlign: pw.TextAlign.left,
+                    style: pw.TextStyle(
+                      fontWeight: pw.FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            pw.Expanded(
+              flex: 1,
+              child: pw.Column(
+                crossAxisAlignment: pw.CrossAxisAlignment.center,
+                children: [
+                  pw.Text(
+                    'Fecha límite de pago',
+                    textAlign: pw.TextAlign.left,
+                    style: pw.TextStyle(
+                      fontWeight: pw.FontWeight.bold,
+                    ),
+                  ),
+                  pw.SizedBox(height: 5),
+                  pw.Text(dueDateSeparacion, textAlign: pw.TextAlign.center),
+                  pw.SizedBox(height: 5),
+                  pw.Text(dueDateSaldoSeparacion,
+                      textAlign: pw.TextAlign.center),
+                  pw.SizedBox(height: 5),
+                  pw.Text(saldoTotalDate, textAlign: pw.TextAlign.center),
+                  pw.SizedBox(height: 30),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ]);
+    } else {
       return pw.Column(
         children: [
-
-          pw.Text('FORMA DE PAGO', textAlign: pw.TextAlign.center, style: pw.TextStyle(fontWeight: pw.FontWeight.bold, fontSize: 16),),
+          pw.Text(
+            'FORMA DE PAGO',
+            textAlign: pw.TextAlign.center,
+            style: pw.TextStyle(fontWeight: pw.FontWeight.bold, fontSize: 16),
+          ),
           pw.SizedBox(height: 10),
-          pw.Text('FINANCIACIÓN DIRECTA', textAlign: pw.TextAlign.center, style: pw.TextStyle(fontWeight: pw.FontWeight.bold,),),
+          pw.Text(
+            'FINANCIACIÓN DIRECTA',
+            textAlign: pw.TextAlign.center,
+            style: pw.TextStyle(
+              fontWeight: pw.FontWeight.bold,
+            ),
+          ),
           pw.SizedBox(height: 10),
           pw.Row(
             children: [
@@ -393,15 +486,28 @@ class PDFGenerator extends StatelessWidget {
                 child: pw.Column(
                   crossAxisAlignment: pw.CrossAxisAlignment.start,
                   children: [
-                    pw.Text('Cuota inicial ($porcCuotaIni)', textAlign: pw.TextAlign.left, style: pw.TextStyle(fontWeight: pw.FontWeight.bold,),),
+                    pw.Text(
+                      'Cuota inicial ($porcCuotaIni)',
+                      textAlign: pw.TextAlign.left,
+                      style: pw.TextStyle(
+                        fontWeight: pw.FontWeight.bold,
+                      ),
+                    ),
                     pw.SizedBox(height: 5),
                     pw.Text('Separación', textAlign: pw.TextAlign.left),
                     pw.SizedBox(height: 5),
                     pw.Text('Saldo separación', textAlign: pw.TextAlign.left),
                     pw.SizedBox(height: 5),
-                    pw.Text('Saldo cuota inicial ($plazoCI)', textAlign: pw.TextAlign.left),
+                    pw.Text('Saldo cuota inicial ($plazoCI)',
+                        textAlign: pw.TextAlign.left),
                     pw.SizedBox(height: 15),
-                    pw.Text('Total', textAlign: pw.TextAlign.left, style: pw.TextStyle(fontWeight: pw.FontWeight.bold,),),
+                    pw.Text(
+                      'Total',
+                      textAlign: pw.TextAlign.left,
+                      style: pw.TextStyle(
+                        fontWeight: pw.FontWeight.bold,
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -410,7 +516,13 @@ class PDFGenerator extends StatelessWidget {
                 child: pw.Column(
                   crossAxisAlignment: pw.CrossAxisAlignment.center,
                   children: [
-                    pw.Text('Valor', textAlign: pw.TextAlign.left, style: pw.TextStyle(fontWeight: pw.FontWeight.bold,),),
+                    pw.Text(
+                      'Valor',
+                      textAlign: pw.TextAlign.left,
+                      style: pw.TextStyle(
+                        fontWeight: pw.FontWeight.bold,
+                      ),
+                    ),
                     pw.SizedBox(height: 5),
                     pw.Text(vlrSeparacion, textAlign: pw.TextAlign.center),
                     pw.SizedBox(height: 5),
@@ -418,7 +530,13 @@ class PDFGenerator extends StatelessWidget {
                     pw.SizedBox(height: 5),
                     pw.Text(saldoCI, textAlign: pw.TextAlign.center),
                     pw.Divider(thickness: 1),
-                    pw.Text(vlrCuotaIni, textAlign: pw.TextAlign.left, style: pw.TextStyle(fontWeight: pw.FontWeight.bold,),),
+                    pw.Text(
+                      vlrCuotaIni,
+                      textAlign: pw.TextAlign.left,
+                      style: pw.TextStyle(
+                        fontWeight: pw.FontWeight.bold,
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -427,11 +545,18 @@ class PDFGenerator extends StatelessWidget {
                 child: pw.Column(
                   crossAxisAlignment: pw.CrossAxisAlignment.center,
                   children: [
-                    pw.Text('Fecha límite de pago', textAlign: pw.TextAlign.left, style: pw.TextStyle(fontWeight: pw.FontWeight.bold,),),
+                    pw.Text(
+                      'Fecha límite de pago',
+                      textAlign: pw.TextAlign.left,
+                      style: pw.TextStyle(
+                        fontWeight: pw.FontWeight.bold,
+                      ),
+                    ),
                     pw.SizedBox(height: 5),
                     pw.Text(dueDateSeparacion, textAlign: pw.TextAlign.center),
                     pw.SizedBox(height: 5),
-                    pw.Text(dueDateSaldoSeparacion, textAlign: pw.TextAlign.center),
+                    pw.Text(dueDateSaldoSeparacion,
+                        textAlign: pw.TextAlign.center),
                     pw.SizedBox(height: 5),
                     pw.Text(dueDateSaldoCI, textAlign: pw.TextAlign.center),
                     pw.SizedBox(height: 30),
@@ -448,13 +573,27 @@ class PDFGenerator extends StatelessWidget {
                 child: pw.Column(
                   crossAxisAlignment: pw.CrossAxisAlignment.start,
                   children: [
-                    pw.Text('Saldo financiado ($porcPorPagar)', textAlign: pw.TextAlign.left, style: pw.TextStyle(fontWeight: pw.FontWeight.bold,),),
+                    pw.Text(
+                      'Saldo financiado ($porcPorPagar)',
+                      textAlign: pw.TextAlign.left,
+                      style: pw.TextStyle(
+                        fontWeight: pw.FontWeight.bold,
+                      ),
+                    ),
                     pw.SizedBox(height: 5),
-                    pw.Text('$nroCuotas cuota(s) ${periodoCuotas.toLowerCase()}(es)', textAlign: pw.TextAlign.left),
+                    pw.Text(
+                        '$nroCuotas cuota(s) ${periodoCuotas.toLowerCase()}(es)',
+                        textAlign: pw.TextAlign.left),
                     pw.SizedBox(height: 5),
                     pw.Text('Intereses $tem', textAlign: pw.TextAlign.left),
                     pw.SizedBox(height: 15),
-                    pw.Text('Total', textAlign: pw.TextAlign.left, style: pw.TextStyle(fontWeight: pw.FontWeight.bold,),),
+                    pw.Text(
+                      'Total',
+                      textAlign: pw.TextAlign.left,
+                      style: pw.TextStyle(
+                        fontWeight: pw.FontWeight.bold,
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -463,13 +602,25 @@ class PDFGenerator extends StatelessWidget {
                 child: pw.Column(
                   crossAxisAlignment: pw.CrossAxisAlignment.center,
                   children: [
-                    pw.Text('Valor', textAlign: pw.TextAlign.left, style: pw.TextStyle(fontWeight: pw.FontWeight.bold,),),
+                    pw.Text(
+                      'Valor',
+                      textAlign: pw.TextAlign.left,
+                      style: pw.TextStyle(
+                        fontWeight: pw.FontWeight.bold,
+                      ),
+                    ),
                     pw.SizedBox(height: 5),
                     pw.Text(vlrCuota, textAlign: pw.TextAlign.center),
                     pw.SizedBox(height: 5),
                     pw.Text('\$0', textAlign: pw.TextAlign.center),
                     pw.Divider(thickness: 1),
-                    pw.Text(vlrPorPagar, textAlign: pw.TextAlign.center, style: pw.TextStyle(fontWeight: pw.FontWeight.bold,),),
+                    pw.Text(
+                      vlrPorPagar,
+                      textAlign: pw.TextAlign.center,
+                      style: pw.TextStyle(
+                        fontWeight: pw.FontWeight.bold,
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -478,7 +629,13 @@ class PDFGenerator extends StatelessWidget {
                 child: pw.Column(
                   crossAxisAlignment: pw.CrossAxisAlignment.center,
                   children: [
-                    pw.Text('A partir de', textAlign: pw.TextAlign.left, style: pw.TextStyle(fontWeight: pw.FontWeight.bold,),),
+                    pw.Text(
+                      'A partir de',
+                      textAlign: pw.TextAlign.left,
+                      style: pw.TextStyle(
+                        fontWeight: pw.FontWeight.bold,
+                      ),
+                    ),
                     pw.SizedBox(height: 5),
                     pw.Text(saldoTotalDate, textAlign: pw.TextAlign.center),
                     pw.SizedBox(height: 50),
