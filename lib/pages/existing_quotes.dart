@@ -27,6 +27,8 @@ class ExistingQuotes extends StatefulWidget {
 
 class _ExistingQuotesState extends State<ExistingQuotes> {
   int _selectedIndex = 0;
+  // ignore: prefer_typing_uninitialized_variables
+  var timer;
   
   @override
   void initState() {
@@ -34,7 +36,11 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
     loteInfo = widget.loteInfo;
     needAll = widget.needAll;
     loggedEmail = widget.loggedEmail;
-    loggedManager();    
+    loggedManager();
+    getSellerId(loggedEmail);
+    timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      setState(() {});
+    });
   }
 
 
@@ -56,6 +62,16 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
     stateLote = selectedLote.get('loteState') as String;
   }
 
+  Future<void> getSellerId(String emailSeller) async {    
+    final querySnapshot = await db.collection('sellers').where('emailSeller', isEqualTo: emailSeller).get();
+    if (querySnapshot.docs.isNotEmpty) {
+      final selectedSeller = querySnapshot.docs.first;
+      identifiedSeller = selectedSeller['roleSeller'] == 'Asesor comercial' ? selectedSeller.id : 'All';
+    } else {
+      identifiedSeller = 'All';
+    }
+  }
+
   Future<String> getGerenteEmail() async {
     final gerenteEmail = await db
         .collection('infoproyecto')
@@ -71,9 +87,11 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
   String loggedEmail = '';
   bool managerLogged = false;
   String stateLote = '';
+  String identifiedSeller = '';
 
   @override
   Widget build(BuildContext context) {
+    print(identifiedSeller);
     return Scaffold(
       extendBodyBehindAppBar: false,
       appBar: AppBar(
@@ -87,22 +105,25 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
               color: primaryColor, fontSize: 18, fontWeight: FontWeight.bold),
         ),
         actions: <Widget>[
-          Padding(
-              padding: const EdgeInsets.only(right: 20.0),
-              child: GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => ArchivedQuotes(
-                                loteInfo: loteInfo,
-                                needAll: true,
-                                loggedEmail: loggedEmail,
-                              )));
-                  setState(() {});
-                },
-                child: const Icon(Icons.archive_outlined),
-              )),
+          Visibility(
+            visible: _selectedIndex == 0,
+            child: Padding(
+                padding: const EdgeInsets.only(right: 20.0),
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => ArchivedQuotes(
+                                  loteInfo: loteInfo,
+                                  needAll: true,
+                                  loggedEmail: loggedEmail,
+                                )));
+                    setState(() {});
+                  },
+                  child: const Icon(Icons.archive_outlined),
+                )),
+          ),
         ],
       ),
       body: Center(
@@ -162,7 +183,7 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
     return Container(
       constraints: const BoxConstraints(maxWidth: 1200),
       child: FutureBuilder(
-          future: getQuotes(loteInfo[1], needAll, true),
+          future: getQuotes(loteInfo[1], needAll, true, identifiedSeller),
           builder: ((context, snapshot) {
             if (snapshot.hasData) {
               return ListView.builder(
@@ -917,7 +938,7 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
     return Container(
       constraints: const BoxConstraints(maxWidth: 1200),
       child: FutureBuilder(
-          future: getOrdenSep(loteInfo[2], needAll),
+          future: getOrdenSep(loteInfo[2], needAll, identifiedSeller),
           builder: ((context, snapshot) {
             if (snapshot.hasData) {
               return ListView.builder(

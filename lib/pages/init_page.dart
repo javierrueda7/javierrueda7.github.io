@@ -133,101 +133,99 @@ class _InitPageState extends State<InitPage> {
               fontWeight: FontWeight.bold,
             ),
           ),
-          leading: Visibility(
-            child: Padding(
-              padding: const EdgeInsets.only(left: 20.0),
-              child: PopupMenuButton<String>(
-                itemBuilder: (context) => [
-                  PopupMenuItem(
-                    value: 'Opción 1',
-                    enabled: userLoggedIn,
-                    child: const Text('Cotizaciones'),
-                  ),
-                  PopupMenuItem(
-                    value: 'Opción 2',
-                    enabled: userLoggedIn,
-                    child: const Text('Lotes'),
-                  ),
-                  PopupMenuItem(
-                    value: 'Opción 3',
-                    enabled: userLoggedIn,
-                    child: const Text('Usuarios'),
-                  ),
-                  PopupMenuItem(
-                    value: 'Opción 4',
-                    enabled: userLoggedIn,
-                    child: const Text('Información general'),
-                  ),
-                  PopupMenuItem(
-                    value: 'Opción 5',
-                    enabled: userLoggedIn,
-                    child: const Text('Separaciones'),
-                  ),
-                  PopupMenuItem(
-                    value: 'Opción 6',
-                    enabled: userLoggedIn,
-                    child: const Text('Pagos'),
-                  ),
-                ],
-                onSelected: (value) {
-                  if (value == 'Opción 1') {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => ExistingQuotes(
-                                  loteInfo: currentLote,
-                                  needAll: true,
-                                  loggedEmail: loggedEmail,
-                                )));
-                    setState(() {});
-                  }
-                  if (value == 'Opción 2') {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) =>
-                                LotesPage(allAccess: userLoggedIn)));
-                    setState(() {});
-                  }
-                  if (value == 'Opción 3') {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) =>
-                                SellersPage(allAccess: userLoggedIn)));
-                    setState(() {});
-                  }
-                  if (value == 'Opción 4') {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const InfoGeneral()));
-                    setState(() {});
-                  } 
-                  if (value == 'Opción 5') {
-                    /*Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => ExistingQuotes(
-                                  loteInfo: currentLote,
-                                  needAll: true,
-                                  loggedEmail: loggedEmail,
-                                )));*/
-                    setState(() {});
-                  }
-                  if (value == 'Opción 6') {
-                    /*Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) =>
-                                LotesPage(allAccess: userLoggedIn)));*/
-                    setState(() {});
-                  }
-                  else {
-                    setState(() {});
-                  }
-                },
-              ),
+          leading: Padding(
+            padding: const EdgeInsets.only(left: 20.0),
+            child: PopupMenuButton<String>(
+              itemBuilder: (context) => [
+                const PopupMenuItem(
+                  value: 'Opción 1',
+                  enabled: true,
+                  child: Text('Cotizaciones'),
+                ),
+                PopupMenuItem(
+                  value: 'Opción 2',
+                  enabled: userLoggedIn,
+                  child: const Text('Lotes'),
+                ),
+                PopupMenuItem(
+                  value: 'Opción 3',
+                  enabled: userLoggedIn,
+                  child: const Text('Usuarios'),
+                ),
+                PopupMenuItem(
+                  value: 'Opción 4',
+                  enabled: userLoggedIn,
+                  child: const Text('Información general'),
+                ),
+                PopupMenuItem(
+                  value: 'Opción 5',
+                  enabled: userLoggedIn,
+                  child: const Text('Separaciones'),
+                ),
+                PopupMenuItem(
+                  value: 'Opción 6',
+                  enabled: userLoggedIn,
+                  child: const Text('Pagos'),
+                ),
+              ],
+              onSelected: (value) {
+                if (value == 'Opción 1') {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => ExistingQuotes(
+                                loteInfo: currentLote,
+                                needAll: true,
+                                loggedEmail: loggedEmail,
+                              )));
+                  setState(() {});
+                }
+                if (value == 'Opción 2') {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              LotesPage(allAccess: userLoggedIn)));
+                  setState(() {});
+                }
+                if (value == 'Opción 3') {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              SellersPage(allAccess: userLoggedIn)));
+                  setState(() {});
+                }
+                if (value == 'Opción 4') {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const InfoGeneral()));
+                  setState(() {});
+                } 
+                if (value == 'Opción 5') {
+                  /*Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => ExistingQuotes(
+                                loteInfo: currentLote,
+                                needAll: true,
+                                loggedEmail: loggedEmail,
+                              )));*/
+                  setState(() {});
+                }
+                if (value == 'Opción 6') {
+                  /*Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              LotesPage(allAccess: userLoggedIn)));*/
+                  setState(() {});
+                }
+                else {
+                  setState(() {});
+                }
+              },
             ),
           ),
           actions: <Widget>[

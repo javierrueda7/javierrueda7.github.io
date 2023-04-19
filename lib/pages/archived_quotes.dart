@@ -30,6 +30,7 @@ class _ArchivedQuotesState extends State<ArchivedQuotes> {
     needAll = widget.needAll;
     loggedEmail = widget.loggedEmail;
     loggedManager();
+    getSellerId(loggedEmail);
   }
 
   void loggedManager() async {
@@ -42,6 +43,16 @@ class _ArchivedQuotesState extends State<ArchivedQuotes> {
       return true;
     } else {
       return false;
+    }
+  }
+
+  Future<void> getSellerId(String emailSeller) async {    
+    final querySnapshot = await db.collection('sellers').where('emailSeller', isEqualTo: emailSeller).get();
+    if (querySnapshot.docs.isNotEmpty) {
+      final selectedSeller = querySnapshot.docs.first;
+      identifiedSeller = selectedSeller['roleSeller'] == 'Asesor comercial' ? selectedSeller.id : 'All';
+    } else {
+      identifiedSeller = 'All';
     }
   }
 
@@ -59,6 +70,7 @@ class _ArchivedQuotesState extends State<ArchivedQuotes> {
   bool needAll = true;
   String loggedEmail = '';
   bool managerLogged = false;
+  String identifiedSeller = '';
 
   @override
   Widget build(BuildContext context) {
@@ -79,7 +91,7 @@ class _ArchivedQuotesState extends State<ArchivedQuotes> {
           child: Container(
         constraints: const BoxConstraints(maxWidth: 1200),
         child: FutureBuilder(
-            future: getQuotes(loteInfo[1], needAll, false),
+            future: getQuotes(loteInfo[1], needAll, false, identifiedSeller),
             builder: ((context, snapshot) {
               if (snapshot.hasData) {
                 return ListView.builder(
