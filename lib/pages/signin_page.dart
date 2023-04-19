@@ -61,7 +61,7 @@ class _SignInPageState extends State<SignInPage> {
                           _emailTextController,
                           true,
                           'email',
-                          () {}),
+                          (value) {}),
                     ),
                     const SizedBox(
                       height: 20,
@@ -75,7 +75,7 @@ class _SignInPageState extends State<SignInPage> {
                           _passwordTextcontroller,
                           true,
                           'password',
-                          () {}),
+                          (value) {}),
                     ),
                     const SizedBox(
                       height: 10,

@@ -281,6 +281,80 @@ Future<void> addOrdenSep(
   });
 }
 
+Future<List> getOrdenSep(String loteId, bool allLotes) async {
+  List separaciones = [];
+  QuerySnapshot? querySeparaciones = await db.collection('ordSep').get();
+  for (var doc in querySeparaciones.docs) {
+    final Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+    if (allLotes == false) {
+      if (data['loteId'] == loteId) {
+        final sep = {
+          "sepId": doc.id,
+          "quoteId": data['quoteId'],
+          "sellerID":data['sellerID'],
+          "loteId": data['loteId'],
+          "priceLote": data['priceLote'],
+          "precioFinal": data['precioFinal'],
+          "dctoLote": data['dctoLote'],
+          "perCILote": data['perCILote'],
+          "vlrCILote": data['vlrCILote'],
+          "vlrSepLote": data['vlrSepLote'],
+          "separacionDate": data['separacionDate'],
+          "saldoSepLote": data['saldoSepLote'],
+          "promesaDLDate": data['promesaDLDate'],
+          "plazoCI": data['plazoCI'],
+          "plazoContado": data['plazoContado'],
+          "saldoCILote": data['saldoCILote'],
+          "saldoCIDLDate": data['saldoCIDLDate'],
+          "vlrPorPagarLote": data['vlrPorPagarLote'],
+          "metodoPagoLote": data['metodoPagoLote'],
+          "saldoTotalDate": data['saldoTotalDate'],
+          "periodoCuotasLote": data['periodoCuotasLote'],
+          "nroCuotasLote": data['nroCuotasLote'],
+          "vlrCuotasLote": data['vlrCuotasLote'],
+          "tem": data['tem'],
+          "observacionesLote": data['observacionesLote'],
+          "clienteID": data['clienteID'],
+          "stageSep": data['stageSep']
+        };
+        separaciones.add(sep);
+      }
+    } else {      
+      final sep = {
+        "sepId": doc.id,
+        "quoteId": data['quoteId'],
+        "sellerID":data['sellerID'],
+        "loteId": data['loteId'],
+        "priceLote": data['priceLote'],
+        "precioFinal": data['precioFinal'],
+        "dctoLote": data['dctoLote'],
+        "perCILote": data['perCILote'],
+        "vlrCILote": data['vlrCILote'],
+        "vlrSepLote": data['vlrSepLote'],
+        "separacionDate": data['separacionDate'],
+        "saldoSepLote": data['saldoSepLote'],
+        "promesaDLDate": data['promesaDLDate'],
+        "plazoCI": data['plazoCI'],
+        "plazoContado": data['plazoContado'],
+        "saldoCILote": data['saldoCILote'],
+        "saldoCIDLDate": data['saldoCIDLDate'],
+        "vlrPorPagarLote": data['vlrPorPagarLote'],
+        "metodoPagoLote": data['metodoPagoLote'],
+        "saldoTotalDate": data['saldoTotalDate'],
+        "periodoCuotasLote": data['periodoCuotasLote'],
+        "nroCuotasLote": data['nroCuotasLote'],
+        "vlrCuotasLote": data['vlrCuotasLote'],
+        "tem": data['tem'],
+        "observacionesLote": data['observacionesLote'],
+        "clienteID": data['clienteID'],
+        "stageSep": data['stageSep']
+      };
+      separaciones.add(sep);    
+    }
+  }
+  return separaciones;
+}
+
 Future<void> deleteSep(String oid) async {
   await db.collection("ordSep").doc(oid).delete();
 }
@@ -640,6 +714,8 @@ Future<List> getLotes() async {
   }
   return lotes;
 }
+
+
 
 Future<void> addLotes(
     String idLote,
