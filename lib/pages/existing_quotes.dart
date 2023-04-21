@@ -91,7 +91,6 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
 
   @override
   Widget build(BuildContext context) {
-    print(identifiedSeller);
     return Scaffold(
       extendBodyBehindAppBar: false,
       appBar: AppBar(
