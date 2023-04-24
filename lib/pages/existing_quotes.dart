@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:albaterrapp/pages/archived_quotes.dart';
 import 'package:albaterrapp/pages/pdf_generator.dart';
+import 'package:albaterrapp/pages/pdf_separacion.dart';
 import 'package:albaterrapp/services/firebase_services.dart';
 import 'package:albaterrapp/utils/color_utils.dart';
 import 'package:albaterrapp/widgets/widgets.dart';
@@ -57,10 +58,6 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
     }
   }
   
-  Future<void> getIsSold(String lid) async {
-    final selectedLote = await db.collection('lotes').doc(lid).get();    
-    stateLote = selectedLote.get('loteState') as String;
-  }
 
   Future<void> getSellerId(String emailSeller) async {    
     final querySnapshot = await db.collection('sellers').where('emailSeller', isEqualTo: emailSeller).get();
@@ -82,12 +79,23 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
     return gerenteEmail.get('email') as String;
   }
 
+  void updateLoteInfo(String lid) async {
+    loteClicked = await getLoteInfo(lid);
+  }
+
+  Map<String, dynamic> loteClicked = {};
   List<dynamic> loteInfo = [];
   bool needAll = true;
   String loggedEmail = '';
   bool managerLogged = false;
-  String stateLote = '';
   String identifiedSeller = '';
+  String letrasSep = '';
+  String letrasSaldoCI = '';
+  String letrasSaldoLote = '';
+  String letrasValorCuotas = '';
+  String letrasVlrPorPagar = '';
+  String letrasPrecioFinal = '';
+  int vlrFijoSep = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -276,7 +284,9 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
                                             child: Text('Ver PDF'),
                                           ),
                                           PopupMenuItem(
-                                            enabled: managerLogged,
+                                            enabled: (managerLogged  && snapshot.data?[index]
+                                                        ['quoteStage'] !=
+                                                    'LOTE SEPARADO'),
                                             value: 'Opción 2',
                                             child: Text(snapshot.data?[index]
                                                         ['quoteStage'] ==
@@ -287,7 +297,7 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
                                           ),
                                         ],
                                         onSelected: (value) async {
-                                          setState(() {getIsSold(snapshot.data?[index]['loteId']);});
+                                          setState(() {updateLoteInfo(snapshot.data?[index]['loteId']);});
                                           if (value == 'Opción 1') {
                                             Navigator.push(
                                                 context,
@@ -552,7 +562,7 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
                                             }
                                             if (snapshot.data?[index]
                                                     ['quoteStage'] ==
-                                                'AUTORIZADA' && stateLote == 'Disponible') {
+                                                'AUTORIZADA' && loteClicked['loteState'] == 'Disponible') {
                                               // ignore: use_build_context_synchronously
                                               await Navigator.pushNamed(
                                                   context, "/genSep",
@@ -761,9 +771,9 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
                                         },
                                       ),
                                       onTap: (() {
-                                        setState(() {getIsSold(snapshot.data?[index]['loteId']);});
+                                        setState(() { updateLoteInfo(snapshot.data?[index]['loteId']);});
                                         if (managerLogged == true) {
-                                          if(stateLote != 'Disponible') {
+                                          if(loteClicked['loteState'] != 'Disponible') {
                                             ScaffoldMessenger.of(context).showSnackBar(
                                               const SnackBar(
                                                 content: CustomAlertMessage(
@@ -1038,7 +1048,7 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
                                             value: 'Opción 1',
                                             child: Text('Ver PDF'),
                                           ),
-                                          PopupMenuItem(
+                                          /*PopupMenuItem(
                                             enabled: managerLogged,
                                             value: 'Opción 2',
                                             child: Text(snapshot.data?[index]
@@ -1047,16 +1057,19 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
                                                 ? 'Cancelar separación'
                                                 : changeState(snapshot
                                                 .data?[index]['quoteStage'])),
-                                          ),
+                                          ),*/
                                         ],
                                         onSelected: (value) async {
-                                          getIsSold(snapshot.data?[index]['loteId']);
+                                          updateLoteInfo(snapshot.data?[index]['loteId']);
+                                          vlrFijoSep = snapshot.data?[index]['vlrSepLote'] + snapshot.data?[index]['saldoSepLote'];
+                                          updateNumberWords(vlrFijoSep.toDouble(), snapshot.data?[index]['saldoCILote'], snapshot.data?[index]['vlrPorPagarLote'], snapshot.data?[index]['vlrCuotasLote'], snapshot.data?[index]['precioFinal'].toDouble());
                                           if (value == 'Opción 1') {
+                                            // ignore: use_build_context_synchronously
                                             Navigator.push(
                                                 context,
                                                 MaterialPageRoute(
                                                   builder: (context) =>
-                                                      PDFGenerator(
+                                                      PDFSeparacion(
                                                     sellerID:
                                                         snapshot.data?[index]
                                                             ['sellerID'],
@@ -1067,22 +1080,25 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
                                                     sellerEmail: sellerData[
                                                         'emailSeller'],
                                                     quoteId: snapshot
-                                                        .data?[index]['qid'],
+                                                        .data?[index]['quoteId'],
                                                     name:
                                                         custData['nameCliente'],
+                                                    idCust: snapshot.data?[index]['clienteID'],
+                                                    idTypeCust: custData['idTypeCliente'],
                                                     lastname: custData[
                                                         'lastnameCliente'],
                                                     phone:
                                                         custData['telCliente'],
+                                                    address: custData['addressCliente'],
+                                                    email: custData['emailCliente'],
+                                                    city: custData['idIssueCityCliente'],
                                                     date: snapshot.data?[index]
-                                                        ['quoteDate'],
+                                                        ['separacionDate'],
                                                     dueDate:
                                                         snapshot.data?[index]
-                                                            ['quoteDLDate'],
-                                                    lote: snapshot.data?[index]
-                                                        ['loteName'],
-                                                    area: snapshot.data?[index]
-                                                        ['areaLote'],
+                                                            ['promesaDLDate'],
+                                                    lote: loteClicked['loteName'],
+                                                    area: '${loteClicked['loteArea'].toInt().toString()} m²',
                                                     price: (currencyCOP(
                                                         (snapshot.data?[index][
                                                                     'priceLote']
@@ -1093,8 +1109,8 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
                                                                     'precioFinal']
                                                                 .toInt())
                                                             .toString())),
-                                                    discount:
-                                                        '${snapshot.data?[index]['dctoLote'].toString()}%',
+                                                    letrasFinalPrice:
+                                                      letrasPrecioFinal,        
                                                     porcCuotaIni:
                                                         '${snapshot.data?[index]['perCILote'].toString()}%',
                                                     vlrCuotaIni: (currencyCOP(
@@ -1102,6 +1118,11 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
                                                                     'vlrCILote']
                                                                 .toInt())
                                                             .toString())),
+                                                    totalSeparacion: (currencyCOP(
+                                                        (vlrFijoSep
+                                                                .toInt())
+                                                            .toString())),
+                                                    letrasSeparacion: letrasSep,
                                                     vlrSeparacion: (currencyCOP(
                                                         (snapshot.data?[index][
                                                                     'vlrSepLote']
@@ -1109,7 +1130,7 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
                                                             .toString())),
                                                     dueDateSeparacion:
                                                         snapshot.data?[index]
-                                                            ['sepDLDate'],
+                                                            ['separacionDate'],
                                                     saldoSeparacion:
                                                         (currencyCOP((snapshot
                                                                 .data?[index][
@@ -1118,11 +1139,12 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
                                                             .toString())),
                                                     dueDateSaldoSeparacion:
                                                         snapshot.data?[index]
-                                                            ['saldoSepDLDate'],
+                                                            ['promesaDLDate'],
                                                     plazoCI:
                                                         '${(snapshot.data?[index]['plazoCI'].toInt()).toString()} días',
                                                     plazoContado:
                                                         '${(snapshot.data?[index]['plazoContado'].toInt()).toString()} días',
+                                                    letrasSaldoCI: letrasSaldoCI,
                                                     saldoCI: (currencyCOP(
                                                         (snapshot.data?[index][
                                                                     'saldoCILote']
@@ -1138,6 +1160,7 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
                                                                     'vlrPorPagarLote']
                                                                 .toInt())
                                                             .toString())),
+                                                    letrasSaldoTotal: letrasSaldoLote,
                                                     paymentMethod:
                                                         snapshot.data?[index]
                                                             ['metodoPagoLote'],
@@ -1148,6 +1171,8 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
                                                                 'vlrCuotasLote']
                                                             .toInt())
                                                         .toString())),
+                                                    letrasVlrCuota: letrasValorCuotas,
+                                                    letrasSaldoContado: letrasSaldoLote,
                                                     saldoTotalDate:
                                                         snapshot.data?[index]
                                                             ['saldoTotalDate'],
@@ -1166,7 +1191,7 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
                                                         ['observacionesLote'],
                                                     quoteStage:
                                                         snapshot.data?[index]
-                                                            ['quoteStage'],
+                                                            ['stageSep'],
                                                   ),
                                                 ));
                                           }
@@ -1174,6 +1199,7 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
                                             if (snapshot.data?[index]
                                                     ['quoteStage'] ==
                                                 'CREADA') {
+                                              // ignore: use_build_context_synchronously
                                               await Navigator.pushNamed(
                                                   context, "/editQuote",
                                                   arguments: {
@@ -1316,7 +1342,7 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
                                             if (snapshot.data?[index]
                                                     ['quoteStage'] ==
                                                 'AUTORIZADA') {
-                                                  if(stateLote != 'Disponible') {
+                                                  if(loteClicked['loteState'] != 'Disponible') {
                                                     // ignore: use_build_context_synchronously
                                                     ScaffoldMessenger.of(context).showSnackBar(
                                                       const SnackBar(
@@ -1544,8 +1570,8 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
                                         },
                                       ),
                                       onTap: (() {
-                                        setState(() {getIsSold(snapshot.data?[index]['loteId']);});
-                                        if (managerLogged == true && stateLote == 'Disponible') {
+                                        setState(() {updateLoteInfo(snapshot.data?[index]['loteId']);});
+                                        if (managerLogged == true && loteClicked['loteState'] == 'Disponible') {
                                           // ignore: use_build_context_synchronously
                                           Navigator.pushNamed(
                                               context, "/editQuote",
@@ -1714,6 +1740,32 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
     );
   }
 
+  Future<Map<String, dynamic>> getLoteInfo(String lid) async {
+
+    DocumentSnapshot<Map<String, dynamic>> infoLote = await db.collection('lotes').doc(lid).get();
+    final Map<String, dynamic> data = infoLote.data() as Map<String, dynamic>;
+    final lote = {
+      "loteName": data['loteName'],      
+      "loteEtapa": data['loteEtapa'],
+      "loteArea": data['loteArea'],
+      "lotePrice": data['lotePrice'],
+      "loteState": data['loteState'],
+      "loteLinderos": data['loteLinderos'],
+    };
+    return lote;  
+  }
+
+  void updateNumberWords(double vlrFijoSeparacion, double saldoCI, double valorAPagar, double valorCuota, double precioFinal) async {
+    letrasSep = await numeroEnLetras(vlrFijoSeparacion, 'pesos');
+    letrasSaldoCI = await numeroEnLetras(saldoCI, 'pesos');
+    letrasSaldoLote = await numeroEnLetras(valorAPagar, 'pesos');
+    letrasValorCuotas =
+        await numeroEnLetras(valorCuota, 'pesos');
+    letrasVlrPorPagar =
+        await numeroEnLetras(valorAPagar, 'pesos');
+    letrasPrecioFinal =
+        await numeroEnLetras(precioFinal, 'pesos');
+  }
 
   String newState(String value) {
     if (value == 'CREADA') {

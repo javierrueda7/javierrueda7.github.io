@@ -586,26 +586,25 @@ class PDFSeparacion extends StatelessWidget {
                         pw.Text('VICTOR ALFONSO OROSTEGUI',
                             textAlign: pw.TextAlign.left,
                             style:
-                                pw.TextStyle(fontWeight: pw.FontWeight.bold)),
+                                pw.TextStyle(fontWeight: pw.FontWeight.bold, fontSize: 10)),
                         pw.Text('GERENTE DEL PROYECTO',
                             textAlign: pw.TextAlign.left,
                             style:
-                                pw.TextStyle(fontWeight: pw.FontWeight.bold)),
+                                pw.TextStyle(fontWeight: pw.FontWeight.bold, fontSize: 10)),
                       ])),
-              pw.Expanded(flex: 1, child: pw.SizedBox()),
               pw.Expanded(
                   flex: 3,
                   child: pw.Column(
                       mainAxisAlignment: pw.MainAxisAlignment.end,
                       children: [
                         pw.Text(sellerName,
-                            textAlign: pw.TextAlign.right,
+                            textAlign: pw.TextAlign.center,
                             style:
-                                pw.TextStyle(fontWeight: pw.FontWeight.bold)),
+                                pw.TextStyle(fontWeight: pw.FontWeight.bold, fontSize: 10)),
                         pw.Text('ASESOR COMERCIAL',
                             textAlign: pw.TextAlign.right,
                             style:
-                                pw.TextStyle(fontWeight: pw.FontWeight.bold)),
+                                pw.TextStyle(fontWeight: pw.FontWeight.bold, fontSize: 10)),
                       ]))
             ]),
           ];
