@@ -10,14 +10,14 @@ import 'package:flutter_typeahead/flutter_typeahead.dart';
 
 FirebaseFirestore db = FirebaseFirestore.instance;
 
-class GenerarSeparacion extends StatefulWidget {
-  const GenerarSeparacion({Key? key}) : super(key: key);
+class EditarSeparacion extends StatefulWidget {
+  const EditarSeparacion({Key? key}) : super(key: key);
 
   @override
-  State<GenerarSeparacion> createState() => _GenerarSeparacionState();
+  State<EditarSeparacion> createState() => _EditarSeparacionState();
 }
 
-class _GenerarSeparacionState extends State<GenerarSeparacion> {
+class _EditarSeparacionState extends State<EditarSeparacion> {
   // ignore: prefer_typing_uninitialized_variables
   var timer;
 
@@ -169,9 +169,9 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
   String sellerName = '';
   String sellerEmail = '';
   String sellerPhone = '';
-  TextEditingController quoteIdController = TextEditingController(text: "");
-  TextEditingController quoteDateController = TextEditingController(text: "");
-  TextEditingController quoteDeadlineController =
+  TextEditingController separacionIdController = TextEditingController(text: "");
+  TextEditingController quoteDateController = TextEditingController(text: dateOnly(false, 0, DateTime.now(), false));
+  TextEditingController quoteId =
       TextEditingController(text: "");
   String loteId = "";
   TextEditingController loteController = TextEditingController(text: "");
@@ -190,7 +190,7 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
       TextEditingController(text: "");
   TextEditingController separacionDeadlineController =
       TextEditingController(text: "");
-  TextEditingController saldoSeparacionDeadlineController =
+  TextEditingController promesaDeadlineController =
       TextEditingController(text: "");
   TextEditingController saldoCuotaIniController =
       TextEditingController(text: "");
@@ -204,7 +204,7 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
   TextEditingController temController = TextEditingController(text: "");
   TextEditingController observacionesController =
       TextEditingController(text: "");
-  TextEditingController quoteStageController = TextEditingController(text: "");
+  TextEditingController sepStageController = TextEditingController(text: "");
 
   TextEditingController nameController = TextEditingController(text: "");
   TextEditingController lastnameController = TextEditingController(text: "");
@@ -235,11 +235,8 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
       sellerName = arguments['sellerName'];
       sellerEmail = arguments['sellerEmail'];
       sellerPhone = arguments['sellerPhone'];
-      quoteIdController.text = arguments['quoteId'];
-      quotePickedDate =
-          DateFormat("dd-MM-yyyy").parse(arguments['separacionDeadline']);
-      quoteDateController.text = arguments['quoteDate'];
-      quoteDeadlineController.text = arguments['quoteDeadline'];
+      separacionIdController.text = arguments['sepId'];
+      quoteId.text = arguments['quoteId'];
       loteId = arguments['loteId'];
       loteController.text = arguments['lote'];
       etapaloteController.text = arguments['etapalote'];
@@ -254,9 +251,8 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
       vlrSeparacionController.text = arguments['vlrSeparacion'];
       saldoSeparacionController.text = arguments['saldoSeparacion'];
       saldoSeparacion = stringConverter(saldoSeparacionController.text);
-      separacionDeadlineController.text = arguments['separacionDeadline'];
-      saldoSeparacionDeadlineController.text =
-          arguments['saldoSeparacionDeadline'];
+      separacionDeadlineController.text = arguments['separacionDate'];
+      promesaDeadlineController.text = arguments['promesaDLDate'];
       saldoCuotaIniController.text = arguments['saldoCuotaIni'];
       saldoCuotaIniDeadlineController.text = arguments['saldoCuotaIniDeadline'];
       vlrPorPagarController.text = arguments['vlrPorPagar'];
@@ -264,7 +260,7 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
       vlrCuotaController.text = arguments['vlrCuota'];
       temController.text = arguments['tem'];
       observacionesController.text = arguments['observaciones'];
-      quoteStageController.text = arguments['quoteStage'];
+      sepStageController.text = arguments['stageSep'];
       nameController.text = arguments['name'];
       lastnameController.text = arguments['lastname'];
       selectedGender = arguments['gender'];
@@ -281,8 +277,7 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
       selectedCountry = arguments['country'];
       selectedState = arguments['state'];
       selectedCity = arguments['city'];
-      vlrFijoSeparacion =
-          saldoSeparacion + stringConverter(vlrSeparacionController.text);
+      vlrFijoSeparacion = saldoSeparacion + stringConverter(vlrSeparacionController.text);
       periodoCalculator(stringConverter(selectedNroCuotas));
       initCuotas();
       updateNumberWords();
@@ -359,7 +354,7 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
                     SizedBox(
                       height: 15,
                       child: Center(
-                          child: Text('COTIZACIÓN #${quoteIdController.text}',
+                          child: Text('COTIZACIÓN #${separacionIdController.text}',
                               style: const TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.bold,
@@ -367,153 +362,6 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
                     ),
                     const SizedBox(
                       height: 15,
-                    ),
-                    Container(
-                      constraints: const BoxConstraints(maxWidth: 800),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            flex: 1,
-                            child: Column(
-                              children: [
-                                const SizedBox(
-                                  height: 15,
-                                  child: Text(
-                                    'Desde',
-                                    style: TextStyle(fontSize: 10),
-                                  ),
-                                ),
-                                Container(
-                                  decoration: BoxDecoration(
-                                    color: primaryColor.withOpacity(0.2),
-                                    borderRadius: BorderRadius.circular(30.0),
-                                    border: Border.all(
-                                        width: 1,
-                                        style: BorderStyle.solid,
-                                        color: fifthColor.withOpacity(0.1)),
-                                  ),
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(left: 10),
-                                    child: TextField(
-                                      textAlign: TextAlign.center,
-                                      cursorColor: fifthColor,
-                                      style: TextStyle(
-                                          color: fifthColor.withOpacity(0.9)),
-                                      controller: quoteDateController,
-                                      decoration: InputDecoration(
-                                        border: InputBorder.none,
-                                        icon: Icon(
-                                          Icons.date_range_outlined,
-                                          color: fifthColor,
-                                        ),
-                                        hintText: DateFormat('dd-MM-yyyy')
-                                            .format(quotePickedDate),
-                                      ),
-                                      readOnly: true,
-                                      onTap: () async {
-                                        DateTime? pickedDate =
-                                            await showDatePicker(
-                                          locale: const Locale("es", "CO"),
-                                          context: context,
-                                          initialDate: dateConverter(
-                                              quoteDateController.text),
-                                          firstDate: DateTime(1900),
-                                          lastDate: DateTime.now(),
-                                        );
-                                        if (pickedDate != null) {
-                                          setState(() {
-                                            quoteDateController.text =
-                                                DateFormat('dd-MM-yyyy')
-                                                    .format(pickedDate);
-                                            quoteDeadlineController.text =
-                                                dateOnly(false, 15, pickedDate,
-                                                    true);
-                                            separacionDeadlineController.text =
-                                                dateOnly(false, 0, pickedDate,
-                                                    false);
-                                            saldoSeparacionDeadlineController
-                                                    .text =
-                                                dateOnly(false, plazoSaldoSep,
-                                                    pickedDate, false);
-                                            saldoCuotaIniDeadlineController
-                                                    .text =
-                                                dateOnly(false, plazoCI,
-                                                    pickedDate, true);
-                                            updateDateSaldo(pickedDate);
-                                            discountValue();
-                                          });
-                                        }
-                                      },
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Expanded(
-                            flex: 1,
-                            child: Column(
-                              children: [
-                                const SizedBox(
-                                  height: 15,
-                                  child: Text(
-                                    'Hasta',
-                                    style: TextStyle(fontSize: 10),
-                                  ),
-                                ),
-                                Container(
-                                  decoration: BoxDecoration(
-                                    color: primaryColor.withOpacity(0.2),
-                                    borderRadius: BorderRadius.circular(30.0),
-                                    border: Border.all(
-                                        width: 1,
-                                        style: BorderStyle.solid,
-                                        color: fifthColor.withOpacity(0.1)),
-                                  ),
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(left: 10),
-                                    child: TextField(
-                                      textAlign: TextAlign.center,
-                                      cursorColor: fifthColor,
-                                      style: TextStyle(
-                                          color: fifthColor.withOpacity(0.9)),
-                                      controller: quoteDeadlineController,
-                                      decoration: InputDecoration(
-                                        border: InputBorder.none,
-                                        icon: Icon(
-                                          Icons.date_range_outlined,
-                                          color: fifthColor,
-                                        ),
-                                        hintText: DateFormat('dd-MM-yyyy')
-                                            .format(quotePickedDate),
-                                      ),
-                                      readOnly: true,
-                                      onTap: () async {
-                                        DateTime? pickedDate =
-                                            await showDatePicker(
-                                          locale: const Locale("es", "CO"),
-                                          context: context,
-                                          initialDate: dateConverter(
-                                              quoteDeadlineController.text),
-                                          firstDate: DateTime(1900),
-                                          lastDate: DateTime(2050),
-                                        );
-                                        if (pickedDate != null) {
-                                          setState(() {
-                                            quoteDeadlineController.text =
-                                                DateFormat('dd-MM-yyyy')
-                                                    .format(pickedDate);
-                                          });
-                                        }
-                                      },
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
                     ),
                     const SizedBox(
                       height: 5,
@@ -534,16 +382,16 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
                                   ),
                                 ),
                                 Container(
-                                  constraints:
-                                      const BoxConstraints(maxWidth: 800),
-                                  child: textFieldWidget(
-                                      loteController.text,
-                                      Icons.house_outlined,
-                                      false,
-                                      loteController,
-                                      false,
-                                      'email',
-                                      () {})),
+                                    constraints:
+                                        const BoxConstraints(maxWidth: 800),
+                                    child: textFieldWidget(
+                                        loteController.text,
+                                        Icons.house_outlined,
+                                        false,
+                                        loteController,
+                                        false,
+                                        'email',
+                                        () {})),
                               ],
                             ),
                           ),
@@ -699,7 +547,7 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
                           const SizedBox(
                               height: 20,
                               child: Text(
-                                'Fecha de separacion)',
+                                'Fecha de separacion',
                                 style: TextStyle(fontSize: 14),
                               )),
                           const SizedBox(
@@ -746,7 +594,7 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
                                       separacionDeadlineController.text =
                                           DateFormat('dd-MM-yyyy')
                                               .format(pickedDate);
-                                      saldoSeparacionDeadlineController.text =
+                                      promesaDeadlineController.text =
                                           dateOnly(false, plazoSaldoSep,
                                               pickedDate, false);
                                       saldoCuotaIniDeadlineController.text =
@@ -1113,7 +961,7 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
                                                           .text =
                                                       DateFormat('dd-MM-yyyy')
                                                           .format(pickedDate);
-                                                  saldoSeparacionDeadlineController
+                                                  promesaDeadlineController
                                                           .text =
                                                       dateOnly(
                                                           false,
@@ -1196,7 +1044,7 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
                                                 color: fifthColor
                                                     .withOpacity(0.9)),
                                             controller:
-                                                saldoSeparacionDeadlineController,
+                                                promesaDeadlineController,
                                             decoration: InputDecoration(
                                               border: InputBorder.none,
                                               icon: Icon(
@@ -1214,14 +1062,14 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
                                                     const Locale("es", "CO"),
                                                 context: context,
                                                 initialDate: dateConverter(
-                                                    saldoSeparacionDeadlineController
+                                                    promesaDeadlineController
                                                         .text),
                                                 firstDate: DateTime(1900),
                                                 lastDate: DateTime(2050),
                                               );
                                               if (pickedDate != null) {
                                                 setState(() {
-                                                  saldoSeparacionDeadlineController
+                                                  promesaDeadlineController
                                                           .text =
                                                       DateFormat('dd-MM-yyyy')
                                                           .format(pickedDate);
@@ -1946,7 +1794,7 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
                                 });
                                 if (selectedSeller.isEmpty ||
                                     quoteDateController.text.isEmpty ||
-                                    quoteDeadlineController.text.isEmpty ||
+                                    quoteId.text.isEmpty ||
                                     priceloteController.text.isEmpty ||
                                     vlrCuotaIniController.text.isEmpty ||
                                     vlrSeparacionController.text.isEmpty ||
@@ -2004,7 +1852,7 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
                                             '${seller['nameSeller']} ${seller['lastnameSeller']}',
                                         sellerPhone: seller['phoneSeller'],
                                         sellerEmail: seller['emailSeller'],
-                                        quoteId: quoteIdController.text,
+                                        quoteId: separacionIdController.text,
                                         name: nameController.text,
                                         idCust: idController.text,
                                         idTypeCust: selectedItemIdtype,
@@ -2014,7 +1862,7 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
                                         email: emailController.text,
                                         city: selectedCity,
                                         date: quoteDateController.text,
-                                        dueDate: quoteDeadlineController.text,
+                                        dueDate: quoteId.text,
                                         lote: loteController.text,
                                         area: arealoteController.text,
                                         price: priceloteController.text,
@@ -2035,7 +1883,7 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
                                         saldoSeparacion:
                                             saldoSeparacionController.text,
                                         dueDateSaldoSeparacion:
-                                            saldoSeparacionDeadlineController
+                                            promesaDeadlineController
                                                 .text,
                                         plazoCI:
                                             '${(((plazoCI).toInt()).toString())} días',
@@ -2068,7 +1916,7 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
                                         tem: '${temController.text}%',
                                         observaciones:
                                             observacionesController.text,
-                                        quoteStage: quoteStageController.text,
+                                        quoteStage: sepStageController.text,
                                       ),
                                     ),
                                   );
@@ -2098,7 +1946,7 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
                                 });
                                 if (selectedSeller.isEmpty ||
                                     quoteDateController.text.isEmpty ||
-                                    quoteDeadlineController.text.isEmpty ||
+                                    quoteId.text.isEmpty ||
                                     priceloteController.text.isEmpty ||
                                     vlrCuotaIniController.text.isEmpty ||
                                     vlrSeparacionController.text.isEmpty ||
@@ -2163,11 +2011,9 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
                                     selectedState,
                                     selectedCity,
                                   );
-                                  await updateQuote(
-                                      quoteIdController.text,
+                                  await updateQuoteForSep(
+                                      quoteId.text,
                                       selectedSeller,
-                                      quoteDateController.text,
-                                      quoteDeadlineController.text,
                                       loteId,
                                       loteController.text,
                                       etapaloteController.text,
@@ -2180,7 +2026,7 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
                                       vlrSeparacion,
                                       separacionDeadlineController.text,
                                       saldoSeparacion,
-                                      saldoSeparacionDeadlineController.text,
+                                      promesaDeadlineController.text,
                                       plazoCI,
                                       plazoContado,
                                       saldoCI,
@@ -2194,10 +2040,10 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
                                       vlrTEM,
                                       observacionesController.text,
                                       idController.text,
-                                      quoteStageController.text);
-                                  await addOrdenSep(
-                                    "SEP${quoteIdController.text}",
-                                    quoteIdController.text,
+                                      sepStageController.text);
+                                  await updateOrdenSep(
+                                    separacionIdController.text,
+                                    quoteId.text,
                                     selectedSeller,
                                     loteId,
                                     vlrBaseLote.toDouble(),
@@ -2208,7 +2054,7 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
                                     vlrSeparacion,
                                     separacionDeadlineController.text,
                                     saldoSeparacion,
-                                    saldoSeparacionDeadlineController.text,
+                                    promesaDeadlineController.text,
                                     plazoCI,
                                     plazoContado,
                                     saldoCI,
@@ -2222,25 +2068,14 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
                                     vlrTEM,
                                     observacionesController.text,
                                     idController.text,
-                                  );
-                                  await addPlanPagos(
-                                    loteId,
-                                    vlrBaseLote.toDouble(),
-                                    precioFinal,
-                                    discountValue(),
-                                    vlrFijoSeparacion,                                    
-                                    porcCuotaInicial,
-                                    'Pendiente',
-                                    precioFinal,
-                                    0
-                                  );
+                                  );                                                             
                                   if(saldoSeparacion == 0){
                                     await pagosEsperados(
                                       loteId,
                                       'SEP1',
                                       vlrSeparacion,
                                       'Separación',
-                                      saldoSeparacionDeadlineController.text
+                                      promesaDeadlineController.text
                                     );
                                   } else{
                                     await pagosEsperados(
@@ -2255,12 +2090,18 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
                                       'SEP2',
                                       saldoSeparacion,
                                       'Separación',
-                                      saldoSeparacionDeadlineController.text
+                                      promesaDeadlineController.text
                                     );
                                   }
-                                  cambioEstadoLote(
-                                          loteId, quoteStageController.text)
-                                      .then((_) {
+                                  await updatePlanPagos(
+                                    loteId,
+                                    vlrBaseLote.toDouble(),
+                                    precioFinal,
+                                    discountValue(),
+                                    'Pendiente',
+                                    precioFinal,
+                                    0
+                                  ).then((_) {
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(
                                         content: CustomAlertMessage(

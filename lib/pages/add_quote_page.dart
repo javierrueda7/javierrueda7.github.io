@@ -38,10 +38,10 @@ class _AddQuotePageState extends State<AddQuotePage> {
   }
 
   @override
-  void dispose() {
+  void dispose() {    
+    ocupacionController.dispose();
     timer.cancel(); //cancel the periodic task
     timer; //clear the timer variable
-    ocupacionController.dispose();
     super.dispose();
   }
 

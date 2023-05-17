@@ -980,15 +980,15 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
                                         snapshot.data?[
                                             index]['quoteId'],
                                         'AUTORIZADA');
-                                    cancSepLote(snapshot
-                                            .data?[index]
-                                        ['loteId']);
-                                    deleteSep(
-                                        snapshot.data?[index]['sepId']);
-                                    setState(() {});
-                                    Navigator.of(context)
-                                        .pop();
-                                        },
+                                      cancSepLote(snapshot
+                                              .data?[index]
+                                          ['loteId']);
+                                      deleteSep(
+                                          snapshot.data?[index]['sepId']);
+                                      setState(() {});
+                                      Navigator.of(context)
+                                          .pop();
+                                    },
                                     confirmDismiss: (direction) async {
                                       bool result = false;
                                       result = await showDialog(
@@ -1061,7 +1061,7 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
                                         ],
                                         onSelected: (value) async {
                                           updateLoteInfo(snapshot.data?[index]['loteId']);
-                                          vlrFijoSep = snapshot.data?[index]['vlrSepLote'] + snapshot.data?[index]['saldoSepLote'];
+                                          vlrFijoSep = snapshot.data?[index]['vlrSepLote'].toInt() + snapshot.data?[index]['saldoSepLote'].toInt();
                                           updateNumberWords(vlrFijoSep.toDouble(), snapshot.data?[index]['saldoCILote'], snapshot.data?[index]['vlrPorPagarLote'], snapshot.data?[index]['vlrCuotasLote'], snapshot.data?[index]['precioFinal'].toDouble());
                                           if (value == 'Opción 1') {
                                             // ignore: use_build_context_synchronously
@@ -1194,507 +1194,62 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
                                                             ['stageSep'],
                                                   ),
                                                 ));
-                                          }
-                                          if (value == 'Opción 2') {
-                                            if (snapshot.data?[index]
-                                                    ['quoteStage'] ==
-                                                'CREADA') {
-                                              // ignore: use_build_context_synchronously
-                                              await Navigator.pushNamed(
-                                                  context, "/editQuote",
-                                                  arguments: {
-                                                    "selectedSeller":
-                                                        snapshot.data?[index]
-                                                            ['sellerID'],
-                                                    "sellerName":
-                                                        '${sellerData['nameSeller']} ${sellerData['lastnameSeller']}',
-                                                    "sellerEmail": sellerData[
-                                                        'emailSeller'],
-                                                    "sellerPhone": sellerData[
-                                                        'phoneSeller'],
-                                                    "quoteId": snapshot
-                                                        .data?[index]['qid'],
-                                                    "quoteDate":
-                                                        snapshot.data?[index]
-                                                            ['quoteDate'],
-                                                    "quoteDeadline":
-                                                        snapshot.data?[index]
-                                                            ['quoteDLDate'],
-                                                    "loteId": snapshot
-                                                        .data?[index]['loteId'],
-                                                    "lote":
-                                                        snapshot.data?[index]
-                                                            ['loteName'],
-                                                    "etapalote":
-                                                        snapshot.data?[index]
-                                                            ['etapaLote'],
-                                                    "arealote":
-                                                        snapshot.data?[index]
-                                                            ['areaLote'],
-                                                    "pricelote": (currencyCOP(
-                                                        (snapshot.data?[index][
-                                                                    'priceLote']
-                                                                .toInt())
-                                                            .toString())),
-                                                    "precioFinal": (currencyCOP(
-                                                        (snapshot.data?[index][
-                                                                    'precioFinal']
-                                                                .toInt())
-                                                            .toString())),
-                                                    "paymentMethod":
-                                                        snapshot.data?[index]
-                                                            ['metodoPagoLote'],
-                                                    "porcCuotaInicial":
-                                                        '${snapshot.data?[index]['perCILote'].toString()}%',
-                                                    "vlrCuotaIni": (currencyCOP(
-                                                        (snapshot.data?[index][
-                                                                    'vlrCILote']
-                                                                .toInt())
-                                                            .toString())),
-                                                    "periodoCuotas": snapshot
-                                                            .data?[index]
-                                                        ['periodoCuotasLote'],
-                                                    "nroCuotas":
-                                                        '${snapshot.data?[index]['nroCuotasLote'].toString()}',
-                                                    "vlrSeparacion":
-                                                        (currencyCOP((snapshot
-                                                                .data?[index][
-                                                                    'vlrSepLote']
-                                                                .toInt())
-                                                            .toString())),
-                                                    "saldoSeparacion":
-                                                        (currencyCOP((snapshot
-                                                                .data?[index][
-                                                                    'saldoSepLote']
-                                                                .toInt())
-                                                            .toString())),
-                                                    "separacionDeadline":
-                                                        snapshot.data?[index]
-                                                            ['sepDLDate'],
-                                                    "saldoSeparacionDeadline":
-                                                        snapshot.data?[index]
-                                                            ['saldoSepDLDate'],
-                                                    "saldoCuotaIni":
-                                                        (currencyCOP((snapshot
-                                                                .data?[index][
-                                                                    'saldoCILote']
-                                                                .toInt())
-                                                            .toString())),
-                                                    "saldoCuotaIniDeadline":
-                                                        snapshot.data?[index]
-                                                            ['saldoCIDLDate'],
-                                                    "vlrPorPagar": (currencyCOP(
-                                                        (snapshot.data?[index][
-                                                                    'vlrPorPagarLote']
-                                                                .toInt())
-                                                            .toString())),
-                                                    "saldoTotalDate":
-                                                        snapshot.data?[index]
-                                                            ['saldoTotalDate'],
-                                                    "vlrCuota": (currencyCOP(
-                                                        (snapshot.data?[index][
-                                                                    'vlrCuotasLote']
-                                                                .toInt())
-                                                            .toString())),
-                                                    "tem":
-                                                        '${snapshot.data?[index]['tem'].toString()}%',
-                                                    "observaciones": snapshot
-                                                            .data?[index]
-                                                        ['observacionesLote'],
-                                                    "quoteStage": newState(
-                                                        snapshot.data?[index]
-                                                            ['quoteStage']),
-                                                    "name":
-                                                        custData['nameCliente'],
-                                                    "lastname": custData[
-                                                        'lastnameCliente'],
-                                                    "gender": custData[
-                                                        'genderCliente'],
-                                                    "birthday":
-                                                        custData['bdayCliente'],
-                                                    "ocupacion": custData[
-                                                        'ocupacionCliente'],
-                                                    "phone":
-                                                        custData['telCliente'],
-                                                    "idtype": custData[
-                                                        'idTypeCliente'],
-                                                    "id": snapshot.data?[index]
-                                                        ['clienteID'],
-                                                    "issuedCountry": custData[
-                                                        'idIssueCountryCliente'],
-                                                    "issuedState": custData[
-                                                        'idIssueStateCliente'],
-                                                    "issuedCity": custData[
-                                                        'idIssueCityCliente'],
-                                                    "email": custData[
-                                                        'emailCliente'],
-                                                    "address": custData[
-                                                        'addressCliente'],
-                                                    "country": custData[
-                                                        'countryCliente'],
-                                                    "state": custData[
-                                                        'stateCliente'],
-                                                    "city":
-                                                        custData['cityCliente'],
-                                                    "cambioEstado": true,
-                                                  });
-                                            }
-                                            if (snapshot.data?[index]
-                                                    ['quoteStage'] ==
-                                                'AUTORIZADA') {
-                                                  if(loteClicked['loteState'] != 'Disponible') {
-                                                    // ignore: use_build_context_synchronously
-                                                    ScaffoldMessenger.of(context).showSnackBar(
-                                                      const SnackBar(
-                                                        content: CustomAlertMessage(
-                                                          errorTitle: "Oops!",
-                                                          errorText:
-                                                              "Parece que este lote ya tiene dueño",
-                                                          stateColor: Color.fromRGBO(214, 66, 66, 1),
-                                                        ),
-                                                        behavior: SnackBarBehavior.floating,
-                                                        backgroundColor: Colors.transparent,
-                                                        elevation: 0,
-                                                      ),
-                                                    );
-                                                  } else {
-
-
-
-                                              // ignore: use_build_context_synchronously
-                                              await Navigator.pushNamed(
-                                                  context, "/genSep",
-                                                  arguments: {
-                                                    "selectedSeller":
-                                                        snapshot.data?[index]
-                                                            ['sellerID'],
-                                                    "sellerName":
-                                                        '${sellerData['nameSeller']} ${sellerData['lastnameSeller']}',
-                                                    "sellerEmail": sellerData[
-                                                        'emailSeller'],
-                                                    "sellerPhone": sellerData[
-                                                        'phoneSeller'],
-                                                    "quoteId": snapshot
-                                                        .data?[index]['qid'],
-                                                    "quoteDate":
-                                                        snapshot.data?[index]
-                                                            ['quoteDate'],
-                                                    "quoteDeadline":
-                                                        snapshot.data?[index]
-                                                            ['quoteDLDate'],
-                                                    "loteId": snapshot
-                                                        .data?[index]['loteId'],
-                                                    "lote":
-                                                        snapshot.data?[index]
-                                                            ['loteName'],
-                                                    "etapalote":
-                                                        snapshot.data?[index]
-                                                            ['etapaLote'],
-                                                    "arealote":
-                                                        snapshot.data?[index]
-                                                            ['areaLote'],
-                                                    "pricelote": (currencyCOP(
-                                                        (snapshot.data?[index][
-                                                                    'priceLote']
-                                                                .toInt())
-                                                            .toString())),
-                                                    "precioFinal": (currencyCOP(
-                                                        (snapshot.data?[index][
-                                                                    'precioFinal']
-                                                                .toInt())
-                                                            .toString())),
-                                                    "paymentMethod":
-                                                        snapshot.data?[index]
-                                                            ['metodoPagoLote'],
-                                                    "porcCuotaInicial":
-                                                        '${snapshot.data?[index]['perCILote'].toString()}%',
-                                                    "vlrCuotaIni": (currencyCOP(
-                                                        (snapshot.data?[index][
-                                                                    'vlrCILote']
-                                                                .toInt())
-                                                            .toString())),
-                                                    "periodoCuotas": snapshot
-                                                            .data?[index]
-                                                        ['periodoCuotasLote'],
-                                                    "nroCuotas":
-                                                        '${snapshot.data?[index]['nroCuotasLote'].toString()}',
-                                                    "vlrSeparacion":
-                                                        (currencyCOP((snapshot
-                                                                .data?[index][
-                                                                    'vlrSepLote']
-                                                                .toInt())
-                                                            .toString())),
-                                                    "saldoSeparacion":
-                                                        (currencyCOP((snapshot
-                                                                .data?[index][
-                                                                    'saldoSepLote']
-                                                                .toInt())
-                                                            .toString())),
-                                                    "separacionDeadline":
-                                                        snapshot.data?[index]
-                                                            ['sepDLDate'],
-                                                    "saldoSeparacionDeadline":
-                                                        snapshot.data?[index]
-                                                            ['saldoSepDLDate'],
-                                                    "saldoCuotaIni":
-                                                        (currencyCOP((snapshot
-                                                                .data?[index][
-                                                                    'saldoCILote']
-                                                                .toInt())
-                                                            .toString())),
-                                                    "saldoCuotaIniDeadline":
-                                                        snapshot.data?[index]
-                                                            ['saldoCIDLDate'],
-                                                    "vlrPorPagar": (currencyCOP(
-                                                        (snapshot.data?[index][
-                                                                    'vlrPorPagarLote']
-                                                                .toInt())
-                                                            .toString())),
-                                                    "saldoTotalDate":
-                                                        snapshot.data?[index]
-                                                            ['saldoTotalDate'],
-                                                    "vlrCuota": (currencyCOP(
-                                                        (snapshot.data?[index][
-                                                                    'vlrCuotasLote']
-                                                                .toInt())
-                                                            .toString())),
-                                                    "tem":
-                                                        '${snapshot.data?[index]['tem'].toString()}%',
-                                                    "observaciones": snapshot
-                                                            .data?[index]
-                                                        ['observacionesLote'],
-                                                    "quoteStage": newState(
-                                                        snapshot.data?[index]
-                                                            ['quoteStage']),
-                                                    "name":
-                                                        custData['nameCliente'],
-                                                    "lastname": custData[
-                                                        'lastnameCliente'],
-                                                    "gender": custData[
-                                                        'genderCliente'],
-                                                    "birthday":
-                                                        custData['bdayCliente'],
-                                                    "ocupacion": custData[
-                                                        'ocupacionCliente'],
-                                                    "phone":
-                                                        custData['telCliente'],
-                                                    "idtype": custData[
-                                                        'idTypeCliente'],
-                                                    "id": snapshot.data?[index]
-                                                        ['clienteID'],
-                                                    "issuedCountry": custData[
-                                                        'idIssueCountryCliente'],
-                                                    "issuedState": custData[
-                                                        'idIssueStateCliente'],
-                                                    "issuedCity": custData[
-                                                        'idIssueCityCliente'],
-                                                    "email": custData[
-                                                        'emailCliente'],
-                                                    "address": custData[
-                                                        'addressCliente'],
-                                                    "country": custData[
-                                                        'countryCliente'],
-                                                    "state": custData[
-                                                        'stateCliente'],
-                                                    "city":
-                                                        custData['cityCliente'],
-                                                    "cambioEstado": true,
-                                                  });
-                                                  }
-                                            } if (snapshot.data?[index]
-                                            ['quoteStage'] ==
-                                            'LOTE SEPARADO') {
-                                              // ignore: use_build_context_synchronously
-                                              showDialog(
-                                                context: context,
-                                                builder: (BuildContext context) {
-                                                  return AlertDialog(
-                                                    title: Text(
-                                                        '¿Estás seguro de que quieres cancelar la separación SEP${snapshot.data?[index]['qid']}?'),
-                                                    actions: <Widget>[
-                                                      TextButton(
-                                                        child: const Text(
-                                                            'Cancelar'),
-                                                        onPressed: () {
-                                                          Navigator.of(context)
-                                                              .pop();
-                                                        },
-                                                      ),
-                                                      TextButton(
-                                                        child: const Text(
-                                                            'Confirmar'),
-                                                        onPressed: () {
-                                                          updateQuoteStage(
-                                                              snapshot.data?[
-                                                                  index]['qid'],
-                                                              'AUTORIZADA');
-                                                          cancSepLote(snapshot
-                                                                  .data?[index]
-                                                              ['loteId']);
-                                                          deleteSep(
-                                                              "SEP${snapshot.data?[index]['qid']}");
-                                                          setState(() {});
-                                                          Navigator.of(context)
-                                                              .pop();
-                                                        },
-                                                      ),
-                                                    ],
-                                                  );
-                                                },
-                                              );
-                                            } else {
-                                              // ignore: use_build_context_synchronously
-                                              ScaffoldMessenger.of(context).showSnackBar(
-                                                const SnackBar(
-                                                  content: CustomAlertMessage(
-                                                    errorTitle: "Oops!",
-                                                    errorText:
-                                                        "Parece que este lote ya tiene dueño",
-                                                    stateColor: Color.fromRGBO(214, 66, 66, 1),
-                                                  ),
-                                                  behavior: SnackBarBehavior.floating,
-                                                  backgroundColor: Colors.transparent,
-                                                  elevation: 0,
-                                                ),
-                                              );
-                                            }
-                                          }
-                                          if (value == 'Opción 3') {
-                                            setState(() {});
-                                          }
-                                          if (value == 'Opción 4') {
-                                            setState(() {});
                                           } else {
                                             setState(() {});
                                           }
                                         },
                                       ),
-                                      onTap: (() {
+                                      onTap: (() async {
                                         setState(() {updateLoteInfo(snapshot.data?[index]['loteId']);});
-                                        if (managerLogged == true && loteClicked['loteState'] == 'Disponible') {
+                                        if (managerLogged == true && loteClicked['loteState'] == 'Lote separado') {
                                           // ignore: use_build_context_synchronously
                                           Navigator.pushNamed(
-                                              context, "/editQuote",
+                                              context, "/editSep",
                                               arguments: {
-                                                "selectedSeller": snapshot
-                                                    .data?[index]['sellerID'],
-                                                "sellerName":
-                                                    '${sellerData['nameSeller']} ${sellerData['lastnameSeller']}',
-                                                "sellerEmail":
-                                                    sellerData['emailSeller'],
-                                                "sellerPhone":
-                                                    sellerData['phoneSeller'],
-                                                "quoteId": snapshot.data?[index]
-                                                    ['qid'],
-                                                "quoteDate": snapshot
-                                                    .data?[index]['quoteDate'],
-                                                "quoteDeadline":
-                                                    snapshot.data?[index]
-                                                        ['quoteDLDate'],
-                                                "loteId": snapshot.data?[index]
-                                                    ['loteId'],
-                                                "lote": snapshot.data?[index]
-                                                    ['loteName'],
-                                                "etapalote": snapshot
-                                                    .data?[index]['etapaLote'],
-                                                "arealote": snapshot
-                                                    .data?[index]['areaLote'],
-                                                "pricelote": (currencyCOP(
-                                                    (snapshot.data?[index]
-                                                                ['priceLote']
-                                                            .toInt())
-                                                        .toString())),
-                                                "precioFinal": (currencyCOP(
-                                                    (snapshot.data?[index]
-                                                                ['precioFinal']
-                                                            .toInt())
-                                                        .toString())),
-                                                "paymentMethod":
-                                                    snapshot.data?[index]
-                                                        ['metodoPagoLote'],
-                                                "porcCuotaInicial":
-                                                    '${snapshot.data?[index]['perCILote'].toString()}%',
-                                                "vlrCuotaIni": (currencyCOP(
-                                                    (snapshot.data?[index]
-                                                                ['vlrCILote']
-                                                            .toInt())
-                                                        .toString())),
-                                                "periodoCuotas":
-                                                    snapshot.data?[index]
-                                                        ['periodoCuotasLote'],
-                                                "nroCuotas":
-                                                    '${snapshot.data?[index]['nroCuotasLote'].toString()}',
-                                                "vlrSeparacion": (currencyCOP(
-                                                    (snapshot.data?[index]
-                                                                ['vlrSepLote']
-                                                            .toInt())
-                                                        .toString())),
-                                                "saldoSeparacion": (currencyCOP(
-                                                    (snapshot.data?[index]
-                                                                ['saldoSepLote']
-                                                            .toInt())
-                                                        .toString())),
-                                                "separacionDeadline": snapshot
-                                                    .data?[index]['sepDLDate'],
-                                                "saldoSeparacionDeadline":
-                                                    snapshot.data?[index]
-                                                        ['saldoSepDLDate'],
-                                                "saldoCuotaIni": (currencyCOP(
-                                                    (snapshot.data?[index]
-                                                                ['saldoCILote']
-                                                            .toInt())
-                                                        .toString())),
-                                                "saldoCuotaIniDeadline":
-                                                    snapshot.data?[index]
-                                                        ['saldoCIDLDate'],
-                                                "vlrPorPagar": (currencyCOP(
-                                                    (snapshot.data?[index][
-                                                                'vlrPorPagarLote']
-                                                            .toInt())
-                                                        .toString())),
-                                                "saldoTotalDate":
-                                                    snapshot.data?[index]
-                                                        ['saldoTotalDate'],
-                                                "vlrCuota": (currencyCOP(
-                                                    (snapshot.data?[index][
-                                                                'vlrCuotasLote']
-                                                            .toInt())
-                                                        .toString())),
-                                                "tem":
-                                                    '${snapshot.data?[index]['tem'].toString()}%',
-                                                "observaciones":
-                                                    snapshot.data?[index]
-                                                        ['observacionesLote'],
-                                                "quoteStage": snapshot
-                                                    .data?[index]['quoteStage'],
+                                                "selectedSeller": snapshot.data?[index]['sellerID'],
+                                                "sellerName": '${sellerData['nameSeller']} ${sellerData['lastnameSeller']}',
+                                                "sellerEmail": sellerData['emailSeller'],
+                                                "sellerPhone": sellerData['phoneSeller'],
+                                                "quoteId": snapshot.data?[index]['quoteId'],
+                                                "sepId": snapshot.data?[index]['sepId'],
+                                                "loteId": snapshot.data?[index]['loteId'],
+                                                "lote": loteClicked['loteName'],
+                                                "etapalote": loteClicked['loteEtapa'],
+                                                "arealote": '${loteClicked['loteArea'].toString()} m²',
+                                                "pricelote": (currencyCOP((snapshot.data?[index]['priceLote'].toInt()).toString())),
+                                                "precioFinal": (currencyCOP((snapshot.data?[index]['precioFinal'].toInt()).toString())),
+                                                "paymentMethod": snapshot.data?[index]['metodoPagoLote'],
+                                                "porcCuotaInicial": '${snapshot.data?[index]['perCILote'].toString()}%',
+                                                "vlrCuotaIni": (currencyCOP((snapshot.data?[index]['vlrCILote'].toInt()).toString())),
+                                                "periodoCuotas": snapshot.data?[index]['periodoCuotasLote'],
+                                                "nroCuotas": '${snapshot.data?[index]['nroCuotasLote'].toString()}',
+                                                "vlrSeparacion": (currencyCOP((snapshot.data?[index]['vlrSepLote'].toInt()).toString())),
+                                                "saldoSeparacion": (currencyCOP((snapshot.data?[index]['saldoSepLote'].toInt()).toString())),
+                                                "separacionDate": snapshot.data?[index]['separacionDate'],
+                                                "promesaDLDate": snapshot.data?[index]['promesaDLDate'],
+                                                "saldoCuotaIni": (currencyCOP((snapshot.data?[index]['saldoCILote'].toInt()).toString())),
+                                                "saldoCuotaIniDeadline":snapshot.data?[index]['saldoCIDLDate'],
+                                                "vlrPorPagar": (currencyCOP((snapshot.data?[index]['vlrPorPagarLote'].toInt()).toString())),
+                                                "saldoTotalDate": snapshot.data?[index]['saldoTotalDate'],
+                                                "vlrCuota": (currencyCOP((snapshot.data?[index]['vlrCuotasLote'].toInt()).toString())),
+                                                "tem": '${snapshot.data?[index]['tem'].toString()}%',
+                                                "observaciones": snapshot.data?[index]['observacionesLote'],
+                                                "stageSep": snapshot.data?[index]['stageSep'],
                                                 "name": custData['nameCliente'],
-                                                "lastname":
-                                                    custData['lastnameCliente'],
-                                                "gender":
-                                                    custData['genderCliente'],
-                                                "birthday":
-                                                    custData['bdayCliente'],
-                                                "ocupacion": custData[
-                                                    'ocupacionCliente'],
+                                                "lastname":custData['lastnameCliente'],
+                                                "gender":custData['genderCliente'],
+                                                "birthday": custData['bdayCliente'],
+                                                "ocupacion": custData['ocupacionCliente'],
                                                 "phone": custData['telCliente'],
-                                                "idtype":
-                                                    custData['idTypeCliente'],
-                                                "id": snapshot.data?[index]
-                                                    ['clienteID'],
-                                                "issuedCountry": custData[
-                                                    'idIssueCountryCliente'],
-                                                "issuedState": custData[
-                                                    'idIssueStateCliente'],
-                                                "issuedCity": custData[
-                                                    'idIssueCityCliente'],
-                                                "email":
-                                                    custData['emailCliente'],
-                                                "address":
-                                                    custData['addressCliente'],
-                                                "country":
-                                                    custData['countryCliente'],
-                                                "state":
-                                                    custData['stateCliente'],
+                                                "idtype": custData['idTypeCliente'],
+                                                "id": snapshot.data?[index]['clienteID'],
+                                                "issuedCountry": custData['idIssueCountryCliente'],
+                                                "issuedState": custData['idIssueStateCliente'],
+                                                "issuedCity": custData['idIssueCityCliente'],
+                                                "email": custData['emailCliente'],
+                                                "address": custData['addressCliente'],
+                                                "country": custData['countryCliente'],
+                                                "state": custData['stateCliente'],
                                                 "city": custData['cityCliente'],
                                                 "cambioEstado": false,
                                               });

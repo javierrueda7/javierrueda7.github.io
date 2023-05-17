@@ -133,7 +133,7 @@ class PDFGenerator extends StatelessWidget {
       body: PdfPreview(
         build: (format) => generatePdf(context),
         // You can set the initial page format here
-        initialPageFormat: PdfPageFormat.letter,
+        initialPageFormat: PdfPageFormat.letter.landscape,
       ),
     );
   }

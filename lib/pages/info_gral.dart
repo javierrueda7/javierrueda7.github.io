@@ -2,6 +2,7 @@ import 'package:albaterrapp/pages/info_banco.dart';
 import 'package:albaterrapp/services/firebase_services.dart';
 import 'package:albaterrapp/utils/color_utils.dart';
 import 'package:albaterrapp/widgets/widgets.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class InfoGeneral extends StatefulWidget {
@@ -28,6 +29,9 @@ class _InfoGeneralState extends State<InfoGeneral> {
     nameRepIController.text = infoInvertaga['nameRep'];
     idRepIController.text = infoInvertaga['idRep'];
     lugarIdRepIController.text = infoInvertaga['idLugar'];
+    dirIController.text = infoInvertaga['dir'];
+    telefonoIController.text = infoInvertaga['tel'];
+    selectedICity = infoInvertaga['ciudad'];
 
     nameVController.text = infoVision['name'];
     nitVController.text = infoVision['nit'];
@@ -35,6 +39,10 @@ class _InfoGeneralState extends State<InfoGeneral> {
     nameRepVController.text = infoVision['nameRep'];
     idRepVController.text = infoVision['idRep'];
     lugarIdRepVController.text = infoVision['idLugar'];
+    dirVController.text = infoVision['dir'];
+    telefonoVController.text = infoVision['tel'];
+    selectedVCity = infoVision['ciudad'];
+
   }
 
   Map<String, dynamic> infoInvertaga = {};
@@ -46,6 +54,9 @@ class _InfoGeneralState extends State<InfoGeneral> {
   TextEditingController nameRepIController = TextEditingController(text: "");
   TextEditingController idRepIController = TextEditingController(text: "");
   TextEditingController lugarIdRepIController = TextEditingController(text: "");
+  TextEditingController dirIController = TextEditingController(text: "");
+  TextEditingController telefonoIController = TextEditingController(text: "");
+  String selectedICity = '';
 
   TextEditingController nameVController = TextEditingController(text: "");
   TextEditingController nitVController = TextEditingController(text: "");
@@ -53,6 +64,9 @@ class _InfoGeneralState extends State<InfoGeneral> {
   TextEditingController nameRepVController = TextEditingController(text: "");
   TextEditingController idRepVController = TextEditingController(text: "");
   TextEditingController lugarIdRepVController = TextEditingController(text: "");
+  TextEditingController dirVController = TextEditingController(text: "");
+  TextEditingController telefonoVController = TextEditingController(text: "");
+  String selectedVCity = '';
 
   bool isInitialized = false;
 
@@ -157,6 +171,89 @@ class _InfoGeneralState extends State<InfoGeneral> {
                         ),
                         Container(
                           constraints: const BoxConstraints(maxWidth: 800),
+                          child: textFieldWidget("TELÉFONO", Icons.phone_enabled_outlined,
+                              false, telefonoIController, true, 'phone', () {}),
+                        ),
+                        const SizedBox(
+                          height: 5,
+                        ),
+                        Container(
+                          constraints: const BoxConstraints(maxWidth: 800),
+                          child: textFieldWidget("DIRECCIÓN", Icons.location_city_outlined,
+                              false, dirIController, true, 'name', () {}),
+                        ),
+                        const SizedBox(
+                          height: 5,
+                        ),
+                        Container(
+                          constraints: const BoxConstraints(maxWidth: 800),
+                          alignment: Alignment.center,
+                          height: 50,
+                          decoration: BoxDecoration(
+                            color: primaryColor.withOpacity(0.2),
+                            borderRadius: BorderRadius.circular(90),
+                            border: Border.all(color:fifthColor.withOpacity(0.1))
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.only(
+                                left: 10.0, right: 10),
+                            child: StreamBuilder<QuerySnapshot>(
+                              stream: FirebaseFirestore.instance
+                                  .collection('cities')
+                                  .orderBy('cityName',
+                                      descending: true)
+                                  .snapshots(),
+                              builder: (context, snapshot) {
+                                Set<String> cityNames = {};
+                                List<DropdownMenuItem> cityItems = [];
+                                if (!snapshot.hasData) {
+                                  return const CircularProgressIndicator();
+                                } else {
+                                  final citiesList = snapshot
+                                      .data?.docs.reversed
+                                      .toList();
+                                  for (var cities in citiesList!) {
+                                    String cityName =
+                                        cities['cityName'];
+                                    if (!cityNames
+                                        .contains(cityName)) {
+                                      cityNames.add(cityName);
+                                      cityItems.add(
+                                        DropdownMenuItem(
+                                          value: cityName,
+                                          child: Center(
+                                              child: Text(cityName)),
+                                        ),
+                                      );
+                                    }
+                                  }
+                                }
+                                return DropdownButton(
+                                  items: cityItems,
+                                  hint: Center(
+                                      child:
+                                          Text(selectedICity)),
+                                  underline: Container(),
+                                  style: TextStyle(
+                                    color:
+                                        fifthColor.withOpacity(0.9),
+                                  ),
+                                  onChanged: (cityValue) {
+                                    setState(() {
+                                      selectedICity = cityValue!;
+                                    });
+                                  },
+                                  isExpanded: true,
+                                );
+                              },
+                            ),
+                          )
+                        ),   
+                        const SizedBox(
+                          height: 5,
+                        ),
+                        Container(
+                          constraints: const BoxConstraints(maxWidth: 800),
                           child: textFieldWidget(
                               "NOMBRE DEL REPRESENTANTE",
                               Icons.person_outline,
@@ -200,9 +297,15 @@ class _InfoGeneralState extends State<InfoGeneral> {
                           ),
                         ),
                         const SizedBox(
-                          height: 5,
+                          height: 25,
                         ),
                       ],
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    const Divider(
+                      thickness: 5,
                     ),
                     const SizedBox(
                       height: 10,
@@ -239,6 +342,89 @@ class _InfoGeneralState extends State<InfoGeneral> {
                               'email',
                               () {}),
                         ),
+                        const SizedBox(
+                          height: 5,
+                        ),
+                        Container(
+                          constraints: const BoxConstraints(maxWidth: 800),
+                          child: textFieldWidget("TELÉFONO", Icons.phone_enabled_outlined,
+                              false, telefonoVController, true, 'phone', () {}),
+                        ),
+                        const SizedBox(
+                          height: 5,
+                        ),
+                        Container(
+                          constraints: const BoxConstraints(maxWidth: 800),
+                          child: textFieldWidget("DIRECCIÓN", Icons.location_city_outlined,
+                              false, dirVController, true, 'name', () {}),
+                        ),
+                        const SizedBox(
+                          height: 5,
+                        ),
+                        Container(
+                          constraints: const BoxConstraints(maxWidth: 800),
+                          alignment: Alignment.center,
+                          height: 50,
+                          decoration: BoxDecoration(
+                            color: primaryColor.withOpacity(0.2),
+                            borderRadius: BorderRadius.circular(90),
+                            border: Border.all(color:fifthColor.withOpacity(0.1))
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.only(
+                                left: 10.0, right: 10),
+                            child: StreamBuilder<QuerySnapshot>(
+                              stream: FirebaseFirestore.instance
+                                  .collection('cities')
+                                  .orderBy('cityName',
+                                      descending: true)
+                                  .snapshots(),
+                              builder: (context, snapshot) {
+                                Set<String> cityNames = {};
+                                List<DropdownMenuItem> cityItems = [];
+                                if (!snapshot.hasData) {
+                                  return const CircularProgressIndicator();
+                                } else {
+                                  final citiesList = snapshot
+                                      .data?.docs.reversed
+                                      .toList();
+                                  for (var cities in citiesList!) {
+                                    String cityName =
+                                        cities['cityName'];
+                                    if (!cityNames
+                                        .contains(cityName)) {
+                                      cityNames.add(cityName);
+                                      cityItems.add(
+                                        DropdownMenuItem(
+                                          value: cityName,
+                                          child: Center(
+                                              child: Text(cityName)),
+                                        ),
+                                      );
+                                    }
+                                  }
+                                }
+                                return DropdownButton(
+                                  items: cityItems,
+                                  hint: Center(
+                                      child:
+                                          Text(selectedVCity)),
+                                  underline: Container(),
+                                  style: TextStyle(
+                                    color:
+                                        fifthColor.withOpacity(0.9),
+                                  ),
+                                  onChanged: (cityValue) {
+                                    setState(() {
+                                      selectedVCity = cityValue!;
+                                    });
+                                  },
+                                  isExpanded: true,
+                                );
+                              },
+                            ),
+                          )
+                        ),   
                         const SizedBox(
                           height: 5,
                         ),
@@ -326,6 +512,9 @@ class _InfoGeneralState extends State<InfoGeneral> {
                             'invertaga',
                             nameIController.text,
                             nitIController.text,
+                            telefonoIController.text,
+                            dirIController.text,
+                            selectedICity,
                             emailIController.text,
                             nameRepIController.text,
                             idRepIController.text,
@@ -335,6 +524,9 @@ class _InfoGeneralState extends State<InfoGeneral> {
                             'vision',
                             nameVController.text,
                             nitVController.text,
+                            telefonoVController.text,
+                            dirVController.text,
+                            selectedVCity,
                             emailVController.text,
                             nameRepVController.text,
                             idRepVController.text,

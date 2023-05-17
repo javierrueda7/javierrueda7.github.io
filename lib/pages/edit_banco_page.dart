@@ -23,7 +23,7 @@ class _EditBancoPageState extends State<EditBancoPage> {
   TextEditingController nameRepController = TextEditingController(text: "");
   String selectedTipoCuenta = '';
   String bid = '';
-  List<String> tipoCuentaList = ['Corriente', 'Ahorros'];
+  List<String> tipoCuentaList = ['CORRIENTE', 'AHORROS'];
   bool isInitialized = false;
 
   @override
@@ -178,7 +178,7 @@ class _EditBancoPageState extends State<EditBancoPage> {
                                 ),
                               );
                             } else {
-                              await addBanco(
+                              await updateBanco(
                                 nameController.text,
                                 bancoController.text,
                                 nroCuentaController.text,

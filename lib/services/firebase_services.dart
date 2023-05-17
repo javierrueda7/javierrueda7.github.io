@@ -2,20 +2,101 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 FirebaseFirestore db = FirebaseFirestore.instance;
 
-Future<List> getRoles() async {
-  List roles = [];
-  QuerySnapshot? queryRoles = await db.collection('roles').get();
-  for (var docRole in queryRoles.docs) {
-    final Map<String, dynamic> dataRole =
-        docRole.data() as Map<String, dynamic>;
-    final rol = {
-      "roleId": dataRole['roleId'],
-      "rid": docRole.id,
-      "roleName": dataRole['roleName'],
+Future<void> addPlanPagos(String lote, double precioIni, double precioFin, double dcto, double valorSeparacion, double porcCI, String estadoPago, double saldoPorPagar, double valorPagado) async{
+  await db.collection("planPagos").doc(lote).set({
+    "precioIni": precioIni,
+    "precioFin": precioFin,
+    "dcto": dcto,
+    "valorSeparacion": valorSeparacion,
+    "porcCI": porcCI,
+    "estadoPago": estadoPago,
+    "saldoPorPagar": saldoPorPagar,
+    "valorPagado": valorPagado
+  });
+}
+
+Future<void> updatePlanPagos(String lote, double precioIni, double precioFin, double dcto, String estadoPago, double saldoPorPagar, double valorPagado) async{
+  await db.collection("planPagos").doc(lote).update({
+    "precioIni": precioIni,
+    "precioFin": precioFin,
+    "dcto": dcto,
+    "estadoPago": estadoPago,
+    "saldoPorPagar": saldoPorPagar,
+    "valorPagado": valorPagado
+  });
+}
+
+Future<void> pagosEsperados(String lote, String idPago, double valorPago, String conceptoPago, String fechaPago) async{
+  await db.collection("planPagos").doc(lote).collection("pagosEsperados").doc(idPago).set({
+    "valorPago": valorPago,
+    "conceptoPago": conceptoPago,
+    "fechaPago": fechaPago,
+  });
+}
+
+Future<void> pagosRealizados(String lote, String idPago, double valorPago, String conceptoPago, String fechaRecibo, String fechaPago, String metodoPago, String nombreCliente, String idCliente, String telCliente, String emailCliente, String dirCliente, String ciudadCliente, String obsPago) async{
+  await db.collection("planPagos").doc(lote).collection("pagosRealizados").doc(idPago).set({
+    "valorPago": valorPago,
+    "conceptoPago": conceptoPago,
+    "fechaRecibo": fechaRecibo,
+    "fechaPago": fechaPago,
+    "metodoPago": metodoPago,
+    "nombreCliente": nombreCliente,
+    "idCliente": idCliente,
+    "telCliente": telCliente,
+    "emailCliente": emailCliente,
+    "dirCliente": dirCliente,
+    "ciudadCliente": ciudadCliente,
+    "obsPago": obsPago
+  });
+}
+
+Future<List> getPagos(String lote) async{
+  List pagos = [];
+  QuerySnapshot? queryPagos = await db.collection('planPagos').doc(lote).collection('pagosRealizados').get();
+  for (var doc in queryPagos.docs) {
+    final Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+    final pago = {
+      "pid": doc.id,
+      "valorPago": data['valorPago'],
+      "conceptoPago": data['conceptoPago'],
+      "fechaRecibo": data['fechaRecibo'],
+      "fechaPago": data['fechaPago'],
+      "metodoPago": data['metodoPago'],
+      "nombreCliente": data['nombreCliente'],
+      "idCliente": data['idCliente'],
+      "telCliente": data['telCliente'],
+      "emailCliente": data['emailCliente'],
+      "dirCliente": data['dirCliente'],
+      "ciudadCliente": data['ciudadCliente'],
+      "obsPago": data['obsPago']
     };
-    roles.add(rol);
+    pagos.add(pago);
   }
-  return roles;
+  return pagos;
+}
+
+Future<void> deletePagos(String pid, String lote, double valor) async {
+  await db.collection("planPagos").doc(lote).collection('pagosRealizados').doc(pid).delete();
+  
+  final DocumentSnapshot doc = await db.collection("planPagos").doc(lote).get();
+  final Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+  
+  final double saldoPorPagar = (data["saldoPorPagar"] ?? 0) + valor;
+  final double valorPagado = (data["valorPagado"] ?? 0) - valor;
+  String estado = data["estadoPago"];
+  if (valorPagado < data["valorSeparacion"]){
+    estado = 'Pendiente';
+    await db.collection("lotes").doc(lote).update({"loteState": 'Lote separado'});
+  } else if(data["valorPagado"] == data["precioFin"]){
+    estado = 'En proceso';
+  }  
+
+  await db.collection("planPagos").doc(lote).update({
+    "saldoPorPagar": saldoPorPagar,
+    "valorPagado": valorPagado,
+    "estadoPago": estado,
+  });
 }
 
 Future<void> addBanco(String bid, String banco, String nroCuenta,
@@ -29,8 +110,19 @@ Future<void> addBanco(String bid, String banco, String nroCuenta,
   });
 }
 
+Future<void> updateBanco(String bid, String banco, String nroCuenta,
+    String tipoCuenta, String nit, String nameRep) async {
+  await db.collection("infobanco").doc(bid).update({
+    "banco": banco,
+    "nroCuenta": nroCuenta,
+    "tipoCuenta": tipoCuenta,
+    "nit": nit,
+    "nameRep": nameRep
+  });
+}
+
 Future<void> deleteBank(String bid) async {
-  await db.collection("infobanco").doc(bid).delete();
+  await db.collection("infobanco").doc(bid).delete();  
 }
 
 Future<List> getCuentasBanco() async {
@@ -174,11 +266,14 @@ Future<List> getPagoAdicional() async {
   return pagos;
 }
 
-Future<void> updateInv(String inv, String name, String nit, String email,
+Future<void> updateInv(String inv, String name, String nit, String tel, String dir, String ciudad, String email,
     String nameRep, String idRep, String idLugar) async {
   await db.collection("infoproyecto").doc(inv).update({
     "name": name,
-    "nit": nit,
+    "nit": nit,    
+    "tel": tel,
+    "dir": dir,
+    "ciudad": ciudad,
     "email": email,
     "nameRep": nameRep,
     "idRep": idRep,
@@ -215,6 +310,9 @@ Future<Map<String, dynamic>> getInversionista(String inv) async {
     "name": data['name'],
     "nameRep": data['nameRep'],
     "nit": data['nit'],
+    "tel": data['tel'],
+    "dir": data['dir'],
+    "ciudad": data['ciudad']
   };
   return inversionistaInfo;
 }
@@ -252,6 +350,64 @@ Future<void> addOrdenSep(
   String clienteID,
 ) async {
   await db.collection("ordSep").doc(oid).set({
+    "quoteId": quoteId,
+    "sellerID": sellerID,
+    "loteId": loteId,
+    "priceLote": priceLote,
+    "precioFinal": precioFinal,
+    "dctoLote": dctoLote,
+    "perCILote": perCILote,
+    "vlrCILote": vlrCILote,
+    "vlrSepLote": vlrSepLote,
+    "separacionDate": separacionDate,
+    "saldoSepLote": saldoSepLote,
+    "promesaDLDate": promesaDLDate,
+    "plazoCI": plazoCI,
+    "plazoContado": plazoContado,
+    "saldoCILote": saldoCILote,
+    "saldoCIDLDate": saldoCIDLDate,
+    "vlrPorPagarLote": vlrPorPagarLote,
+    "metodoPagoLote": metodoPagoLote,
+    "saldoTotalDate": saldoTotalDate,
+    "periodoCuotasLote": periodoCuotasLote,
+    "nroCuotasLote": nroCuotasLote,
+    "vlrCuotasLote": vlrCuotasLote,
+    "tem": tem,
+    "observacionesLote": observacionesLote,
+    "clienteID": clienteID,
+    "stageSep": "ACTIVA"
+  });
+}
+
+Future<void> updateOrdenSep(
+  String oid,
+  String quoteId,
+  String sellerID,
+  String loteId,
+  double priceLote,
+  double precioFinal,
+  double dctoLote,
+  double perCILote,
+  double vlrCILote,
+  double vlrSepLote,
+  String separacionDate,
+  double saldoSepLote,
+  String promesaDLDate,
+  double plazoCI,
+  double plazoContado,
+  double saldoCILote,
+  String saldoCIDLDate,
+  double vlrPorPagarLote,
+  String metodoPagoLote,
+  String saldoTotalDate,
+  String periodoCuotasLote,
+  int nroCuotasLote,
+  double vlrCuotasLote,
+  double tem,
+  String observacionesLote,
+  String clienteID,
+) async {
+  await db.collection("ordSep").doc(oid).update({
     "quoteId": quoteId,
     "sellerID": sellerID,
     "loteId": loteId,
@@ -431,6 +587,68 @@ Future<void> deleteSep(String oid) async {
 
 Future<void> updateQuoteStage(String qid, String quoteStage) async {
   await db.collection("quotes").doc(qid).update({"quoteStage": quoteStage});
+}
+
+Future<void> updateQuoteForSep(
+    String qid,
+    String sellerID,
+    String loteId,
+    String loteName,
+    String etapaLote,
+    String areaLote,
+    double priceLote,
+    double precioFinal,
+    double dctoLote,
+    double perCILote,
+    double vlrCILote,
+    double vlrSepLote,
+    String sepDLDate,
+    double saldoSepLote,
+    String saldoSepDLDate,
+    double plazoCI,
+    double plazoContado,
+    double saldoCILote,
+    String saldoCIDLDate,
+    double vlrPorPagarLote,
+    String metodoPagoLote,
+    String saldoTotalDate,
+    String periodoCuotasLote,
+    int nroCuotasLote,
+    double vlrCuotasLote,
+    double tem,
+    String observacionesLote,
+    String clienteID,
+    String quoteStage) async {
+  await db.collection("quotes").doc(qid).update({
+    "sellerID": sellerID,
+    "loteId": loteId,
+    "loteName": loteName,
+    "etapaLote": etapaLote,
+    "areaLote": areaLote,
+    "priceLote": priceLote,
+    "precioFinal": precioFinal,
+    "dctoLote": dctoLote,
+    "perCILote": perCILote,
+    "vlrCILote": vlrCILote,
+    "vlrSepLote": vlrSepLote,
+    "sepDLDate": sepDLDate,
+    "saldoSepLote": saldoSepLote,
+    "saldoSepDLDate": saldoSepDLDate,
+    "plazoCI": plazoCI,
+    "plazoContado": plazoContado,
+    "saldoCILote": saldoCILote,
+    "saldoCIDLDate": saldoCIDLDate,
+    "vlrPorPagarLote": vlrPorPagarLote,
+    "metodoPagoLote": metodoPagoLote,
+    "saldoTotalDate": saldoTotalDate,
+    "periodoCuotasLote": periodoCuotasLote,
+    "nroCuotasLote": nroCuotasLote,
+    "vlrCuotasLote": vlrCuotasLote,
+    "tem": tem,
+    "observacionesLote": observacionesLote,
+    "clienteID": clienteID,
+    "quoteStage": quoteStage
+  });
 }
 
 Future<void> updateQuote(

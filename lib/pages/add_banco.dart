@@ -14,10 +14,10 @@ class _AddBancoPageState extends State<AddBancoPage> {
   final TextEditingController nameController = TextEditingController();
   final TextEditingController bancoController = TextEditingController();
   final TextEditingController nroCuentaController = TextEditingController();
-  String selectedTipoCuenta = 'Corriente';
+  String selectedTipoCuenta = 'CORRIENTE';
   final TextEditingController nitController = TextEditingController();
   final TextEditingController nameRepController = TextEditingController();
-  List<String> tipoCuentaList = ['Corriente', 'Ahorros'];
+  List<String> tipoCuentaList = ['CORRIENTE', 'AHORROS'];
 
   @override
   Widget build(BuildContext context) {

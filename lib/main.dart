@@ -1,5 +1,7 @@
+import 'package:albaterrapp/pages/add_payment.dart';
 import 'package:albaterrapp/pages/edit_banco_page.dart';
 import 'package:albaterrapp/pages/edit_lote.dart';
+import 'package:albaterrapp/pages/edit_sep.dart';
 import 'package:albaterrapp/pages/gen_sep.dart';
 import 'package:albaterrapp/pages/edit_quote.dart';
 import 'package:albaterrapp/pages/edit_seller_page.dart';
@@ -38,6 +40,8 @@ class MyApp extends StatelessWidget {
         '/editLote': (context) => const EditLotePage(),
         '/editBanco': (context) => const EditBancoPage(),
         '/genSep': (context) => const GenerarSeparacion(),
+        '/editSep': (context) => const EditarSeparacion(),
+        '/addPayment': (context) => const AddPaymentPage(),
       },
     );
   }
