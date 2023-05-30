@@ -1438,7 +1438,7 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
                                 false,
                                 idController,
                                 true,
-                                'email',
+                                'id',
                                 () {}),
                           ),
                         ],
@@ -2196,7 +2196,6 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
                                       idController.text,
                                       quoteStageController.text);
                                   await addOrdenSep(
-                                    "SEP${quoteIdController.text}",
                                     quoteIdController.text,
                                     selectedSeller,
                                     loteId,
@@ -2223,8 +2222,9 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
                                     observacionesController.text,
                                     idController.text,
                                   );
-                                  await addPlanPagos(
+                                  await addPlanPagos(                                    
                                     loteId,
+                                    quoteIdController.text,
                                     vlrBaseLote.toDouble(),
                                     precioFinal,
                                     discountValue(),

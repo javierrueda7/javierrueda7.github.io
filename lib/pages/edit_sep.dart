@@ -171,8 +171,6 @@ class _EditarSeparacionState extends State<EditarSeparacion> {
   String sellerPhone = '';
   TextEditingController separacionIdController = TextEditingController(text: "");
   TextEditingController quoteDateController = TextEditingController(text: dateOnly(false, 0, DateTime.now(), false));
-  TextEditingController quoteId =
-      TextEditingController(text: "");
   String loteId = "";
   TextEditingController loteController = TextEditingController(text: "");
   TextEditingController etapaloteController = TextEditingController(text: "");
@@ -236,7 +234,6 @@ class _EditarSeparacionState extends State<EditarSeparacion> {
       sellerEmail = arguments['sellerEmail'];
       sellerPhone = arguments['sellerPhone'];
       separacionIdController.text = arguments['sepId'];
-      quoteId.text = arguments['quoteId'];
       loteId = arguments['loteId'];
       loteController.text = arguments['lote'];
       etapaloteController.text = arguments['etapalote'];
@@ -1286,7 +1283,7 @@ class _EditarSeparacionState extends State<EditarSeparacion> {
                                 false,
                                 idController,
                                 true,
-                                'email',
+                                'id',
                                 () {}),
                           ),
                         ],
@@ -1794,7 +1791,6 @@ class _EditarSeparacionState extends State<EditarSeparacion> {
                                 });
                                 if (selectedSeller.isEmpty ||
                                     quoteDateController.text.isEmpty ||
-                                    quoteId.text.isEmpty ||
                                     priceloteController.text.isEmpty ||
                                     vlrCuotaIniController.text.isEmpty ||
                                     vlrSeparacionController.text.isEmpty ||
@@ -1862,7 +1858,7 @@ class _EditarSeparacionState extends State<EditarSeparacion> {
                                         email: emailController.text,
                                         city: selectedCity,
                                         date: quoteDateController.text,
-                                        dueDate: quoteId.text,
+                                        dueDate: quoteDateController.text,
                                         lote: loteController.text,
                                         area: arealoteController.text,
                                         price: priceloteController.text,
@@ -1946,7 +1942,6 @@ class _EditarSeparacionState extends State<EditarSeparacion> {
                                 });
                                 if (selectedSeller.isEmpty ||
                                     quoteDateController.text.isEmpty ||
-                                    quoteId.text.isEmpty ||
                                     priceloteController.text.isEmpty ||
                                     vlrCuotaIniController.text.isEmpty ||
                                     vlrSeparacionController.text.isEmpty ||
@@ -2012,7 +2007,7 @@ class _EditarSeparacionState extends State<EditarSeparacion> {
                                     selectedCity,
                                   );
                                   await updateQuoteForSep(
-                                      quoteId.text,
+                                      separacionIdController.text,
                                       selectedSeller,
                                       loteId,
                                       loteController.text,
@@ -2043,7 +2038,6 @@ class _EditarSeparacionState extends State<EditarSeparacion> {
                                       sepStageController.text);
                                   await updateOrdenSep(
                                     separacionIdController.text,
-                                    quoteId.text,
                                     selectedSeller,
                                     loteId,
                                     vlrBaseLote.toDouble(),
@@ -2094,7 +2088,7 @@ class _EditarSeparacionState extends State<EditarSeparacion> {
                                     );
                                   }
                                   await updatePlanPagos(
-                                    loteId,
+                                    loteId, 
                                     vlrBaseLote.toDouble(),
                                     precioFinal,
                                     discountValue(),
@@ -2185,13 +2179,7 @@ class _EditarSeparacionState extends State<EditarSeparacion> {
     } else {
       return Container();
     }
-  }
-
-  double stringConverter(String valorAConvertir) {
-    String valorSinPuntos =
-        valorAConvertir.replaceAll('\$', '').replaceAll('.', '');
-    return double.parse(valorSinPuntos);
-  }
+  }  
 
   DateTime dateConverter(String stringAConvertir) {
     DateTime dateConverted = DateFormat('dd-MM-yyyy').parse(stringAConvertir);

@@ -2,8 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 FirebaseFirestore db = FirebaseFirestore.instance;
 
-Future<void> addPlanPagos(String lote, double precioIni, double precioFin, double dcto, double valorSeparacion, double porcCI, String estadoPago, double saldoPorPagar, double valorPagado) async{
+Future<void> addPlanPagos(String lote, String idPlanPagos, double precioIni, double precioFin, double dcto, double valorSeparacion, double porcCI, String estadoPago, double saldoPorPagar, double valorPagado) async{
   await db.collection("planPagos").doc(lote).set({
+    "idPlanPagos": idPlanPagos,
     "precioIni": precioIni,
     "precioFin": precioFin,
     "dcto": dcto,
@@ -323,7 +324,6 @@ Future<void> deleteSeller(String sid) async {
 
 Future<void> addOrdenSep(
   String oid,
-  String quoteId,
   String sellerID,
   String loteId,
   double priceLote,
@@ -350,7 +350,6 @@ Future<void> addOrdenSep(
   String clienteID,
 ) async {
   await db.collection("ordSep").doc(oid).set({
-    "quoteId": quoteId,
     "sellerID": sellerID,
     "loteId": loteId,
     "priceLote": priceLote,
@@ -381,7 +380,6 @@ Future<void> addOrdenSep(
 
 Future<void> updateOrdenSep(
   String oid,
-  String quoteId,
   String sellerID,
   String loteId,
   double priceLote,
@@ -408,7 +406,6 @@ Future<void> updateOrdenSep(
   String clienteID,
 ) async {
   await db.collection("ordSep").doc(oid).update({
-    "quoteId": quoteId,
     "sellerID": sellerID,
     "loteId": loteId,
     "priceLote": priceLote,
@@ -447,7 +444,6 @@ Future<List> getOrdenSep(String loteId, bool allLotes, String sellerId) async {
         if (data['loteId'] == loteId) {
           final sep = {
             "sepId": doc.id,
-            "quoteId": data['quoteId'],
             "sellerID":data['sellerID'],
             "loteId": data['loteId'],
             "priceLote": data['priceLote'],
@@ -479,7 +475,6 @@ Future<List> getOrdenSep(String loteId, bool allLotes, String sellerId) async {
       } else {      
         final sep = {
           "sepId": doc.id,
-          "quoteId": data['quoteId'],
           "sellerID":data['sellerID'],
           "loteId": data['loteId'],
           "priceLote": data['priceLote'],
@@ -513,7 +508,6 @@ Future<List> getOrdenSep(String loteId, bool allLotes, String sellerId) async {
         if (data['loteId'] == loteId && data['sellerID'] == sellerId) {
           final sep = {
             "sepId": doc.id,
-            "quoteId": data['quoteId'],
             "sellerID":data['sellerID'],
             "loteId": data['loteId'],
             "priceLote": data['priceLote'],
@@ -546,7 +540,6 @@ Future<List> getOrdenSep(String loteId, bool allLotes, String sellerId) async {
         if(data['sellerID'] == sellerId){
           final sep = {
             "sepId": doc.id,
-            "quoteId": data['quoteId'],
             "sellerID":data['sellerID'],
             "loteId": data['loteId'],
             "priceLote": data['priceLote'],

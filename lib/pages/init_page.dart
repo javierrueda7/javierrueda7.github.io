@@ -6,6 +6,7 @@ import 'package:albaterrapp/pages/lotes_page.dart';
 import 'package:albaterrapp/pages/resumen_pagos.dart';
 import 'package:albaterrapp/pages/sellers_page.dart';
 import 'package:albaterrapp/pages/signin_page.dart';
+import 'package:albaterrapp/pages/signup_page.dart';
 import 'package:albaterrapp/services/firebase_services.dart';
 import 'package:albaterrapp/utils/color_utils.dart';
 import 'package:albaterrapp/widgets/widgets.dart';
@@ -205,14 +206,10 @@ class _InitPageState extends State<InitPage> {
                   setState(() {});
                 } 
                 if (value == 'Opción 5') {
-                  /*Navigator.push(
+                  Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => ExistingQuotes(
-                                loteInfo: currentLote,
-                                needAll: true,
-                                loggedEmail: loggedEmail,
-                              )));*/
+                          builder: (context) => const TestPage()));
                   setState(() {});
                 }
                 if (value == 'Opción 6') {

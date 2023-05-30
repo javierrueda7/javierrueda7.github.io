@@ -1249,7 +1249,7 @@ class _EditQuotePageState extends State<EditQuotePage> {
                                 false,
                                 idController,
                                 true,
-                                'email',
+                                'id',
                                 () {}),
                           ),
                         ],

@@ -104,6 +104,13 @@ List<TextInputFormatter> inputFormatFinder(String value) {
   List<TextInputFormatter> inputFormat = [];
   if (value == 'number') {
     inputFormat = <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly];
+  } if (value == 'id') {
+    inputFormat = [
+      FilteringTextInputFormatter.allow(
+        RegExp(r'[A-Z0-9]'),
+        replacementString: '',
+      ),
+    ];
   } else {
     inputFormat = [];
   }
@@ -390,11 +397,17 @@ Widget easyDropdown(
 
 String currencyCOP(String initValue) {
   NumberFormat formatoMonedaColombiana =
-      NumberFormat.currency(locale: 'es_CO', symbol: '', decimalDigits: 0);
+      NumberFormat.currency(locale: 'es_CO', symbol: '', decimalDigits: 2);
 
-  String newValue = formatoMonedaColombiana.format(int.parse(initValue)).trim();
+  String newValue = formatoMonedaColombiana.format(double.parse(initValue).toInt()).trim();
 
   return '\$$newValue';
+}
+
+double stringConverter(String valorAConvertir) {
+  String valorSinPuntos =
+      valorAConvertir.replaceAll('\$', '').replaceAll('.', '');
+  return double.parse(valorSinPuntos);
 }
 
 String dateOnly(

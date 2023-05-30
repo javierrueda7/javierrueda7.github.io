@@ -224,7 +224,7 @@ class PDFInvoice extends StatelessWidget {
                       child: pw.Column(
                         crossAxisAlignment: pw.CrossAxisAlignment.start,
                         children: [
-                          pw.Text('NIT',
+                          pw.Text('Documento de identificación',
                             textAlign: pw.TextAlign.left, style: pw.TextStyle(fontSize: 10, fontWeight: pw.FontWeight.bold)
                           ),
                           pw.Text('Dirección',
@@ -349,7 +349,7 @@ class PDFInvoice extends StatelessWidget {
                         children: [
                           pw.Text(' ',
                             textAlign: pw.TextAlign.center, style: const pw.TextStyle(fontSize: 10)),
-                          pw.Text('RC-1',
+                          pw.Text(vision['name'],
                             textAlign: pw.TextAlign.center, style: const pw.TextStyle(fontSize: 10)),
                           pw.Text(' ',
                             textAlign: pw.TextAlign.center, style: const pw.TextStyle(fontSize: 10)),
@@ -432,7 +432,7 @@ class PDFInvoice extends StatelessWidget {
                         children: [
                           pw.Text(' ',
                             textAlign: pw.TextAlign.center, style: const pw.TextStyle(fontSize: 10)),
-                          pw.Text('RC-1',
+                          pw.Text(invertaga['name'],
                             textAlign: pw.TextAlign.center, style: const pw.TextStyle(fontSize: 10)),
                           pw.Text(' ',
                             textAlign: pw.TextAlign.center, style: const pw.TextStyle(fontSize: 10)),

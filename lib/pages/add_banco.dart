@@ -132,7 +132,7 @@ class _AddBancoPageState extends State<AddBancoPage> {
                           false,
                           nitController,
                           true,
-                          'email',
+                          'id',
                           () {}),
                     ),
                     const SizedBox(

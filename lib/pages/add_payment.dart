@@ -1,4 +1,3 @@
-import 'package:albaterrapp/pages/pdf_invoice.dart';
 import 'package:albaterrapp/services/firebase_services.dart';
 import 'package:albaterrapp/utils/color_utils.dart';
 import 'package:albaterrapp/widgets/widgets.dart';
@@ -271,7 +270,7 @@ class _AddPaymentPageState extends State<AddPaymentPage> {
                             false,
                             idController,
                             true,
-                            'email',
+                            'id',
                             () {}),
                       ),
                       const SizedBox(
