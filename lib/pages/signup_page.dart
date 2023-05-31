@@ -1,3 +1,4 @@
+import 'package:albaterrapp/utils/color_utils.dart';
 import 'package:albaterrapp/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -12,13 +13,15 @@ class TestPage extends StatefulWidget {
 
 class _TestPageState extends State<TestPage> {
   List<Map<String, dynamic>> installments = [];
-  double totalAmount = 0;
+  double precioFinal = 0;
   double remainingAmount = 0;
   double totalInstallmentAmount = 0;
   DateTime lastDate = DateTime.now();
+  Color amountColor = Colors.black;
+  void completo = false;
 
   void calculateRemainingAmount() {    
-    remainingAmount = totalAmount - totalInstallmentAmount;
+    remainingAmount = precioFinal - totalInstallmentAmount;
   }
 
   void printAllPayments() {
@@ -62,69 +65,115 @@ class _TestPageState extends State<TestPage> {
     }
   }
 
+
   DateTime dateConverter(String stringAConvertir) {
     DateTime dateConverted = DateFormat('dd-MM-yyyy').parse(stringAConvertir);
     return dateConverted;
   }
 
+  void setAmountColor(){
+    if(precioFinal==totalInstallmentAmount){
+      amountColor = successColor;
+    } else if(precioFinal<totalInstallmentAmount){
+      amountColor = dangerColor;
+    } else{
+      amountColor = Colors.black;
+    }
+  }
+
   Widget installmentForm() {
-    return Column(
+  return Container(
+    alignment: Alignment.center,
+    constraints: const BoxConstraints(maxWidth: 800),
+    child: Column(
       children: [
         Text(
-          'Total Amount: ${currencyCOP((totalAmount.toInt()).toString())}',
+          'Total Amount: ${currencyCOP((precioFinal.toInt()).toString())}',
           style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 16),
-        Text(
-          'Suma actual de las cuotas: ${currencyCOP(totalInstallmentAmount.toString())}',
-          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+        RichText(
+          text: TextSpan(
+            children: [
+              const TextSpan(
+                text: 'Suma actual de las cuotas: ',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black),
+              ),
+              TextSpan(
+                text: currencyCOP(totalInstallmentAmount.toString()),
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: amountColor,
+                ),
+              ),
+            ],
+          ),
         ),
         const SizedBox(height: 16),
         ListView.builder(
           shrinkWrap: true,
           itemCount: installments.length,
           itemBuilder: (context, index) {
-            TextEditingController amountController = installments[index]['controller'];
-            double installmentAmount = double.tryParse(amountController.text) ?? 0.0;
-
+            TextEditingController dateController = installments[index]['controller'];
+            TextEditingController amountController = installments[index]['amountController'];
             return Row(
               children: [
                 Expanded(
-                  flex: 2,
+                  flex: 4,
                   child: TextFormField(
-                    decoration: const InputDecoration(
-                      labelText: 'Payment Amount',
-                      prefixIcon: Icon(Icons.attach_money),
+                    decoration: InputDecoration(
+                      labelText: 'Cuota ${index+1}',
+                      labelStyle: TextStyle(color: fourthColor, fontWeight: FontWeight.bold),
+                      prefixIcon: const Icon(Icons.monetization_on_outlined, size: 20,),
                     ),
                     keyboardType: TextInputType.number,
                     inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly],
                     controller: amountController,
+                    textAlign: TextAlign.center,
                     onChanged: (value) {
-                      double newValue = double.tryParse(value) ?? 0.0;
-                      if (newValue > remainingAmount) {
-                        // If the entered value exceeds the total amount, set it to the total amount
-                        value = remainingAmount.toString();
-                        newValue = remainingAmount;
-                      }
+                      double newValue = double.tryParse(value) ?? 0;
                       setState(() {
-                        totalInstallmentAmount = installments.fold(0.0, (sum, installment) => sum + double.tryParse(installment['controller'].text) ?? 0.0);
+                        installments[index]['amount'] = newValue;
+                        totalInstallmentAmount = installments.fold(0.0, (sum, installment) => sum + installment['amount']);
                         calculateRemainingAmount();
+                        setAmountColor();
+                        amountController.value = TextEditingValue(
+                          text: (currencyCOP((newValue.toInt()).toString())),
+                          selection: TextSelection.collapsed(offset: (currencyCOP((newValue.toInt()).toString())).length),
+                        );
                       });
+                    },
+  
+                  ),
+                ),
+                Expanded(
+                  flex: 4,
+                  child: TextFormField(
+                    decoration: InputDecoration(
+                      labelText: 'Fecha de pago',
+                      labelStyle: TextStyle(color: fourthColor, fontWeight: FontWeight.bold),
+                      prefixIcon: const Icon(Icons.calendar_today, size: 20,),
+                    ),
+                    keyboardType: TextInputType.datetime,
+                    controller: dateController,
+                    textAlign: TextAlign.center,
+                    onTap: () {
+                      showDatePickerDialog(index);
                     },
                   ),
                 ),
                 Expanded(
-                  flex: 3,
-                  child: TextFormField(
-                    decoration: const InputDecoration(
-                      labelText: 'Payment Date',
-                      prefixIcon: Icon(Icons.calendar_today),
-                    ),
-                    keyboardType: TextInputType.datetime,
-                    controller: installments[index]['controller'],
-                    onTap: () {
-                      showDatePickerDialog(index);
+                  flex: 1,
+                  child: IconButton(
+                    onPressed: () {
+                      setState(() {
+                        installments.removeAt(index);
+                        totalInstallmentAmount = installments.fold(0.0, (sum, installment) => sum + installment['amount']);
+                        calculateRemainingAmount();
+                      });
                     },
+                    icon: Icon(Icons.delete_forever_outlined, color: dangerColor,),
                   ),
                 ),
               ],
@@ -134,31 +183,40 @@ class _TestPageState extends State<TestPage> {
         const SizedBox(height: 16),
         ElevatedButton(
           onPressed: () {
+            calculateRemainingAmount();
             Map<String, dynamic> newInstallment = {
-              'amount': installments[index]['controller'],
+              'amount': remainingAmount,
+              'amountController': TextEditingController(text: currencyCOP((remainingAmount.toInt()).toString())),
               'date': '',
               'controller': TextEditingController(text: DateFormat('dd-MM-yyyy').format(DateTime.now())),
             };
             installments.add(newInstallment);
             setState(() {
-              totalInstallmentAmount = installments.fold(0.0, (sum, installment) => sum + double.tryParse(installment['controller'].text) ?? 0.0);
+              totalInstallmentAmount = installments.fold(0.0, (sum, installment) => sum + (installment['amount']));
               calculateRemainingAmount();
             });
           },
-          child: const Text('Add Payment'),
+          child: const Text('Agregar pago'),
         ),
         const SizedBox(height: 16),
         ElevatedButton(
-          onPressed: printAllPayments,
+          onPressed: precioFinal == totalInstallmentAmount ? printAllPayments : () {
+            
+          },
           child: const Text('Print Payments'),
         ),
       ],
-    );
-  }
+    ),
+  );
+}
+
+
+
 
   @override
   Widget build(BuildContext context) {
-    totalAmount = 100; // Set the total amount here
+    precioFinal = 10000000; // Set the total amount here
+    setAmountColor();
     calculateRemainingAmount();
 
     return Scaffold(
@@ -171,5 +229,4 @@ class _TestPageState extends State<TestPage> {
       ),
     );
   }
-
 }

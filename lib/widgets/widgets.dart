@@ -397,7 +397,7 @@ Widget easyDropdown(
 
 String currencyCOP(String initValue) {
   NumberFormat formatoMonedaColombiana =
-      NumberFormat.currency(locale: 'es_CO', symbol: '', decimalDigits: 2);
+      NumberFormat.currency(locale: 'es_CO', symbol: '', decimalDigits: 0);
 
   String newValue = formatoMonedaColombiana.format(double.parse(initValue).toInt()).trim();
 

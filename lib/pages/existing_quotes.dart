@@ -1080,7 +1080,7 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
                                                     sellerEmail: sellerData[
                                                         'emailSeller'],
                                                     quoteId: snapshot
-                                                        .data?[index]['quoteId'],
+                                                        .data?[index]['sepId'],
                                                     name:
                                                         custData['nameCliente'],
                                                     idCust: snapshot.data?[index]['clienteID'],
