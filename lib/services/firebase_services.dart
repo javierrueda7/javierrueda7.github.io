@@ -2,9 +2,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 FirebaseFirestore db = FirebaseFirestore.instance;
 
-Future<void> addPlanPagos(String lote, String idPlanPagos, double precioIni, double precioFin, double dcto, double valorSeparacion, double porcCI, String estadoPago, double saldoPorPagar, double valorPagado) async{
+Future<void> addPlanPagos(String lote, String idPlanPagos, String paymentMethod, double precioIni, double precioFin, double dcto, double valorSeparacion, double porcCI, String estadoPago, double saldoPorPagar, double valorPagado) async{
   await db.collection("planPagos").doc(lote).set({
     "idPlanPagos": idPlanPagos,
+    "paymentMethod": paymentMethod,
     "precioIni": precioIni,
     "precioFin": precioFin,
     "dcto": dcto,
@@ -36,7 +37,7 @@ Future<void> pagosEsperados(String lote, String idPago, double valorPago, String
 }
 
 Future<void> pagosRealizados(String lote, String idPago, double valorPago, String conceptoPago, String fechaRecibo, String fechaPago, String metodoPago, String nombreCliente, String idCliente, String telCliente, String emailCliente, String dirCliente, String ciudadCliente, String obsPago) async{
-  await db.collection("planPagos").doc(lote).collection("pagosRealizados").doc(idPago).set({
+  await db.collection("pagos").doc(idPago).set({
     "valorPago": valorPago,
     "conceptoPago": conceptoPago,
     "fechaRecibo": fechaRecibo,

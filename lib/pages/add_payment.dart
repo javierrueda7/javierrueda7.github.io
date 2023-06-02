@@ -129,9 +129,15 @@ class _AddPaymentPageState extends State<AddPaymentPage> {
   TextEditingController conceptoPagoController = TextEditingController(text: "");
   TextEditingController paymentNumberController = TextEditingController(text: "");
   TextEditingController paymentValueController = TextEditingController(text: "");
+  late int paymentCounter;
+  final CollectionReference collectionReference =
+      FirebaseFirestore.instance.collection('pagos');
 
   @override
   Widget build(BuildContext context) {
+    collectionReference.get().then((QuerySnapshot paymentSnapshot) {
+      paymentCounter = paymentSnapshot.size;
+    });
     
     if(selectedLote != ''){
       CollectionReference collectionReference = FirebaseFirestore.instance.collection('planPagos').doc(selectedLote).collection('pagosRealizados');
@@ -762,7 +768,7 @@ class _AddPaymentPageState extends State<AddPaymentPage> {
                             });
                             await pagosRealizados(
                               selectedLote,
-                              pagosCounter.toString(),
+                              paymentIdGenerator(paymentCounter),
                               paymentValue,
                               'ABONO',
                               receiptDateController.text,
@@ -777,7 +783,7 @@ class _AddPaymentPageState extends State<AddPaymentPage> {
                               observacionesController.text
                             );
                             await updatePlanPagos(
-                              selectedLote, 
+                              selectedLote,                               
                               planPagos['precioIni'], 
                               totalPrice, 
                               discount, 
@@ -818,9 +824,11 @@ class _AddPaymentPageState extends State<AddPaymentPage> {
         ));
   }
 
-  String idPagoGen (int value){
-    value = value++;
-    return value.toString();
+  String paymentIdGenerator(int paymentCount) {
+    paymentCount++;
+    String idGenerated = paymentCount.toString().padLeft(5, '0');
+    idGenerated = '$idGenerated-$selectedLote';
+    return idGenerated;
   }
 
   String nextState(){

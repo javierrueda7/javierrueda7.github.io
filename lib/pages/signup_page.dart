@@ -36,34 +36,36 @@ class _TestPageState extends State<TestPage> {
   }
 
   void showDatePickerDialog(int index) async {
-    final currentDate = installments[index]['date'] != ''
-        ? DateFormat('dd-MM-yyyy').parse(installments[index]['date'])
-        : DateTime.now();
-
-    if (index > 0) {
-      lastDate = DateFormat('dd-MM-yyyy').parse(installments[index - 1]['date']);
-    } else {
-      lastDate = DateTime(1900);
-    }
-
-    final pickedDate = await showDatePicker(
-      locale: const Locale("es", "CO"),
-      context: context,
-      initialDate: currentDate,
-      firstDate: lastDate.add(const Duration(days: 1)),
-      lastDate: DateTime(2050),
-    );
-
-    if (pickedDate != null) {
-      final formattedDate = DateFormat('dd-MM-yyyy').format(pickedDate);
-      setState(() {
-        installments[index]['date'] = formattedDate;
-      });
-      // Update the corresponding TextEditingController with the selected date
-      TextEditingController dateController = installments[index]['controller'];
-      dateController.text = formattedDate;
-    }
+  DateTime previousDate;
+  DateTime firstDate;
+  if (index > 0 && installments[index - 1]['date'] != '') {
+    previousDate = DateFormat('dd-MM-yyyy').parse(installments[index - 1]['date']);
+    firstDate = previousDate.add(Duration(days: 1));
+  } else {
+    firstDate = DateTime.now();
+    previousDate = DateTime.now();
   }
+
+  final pickedDate = await showDatePicker(
+    context: context,
+    initialDate: firstDate,
+    firstDate: previousDate,
+    lastDate: DateTime(2050),
+  );
+
+  if (pickedDate != null) {
+    final formattedDate = DateFormat('dd-MM-yyyy').format(pickedDate);
+    setState(() {
+      installments[index]['date'] = formattedDate;
+    });
+    // Update the corresponding TextEditingController with the selected date
+    TextEditingController dateController = installments[index]['controller'];
+    dateController.text = formattedDate;
+  }
+}
+
+
+
 
 
   DateTime dateConverter(String stringAConvertir) {
@@ -188,7 +190,7 @@ class _TestPageState extends State<TestPage> {
               'amount': remainingAmount,
               'amountController': TextEditingController(text: currencyCOP((remainingAmount.toInt()).toString())),
               'date': '',
-              'controller': TextEditingController(text: DateFormat('dd-MM-yyyy').format(DateTime.now())),
+              'controller': TextEditingController(text: ''),
             };
             installments.add(newInstallment);
             setState(() {

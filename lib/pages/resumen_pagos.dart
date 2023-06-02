@@ -165,16 +165,17 @@ class _ResumenPagosState extends State<ResumenPagos> {
                 bottom: 0,
                 child: FutureBuilder(
                   future: getPagos(loteid),
-                  builder: ((context, snapshot) {
-                    if (snapshot.hasData) {
+                  builder: ((context, pagosSnapshot) {
+                    if (pagosSnapshot.hasData) {
                       return ListView.builder(
-                        itemCount: snapshot.data?.length,
+                        itemCount: pagosSnapshot.data?.length,
                         itemBuilder: (context, index) {
                           return Dismissible(
                             onDismissed: (direction) async {
-                              await deletePagos(snapshot.data?[index]['pid'], loteid, snapshot.data?[index]['valorPago']);
-                              snapshot.data?.removeAt(index);
-                              setState(() {});
+                              await deletePagos(pagosSnapshot.data?[index]['pid'], loteid, pagosSnapshot.data?[index]['valorPago']);
+                              setState(() {
+                                pagosSnapshot.data?.removeAt(index);
+                              });
                             },
                             confirmDismiss: (direction) async {
                               bool result = false;
@@ -183,7 +184,7 @@ class _ResumenPagosState extends State<ResumenPagos> {
                                 builder: (context) {
                                   return AlertDialog(
                                     title: Text(
-                                      "Esta seguro de eliminar el pago ${snapshot.data?[index]['pid']}?"),
+                                      "Esta seguro de eliminar el pago ${pagosSnapshot.data?[index]['pid']}?"),
                                     actions: [
                                       TextButton(
                                         onPressed: () {
@@ -214,41 +215,41 @@ class _ResumenPagosState extends State<ResumenPagos> {
                               child: const Icon(Icons.delete),
                             ),
                             direction: DismissDirection.endToStart,
-                            key: Key(snapshot.data?[index]['pid']),
+                            key: Key(pagosSnapshot.data?[index]['pid']),
                             child: ListTile(
-                              leading: Text('Pago ${snapshot.data?[index]['pid']}'),
-                              title: Text('Valor pagado: ${currencyCOP((snapshot.data?[index]['valorPago'].toInt()).toString())}'),
+                              leading: Text('Pago ${pagosSnapshot.data?[index]['pid']}'),
+                              title: Text('Valor pagado: ${currencyCOP((pagosSnapshot.data?[index]['valorPago'].toInt()).toString())}'),
                               subtitle: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text('Fecha de pago: ${snapshot.data?[index]['fechaPago']}'),
-                                  Text('Método de pago: ${snapshot.data?[index]['metodoPago']}')
+                                  Text('Fecha de pago: ${pagosSnapshot.data?[index]['fechaPago']}'),
+                                  Text('Método de pago: ${pagosSnapshot.data?[index]['metodoPago']}')
                                 ],
                               ),
                               onTap: (() async {
-                                String valorEnLetras = await numeroEnLetras(snapshot.data?[index]['valorPago'], 'pesos');
+                                String valorEnLetras = await numeroEnLetras(pagosSnapshot.data?[index]['valorPago'], 'pesos');
                                   // ignore: use_build_context_synchronously
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) => PDFInvoice(
                                         lote: lote['loteName'],
-                                        recibo: 'No. ${snapshot.data?[index]['pid']}',                                  
-                                        nameCliente: snapshot.data?[index]['nombreCliente'],
-                                        idCliente: snapshot.data?[index]['idCliente'],
-                                        phoneCliente: snapshot.data?[index]['telCliente'],
-                                        addressCliente: snapshot.data?[index]['dirCliente'],
-                                        emailCliente: snapshot.data?[index]['emailCliente'],
-                                        cityCliente: snapshot.data?[index]['ciudadCliente'],
-                                        receiptDate: snapshot.data?[index]['fechaRecibo'],
-                                        paymentDate: snapshot.data?[index]['fechaPago'],                                  
-                                        paymentValue: snapshot.data?[index]['valorPago'],
+                                        recibo: 'No. ${pagosSnapshot.data?[index]['pid']}',                                  
+                                        nameCliente: pagosSnapshot.data?[index]['nombreCliente'],
+                                        idCliente: pagosSnapshot.data?[index]['idCliente'],
+                                        phoneCliente: pagosSnapshot.data?[index]['telCliente'],
+                                        addressCliente: pagosSnapshot.data?[index]['dirCliente'],
+                                        emailCliente: pagosSnapshot.data?[index]['emailCliente'],
+                                        cityCliente: pagosSnapshot.data?[index]['ciudadCliente'],
+                                        receiptDate: pagosSnapshot.data?[index]['fechaRecibo'],
+                                        paymentDate: pagosSnapshot.data?[index]['fechaPago'],                                  
+                                        paymentValue: pagosSnapshot.data?[index]['valorPago'],
                                         paymentValueLetters: valorEnLetras,
                                         saldoPorPagar: planPagos['saldoPorPagar'],
                                         valorTotal: planPagos['precioFin'],
-                                        paymentMethod: snapshot.data?[index]['metodoPago'],
-                                        observaciones: snapshot.data?[index]['obsPago'],
-                                        conceptoPago: snapshot.data?[index]['conceptoPago'],
+                                        paymentMethod: pagosSnapshot.data?[index]['metodoPago'],
+                                        observaciones: pagosSnapshot.data?[index]['obsPago'],
+                                        conceptoPago: pagosSnapshot.data?[index]['conceptoPago'],
                                       ),
                                     ),
                                   );

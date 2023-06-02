@@ -4,6 +4,7 @@ import 'package:albaterrapp/utils/color_utils.dart';
 import 'package:albaterrapp/widgets/widgets.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'dart:async';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
@@ -89,7 +90,6 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
   double vlrTEM = 0;
   double dctoContado = 0;
   double dctoCuotas = 0;
-  double nroCuotas = 1;
   int maxCuotas = 1;
   double cuotaInicial = 0;
   int periodoCuotas = 1;
@@ -123,6 +123,24 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
     dctoCuotas = await getPeriodoDiscount(periodoCuotas.toString());
   }
 
+  bool isFormVisible = false;
+
+  void toggleFormVisibility() {
+    setState(() {
+      isFormVisible = !isFormVisible;
+    });
+  }
+
+  List<String> dctoPersonalizado = ['0.0%', '2.5%', '5.0%', '7.5%', '10.0%', '12.5%'];
+  String selectedDctoPersonalizado = '0.0%';
+
+  List<Map<String, dynamic>> installments = [];
+  double remainingAmount = 0;
+  double totalInstallmentAmount = 0;
+  DateTime lastDate = DateTime.now();
+  Color amountColor = Colors.black;
+  void completo = false;
+
   late int vlrBaseLote;
   late double saldoCI;
   late double valorAPagar;
@@ -146,6 +164,7 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
     'Semestral',
     'Anual'
   ];
+  int diasValue = 30;
   List<String> paymentMethodList = ['Pago de contado', 'Financiación directa', 'Personalizado'];
   String paymentMethodSelectedItem = 'Pago de contado';
   Stream<QuerySnapshot>? citiesStream;
@@ -325,6 +344,7 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
       auxn++;
     }
     isInitialized = true;
+    setAmountColor();
 
     return Scaffold(
       extendBodyBehindAppBar: false,
@@ -685,257 +705,33 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
                       height: 10,
                     ),
                     Container(
-                        constraints: const BoxConstraints(maxWidth: 800),
-                        alignment: Alignment.center,
-                        child: const Text('Método de pago',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ))),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    Container(
-                      constraints: const BoxConstraints(maxWidth: 800),
-                      child: easyDropdown(
-                          paymentMethodList, paymentMethodSelectedItem,
-                          (tempPaymentMethod) {
-                        setState(() {
-                          paymentMethodSelectedItem = tempPaymentMethod!;
-                          updateDateSaldo(
-                              dateConverter(separacionDeadlineController.text));
-                          discountValue();
-                          updateNumberWords();
-                        });
-                      }),
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    //Separacion
-                    paymentMethodSelectedItem == 'Personalizado' 
-                    ? Container() 
-                    : Column(
-                      children: [
-                        Container(
-                          constraints: const BoxConstraints(maxWidth: 800),
-                          child: Column(
-                            children: [
-                              const SizedBox(
-                                  height: 25,
-                                  child: Text(
-                                    'Separación',
-                                    style: TextStyle(
-                                        fontSize: 16, fontWeight: FontWeight.bold),
-                                  )),
-                              const SizedBox(
-                                  height: 20,
-                                  child: Text(
-                                    'Fecha de separacion)',
-                                    style: TextStyle(fontSize: 14),
-                                  )),
-                              const SizedBox(
-                                height: 10,
-                              ),
-                              Container(
-                                decoration: BoxDecoration(
-                                  color: primaryColor.withOpacity(0.2),
-                                  borderRadius: BorderRadius.circular(30.0),
-                                  border: Border.all(
-                                      width: 1,
-                                      style: BorderStyle.solid,
-                                      color: fifthColor.withOpacity(0.1)),
-                                ),
-                                child: Padding(
-                                  padding: const EdgeInsets.only(left: 10),
-                                  child: TextField(
-                                    textAlign: TextAlign.center,
-                                    cursorColor: fifthColor,
-                                    style: TextStyle(
-                                        color: fifthColor.withOpacity(0.9)),
-                                    controller: separacionDeadlineController,
-                                    decoration: InputDecoration(
-                                      border: InputBorder.none,
-                                      icon: Icon(
-                                        Icons.date_range_outlined,
-                                        color: fifthColor,
-                                      ),
-                                      hintText: DateFormat('dd-MM-yyyy')
-                                          .format(quotePickedDate),
-                                    ),
-                                    readOnly: true,
-                                    onTap: () async {
-                                      DateTime? pickedDate = await showDatePicker(
-                                        locale: const Locale("es", "CO"),
-                                        context: context,
-                                        initialDate: dateConverter(
-                                            separacionDeadlineController.text),
-                                        firstDate: DateTime(1900),
-                                        lastDate: DateTime(2050),
-                                      );
-                                      if (pickedDate != null) {
-                                        setState(() {
-                                          separacionDeadlineController.text =
-                                              DateFormat('dd-MM-yyyy')
-                                                  .format(pickedDate);
-                                          saldoSeparacionDeadlineController.text =
-                                              dateOnly(false, plazoSaldoSep,
-                                                  pickedDate, false);
-                                          saldoCuotaIniDeadlineController.text =
-                                              dateOnly(
-                                                  false, plazoCI, pickedDate, true);
-                                          updateDateSaldo(pickedDate);
-                                          discountValue();
-                                        });
-                                      }
-                                    },
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(
-                                height: 10,
-                              ),
-                              const SizedBox(
-                                  height: 15,
-                                  child: Text(
-                                    'Valor de separación',
-                                    style: TextStyle(fontSize: 14),
-                                  )),
-                              const SizedBox(
-                                height: 10,
-                              ),
-                              Row(
-                                children: [
-                                  Expanded(
-                                    flex: 6,
-                                    child: textFieldWidget(
-                                      (currencyCOP(
-                                          (vlrFijoSeparacion.toInt()).toString())),
-                                      Icons.monetization_on_outlined,
-                                      false,
-                                      totalSeparacionController,
-                                      false,
-                                      'number',
-                                      () {},
-                                    ),
-                                  ),
-                                  Expanded(
-                                    flex: 7,
-                                    child: textFieldWidget(
-                                        "Valor en letras",
-                                        Icons.abc_outlined,
-                                        false,
-                                        letrasSepController,
-                                        true,
-                                        'name',
-                                        () {}),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        //Financiación directa
-                        paymentMethodSeparacion(paymentMethodSelectedItem),
-                      ],
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    Container(
-                        constraints: const BoxConstraints(maxWidth: 800),
-                        alignment: Alignment.center,
-                        child: const Text('Asesor comercial',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ))),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    Container(
-                      constraints: const BoxConstraints(maxWidth: 800),
-                      alignment: Alignment.center,
-                      height: 50,
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(90),
-                          border:
-                              Border.all(color: fifthColor.withOpacity(0.1))),
-                      child: Padding(
-                        padding: const EdgeInsets.only(left: 10.0, right: 10),
-                        child: StreamBuilder<QuerySnapshot>(
-                          stream: sellerStream,
-                          builder: (context, sellersSnapshot) {
-                            List<DropdownMenuItem> sellerItems = [];
-                            if (!sellersSnapshot.hasData) {
-                              const CircularProgressIndicator();
-                            } else {
-                              final sellersList = sellersSnapshot.data?.docs;
-                              for (var sellers in sellersList!) {
-                                if (sellers['roleSeller'] ==
-                                        'Asesor comercial' &&
-                                    sellers['statusSeller'] == 'Activo') {
-                                  sellerItems.add(
-                                    DropdownMenuItem(
-                                      value: sellers.id,
-                                      child: Center(
-                                          child: Text(
-                                              '${sellers['nameSeller']} ${sellers['lastnameSeller']}')),
-                                    ),
-                                  );
-                                }
-                              }
-                            }
-                            return DropdownButton(
-                              items: sellerItems,
-                              hint: Center(
-                                  child: Text(selectedSeller != ''
-                                      ? '${seller['nameSeller']} ${seller['lastnameSeller']}'
-                                      : 'Seleccione un vendedor')),
-                              underline: Container(),
-                              style: TextStyle(
-                                color: fifthColor.withOpacity(0.9),
-                              ),
-                              onChanged: (sellerValue) {
-                                setState(() {
-                                  selectedSeller = sellerValue!;
-                                  getSeller();
-                                });
-                              },
-                              isExpanded: true,
-                            );
-                          },
-                        ),
-                      ),
-                    ),
-                    Container(
-                      //Container de separación
                       constraints: const BoxConstraints(maxWidth: 800),
                       child: Column(
                         children: [
                           const SizedBox(
+                              height: 25,
+                              child: Text(
+                                'Separación',
+                                style: TextStyle(
+                                    fontSize: 16, fontWeight: FontWeight.bold),
+                              )),                          
+                          const SizedBox(
                             height: 10,
                           ),
-                          Container(
-                              alignment: Alignment.center,
-                              child: const Text('Separación',
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.bold,
-                                  ))),
                           const SizedBox(
-                            height: 15,
-                            child: Text(
-                              'Valor total de separación',
-                              style: TextStyle(fontSize: 10),
-                            ),
+                              height: 15,
+                              child: Text(
+                                'Valor total de separación',
+                                style: TextStyle(fontSize: 14),
+                              )),
+                          const SizedBox(
+                            height: 10,
                           ),
-                          Container(
-                              constraints: const BoxConstraints(maxWidth: 800),
-                              child: textFieldWidget(
+                          Row(
+                            children: [
+                              Expanded(
+                                flex: 6,
+                                child: textFieldWidget(
                                   (currencyCOP(
                                       (vlrFijoSeparacion.toInt()).toString())),
                                   Icons.monetization_on_outlined,
@@ -969,7 +765,24 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
                                   );
                                   updateNumberWords();
                                 });
-                              }))),
+                              }))
+                              ),
+                              Expanded(
+                                flex: 7,
+                                child: textFieldWidget(
+                                    "Valor en letras",
+                                    Icons.abc_outlined,
+                                    false,
+                                    letrasSepController,
+                                    true,
+                                    'name',
+                                    () {}),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(
+                            height: 10,
+                          ),
                           Container(
                               constraints: const BoxConstraints(maxWidth: 800),
                               child: Row(children: [
@@ -1065,7 +878,7 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
                                       const SizedBox(
                                           height: 15,
                                           child: Text(
-                                            'Fecha límite',
+                                            'Fecha de separación',
                                             style: TextStyle(fontSize: 10),
                                           )),
                                       Container(
@@ -1246,6 +1059,160 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
                     const SizedBox(
                       height: 10,
                     ),
+                    Container(
+                        constraints: const BoxConstraints(maxWidth: 800),
+                        alignment: Alignment.center,
+                        child: const Text('Método de pago',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ))),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    Container(
+                      constraints: const BoxConstraints(maxWidth: 800),
+                      child: easyDropdown(
+                          paymentMethodList, paymentMethodSelectedItem,
+                          (tempPaymentMethod) {
+                        setState(() {
+                          paymentMethodSelectedItem = tempPaymentMethod!;
+                          updateDateSaldo(
+                              dateConverter(separacionDeadlineController.text));
+                          discountValue();
+                          updateNumberWords();
+                        });
+                      }),
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    //Separacion
+                    paymentMethodSelectedItem == 'Personalizado' 
+                    ? Container(
+                      constraints: const BoxConstraints(maxWidth: 800),
+                      child: Column(
+                        children: [
+                          Row(
+                            children: [
+                              Expanded(
+                                flex: 1,
+                                child: Container(                            
+                                  alignment: Alignment.center,
+                                  child: const Text('Descuento a aplicar')
+                                ),
+                              ),
+                              Expanded(
+                                flex: 1,
+                                child: Container(
+                                  child: easyDropdown(
+                                      dctoPersonalizado, selectedDctoPersonalizado,
+                                      (tempDctoPersonalizado) {
+                                    setState(() {
+                                      selectedDctoPersonalizado = tempDctoPersonalizado!;                                
+                                      discountValue();
+                                      updateNumberWords();
+                                    });
+                                  }),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          ElevatedButton(
+                            onPressed: toggleFormVisibility,
+                            child: Text(isFormVisible ? 'Ocultar pagos' : 'Mostrar pagos'),
+                          ),
+                          const SizedBox(height: 10),                          
+                          Visibility(
+                            visible: isFormVisible,
+                            child: Card(
+                              child: Padding(
+                                padding: const EdgeInsets.all(16),
+                                child: installmentForm(),
+                              ),
+                            ),
+                          ),
+                        ]
+                      )
+                    ) 
+                    : Column(
+                      children: [                        
+                        //Financiación directa
+                        paymentMethodSeparacion(paymentMethodSelectedItem),
+                      ],
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    Container(
+                        constraints: const BoxConstraints(maxWidth: 800),
+                        alignment: Alignment.center,
+                        child: const Text('Asesor comercial',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ))),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    Container(
+                      constraints: const BoxConstraints(maxWidth: 800),
+                      alignment: Alignment.center,
+                      height: 50,
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(90),
+                          border:
+                              Border.all(color: fifthColor.withOpacity(0.1))),
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: 10.0, right: 10),
+                        child: StreamBuilder<QuerySnapshot>(
+                          stream: sellerStream,
+                          builder: (context, sellersSnapshot) {
+                            List<DropdownMenuItem> sellerItems = [];
+                            if (!sellersSnapshot.hasData) {
+                              const CircularProgressIndicator();
+                            } else {
+                              final sellersList = sellersSnapshot.data?.docs;
+                              for (var sellers in sellersList!) {
+                                if (sellers['roleSeller'] ==
+                                        'Asesor comercial' &&
+                                    sellers['statusSeller'] == 'Activo') {
+                                  sellerItems.add(
+                                    DropdownMenuItem(
+                                      value: sellers.id,
+                                      child: Center(
+                                          child: Text(
+                                              '${sellers['nameSeller']} ${sellers['lastnameSeller']}')),
+                                    ),
+                                  );
+                                }
+                              }
+                            }
+                            return DropdownButton(
+                              items: sellerItems,
+                              hint: Center(
+                                  child: Text(selectedSeller != ''
+                                      ? '${seller['nameSeller']} ${seller['lastnameSeller']}'
+                                      : 'Seleccione un vendedor')),
+                              underline: Container(),
+                              style: TextStyle(
+                                color: fifthColor.withOpacity(0.9),
+                              ),
+                              onChanged: (sellerValue) {
+                                setState(() {
+                                  selectedSeller = sellerValue!;
+                                  getSeller();
+                                });
+                              },
+                              isExpanded: true,
+                            );
+                          },
+                        ),
+                      ),
+                    ),                    
                     paymentMethod(paymentMethodSelectedItem),
                     const SizedBox(
                       height: 10,
@@ -2145,6 +2112,20 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
                                       elevation: 0,
                                     ),
                                   );
+                                } else if (paymentMethodSelectedItem == 'Personalizado' && valorAPagar != totalInstallmentAmount){
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: CustomAlertMessage(
+                                        errorTitle: "Oops!",
+                                        errorText:
+                                            "Verifique que la suma de los pagos sea correcta.",
+                                        stateColor: dangerColor,
+                                      ),
+                                      behavior: SnackBarBehavior.floating,
+                                      backgroundColor: Colors.transparent,
+                                      elevation: 0,
+                                    ),
+                                  );
                                 } else {
                                   if (!ocupacionList
                                       .contains(ocupacionController.text)) {
@@ -2230,6 +2211,7 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
                                   await addPlanPagos(                                    
                                     loteId,
                                     quoteIdController.text,
+                                    paymentMethodSelectedItem,
                                     vlrBaseLote.toDouble(),
                                     precioFinal,
                                     discountValue(),
@@ -2244,7 +2226,7 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
                                       loteId,
                                       'SEP1',
                                       vlrSeparacion,
-                                      'Separación',
+                                      'SEPARACIÓN',
                                       saldoSeparacionDeadlineController.text
                                     );
                                   } else{
@@ -2252,16 +2234,30 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
                                       loteId,
                                       'SEP1',
                                       vlrSeparacion,
-                                      'Separación',
+                                      'SEPARACIÓN',
                                       separacionDeadlineController.text
                                     );
                                     await pagosEsperados(
                                       loteId,
                                       'SEP2',
                                       saldoSeparacion,
-                                      'Separación',
+                                      'SEPARACIÓN',
                                       saldoSeparacionDeadlineController.text
                                     );
+                                  };
+                                  if(paymentMethodSelectedItem == 'Personalizado'){
+                                    for (var i = 0; i < installments.length; i++) {
+                                      final payment = installments[i];
+                                      await pagosEsperados(loteId, (i + 1).toString(), payment['amount'], 'ABONO', payment['date']);
+                                    }
+                                  } else if(paymentMethodSelectedItem == 'Financiación directa'){
+                                    pagosEsperados(loteId, 'CINI', saldoCI, 'CUOTA INICIAL', saldoCuotaIniDeadlineController.text);
+                                    for (var i = 0; i < int.parse(selectedNroCuotas); i++) {
+                                      pagosEsperados(loteId, (i + 1).toString(), valorCuota, 'ABONO', dateOnly(false, (diasValue*i).toDouble(), dateConverter(dateSaldo), true));
+                                    }
+                                  }
+                                  else if(paymentMethodSelectedItem == 'Pago de contado'){
+                                    await pagosEsperados(loteId, 'TOTAL', valorAPagar, 'PAGO CONTADO', dateSaldo);                                    
                                   }
                                   cambioEstadoLote(
                                           loteId, quoteStageController.text)
@@ -2391,6 +2387,11 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
     if (paymentMethodSelectedItem == 'Pago de contado') {
       valorAPagar = precioFinal - vlrFijoSeparacion;
       return dctoContado;
+    } else if (paymentMethodSelectedItem == 'Personalizado'){
+      valorAPagar = precioFinal - vlrFijoSeparacion;
+      String percentageString = selectedDctoPersonalizado;
+      double percentage = double.parse(percentageString.replaceAll('%', ''));
+      return percentage;
     } else {
       valorAPagar = precioFinal - cuotaInicial;
       return dctoCuotas;
@@ -2400,27 +2401,35 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
   void getPeriodicidad() {
     if (selectedPeriodoCuotas == 'Semanal') {
       periodoNumValue = 0.25;
+      diasValue = 7;
     }
     if (selectedPeriodoCuotas == 'Quincenal') {
       periodoNumValue = 0.5;
+      diasValue = 14;
     }
     if (selectedPeriodoCuotas == 'Mensual') {
       periodoNumValue = 1;
+      diasValue = 30;
     }
     if (selectedPeriodoCuotas == 'Bimestral') {
       periodoNumValue = 2;
+      diasValue = 60;
     }
     if (selectedPeriodoCuotas == 'Trimestral') {
       periodoNumValue = 3;
+      diasValue = 90;
     }
     if (selectedPeriodoCuotas == 'Cuatrimestral') {
       periodoNumValue = 4;
+      diasValue = 120;
     }
     if (selectedPeriodoCuotas == 'Semestral') {
       periodoNumValue = 6;
+      diasValue = 180;
     }
     if (selectedPeriodoCuotas == 'Anual') {
       periodoNumValue = 12;
+      diasValue = 360;
     } else {
       periodoNumValue = periodoNumValue;
     }
@@ -2987,7 +2996,7 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
           ],
         ),
       );
-    } else {
+    } else if (paymentMethodSelection == 'Financiación directa') {
       return Container(
         constraints: const BoxConstraints(maxWidth: 800),
         child: Column(
@@ -3273,6 +3282,8 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
           ],
         ),
       );
+    } else {
+      return Container();
     }
   }
 
@@ -3286,6 +3297,194 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
         await numeroEnLetras(valorAPagar, 'pesos');
     letrasPrecioFinalController.text =
         await numeroEnLetras(precioFinal, 'pesos');
+  }
+
+  void calculateRemainingAmount() {
+    discountValue();
+    remainingAmount = valorAPagar - totalInstallmentAmount;
+  }
+
+  void printAllPayments() {
+    print('Payment Details:');
+    for (var i = 0; i < installments.length; i++) {
+      final payment = installments[i];
+      print('Payment ${i + 1}:');
+      print('Amount: ${payment['amount']}');
+      print('Date: ${payment['date']}');
+      print(remainingAmount);
+    }
+  }
+
+  void showDatePickerDialog(int index) async {
+    DateTime previousDate;
+    DateTime firstDate;
+    if (index > 0 && installments[index - 1]['date'] != '') {
+      previousDate = DateFormat('dd-MM-yyyy').parse(installments[index - 1]['date']);
+      firstDate = previousDate.add(const Duration(days: 1));
+    } else {
+      firstDate = DateTime.now();
+      previousDate = DateTime.now();
+    }
+
+    final pickedDate = await showDatePicker(
+      context: context,
+      initialDate: firstDate,
+      firstDate: previousDate,
+      lastDate: DateTime(2050),
+    );
+
+    if (pickedDate != null) {
+      final formattedDate = DateFormat('dd-MM-yyyy').format(pickedDate);
+      setState(() {
+        installments[index]['date'] = formattedDate;
+      });
+      // Update the corresponding TextEditingController with the selected date
+      TextEditingController dateController = installments[index]['controller'];
+      dateController.text = formattedDate;
+    }
+  }
+
+
+
+  void setAmountColor(){
+    if(valorAPagar==totalInstallmentAmount){
+      amountColor = successColor;
+    } else if(valorAPagar<totalInstallmentAmount){
+      amountColor = dangerColor;
+    } else{
+      amountColor = Colors.black;
+    }
+  }
+
+  Widget installmentForm() {
+    String tempDate = dateSaldo;
+    return Container(
+      alignment: Alignment.center,
+      constraints: const BoxConstraints(maxWidth: 800),
+      child: Column(
+        children: [
+          Text(
+            'Saldo a pagar: ${currencyCOP((valorAPagar.toInt()).toString())}',
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 16),
+          RichText(
+            text: TextSpan(
+              children: [
+                const TextSpan(
+                  text: 'Valor acumulado: ',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black),
+                ),
+                TextSpan(
+                  text: currencyCOP(totalInstallmentAmount.toString()),
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: amountColor,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 16),
+          ListView.builder(
+            shrinkWrap: true,
+            itemCount: installments.length,
+            itemBuilder: (context, index) {
+              TextEditingController dateController = installments[index]['controller'];
+              TextEditingController amountController = installments[index]['amountController'];
+              return Row(
+                children: [
+                  Expanded(
+                    flex: 4,
+                    child: TextFormField(
+                      decoration: InputDecoration(
+                        labelText: 'Cuota ${index+1}',
+                        labelStyle: TextStyle(color: fourthColor, fontWeight: FontWeight.bold),
+                        prefixIcon: const Icon(Icons.monetization_on_outlined, size: 20,),
+                      ),
+                      keyboardType: TextInputType.number,
+                      inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly],
+                      controller: amountController,
+                      textAlign: TextAlign.center,
+                      onChanged: (value) {
+                        double newValue = double.tryParse(value) ?? 0;
+                        setState(() {
+                          installments[index]['amount'] = newValue;
+                          totalInstallmentAmount = installments.fold(0.0, (sum, installment) => sum + installment['amount']);
+                          calculateRemainingAmount();
+                          setAmountColor();
+                          amountController.value = TextEditingValue(
+                            text: (currencyCOP((newValue.toInt()).toString())),
+                            selection: TextSelection.collapsed(offset: (currencyCOP((newValue.toInt()).toString())).length),
+                          );
+                        });
+                      },
+    
+                    ),
+                  ),
+                  Expanded(
+                    flex: 4,
+                    child: TextFormField(
+                      decoration: InputDecoration(
+                        labelText: 'Fecha de pago',
+                        labelStyle: TextStyle(color: fourthColor, fontWeight: FontWeight.bold),
+                        prefixIcon: const Icon(Icons.calendar_today, size: 20,),
+                      ),
+                      keyboardType: TextInputType.datetime,
+                      controller: dateController,
+                      textAlign: TextAlign.center,
+                      onTap: () {
+                        showDatePickerDialog(index);
+                      },
+                    ),
+                  ),
+                  Expanded(
+                    flex: 1,
+                    child: IconButton(
+                      onPressed: () {
+                        setState(() {
+                          installments.removeAt(index);
+                          totalInstallmentAmount = installments.fold(0.0, (sum, installment) => sum + installment['amount']);
+                          calculateRemainingAmount();
+                        });
+                      },
+                      icon: Icon(Icons.delete_forever_outlined, color: dangerColor,),
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
+          const SizedBox(height: 16),
+          ElevatedButton(
+            onPressed: () {            
+              calculateRemainingAmount();
+              Map<String, dynamic> newInstallment = {
+                'amount': remainingAmount,
+                'amountController': TextEditingController(text: currencyCOP((remainingAmount.toInt()).toString())),
+                'date': dateOnly(false, 1, lastDate, false),
+                'controller': TextEditingController(text: dateOnly(false, 1, lastDate, false)),
+              };
+              installments.add(newInstallment);
+              setState(() {
+                totalInstallmentAmount = installments.fold(0.0, (sum, installment) => sum + (installment['amount']));
+                calculateRemainingAmount();
+                setAmountColor();
+              });
+            },
+            child: const Text('Agregar pago'),
+          ),
+          const SizedBox(height: 16),
+          ElevatedButton(
+            onPressed: precioFinal == totalInstallmentAmount ? printAllPayments : () {
+              
+            },
+            child: const Text('Print Payments'),
+          ),
+        ],
+      ),
+    );
   }
 
   State<StatefulWidget> createState() => throw UnimplementedError();
