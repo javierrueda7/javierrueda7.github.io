@@ -131,8 +131,9 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
     });
   }
 
-  List<String> dctoPersonalizado = ['0.0%', '2.5%', '5.0%', '7.5%', '10.0%', '12.5%'];
+  List<String> dctoPersonalizado = ['0.0%', '2.0%', '4.0%', '6.0%', '8.0%',   '10.0%', '12.5%'];
   String selectedDctoPersonalizado = '0.0%';
+  String customDiscountValue = '';
 
   List<Map<String, dynamic>> installments = [];
   double remainingAmount = 0;
@@ -1105,15 +1106,44 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
                               Expanded(
                                 flex: 1,
                                 child: Container(
-                                  child: easyDropdown(
-                                      dctoPersonalizado, selectedDctoPersonalizado,
-                                      (tempDctoPersonalizado) {
-                                    setState(() {
-                                      selectedDctoPersonalizado = tempDctoPersonalizado!;                                
-                                      discountValue();
-                                      updateNumberWords();
-                                    });
-                                  }),
+                                  child: Row(
+                                    children: [
+                                      DropdownButton<String>(
+                                        value: selectedDctoPersonalizado,
+                                        items: dctoPersonalizado.map((String value) {
+                                          return DropdownMenuItem<String>(
+                                            value: value,
+                                            child: Text(value),
+                                          );
+                                        }).toList(),
+                                        onChanged: (newValue) {
+                                          setState(() {
+                                            if (newValue == 'Otro') {
+                                              selectedDctoPersonalizado = newValue!;
+                                            } else {
+                                              selectedDctoPersonalizado = newValue!;
+                                              customDiscountValue = '';
+                                            }
+                                            discountValue();
+                                            updateNumberWords();
+                                          });
+                                        },
+                                      ),
+                                      SizedBox(width: 10),
+                                      if (selectedDctoPersonalizado == 'Otro')
+                                        Expanded(
+                                          child: TextField(
+                                            onChanged: (newValue) {
+                                              setState(() {
+                                                customDiscountValue = newValue;
+                                                discountValue();
+                                                updateNumberWords();
+                                              });
+                                            },
+                                          ),
+                                        ),
+                                    ],
+                                  ),
                                 ),
                               ),
                             ],
@@ -3323,7 +3353,7 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
       firstDate = previousDate.add(const Duration(days: 1));
     } else {
       firstDate = DateTime.now();
-      previousDate = DateTime.now();
+      previousDate = DateTime(2000);
     }
 
     final pickedDate = await showDatePicker(
@@ -3337,6 +3367,7 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
       final formattedDate = DateFormat('dd-MM-yyyy').format(pickedDate);
       setState(() {
         installments[index]['date'] = formattedDate;
+        lastDate = pickedDate;
       });
       // Update the corresponding TextEditingController with the selected date
       TextEditingController dateController = installments[index]['controller'];
