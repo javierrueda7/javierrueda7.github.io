@@ -53,33 +53,35 @@ Future<void> pagosRealizados(String lote, String idPago, double valorPago, Strin
   });
 }
 
-Future<List> getPagos(String lote) async{
+Future<List> getPagos(String lote) async {
   List pagos = [];
-  QuerySnapshot? queryPagos = await db.collection('planPagos').doc(lote).collection('pagosRealizados').get();
+  QuerySnapshot? queryPagos = await db.collection('pagos').get();
   for (var doc in queryPagos.docs) {
     final Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-    final pago = {
-      "pid": doc.id,
-      "valorPago": data['valorPago'],
-      "conceptoPago": data['conceptoPago'],
-      "fechaRecibo": data['fechaRecibo'],
-      "fechaPago": data['fechaPago'],
-      "metodoPago": data['metodoPago'],
-      "nombreCliente": data['nombreCliente'],
-      "idCliente": data['idCliente'],
-      "telCliente": data['telCliente'],
-      "emailCliente": data['emailCliente'],
-      "dirCliente": data['dirCliente'],
-      "ciudadCliente": data['ciudadCliente'],
-      "obsPago": data['obsPago']
-    };
-    pagos.add(pago);
+    if (lote == 'Null' || doc.id.contains(lote)) {
+      final pago = {
+        "pid": doc.id,
+        "valorPago": data['valorPago'],
+        "conceptoPago": data['conceptoPago'],
+        "fechaRecibo": data['fechaRecibo'],
+        "fechaPago": data['fechaPago'],
+        "metodoPago": data['metodoPago'],
+        "nombreCliente": data['nombreCliente'],
+        "idCliente": data['idCliente'],
+        "telCliente": data['telCliente'],
+        "emailCliente": data['emailCliente'],
+        "dirCliente": data['dirCliente'],
+        "ciudadCliente": data['ciudadCliente'],
+        "obsPago": data['obsPago']
+      };
+      pagos.add(pago);
+    }
   }
   return pagos;
 }
 
 Future<void> deletePagos(String pid, String lote, double valor) async {
-  await db.collection("planPagos").doc(lote).collection('pagosRealizados').doc(pid).delete();
+  await db.collection("pagos").doc(pid).delete();
   
   final DocumentSnapshot doc = await db.collection("planPagos").doc(lote).get();
   final Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
@@ -575,8 +577,19 @@ Future<List> getOrdenSep(String loteId, bool allLotes, String sellerId) async {
   return separaciones;
 }
 
-Future<void> deleteSep(String oid) async {
+Future<void> deleteSep(String oid, String lote) async {
   await db.collection("ordSep").doc(oid).delete();
+  CollectionReference paymentsCollection = FirebaseFirestore.instance
+    .collection('planPagos')
+    .doc(lote)
+    .collection('pagosEsperados');
+
+  QuerySnapshot querySnapshot = await paymentsCollection.get();
+
+  for (DocumentSnapshot documentSnapshot in querySnapshot.docs) {
+    await documentSnapshot.reference.delete();
+  }
+  await db.collection("planPagos").doc(lote).delete();
 }
 
 Future<void> updateQuoteStage(String qid, String quoteStage) async {

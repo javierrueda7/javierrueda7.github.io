@@ -69,6 +69,45 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
     }
   }
 
+  Future<void> llenarInstallments(String loteSel) async {
+    CollectionReference collection = FirebaseFirestore.instance.doc(loteSel).collection('pagosEsperados');
+
+    // Fetch the documents
+    QuerySnapshot querySnapshot = await collection.get();
+
+    // Process each document
+    for (var doc in querySnapshot.docs) {
+      // Check if the document ID contains 'SEP' or 'TOTAL'
+      if (doc.id.contains('SEP') || doc.id.contains('TOTAL')) {
+        // Extract the fields from the document data
+        String conceptoPago = doc.get('conceptoPago');
+        Timestamp fechaPagoTimestamp = doc.get('fechaPago');
+        double valorPago = doc.get('valorPago');
+
+        // Convert the timestamp to a DateTime object
+        DateTime fechaPago = fechaPagoTimestamp.toDate();
+
+        // Create a map for each document, including the document ID
+        Map<String, dynamic> installment = {
+          'id': doc.id,
+          'conceptoPago': conceptoPago,
+          'fechaPago': fechaPago,
+          'valorPago': valorPago,
+        };
+
+        // Add the map to the installments list
+        installments.add(installment);
+      }
+    }
+  }
+
+  List<Map<String, dynamic>> installments = [];
+  double remainingAmount = 0;
+  double totalInstallmentAmount = 0;
+  DateTime lastDate = DateTime.now();
+  Color amountColor = Colors.black;
+  void completo = false;
+
   Future<String> getGerenteEmail() async {
     final gerenteEmail = await db
         .collection('infoproyecto')
@@ -298,7 +337,9 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
                                           ),
                                         ],
                                         onSelected: (value) async {
-                                          setState(() {updateLoteInfo(quotesSnapshot.data?[index]['loteId']);});
+                                          setState(() {
+                                            updateLoteInfo(quotesSnapshot.data?[index]['loteId']);
+                                          });
                                           if (value == 'Opción 1') {
                                             Navigator.push(
                                                 context,
@@ -734,7 +775,7 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
                                                                   .data?[index]
                                                               ['loteId']);
                                                           deleteSep(
-                                                              "${quotesSnapshot.data?[index]['qid']}");
+                                                              quotesSnapshot.data?[index]['qid'], quotesSnapshot.data?[index]['loteId']);
                                                           setState(() {});
                                                           Navigator.of(context)
                                                               .pop();
@@ -985,7 +1026,7 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
                                               .data?[index]
                                           ['loteId']);
                                       deleteSep(
-                                          sepSnapshot.data?[index]['sepId']);
+                                          sepSnapshot.data?[index]['sepId'], sepSnapshot.data?[index]['loteId']);                                      
                                       setState(() {
                                         sepSnapshot.data?.removeAt(index);
                                       });
@@ -1064,8 +1105,11 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
                                         ],
                                         onSelected: (value) async {
                                           updateLoteInfo(sepSnapshot.data?[index]['loteId']);
-                                          vlrFijoSep = sepSnapshot.data?[index]['vlrSepLote'].toInt() + sepSnapshot.data?[index]['saldoSepLote'].toInt();
-                                          updateNumberWords(vlrFijoSep.toDouble(), sepSnapshot.data?[index]['saldoCILote'], sepSnapshot.data?[index]['vlrPorPagarLote'], sepSnapshot.data?[index]['vlrCuotasLote'], sepSnapshot.data?[index]['precioFinal'].toDouble());
+                                          setState(() {
+                                            llenarInstallments(sepSnapshot.data?[index]['loteId']);                                            
+                                            vlrFijoSep = sepSnapshot.data?[index]['vlrSepLote'].toInt() + sepSnapshot.data?[index]['saldoSepLote'].toInt();
+                                            updateNumberWords(vlrFijoSep.toDouble(), sepSnapshot.data?[index]['saldoCILote'].toDouble(), sepSnapshot.data?[index]['vlrPorPagarLote'].toDouble(), sepSnapshot.data?[index]['vlrCuotasLote'].toDouble(), sepSnapshot.data?[index]['precioFinal'].toDouble());
+                                          });
                                           if (value == 'Opción 1') {
                                             // ignore: use_build_context_synchronously
                                             Navigator.push(
@@ -1195,6 +1239,7 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
                                                     quoteStage:
                                                         sepSnapshot.data?[index]
                                                             ['stageSep'],
+                                                    installments: installments,
                                                   ),
                                                 ));
                                           } else {

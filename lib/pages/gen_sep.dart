@@ -2071,6 +2071,7 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
                                         observaciones:
                                             observacionesController.text,
                                         quoteStage: quoteStageController.text,
+                                        installments: installments
                                       ),
                                     ),
                                   );

@@ -644,7 +644,7 @@ class _ArchivedQuotesState extends State<ArchivedQuotes> {
                                               cancSepLote(snapshot.data?[index]
                                                   ['loteId']);
                                               deleteSep(
-                                                  "SEP${snapshot.data?[index]['qid']}");
+                                                  snapshot.data?[index]['qid'], snapshot.data?[index]['loteId']);
                                               setState(() {});
                                             }
                                             if (value == 'Opción 4') {

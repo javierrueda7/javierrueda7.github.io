@@ -4,6 +4,7 @@ import 'package:albaterrapp/utils/color_utils.dart';
 import 'package:albaterrapp/widgets/widgets.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'dart:async';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
@@ -123,6 +124,45 @@ class _EditarSeparacionState extends State<EditarSeparacion> {
     dctoCuotas = await getPeriodoDiscount(periodoCuotas.toString());
   }
 
+  Future<void> llenarInstallments() async {
+    CollectionReference collection = FirebaseFirestore.instance.doc(loteId).collection('pagosEsperados');
+
+    // Fetch the documents
+    QuerySnapshot querySnapshot = await collection.get();
+
+    // Process each document
+    for (var doc in querySnapshot.docs) {
+      // Check if the document ID contains 'SEP' or 'TOTAL'
+      if (doc.id.contains('SEP') || doc.id.contains('TOTAL')) {
+        // Extract the fields from the document data
+        String conceptoPago = doc.get('conceptoPago');
+        Timestamp fechaPagoTimestamp = doc.get('fechaPago');
+        double valorPago = doc.get('valorPago');
+
+        // Convert the timestamp to a DateTime object
+        DateTime fechaPago = fechaPagoTimestamp.toDate();
+
+        // Create a map for each document, including the document ID
+        Map<String, dynamic> installment = {
+          'id': doc.id,
+          'conceptoPago': conceptoPago,
+          'fechaPago': fechaPago,
+          'valorPago': valorPago,
+        };
+
+        // Add the map to the installments list
+        installments.add(installment);
+      }
+    }
+  }
+
+  List<Map<String, dynamic>> installments = [];
+  double remainingAmount = 0;
+  double totalInstallmentAmount = 0;
+  DateTime lastDate = DateTime.now();
+  Color amountColor = Colors.black;
+  void completo = false;
+  
   late int vlrBaseLote;
   late double saldoCI;
   late double valorAPagar;
@@ -277,6 +317,7 @@ class _EditarSeparacionState extends State<EditarSeparacion> {
       vlrFijoSeparacion = saldoSeparacion + stringConverter(vlrSeparacionController.text);
       periodoCalculator(stringConverter(selectedNroCuotas));
       initCuotas();
+      llenarInstallments();
       updateNumberWords();
     } else {
       isInitialized = true;
@@ -1913,6 +1954,7 @@ class _EditarSeparacionState extends State<EditarSeparacion> {
                                         observaciones:
                                             observacionesController.text,
                                         quoteStage: sepStageController.text,
+                                        installments: installments
                                       ),
                                     ),
                                   );
@@ -3111,6 +3153,196 @@ class _EditarSeparacionState extends State<EditarSeparacion> {
     letrasPrecioFinalController.text =
         await numeroEnLetras(precioFinal, 'pesos');
   }
+
+  void calculateRemainingAmount() {
+    discountValue();
+    remainingAmount = valorAPagar - totalInstallmentAmount;
+  }
+
+  void printAllPayments() {
+    print('Payment Details:');
+    for (var i = 0; i < installments.length; i++) {
+      final payment = installments[i];
+      print('Payment ${i + 1}:');
+      print('Amount: ${payment['amount']}');
+      print('Date: ${payment['date']}');
+      print(remainingAmount);
+    }
+  }
+
+  void showDatePickerDialog(int index) async {
+    DateTime previousDate;
+    DateTime firstDate;
+    if (index > 0 && installments[index - 1]['date'] != '') {
+      previousDate = DateFormat('dd-MM-yyyy').parse(installments[index - 1]['date']);
+      firstDate = previousDate.add(const Duration(days: 1));
+    } else {
+      firstDate = DateTime.now();
+      previousDate = DateTime(2000);
+    }
+
+    final pickedDate = await showDatePicker(
+      context: context,
+      initialDate: firstDate,
+      firstDate: previousDate,
+      lastDate: DateTime(2050),
+    );
+
+    if (pickedDate != null) {
+      final formattedDate = DateFormat('dd-MM-yyyy').format(pickedDate);
+      setState(() {
+        installments[index]['date'] = formattedDate;
+        lastDate = pickedDate;
+      });
+      // Update the corresponding TextEditingController with the selected date
+      TextEditingController dateController = installments[index]['controller'];
+      dateController.text = formattedDate;
+    }
+  }
+
+
+
+  void setAmountColor(){
+    if(valorAPagar==totalInstallmentAmount){
+      amountColor = successColor;
+    } else if(valorAPagar<totalInstallmentAmount){
+      amountColor = dangerColor;
+    } else{
+      amountColor = Colors.black;
+    }
+  }
+
+  Widget installmentForm(List<Map<String, dynamic>> installments) {
+    String tempDate = dateSaldo;
+    return Container(
+      alignment: Alignment.center,
+      constraints: const BoxConstraints(maxWidth: 800),
+      child: Column(
+        children: [
+          Text(
+            'Saldo a pagar: ${currencyCOP((valorAPagar.toInt()).toString())}',
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 16),
+          RichText(
+            text: TextSpan(
+              children: [
+                const TextSpan(
+                  text: 'Valor acumulado: ',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black),
+                ),
+                TextSpan(
+                  text: currencyCOP(totalInstallmentAmount.toString()),
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: amountColor,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 16),
+          ListView.builder(
+            shrinkWrap: true,
+            itemCount: installments.length,
+            itemBuilder: (context, index) {
+              TextEditingController dateController = TextEditingController(text: installments[index]['date']);
+              TextEditingController amountController = TextEditingController(text: currencyCOP(installments[index]['amount'].toString()));
+              return Row(
+                children: [
+                  Expanded(
+                    flex: 4,
+                    child: TextFormField(
+                      decoration: InputDecoration(
+                        labelText: 'Cuota ${index + 1}',
+                        labelStyle: TextStyle(color: fourthColor, fontWeight: FontWeight.bold),
+                        prefixIcon: const Icon(Icons.monetization_on_outlined, size: 20,),
+                      ),
+                      keyboardType: TextInputType.number,
+                      inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly],
+                      controller: amountController,
+                      textAlign: TextAlign.center,
+                      onChanged: (value) {
+                        double newValue = double.tryParse(value) ?? 0;
+                        setState(() {
+                          installments[index]['amount'] = newValue;
+                          totalInstallmentAmount = installments.fold(0.0, (sum, installment) => sum + installment['amount']);
+                          calculateRemainingAmount();
+                          setAmountColor();
+                          amountController.value = TextEditingValue(
+                            text: (currencyCOP((newValue.toInt()).toString())),
+                            selection: TextSelection.collapsed(offset: (currencyCOP((newValue.toInt()).toString())).length),
+                          );
+                        });
+                      },
+                    ),
+                  ),
+                  Expanded(
+                    flex: 4,
+                    child: TextFormField(
+                      decoration: InputDecoration(
+                        labelText: 'Fecha de pago',
+                        labelStyle: TextStyle(color: fourthColor, fontWeight: FontWeight.bold),
+                        prefixIcon: const Icon(Icons.calendar_today, size: 20,),
+                      ),
+                      keyboardType: TextInputType.datetime,
+                      controller: dateController,
+                      textAlign: TextAlign.center,
+                      onTap: () async {
+                        showDatePickerDialog(index);
+                      },
+
+                    ),
+                  ),
+                  Expanded(
+                    flex: 1,
+                    child: IconButton(
+                      onPressed: () {
+                        setState(() {
+                          installments.removeAt(index);
+                          totalInstallmentAmount = installments.fold(0.0, (sum, installment) => sum + installment['amount']);
+                          calculateRemainingAmount();
+                        });
+                      },
+                      icon: Icon(Icons.delete_forever_outlined, color: dangerColor,),
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
+          const SizedBox(height: 16),
+          ElevatedButton(
+            onPressed: () {
+              calculateRemainingAmount();
+              Map<String, dynamic> newInstallment = {
+                'amount': remainingAmount,
+                'amountController': TextEditingController(text: currencyCOP((remainingAmount.toInt()).toString())),
+                'date': dateOnly(false, 1, lastDate, false),
+                'controller': TextEditingController(text: dateOnly(false, 1, lastDate, false)),
+              };
+              installments.add(newInstallment);
+              setState(() {
+                totalInstallmentAmount = installments.fold(0.0, (sum, installment) => sum + (installment['amount']));
+                calculateRemainingAmount();
+                setAmountColor();
+              });
+            },
+            child: const Text('Agregar pago'),
+          ),
+          const SizedBox(height: 16),
+          ElevatedButton(
+            onPressed: precioFinal == totalInstallmentAmount ? printAllPayments : () {
+              // Add your custom logic here for the action when the button is pressed
+            },
+            child: const Text('Print Payments'),
+          ),
+        ],
+      ),
+    );
+  }
+
 
   State<StatefulWidget> createState() => throw UnimplementedError();
 }

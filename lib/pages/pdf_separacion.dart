@@ -1,5 +1,6 @@
 import 'package:albaterrapp/services/firebase_services.dart';
 import 'package:albaterrapp/utils/color_utils.dart';
+import 'package:albaterrapp/widgets/widgets.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -56,6 +57,7 @@ class PDFSeparacion extends StatelessWidget {
   final String tem;
   final String observaciones;
   final String quoteStage;
+  final List<Map<String, dynamic>> installments;
 
   PDFSeparacion(
       {super.key,
@@ -105,7 +107,8 @@ class PDFSeparacion extends StatelessWidget {
       required this.nroCuotas,
       required this.tem,
       required this.observaciones,
-      required this.quoteStage});
+      required this.quoteStage,
+      required this.installments});
 
   void initState() {
     initCont();
@@ -312,7 +315,7 @@ class PDFSeparacion extends StatelessWidget {
                         'Valor final del lote luego de definir forma de pago: ',
                     style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
                   ),
-                  pw.TextSpan(text: "$letrasFinalPrice ($finalPrice)"),
+                  pw.TextSpan(text: "${letrasFinalPrice.toUpperCase()} ($finalPrice)"),
                 ],
               ),
             ),
@@ -631,35 +634,62 @@ class PDFSeparacion extends StatelessWidget {
   pw.Widget metodoPago(String evaluarMetodo, context) {
     if (evaluarMetodo == 'Pago de contado') {
       return pw.Column(
-          crossAxisAlignment: pw.CrossAxisAlignment.stretch,
-          children: [
-            pw.Text('VALOR SALDO: $vlrPorPagar',
-                textAlign: pw.TextAlign.justify),
-            pw.Text(
-                '   1. La suma de $letrasSeparacion ($totalSeparacion) el día $dueDateSeparacion',
-                textAlign: pw.TextAlign.justify),
-            pw.Text(
-                '   2. La suma de $letrasSaldoContado ($vlrPorPagar) que corresponde al saldo del lote, en menos de $plazoContado, teniendo como fecha límite el $saldoTotalDate',
-                textAlign: pw.TextAlign.justify),
-          ]);
-    } else {
+        crossAxisAlignment: pw.CrossAxisAlignment.stretch,
+        children: [
+          pw.Text('VALOR SALDO: $vlrPorPagar',
+              textAlign: pw.TextAlign.justify),
+          pw.Text(
+              '   1. La suma de ${letrasSeparacion.toUpperCase()} ($totalSeparacion) el día $dueDateSeparacion',
+              textAlign: pw.TextAlign.justify),
+          pw.Text(
+              '   2. La suma de ${letrasSaldoContado.toUpperCase()} ($vlrPorPagar) que corresponde al saldo del lote, en menos de $plazoContado, teniendo como fecha límite el $saldoTotalDate',
+              textAlign: pw.TextAlign.justify),
+        ]
+      );
+    } else if (evaluarMetodo == 'Financiación directa') {
       return pw.Column(
-          crossAxisAlignment: pw.CrossAxisAlignment.stretch,
-          children: [
-            pw.Text('VALOR CUOTA INICIAL $porcCuotaIni: $vlrCuotaIni',
-                textAlign: pw.TextAlign.justify),
-            pw.Text('VALOR SALDO $porcPorPagar: $vlrPorPagar',
-                textAlign: pw.TextAlign.justify),
+        crossAxisAlignment: pw.CrossAxisAlignment.stretch,
+        children: [
+          pw.Text('VALOR CUOTA INICIAL $porcCuotaIni: $vlrCuotaIni',
+              textAlign: pw.TextAlign.justify),
+          pw.Text('VALOR SALDO $porcPorPagar: $vlrPorPagar',
+              textAlign: pw.TextAlign.justify),
+          pw.Text(
+              '   1. La suma de ${letrasSeparacion.toUpperCase()} ($totalSeparacion) el día $dueDateSeparacion',
+              textAlign: pw.TextAlign.justify),
+          pw.Text(
+              '   2. La suma de ${letrasSaldoCI.toUpperCase()} ($saldoCI) que corresponde al saldo de la cuota inicial del lote ($porcCuotaIni del valor total), en menos de $plazoCI, teniendo como fecha límite el $dueDateSaldoCI',
+              textAlign: pw.TextAlign.justify),
+          pw.Text(
+              '   3. La suma de ${letrasSaldoTotal.toUpperCase()} ($vlrPorPagar) que corresponde al saldo del lote ($porcPorPagar del valor total), en $nroCuotas cuotas con periodicidad ${periodoCuotas.toUpperCase()} por valor de $letrasVlrCuota ($vlrCuota) pagaderas el último día hábil del mes, iniciando el $saldoTotalDate',
+              textAlign: pw.TextAlign.justify),
+        ]
+      );
+    } else if (evaluarMetodo == 'Personalizado') {
+      return pw.Column(
+        crossAxisAlignment: pw.CrossAxisAlignment.stretch,
+        children: [
+          pw.Text('VALOR SALDO: $vlrPorPagar', textAlign: pw.TextAlign.justify),
+          pw.Text(
+            '   La suma de ${letrasSeparacion.toUpperCase()} ($totalSeparacion) el día $dueDateSeparacion',
+            textAlign: pw.TextAlign.justify,
+          ),
+          for (var i = 0; i < installments.length; i++)
             pw.Text(
-                '   1. La suma de $letrasSeparacion ($totalSeparacion) el día $dueDateSeparacion',
-                textAlign: pw.TextAlign.justify),
-            pw.Text(
-                '   2. La suma de $letrasSaldoCI ($saldoCI) que corresponde al saldo de la cuota inicial del lote ($porcCuotaIni del valor total), en menos de $plazoCI, teniendo como fecha límite el $dueDateSaldoCI',
-                textAlign: pw.TextAlign.justify),
-            pw.Text(
-                '   3. La suma de $letrasSaldoTotal ($vlrPorPagar) que corresponde al saldo del lote ($porcPorPagar del valor total), en $nroCuotas cuotas con periodicidad ${periodoCuotas.toUpperCase()} por valor de $letrasVlrCuota ($vlrCuota) pagaderas el último día hábil del mes, iniciando el $saldoTotalDate',
-                textAlign: pw.TextAlign.justify),
-          ]);
+              '   ${i + 1}. La suma de ${valorEnLetras(installments[i]['amount'])} (${installments[i]['amount']}) el día ${installments[i]['date']}',
+              textAlign: pw.TextAlign.justify,
+            ),
+        ],
+      );
+    } else {
+      return pw.Container();
     }
   }
+
+  Future<String> valorEnLetras(double valor) async {
+    String rta = await numeroEnLetras(valor, 'pesos');
+    return rta;
+  }
+
+
 }
