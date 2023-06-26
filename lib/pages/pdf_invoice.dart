@@ -2,6 +2,7 @@ import 'package:albaterrapp/services/firebase_services.dart';
 import 'package:albaterrapp/utils/color_utils.dart';
 import 'package:albaterrapp/widgets/widgets.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:pdf/pdf.dart';
@@ -53,6 +54,26 @@ class PDFInvoice extends StatelessWidget {
     getMetodoPago();
     getInv();
   }
+  
+  User? user = FirebaseAuth.instance.currentUser;
+  String loggedEmail = '';
+  String loggedName = '';
+
+  Future<String> getLoggedName() async {    
+    user = FirebaseAuth.instance.currentUser;
+    loggedEmail = user!.email!;
+    QuerySnapshot loggedSnapshot = await db
+        .collection('sellers')
+        .where('emailSeller', isEqualTo: loggedEmail)
+        .get();
+    if (loggedSnapshot.docs.isNotEmpty) {
+      DocumentSnapshot doc = loggedSnapshot.docs.first;
+      loggedName = doc['nameSeller'] + ' ' + doc['lastnameSeller'];
+    } else {
+      loggedName = 'JAVIER CAMILO RUEDA SERRANO';
+    }
+    return loggedName;
+  }
 
   Future<void> getMetodoPago() async {
     DocumentSnapshot? doc =
@@ -76,7 +97,7 @@ class PDFInvoice extends StatelessWidget {
   Map<String, dynamic> metodoPago = {};
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) {    
     getInv();
     getMetodoPago();
     return Scaffold(
@@ -113,7 +134,9 @@ class PDFInvoice extends StatelessWidget {
         await rootBundle.load('assets/images/invertaga.png');
     final Uint8List byteList2 = photo2.buffer.asUint8List();
     final ByteData photo3 = await rootBundle.load('assets/images/vision.png');
-    final Uint8List byteList3 = photo3.buffer.asUint8List();    
+    final Uint8List byteList3 = photo3.buffer.asUint8List();  
+
+    loggedName = await getLoggedName();  
 
     pdf.addPage(
       pw.Page(
@@ -516,11 +539,12 @@ class PDFInvoice extends StatelessWidget {
                         crossAxisAlignment: pw.CrossAxisAlignment.center,
                         children: [
                           pw.Text(
-                            '_____________________________',
+                            '_______${loggedName.toUpperCase()}_______',
                             textAlign: pw.TextAlign.center,
                             style: pw.TextStyle(fontSize: 10, 
                               fontWeight: pw.FontWeight.bold,
-                            ),
+                              decoration: pw.TextDecoration.underline
+                            ),                            
                           ),
                           pw.Text(
                             'Firma elaborado',

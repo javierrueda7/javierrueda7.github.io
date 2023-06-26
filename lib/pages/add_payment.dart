@@ -434,7 +434,7 @@ class _AddPaymentPageState extends State<AddPaymentPage> {
                                           final lotesList = lotesSnapshot.data?.docs;
                                           for (var lotes in lotesList!) {
                                             if (lotes['loteState'] !=
-                                                    'Disponible' && lotes['loteState'] != 'Pagado') {
+                                                    'Disponible' && lotes['loteState'] != 'Completo') {
                                               loteItems.add(
                                                 DropdownMenuItem(
                                                   value: lotes.id,

@@ -227,7 +227,7 @@ class _ResumenPagosState extends State<ResumenPagos> {
                                 ],
                               ),
                               onTap: (() async {
-                                String valorEnLetras = await numeroEnLetras(pagosSnapshot.data?[index]['valorPago'], 'pesos');
+                                String valorEnLetras = await numeroEnLetras(pagosSnapshot.data?[index]['valorPago'].toDouble(), 'pesos');
                                   // ignore: use_build_context_synchronously
                                   Navigator.push(
                                     context,
@@ -243,7 +243,7 @@ class _ResumenPagosState extends State<ResumenPagos> {
                                         cityCliente: pagosSnapshot.data?[index]['ciudadCliente'],
                                         receiptDate: pagosSnapshot.data?[index]['fechaRecibo'],
                                         paymentDate: pagosSnapshot.data?[index]['fechaPago'],                                  
-                                        paymentValue: pagosSnapshot.data?[index]['valorPago'],
+                                        paymentValue: pagosSnapshot.data?[index]['valorPago'].toDouble(),
                                         paymentValueLetters: valorEnLetras,
                                         saldoPorPagar: planPagos['saldoPorPagar'],
                                         valorTotal: planPagos['precioFin'],

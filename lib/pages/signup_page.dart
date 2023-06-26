@@ -24,23 +24,12 @@ class _TestPageState extends State<TestPage> {
     remainingAmount = precioFinal - totalInstallmentAmount;
   }
 
-  void printAllPayments() {
-    print('Payment Details:');
-    for (var i = 0; i < installments.length; i++) {
-      final payment = installments[i];
-      print('Payment ${i + 1}:');
-      print('Amount: ${payment['amount']}');
-      print('Date: ${payment['date']}');
-      print(remainingAmount);
-    }
-  }
-
   void showDatePickerDialog(int index) async {
   DateTime previousDate;
   DateTime firstDate;
   if (index > 0 && installments[index - 1]['date'] != '') {
     previousDate = DateFormat('dd-MM-yyyy').parse(installments[index - 1]['date']);
-    firstDate = previousDate.add(Duration(days: 1));
+    firstDate = previousDate.add(const Duration(days: 1));
   } else {
     firstDate = DateTime.now();
     previousDate = DateTime.now();
@@ -200,13 +189,7 @@ class _TestPageState extends State<TestPage> {
           },
           child: const Text('Agregar pago'),
         ),
-        const SizedBox(height: 16),
-        ElevatedButton(
-          onPressed: precioFinal == totalInstallmentAmount ? printAllPayments : () {
-            
-          },
-          child: const Text('Print Payments'),
-        ),
+        const SizedBox(height: 16),        
       ],
     ),
   );

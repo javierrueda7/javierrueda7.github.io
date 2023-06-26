@@ -108,6 +108,7 @@ class _EditarSeparacionState extends State<EditarSeparacion> {
     nroCuotasList = nroCuotasGenerator(maxCuotas);
     totalSeparacionController.text =
         (currencyCOP((vlrFijoSeparacion.toInt()).toString()));
+    await llenarInstallments();
 
     getSeller();
   }
@@ -125,29 +126,27 @@ class _EditarSeparacionState extends State<EditarSeparacion> {
   }
 
   Future<void> llenarInstallments() async {
-    CollectionReference collection = FirebaseFirestore.instance.doc(loteId).collection('pagosEsperados');
+    installments = [];
+    CollectionReference collection = FirebaseFirestore.instance.collection('planPagos').doc(loteId).collection('pagosEsperados');
 
     // Fetch the documents
-    QuerySnapshot querySnapshot = await collection.get();
+    QuerySnapshot paymentSnapshot = await collection.get();
 
     // Process each document
-    for (var doc in querySnapshot.docs) {
+    for (var doc in paymentSnapshot.docs) {
       // Check if the document ID contains 'SEP' or 'TOTAL'
-      if (doc.id.contains('SEP') || doc.id.contains('TOTAL')) {
+      if (!doc.id.contains('SEP') && !doc.id.contains('TOTAL')) {
         // Extract the fields from the document data
         String conceptoPago = doc.get('conceptoPago');
-        Timestamp fechaPagoTimestamp = doc.get('fechaPago');
+        String fechaPago = doc.get('fechaPago');
         double valorPago = doc.get('valorPago');
-
-        // Convert the timestamp to a DateTime object
-        DateTime fechaPago = fechaPagoTimestamp.toDate();
 
         // Create a map for each document, including the document ID
         Map<String, dynamic> installment = {
           'id': doc.id,
           'conceptoPago': conceptoPago,
-          'fechaPago': fechaPago,
-          'valorPago': valorPago,
+          'date': fechaPago,
+          'amount': valorPago,
         };
 
         // Add the map to the installments list
@@ -155,6 +154,21 @@ class _EditarSeparacionState extends State<EditarSeparacion> {
       }
     }
   }
+
+  bool isFormVisible = false;
+
+  void toggleFormVisibility() {
+    setState(() {
+      isFormVisible = !isFormVisible;
+      if(isFormVisible == true){
+        llenarInstallments();
+      }
+    });
+  }
+
+  List<String> dctoPersonalizado = ['0.0%', '2.0%', '4.0%', '6.0%', '8.0%',   '10.0%', '12.5%'];
+  String selectedDctoPersonalizado = '0.0';
+  String customDiscountValue = '';
 
   List<Map<String, dynamic>> installments = [];
   double remainingAmount = 0;
@@ -186,7 +200,7 @@ class _EditarSeparacionState extends State<EditarSeparacion> {
     'Semestral',
     'Anual'
   ];
-  List<String> paymentMethodList = ['Pago de contado', 'Financiación directa'];
+  List<String> paymentMethodList = ['Pago de contado', 'Financiación directa', 'Personalizado'];
   String paymentMethodSelectedItem = 'Pago de contado';
   Stream<QuerySnapshot>? citiesStream;
   Stream<QuerySnapshot>? sellerStream;
@@ -690,6 +704,278 @@ class _EditarSeparacionState extends State<EditarSeparacion> {
                       ),
                     ),
 
+                    Container(
+                      constraints: const BoxConstraints(maxWidth: 800),
+                      child: Row(children: [
+                        Expanded(
+                          flex: 1,
+                          child: Column(
+                            children: [
+                              const SizedBox(
+                                  height: 15,
+                                  child: Text(
+                                    'Valor inicial',
+                                    style: TextStyle(fontSize: 10),
+                                  )),
+                              textFieldWidget(
+                                (currencyCOP((vlrSeparacion.toInt())
+                                    .toString())),
+                                Icons.monetization_on_outlined,
+                                false,
+                                vlrSeparacionController,
+                                true,
+                                'number',
+                                (String value) {
+                                  if (value.isEmpty ||
+                                      stringConverter(value) <=
+                                          vlrFijoSeparacion) {
+                                    setState(() {
+                                      vlrSeparacion =
+                                          stringConverter(value);
+                                      saldoSeparacion =
+                                          vlrFijoSeparacion -
+                                              stringConverter(value);
+                                      saldoSeparacionController.text =
+                                          (currencyCOP(
+                                              (saldoSeparacion.toInt())
+                                                  .toString()));
+                                      saldoCuotaIniController.text =
+                                          (currencyCOP((saldoCI.toInt())
+                                              .toString()));
+                                      vlrSeparacionController.value =
+                                          TextEditingValue(
+                                        text: (currencyCOP(
+                                            (vlrSeparacion.toInt())
+                                                .toString())),
+                                        selection:
+                                            TextSelection.collapsed(
+                                                offset: (currencyCOP(
+                                                        (vlrSeparacion
+                                                                .toInt())
+                                                            .toString()))
+                                                    .length),
+                                      );
+                                      updateNumberWords();
+                                    });
+                                  }
+                                  if (stringConverter(value) >=
+                                      vlrFijoSeparacion) {
+                                    setState(() {
+                                      vlrSeparacion = vlrFijoSeparacion;
+                                      vlrSeparacionController.text =
+                                          vlrFijoSeparacion
+                                              .toInt()
+                                              .toString();
+                                      saldoSeparacion = 0;
+                                      saldoSeparacionController.text =
+                                          (currencyCOP(
+                                              (saldoSeparacion.toInt())
+                                                  .toString()));
+                                      vlrSeparacionController.value =
+                                          TextEditingValue(
+                                        text: (currencyCOP(
+                                            (vlrSeparacion.toInt())
+                                                .toString())),
+                                        selection:
+                                            TextSelection.collapsed(
+                                                offset: (currencyCOP(
+                                                        (vlrSeparacion
+                                                                .toInt())
+                                                            .toString()))
+                                                    .length),
+                                      );
+                                      updateNumberWords();
+                                    });
+                                  }
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
+                        Expanded(
+                          flex: 1,
+                          child: Column(
+                            children: [
+                              const SizedBox(
+                                  height: 15,
+                                  child: Text(
+                                    'Fecha de separación',
+                                    style: TextStyle(fontSize: 10),
+                                  )),
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: primaryColor.withOpacity(0.2),
+                                  borderRadius:
+                                      BorderRadius.circular(30.0),
+                                  border: Border.all(
+                                      width: 1,
+                                      style: BorderStyle.solid,
+                                      color:
+                                          fifthColor.withOpacity(0.1)),
+                                ),
+                                child: Padding(
+                                  padding:
+                                      const EdgeInsets.only(left: 10),
+                                  child: TextField(
+                                    textAlign: TextAlign.center,
+                                    cursorColor: fifthColor,
+                                    style: TextStyle(
+                                        color: fifthColor
+                                            .withOpacity(0.9)),
+                                    controller:
+                                        separacionDeadlineController,
+                                    decoration: InputDecoration(
+                                      border: InputBorder.none,
+                                      icon: Icon(
+                                        Icons.date_range_outlined,
+                                        color: fifthColor,
+                                      ),
+                                      hintText: DateFormat('dd-MM-yyyy')
+                                          .format(quotePickedDate),
+                                    ),
+                                    readOnly: true,
+                                    onTap: () async {
+                                      DateTime? pickedDate =
+                                          await showDatePicker(
+                                        locale:
+                                            const Locale("es", "CO"),
+                                        context: context,
+                                        initialDate: dateConverter(
+                                            separacionDeadlineController
+                                                .text),
+                                        firstDate: DateTime(1900),
+                                        lastDate: DateTime(2050),
+                                      );
+                                      if (pickedDate != null) {
+                                        setState(() {
+                                          separacionDeadlineController
+                                                  .text =
+                                              DateFormat('dd-MM-yyyy')
+                                                  .format(pickedDate);
+                                          promesaDeadlineController
+                                                  .text =
+                                              dateOnly(
+                                                  false,
+                                                  plazoSaldoSep,
+                                                  pickedDate,
+                                                  false);
+                                          saldoCuotaIniDeadlineController
+                                                  .text =
+                                              dateOnly(false, plazoCI,
+                                                  pickedDate, true);
+                                          updateDateSaldo(pickedDate);
+                                          discountValue();
+                                        });
+                                      }
+                                    },
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ])),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    Container(
+                        constraints: const BoxConstraints(maxWidth: 800),
+                        child: Row(children: [
+                          Expanded(
+                            flex: 1,
+                            child: Column(
+                              children: [
+                                const SizedBox(
+                                    height: 15,
+                                    child: Text(
+                                      'Saldo separación',
+                                      style: TextStyle(fontSize: 10),
+                                    )),
+                                textFieldWidget(
+                                  (currencyCOP((saldoSeparacion.toInt())
+                                      .toString())),
+                                  Icons.monetization_on_outlined,
+                                  false,
+                                  saldoSeparacionController,
+                                  false,
+                                  'number',
+                                  () {},
+                                ),
+                              ],
+                            ),
+                          ),
+                          Expanded(
+                            flex: 1,
+                            child: Column(
+                              children: [
+                                const SizedBox(
+                                    height: 15,
+                                    child: Text(
+                                      'Fecha límite saldo separación',
+                                      style: TextStyle(fontSize: 10),
+                                    )),
+                                Container(
+                                  decoration: BoxDecoration(
+                                    color: primaryColor.withOpacity(0.2),
+                                    borderRadius:
+                                        BorderRadius.circular(30.0),
+                                    border: Border.all(
+                                        width: 1,
+                                        style: BorderStyle.solid,
+                                        color:
+                                            fifthColor.withOpacity(0.1)),
+                                  ),
+                                  child: Padding(
+                                    padding:
+                                        const EdgeInsets.only(left: 10),
+                                    child: TextField(
+                                      textAlign: TextAlign.center,
+                                      cursorColor: fifthColor,
+                                      style: TextStyle(
+                                          color: fifthColor
+                                              .withOpacity(0.9)),
+                                      controller:
+                                          promesaDeadlineController,
+                                      decoration: InputDecoration(
+                                        border: InputBorder.none,
+                                        icon: Icon(
+                                          Icons.date_range_outlined,
+                                          color: fifthColor,
+                                        ),
+                                        hintText: DateFormat('dd-MM-yyyy')
+                                            .format(quotePickedDate),
+                                      ),
+                                      readOnly: true,
+                                      onTap: () async {
+                                        DateTime? pickedDate =
+                                            await showDatePicker(
+                                          locale:
+                                              const Locale("es", "CO"),
+                                          context: context,
+                                          initialDate: dateConverter(
+                                              promesaDeadlineController
+                                                  .text),
+                                          firstDate: DateTime(1900),
+                                          lastDate: DateTime(2050),
+                                        );
+                                        if (pickedDate != null) {
+                                          setState(() {
+                                            promesaDeadlineController
+                                                    .text =
+                                                DateFormat('dd-MM-yyyy')
+                                                    .format(pickedDate);
+                                          });
+                                        }
+                                      },
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ]
+                      )
+                    ),
                     const SizedBox(
                       height: 10,
                     ),
@@ -722,7 +1008,120 @@ class _EditarSeparacionState extends State<EditarSeparacion> {
                       height: 10,
                     ),
                     //Financiación directa
-                    paymentMethodSeparacion(paymentMethodSelectedItem),
+                    paymentMethodSelectedItem == 'Personalizado' 
+                    ? Container(
+                      constraints: const BoxConstraints(maxWidth: 800),
+                      child: Column(
+                        children: [
+                          Row(
+                            children: [
+                              Expanded(
+                                flex: 2,
+                                child: Container(                            
+                                  alignment: Alignment.center,
+                                  child: const Text('Descuento a aplicar')
+                                ),
+                              ),
+                              Expanded(
+                                flex: 1,
+                                child: Container(
+                                  alignment: Alignment.centerRight,
+                                  child: TextFormField(
+                                    textAlign: TextAlign.center,
+                                    decoration: const InputDecoration(
+                                      hintText: '0.0',
+                                    ),
+                                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                                    onChanged: (value) {
+                                      setState(() {
+                                        // Parse the input value to a double and update the interest
+                                        selectedDctoPersonalizado = value;
+                                        // Call necessary functions for calculations or updates
+                                        discountValue();
+                                        updateNumberWords();
+                                      });
+                                    },
+                                  ),                                  
+                                ),
+                              ),
+                              Expanded(
+                                flex: 1,
+                                child: Container(                            
+                                  alignment: Alignment.centerLeft,
+                                  child: const Text('%')
+                                ),
+                              ),
+                              /*Expanded(
+                                flex: 1,
+                                child: Container(
+                                  child: Row(
+                                    children: [
+                                      DropdownButton<String>(
+                                        value: selectedDctoPersonalizado,
+                                        items: dctoPersonalizado.map((String value) {
+                                          return DropdownMenuItem<String>(
+                                            value: value,
+                                            child: Text(value),
+                                          );
+                                        }).toList(),
+                                        onChanged: (newValue) {
+                                          setState(() {
+                                            if (newValue == 'Otro') {
+                                              selectedDctoPersonalizado = newValue!;
+                                            } else {
+                                              selectedDctoPersonalizado = newValue!;
+                                              customDiscountValue = '';
+                                            }
+                                            discountValue();
+                                            updateNumberWords();
+                                          });
+                                        },
+                                      ),
+                                      const SizedBox(width: 10),
+                                      if (selectedDctoPersonalizado == 'Otro')
+                                        Expanded(
+                                          child: TextField(
+                                            onChanged: (newValue) {
+                                              setState(() {
+                                                customDiscountValue = newValue;
+                                                discountValue();
+                                                updateNumberWords();
+                                              });
+                                            },
+                                          ),
+                                        ),
+                                    ],
+                                  ),
+                                ),
+                              ),*/
+                            ],
+                          ),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          ElevatedButton(
+                            onPressed: toggleFormVisibility,
+                            child: Text(isFormVisible ? 'Ocultar pagos' : 'Mostrar pagos'),
+                          ),
+                          const SizedBox(height: 10),                          
+                          Visibility(
+                            visible: isFormVisible,
+                            child: Card(
+                              child: Padding(
+                                padding: const EdgeInsets.all(16),
+                                child: installmentForm(installments),
+                              ),
+                            ),
+                          ),
+                        ]
+                      )
+                    ) 
+                    : Column(
+                      children: [                        
+                        //Financiación directa
+                        paymentMethodSeparacion(paymentMethodSelectedItem),
+                      ],
+                    ),
                     const SizedBox(
                       height: 10,
                     ),
@@ -2257,6 +2656,11 @@ class _EditarSeparacionState extends State<EditarSeparacion> {
     if (paymentMethodSelectedItem == 'Pago de contado') {
       valorAPagar = precioFinal - vlrFijoSeparacion;
       return dctoContado;
+    } else if (paymentMethodSelectedItem == 'Personalizado'){
+      valorAPagar = precioFinal - vlrFijoSeparacion;
+      String percentageString = selectedDctoPersonalizado;
+      double percentage = double.parse(percentageString.replaceAll('%', ''));
+      return percentage;
     } else {
       valorAPagar = precioFinal - cuotaInicial;
       return dctoCuotas;
@@ -3159,17 +3563,6 @@ class _EditarSeparacionState extends State<EditarSeparacion> {
     remainingAmount = valorAPagar - totalInstallmentAmount;
   }
 
-  void printAllPayments() {
-    print('Payment Details:');
-    for (var i = 0; i < installments.length; i++) {
-      final payment = installments[i];
-      print('Payment ${i + 1}:');
-      print('Amount: ${payment['amount']}');
-      print('Date: ${payment['date']}');
-      print(remainingAmount);
-    }
-  }
-
   void showDatePickerDialog(int index) async {
     DateTime previousDate;
     DateTime firstDate;
@@ -3213,7 +3606,8 @@ class _EditarSeparacionState extends State<EditarSeparacion> {
   }
 
   Widget installmentForm(List<Map<String, dynamic>> installments) {
-    String tempDate = dateSaldo;
+    totalInstallmentAmount = installments.fold(0.0, (sum, installment) => sum + installment['amount']);
+
     return Container(
       alignment: Alignment.center,
       constraints: const BoxConstraints(maxWidth: 800),
@@ -3332,12 +3726,6 @@ class _EditarSeparacionState extends State<EditarSeparacion> {
             child: const Text('Agregar pago'),
           ),
           const SizedBox(height: 16),
-          ElevatedButton(
-            onPressed: precioFinal == totalInstallmentAmount ? printAllPayments : () {
-              // Add your custom logic here for the action when the button is pressed
-            },
-            child: const Text('Print Payments'),
-          ),
         ],
       ),
     );

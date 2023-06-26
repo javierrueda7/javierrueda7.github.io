@@ -70,7 +70,7 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
   }
 
   Future<void> llenarInstallments(String loteSel) async {
-    CollectionReference collection = FirebaseFirestore.instance.doc(loteSel).collection('pagosEsperados');
+    CollectionReference collection = FirebaseFirestore.instance.collection('planPagos').doc(loteSel).collection('pagosEsperados');
 
     // Fetch the documents
     QuerySnapshot querySnapshot = await collection.get();
@@ -78,14 +78,11 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
     // Process each document
     for (var doc in querySnapshot.docs) {
       // Check if the document ID contains 'SEP' or 'TOTAL'
-      if (doc.id.contains('SEP') || doc.id.contains('TOTAL')) {
+      if (!doc.id.contains('SEP') && !doc.id.contains('TOTAL')) {
         // Extract the fields from the document data
         String conceptoPago = doc.get('conceptoPago');
-        Timestamp fechaPagoTimestamp = doc.get('fechaPago');
+        String fechaPago = doc.get('fechaPago');
         double valorPago = doc.get('valorPago');
-
-        // Convert the timestamp to a DateTime object
-        DateTime fechaPago = fechaPagoTimestamp.toDate();
 
         // Create a map for each document, including the document ID
         Map<String, dynamic> installment = {
@@ -118,9 +115,9 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
     return gerenteEmail.get('email') as String;
   }
 
-  void updateLoteInfo(String lid) async {
-    loteClicked = await getLoteInfo(lid);
-  }
+  Future<void> updateLoteInfo(String loteId) async {
+  loteClicked = await getLoteInfo(loteId);
+}
 
   Map<String, dynamic> loteClicked = {};
   List<dynamic> loteInfo = [];
@@ -337,10 +334,9 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
                                           ),
                                         ],
                                         onSelected: (value) async {
-                                          setState(() {
-                                            updateLoteInfo(quotesSnapshot.data?[index]['loteId']);
-                                          });
+                                          await updateLoteInfo(quotesSnapshot.data?[index]['loteId']);                                          
                                           if (value == 'Opción 1') {
+                                            // ignore: use_build_context_synchronously
                                             Navigator.push(
                                                 context,
                                                 MaterialPageRoute(
@@ -463,6 +459,7 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
                                             if (quotesSnapshot.data?[index]
                                                     ['quoteStage'] ==
                                                 'CREADA') {
+                                              // ignore: use_build_context_synchronously
                                               await Navigator.pushNamed(
                                                   context, "/editQuote",
                                                   arguments: {
@@ -812,10 +809,11 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
                                           }
                                         },
                                       ),
-                                      onTap: (() {
-                                        setState(() { updateLoteInfo(quotesSnapshot.data?[index]['loteId']);});
+                                      onTap: (() async {
+                                        await updateLoteInfo(quotesSnapshot.data?[index]['loteId']);
                                         if (managerLogged == true) {
                                           if(loteClicked['loteState'] != 'Disponible') {
+                                            // ignore: use_build_context_synchronously
                                             ScaffoldMessenger.of(context).showSnackBar(
                                               const SnackBar(
                                                 content: CustomAlertMessage(
@@ -1104,9 +1102,9 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
                                           ),*/
                                         ],
                                         onSelected: (value) async {
-                                          updateLoteInfo(sepSnapshot.data?[index]['loteId']);
-                                          setState(() {
-                                            llenarInstallments(sepSnapshot.data?[index]['loteId']);                                            
+                                          await updateLoteInfo(sepSnapshot.data?[index]['loteId']);
+                                          await llenarInstallments(sepSnapshot.data?[index]['loteId']);
+                                          setState(() {                                                                                        
                                             vlrFijoSep = sepSnapshot.data?[index]['vlrSepLote'].toInt() + sepSnapshot.data?[index]['saldoSepLote'].toInt();
                                             updateNumberWords(vlrFijoSep.toDouble(), sepSnapshot.data?[index]['saldoCILote'].toDouble(), sepSnapshot.data?[index]['vlrPorPagarLote'].toDouble(), sepSnapshot.data?[index]['vlrCuotasLote'].toDouble(), sepSnapshot.data?[index]['precioFinal'].toDouble());
                                           });
@@ -1248,7 +1246,7 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
                                         },
                                       ),
                                       onTap: (() async {
-                                        setState(() {updateLoteInfo(sepSnapshot.data?[index]['loteId']);});
+                                        await updateLoteInfo(sepSnapshot.data?[index]['loteId']);
                                         if (managerLogged == true && loteClicked['loteState'] == 'Lote separado') {
                                           // ignore: use_build_context_synchronously
                                           Navigator.pushNamed(
@@ -1303,6 +1301,7 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
                                               });
                                           setState(() {});
                                         } else {
+                                          // ignore: use_build_context_synchronously
                                           ScaffoldMessenger.of(context).showSnackBar(
                                             const SnackBar(
                                               content: CustomAlertMessage(
