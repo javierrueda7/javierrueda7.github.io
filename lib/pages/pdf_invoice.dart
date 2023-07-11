@@ -128,8 +128,8 @@ class PDFInvoice extends StatelessWidget {
 
     final pdf = pw.Document();
 
-    final ByteData photo1 = await rootBundle.load('assets/images/logo.png');
-    final Uint8List byteList1 = photo1.buffer.asUint8List();
+    //final ByteData photo1 = await rootBundle.load('assets/images/logo.png');
+    //final Uint8List byteList1 = photo1.buffer.asUint8List();
     final ByteData photo2 =
         await rootBundle.load('assets/images/invertaga.png');
     final Uint8List byteList2 = photo2.buffer.asUint8List();

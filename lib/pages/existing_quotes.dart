@@ -1,7 +1,7 @@
 import 'dart:async';
-
 import 'package:albaterrapp/pages/archived_quotes.dart';
 import 'package:albaterrapp/pages/pdf_generator.dart';
+import 'package:albaterrapp/pages/pdf_promesa.dart';
 import 'package:albaterrapp/pages/pdf_separacion.dart';
 import 'package:albaterrapp/services/firebase_services.dart';
 import 'package:albaterrapp/utils/color_utils.dart';
@@ -82,7 +82,7 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
         // Extract the fields from the document data
         String conceptoPago = doc.get('conceptoPago');
         String fechaPago = doc.get('fechaPago');
-        double valorPago = doc.get('valorPago');
+        double valorPago = doc.get('valorPago').toDouble();
 
         // Create a map for each document, including the document ID
         Map<String, dynamic> installment = {
@@ -132,6 +132,14 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
   String letrasVlrPorPagar = '';
   String letrasPrecioFinal = '';
   int vlrFijoSep = 0;
+  // ignore: prefer_final_fields
+  TextEditingController _observacionesController = TextEditingController(text: '');
+
+  @override
+  void dispose() {
+    _observacionesController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -1090,16 +1098,11 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
                                             value: 'Opción 1',
                                             child: Text('Ver PDF'),
                                           ),
-                                          /*PopupMenuItem(
-                                            enabled: managerLogged,
+                                          PopupMenuItem(
+                                            enabled: managerLogged == true && sepSnapshot.data?[index]['stageSep'] == 'ACTIVA' ? true : false,
                                             value: 'Opción 2',
-                                            child: Text(snapshot.data?[index]
-                                                        ['quoteStage'] ==
-                                                    'LOTE SEPARADO'
-                                                ? 'Cancelar separación'
-                                                : changeState(snapshot
-                                                .data?[index]['quoteStage'])),
-                                          ),*/
+                                            child: const Text('Generar promesa de compra-venta'),
+                                          ),
                                         ],
                                         onSelected: (value) async {
                                           await updateLoteInfo(sepSnapshot.data?[index]['loteId']);
@@ -1240,6 +1243,204 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
                                                     installments: installments,
                                                   ),
                                                 ));
+                                          } 
+                                          if (value == 'Opción 2') {
+                                            _observacionesController.text = sepSnapshot.data?[index]['observacionesLote'];
+                                            // ignore: use_build_context_synchronously
+                                            showDialog(
+                                              context: context,
+                                              builder: (BuildContext context) {
+                                                return AlertDialog(
+                                                  content: Column(
+                                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                                    mainAxisSize: MainAxisSize.min,
+                                                    children: [
+                                                      const SizedBox(height: 20),
+                                                      TextField(
+                                                        controller: _observacionesController,
+                                                        maxLines: null,
+                                                        obscureText: false,
+                                                        enableSuggestions: true,
+                                                        autocorrect: true,
+                                                        cursorColor: fifthColor,
+                                                        enabled: true,
+                                                        textAlign: TextAlign.center,
+                                                        style: TextStyle(color: fifthColor.withOpacity(0.9)),
+                                                        decoration: InputDecoration(
+                                                          prefixIcon: Icon(
+                                                            Icons.search_outlined,
+                                                            color: fifthColor,
+                                                          ),
+                                                          hintText: "Observaciones",
+                                                          hintStyle:
+                                                              TextStyle(color: fifthColor.withOpacity(0.9)),
+                                                          filled: true,
+                                                          floatingLabelBehavior: FloatingLabelBehavior.never,
+                                                          fillColor: primaryColor.withOpacity(0.2),
+                                                          enabledBorder: OutlineInputBorder(
+                                                              borderRadius: BorderRadius.circular(30.0),
+                                                              borderSide: BorderSide(
+                                                                  width: 1,
+                                                                  style: BorderStyle.solid,
+                                                                  color: fifthColor.withOpacity(0.1))),
+                                                          focusedBorder: OutlineInputBorder(
+                                                              borderRadius: BorderRadius.circular(30.0),
+                                                              borderSide: BorderSide(
+                                                                  width: 2,
+                                                                  style: BorderStyle.solid,
+                                                                  color: fifthColor)),
+                                                        ),
+                                                        keyboardType: TextInputType.emailAddress,
+                                                      ),
+                                                      const SizedBox(height: 20),
+                                                      ElevatedButton(
+                                                        onPressed: () {
+                                                          updateSepPromesa(sepSnapshot.data?[index]['sepId'], _observacionesController.text);
+                                                          Navigator.push(
+                                                            context,
+                                                            MaterialPageRoute(
+                                                              builder: (context) =>
+                                                                  PDFPromesa(
+                                                                sellerID:
+                                                                    sepSnapshot.data?[index]
+                                                                        ['sellerID'],
+                                                                sellerName:
+                                                                    '${sellerData['nameSeller']} ${sellerData['lastnameSeller']}',
+                                                                sellerPhone: sellerData[
+                                                                    'phoneSeller'],
+                                                                sellerEmail: sellerData[
+                                                                    'emailSeller'],
+                                                                quoteId: sepSnapshot
+                                                                    .data?[index]['sepId'],
+                                                                name:
+                                                                    custData['nameCliente'],
+                                                                idCust: sepSnapshot.data?[index]['clienteID'],
+                                                                idTypeCust: custData['idTypeCliente'],
+                                                                lastname: custData[
+                                                                    'lastnameCliente'],
+                                                                phone:
+                                                                    custData['telCliente'],
+                                                                address: custData['addressCliente'],
+                                                                email: custData['emailCliente'],
+                                                                city: custData['idIssueCityCliente'],
+                                                                date: sepSnapshot.data?[index]
+                                                                    ['separacionDate'],
+                                                                dueDate:
+                                                                    sepSnapshot.data?[index]
+                                                                        ['promesaDLDate'],
+                                                                lote: loteClicked['loteName'],
+                                                                loteId: sepSnapshot.data?[index]['loteId'],
+                                                                area: '${loteClicked['loteArea'].toInt().toString()} m²',
+                                                                price: (currencyCOP(
+                                                                    (sepSnapshot.data?[index][
+                                                                                'priceLote']
+                                                                            .toInt())
+                                                                        .toString())),
+                                                                finalPrice: (currencyCOP(
+                                                                    (sepSnapshot.data?[index][
+                                                                                'precioFinal']
+                                                                            .toInt())
+                                                                        .toString())),
+                                                                letrasFinalPrice:
+                                                                  letrasPrecioFinal,        
+                                                                porcCuotaIni:
+                                                                    '${sepSnapshot.data?[index]['perCILote'].toString()}%',
+                                                                vlrCuotaIni: (currencyCOP(
+                                                                    (sepSnapshot.data?[index][
+                                                                                'vlrCILote']
+                                                                            .toInt())
+                                                                        .toString())),
+                                                                totalSeparacion: (currencyCOP(
+                                                                    (vlrFijoSep
+                                                                            .toInt())
+                                                                        .toString())),
+                                                                letrasSeparacion: letrasSep,
+                                                                vlrSeparacion: (currencyCOP(
+                                                                    (sepSnapshot.data?[index][
+                                                                                'vlrSepLote']
+                                                                            .toInt())
+                                                                        .toString())),
+                                                                dueDateSeparacion:
+                                                                    sepSnapshot.data?[index]
+                                                                        ['separacionDate'],
+                                                                saldoSeparacion:
+                                                                    (currencyCOP((sepSnapshot
+                                                                            .data?[index][
+                                                                                'saldoSepLote']
+                                                                            .toInt())
+                                                                        .toString())),
+                                                                dueDateSaldoSeparacion:
+                                                                    sepSnapshot.data?[index]
+                                                                        ['promesaDLDate'],
+                                                                plazoCI:
+                                                                    '${(sepSnapshot.data?[index]['plazoCI'].toInt()).toString()} días',
+                                                                plazoContado:
+                                                                    '${(sepSnapshot.data?[index]['plazoContado'].toInt()).toString()} días',
+                                                                letrasSaldoCI: letrasSaldoCI,
+                                                                saldoCI: (currencyCOP(
+                                                                    (sepSnapshot.data?[index][
+                                                                                'saldoCILote']
+                                                                            .toInt())
+                                                                        .toString())),
+                                                                dueDateSaldoCI:
+                                                                    sepSnapshot.data?[index]
+                                                                        ['saldoCIDLDate'],
+                                                                porcPorPagar:
+                                                                    '${(100 - sepSnapshot.data?[index]['perCILote']).toString()}%',
+                                                                vlrPorPagar: (currencyCOP(
+                                                                    (sepSnapshot.data?[index][
+                                                                                'vlrPorPagarLote']
+                                                                            .toInt())
+                                                                        .toString())),
+                                                                letrasSaldoTotal: letrasSaldoLote,
+                                                                paymentMethod:
+                                                                    sepSnapshot.data?[index]
+                                                                        ['metodoPagoLote'],
+                                                                tiempoFinanc:
+                                                                    '${((sepSnapshot.data?[index]['nroCuotasLote']) / 12).toString()} años',
+                                                                vlrCuota: (currencyCOP((sepSnapshot
+                                                                        .data?[index][
+                                                                            'vlrCuotasLote']
+                                                                        .toInt())
+                                                                    .toString())),
+                                                                letrasVlrCuota: letrasValorCuotas,
+                                                                letrasSaldoContado: letrasSaldoLote,
+                                                                saldoTotalDate:
+                                                                    sepSnapshot.data?[index]
+                                                                        ['saldoTotalDate'],
+                                                                periodoCuotas: sepSnapshot
+                                                                        .data?[index]
+                                                                    ['periodoCuotasLote'],
+                                                                nroCuotas: (sepSnapshot
+                                                                        .data?[index][
+                                                                            'nroCuotasLote']
+                                                                        .toInt())
+                                                                    .toString(),
+                                                                tem:
+                                                                    '${sepSnapshot.data?[index]['tem'].toString()}%',
+                                                                observaciones: _observacionesController.text,
+                                                                quoteStage:
+                                                                    sepSnapshot.data?[index]
+                                                                        ['stageSep'],
+                                                                installments: installments,
+                                                              ),
+                                                            ));
+                                                        },
+                                                        child: const Text('Generar promesa de compra-venta'),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                  actions: [
+                                                    IconButton(
+                                                      onPressed: () {
+                                                        Navigator.pop(context);
+                                                      },
+                                                      icon: const Icon(Icons.close),
+                                                    ),
+                                                  ],
+                                                );
+                                              }
+                                            );                                       
                                           } else {
                                             setState(() {});
                                           }

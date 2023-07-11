@@ -205,7 +205,7 @@ class PDFSeparacion extends StatelessWidget {
         elevation: 0,
         centerTitle: true,
         title: Text(
-          'Vista previa cotización',
+          'Vista previa orden de separación',
           style: TextStyle(
               color: primaryColor, fontSize: 18, fontWeight: FontWeight.bold),
         ),

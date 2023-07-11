@@ -40,8 +40,6 @@ dependencies:
   cloud_firestore: ^4.3.1
   firebase_auth: ^4.2.5
   csv: ^5.0.1
-  intl: ^0.17.0
-  flutter_masked_text: ^0.8.0
   pdf: ^3.9.0
   printing: ^5.10.1
   path_provider: ^2.0.13
@@ -49,14 +47,16 @@ dependencies:
   font_awesome_flutter: ^10.4.0
   number_to_character: ^0.0.12
   translator: ^0.1.7
-  flutter_localization: ^0.1.10
   flutter_typeahead: ^4.3.7
-  
+  flutter_localization: ^0.1.12
+  intl: ^0.18.0
+  webview_flutter: ^2.0.14
+    
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_launcher_icons: ^0.12.0
+  flutter_launcher_icons: ^0.13.1
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
   # activated in the `analysis_options.yaml` file located at the root of your

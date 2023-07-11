@@ -6,7 +6,7 @@ import 'package:albaterrapp/pages/lotes_page.dart';
 import 'package:albaterrapp/pages/resumen_pagos.dart';
 import 'package:albaterrapp/pages/sellers_page.dart';
 import 'package:albaterrapp/pages/signin_page.dart';
-import 'package:albaterrapp/pages/signup_page.dart';
+import 'package:albaterrapp/pages/stats_page.dart';
 import 'package:albaterrapp/services/firebase_services.dart';
 import 'package:albaterrapp/utils/color_utils.dart';
 import 'package:albaterrapp/widgets/widgets.dart';
@@ -159,11 +159,11 @@ class _InitPageState extends State<InitPage> {
                   enabled: userLoggedIn,
                   child: const Text('Información general'),
                 ),
-                /*PopupMenuItem(
+                PopupMenuItem(
                   value: 'Opción 5',
                   enabled: userLoggedIn,
-                  child: const Text('Separaciones'),
-                ),*/
+                  child: const Text('Estadisticas'),
+                ),
                 PopupMenuItem(
                   value: 'Opción 6',
                   enabled: userLoggedIn,
@@ -206,10 +206,9 @@ class _InitPageState extends State<InitPage> {
                   setState(() {});
                 } 
                 if (value == 'Opción 5') {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const TestPage()));
+                  Navigator.of(context).push(MaterialPageRoute(
+                    builder: (BuildContext context) => const PowerBIReportScreen()
+                  ));
                   setState(() {});
                 }
                 if (value == 'Opción 6') {
