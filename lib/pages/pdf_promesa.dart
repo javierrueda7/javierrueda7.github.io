@@ -233,9 +233,6 @@ class PDFPromesa extends StatelessWidget {
   }
 
   Future<Uint8List> generatePdf(BuildContext context) async {
-    final ByteData photo =
-        await rootBundle.load('assets/images/albaterrashape.png');
-    final Uint8List byteList = photo.buffer.asUint8List();
 
     final pdf = pw.Document();
     // ignore: use_build_context_synchronously

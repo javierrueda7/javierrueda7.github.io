@@ -884,7 +884,7 @@ Future<List> getQuotes(String loteName, bool allLotes, bool archive, String sell
         }
       } else {
         if (data['isActive'] == archive) {
-          if(data['quoteStage'] == 'ACTIVA' || data['quoteStage'] == 'CREADA' )  {
+          if(data['quoteStage'] == 'AUTORIZADA' || data['quoteStage'] == 'CREADA' )  {
             final quote = {
               "qid": doc.id,
               "sellerID": data['sellerID'],
@@ -964,7 +964,7 @@ Future<List> getQuotes(String loteName, bool allLotes, bool archive, String sell
         }
       } else {
         if (data['isActive'] == archive && data['sellerID'] == sellerId) {
-          if(data['quoteStage'] == 'ACTIVA' || data['quoteStage'] == 'CREADA' )  {
+          if(data['quoteStage'] == 'AUTORIZADA' || data['quoteStage'] == 'CREADA' )  {
             final quote = {
               "qid": doc.id,
               "sellerID": data['sellerID'],
