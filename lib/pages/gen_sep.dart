@@ -1075,9 +1075,10 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
                     ),
                     Container(
                       constraints: const BoxConstraints(maxWidth: 800),
-                      child: easyDropdown(
-                          paymentMethodList, paymentMethodSelectedItem,
-                          (tempPaymentMethod) {
+                      child: easyDropdown(paymentMethodList, paymentMethodSelectedItem,(tempPaymentMethod) {
+                        if (tempPaymentMethod == 'Personalizado'){
+                          showSimpleDialog(context);
+                        }
                         setState(() {
                           paymentMethodSelectedItem = tempPaymentMethod!;
                           updateDateSaldo(
@@ -1134,49 +1135,6 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
                                   child: const Text('%')
                                 ),
                               ),
-                              /*Expanded(
-                                flex: 1,
-                                child: Container(
-                                  child: Row(
-                                    children: [
-                                      DropdownButton<String>(
-                                        value: selectedDctoPersonalizado,
-                                        items: dctoPersonalizado.map((String value) {
-                                          return DropdownMenuItem<String>(
-                                            value: value,
-                                            child: Text(value),
-                                          );
-                                        }).toList(),
-                                        onChanged: (newValue) {
-                                          setState(() {
-                                            if (newValue == 'Otro') {
-                                              selectedDctoPersonalizado = newValue!;
-                                            } else {
-                                              selectedDctoPersonalizado = newValue!;
-                                              customDiscountValue = '';
-                                            }
-                                            discountValue();
-                                            updateNumberWords();
-                                          });
-                                        },
-                                      ),
-                                      const SizedBox(width: 10),
-                                      if (selectedDctoPersonalizado == 'Otro')
-                                        Expanded(
-                                          child: TextField(
-                                            onChanged: (newValue) {
-                                              setState(() {
-                                                customDiscountValue = newValue;
-                                                discountValue();
-                                                updateNumberWords();
-                                              });
-                                            },
-                                          ),
-                                        ),
-                                    ],
-                                  ),
-                                ),
-                              ),*/
                             ],
                           ),
                           const SizedBox(
@@ -3533,6 +3491,19 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
       ),
     );
   }
+
+  Future<void> showSimpleDialog(BuildContext context) async {
+  return showDialog<void>(
+    context: context,
+    barrierDismissible: true, // Dialog can be dismissed by tapping outside
+    builder: (BuildContext context) {
+      return const AlertDialog(
+        title: Text('Dialog Title'),
+        content: Text('This is a simple dialog.'),
+      );
+    },
+  );
+}
 
   State<StatefulWidget> createState() => throw UnimplementedError();
 }

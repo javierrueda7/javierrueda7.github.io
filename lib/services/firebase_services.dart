@@ -621,6 +621,7 @@ Future<List> getOrdenSep(String loteId, bool allLotes, String sellerId) async {
       }
     }
   }
+  separaciones.sort((a, b) => b['sepId'].compareTo(a['sepId']));
   return separaciones;
 }
 
@@ -1005,6 +1006,7 @@ Future<List> getQuotes(String loteName, bool allLotes, bool archive, String sell
       }
     }
   }
+  quotes.sort((a, b) => b['qid'].compareTo(a['qid']));
   return quotes;
 }
 
