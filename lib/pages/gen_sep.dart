@@ -2247,7 +2247,8 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
                                       'SEP1',
                                       vlrSeparacion,
                                       'SEPARACIÓN',
-                                      saldoSeparacionDeadlineController.text
+                                      saldoSeparacionDeadlineController.text,
+                                      quoteIdController.text
                                     );
                                   } else{
                                     await pagosEsperados(
@@ -2255,29 +2256,31 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
                                       'SEP1',
                                       vlrSeparacion,
                                       'SEPARACIÓN',
-                                      separacionDeadlineController.text
+                                      separacionDeadlineController.text,
+                                      quoteIdController.text
                                     );
                                     await pagosEsperados(
                                       loteId,
                                       'SEP2',
                                       saldoSeparacion,
                                       'SEPARACIÓN',
-                                      saldoSeparacionDeadlineController.text
+                                      saldoSeparacionDeadlineController.text,
+                                      quoteIdController.text
                                     );
                                   }
                                   if(paymentMethodSelectedItem == 'Personalizado'){
                                     for (var i = 0; i < installments.length; i++) {
                                       final payment = installments[i];
-                                      await pagosEsperados(loteId, (i + 1).toString(), payment['valorPago'], 'ABONO', payment['fechaPago']);
+                                      await pagosEsperados(loteId, (i + 1).toString(), payment['valorPago'], 'ABONO', payment['fechaPago'], quoteIdController.text);
                                     }
                                   } else if(paymentMethodSelectedItem == 'Financiación directa'){
-                                    pagosEsperados(loteId, 'CINI', saldoCI, 'CUOTA INICIAL', saldoCuotaIniDeadlineController.text);
+                                    pagosEsperados(loteId, 'CINI', saldoCI, 'CUOTA INICIAL', saldoCuotaIniDeadlineController.text, quoteIdController.text);
                                     for (var i = 0; i < int.parse(selectedNroCuotas); i++) {
-                                      pagosEsperados(loteId, (i + 1).toString(), valorCuota, 'ABONO', dateOnly(false, (diasValue*i).toDouble(), dateConverter(dateSaldo), true));
+                                      pagosEsperados(loteId, (i + 1).toString(), valorCuota, 'ABONO', dateOnly(false, (diasValue*i).toDouble(), dateConverter(dateSaldo), true), quoteIdController.text);
                                     }
                                   }
                                   else if(paymentMethodSelectedItem == 'Pago de contado'){
-                                    await pagosEsperados(loteId, 'TOTAL', valorAPagar, 'PAGO CONTADO', dateSaldo);                                    
+                                    await pagosEsperados(loteId, 'TOTAL', valorAPagar, 'PAGO CONTADO', dateSaldo, quoteIdController.text);                                    
                                   }
                                   cambioEstadoLote(
                                           loteId, quoteStageController.text)
@@ -3493,17 +3496,17 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
   }
 
   Future<void> showSimpleDialog(BuildContext context) async {
-  return showDialog<void>(
-    context: context,
-    barrierDismissible: true, // Dialog can be dismissed by tapping outside
-    builder: (BuildContext context) {
-      return const AlertDialog(
-        title: Text('Dialog Title'),
-        content: Text('This is a simple dialog.'),
-      );
-    },
-  );
-}
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: true, // Dialog can be dismissed by tapping outside
+      builder: (BuildContext context) {
+        return const AlertDialog(
+          title: Text('Importante'),
+          content: Text('Tener presente que el valor de la separación ya se definió, por lo tanto no está incluído en el método de pago personalizado.'),
+        );
+      },
+    );
+  }
 
   State<StatefulWidget> createState() => throw UnimplementedError();
 }

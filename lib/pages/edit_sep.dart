@@ -177,6 +177,7 @@ class _EditarSeparacionState extends State<EditarSeparacion> {
   Color amountColor = Colors.black;
   void completo = false;
   
+  int diasValue = 30;
   late int vlrBaseLote;
   late double saldoCI;
   late double valorAPagar;
@@ -1149,7 +1150,7 @@ class _EditarSeparacionState extends State<EditarSeparacion> {
                         ),
                       ),
                     ),
-                    Container(
+                    /*Container(
                       //Container de separación
                       constraints: const BoxConstraints(maxWidth: 800),
                       child: Column(
@@ -1484,7 +1485,7 @@ class _EditarSeparacionState extends State<EditarSeparacion> {
                     const SizedBox(
                       height: 10,
                     ),
-                    paymentMethod(paymentMethodSelectedItem),
+                    paymentMethod(paymentMethodSelectedItem),*/
                     const SizedBox(
                       height: 10,
                     ),
@@ -2461,14 +2462,15 @@ class _EditarSeparacionState extends State<EditarSeparacion> {
                                     vlrTEM,
                                     observacionesController.text,
                                     idController.text,
-                                  );                                                             
+                                  );                                                                                              
                                   if(saldoSeparacion == 0){
                                     await pagosEsperados(
                                       loteId,
                                       'SEP1',
                                       vlrSeparacion,
                                       'Separación',
-                                      promesaDeadlineController.text
+                                      promesaDeadlineController.text,
+                                      separacionIdController.text
                                     );
                                   } else{
                                     await pagosEsperados(
@@ -2476,17 +2478,33 @@ class _EditarSeparacionState extends State<EditarSeparacion> {
                                       'SEP1',
                                       vlrSeparacion,
                                       'Separación',
-                                      separacionDeadlineController.text
+                                      separacionDeadlineController.text,
+                                      separacionIdController.text
                                     );
                                     await pagosEsperados(
                                       loteId,
                                       'SEP2',
                                       saldoSeparacion,
                                       'Separación',
-                                      promesaDeadlineController.text
+                                      promesaDeadlineController.text,
+                                      separacionIdController.text
                                     );
                                   }
-                                  await updatePlanPagos(
+                                  if(paymentMethodSelectedItem == 'Personalizado'){
+                                    for (var i = 0; i < installments.length; i++) {
+                                      final payment = installments[i];
+                                      await pagosEsperados(loteId, (i + 1).toString(), payment['valorPago'], 'ABONO', payment['fechaPago'], separacionIdController.text);
+                                    }
+                                  } else if(paymentMethodSelectedItem == 'Financiación directa'){
+                                    pagosEsperados(loteId, 'CINI', saldoCI, 'CUOTA INICIAL', saldoCuotaIniDeadlineController.text, separacionIdController.text);
+                                    for (var i = 0; i < int.parse(selectedNroCuotas); i++) {
+                                      pagosEsperados(loteId, (i + 1).toString(), valorCuota, 'ABONO', dateOnly(false, (diasValue*i).toDouble(), dateConverter(dateSaldo), true), separacionIdController.text);
+                                    }
+                                  }
+                                  else if(paymentMethodSelectedItem == 'Pago de contado'){
+                                    await pagosEsperados(loteId, 'TOTAL', valorAPagar, 'PAGO CONTADO', dateSaldo, separacionIdController.text);                                    
+                                  }                                 
+                                  updatePlanPagos(
                                     loteId, 
                                     vlrBaseLote.toDouble(),
                                     precioFinal,

@@ -65,11 +65,12 @@ Future<void> updatePlanPagos(String lote, double precioIni, double precioFin, do
   });
 }
 
-Future<void> pagosEsperados(String lote, String idPago, double valorPago, String conceptoPago, String fechaPago) async{
+Future<void> pagosEsperados(String lote, String idPago, double valorPago, String conceptoPago, String fechaPago, String idPlanPagos) async{
   await db.collection("planPagos").doc(lote).collection("pagosEsperados").doc(idPago).set({
     "valorPago": valorPago,
     "conceptoPago": conceptoPago,
     "fechaPago": fechaPago,
+    "idPlanPagos": idPlanPagos,
   });
 }
 
@@ -621,7 +622,7 @@ Future<List> getOrdenSep(String loteId, bool allLotes, String sellerId) async {
       }
     }
   }
-  separaciones.sort((a, b) => b['sepId'].compareTo(a['sepId']));
+  separaciones.sort((a, b) => a['loteId'].compareTo(b['loteId']));
   return separaciones;
 }
 
@@ -1006,7 +1007,7 @@ Future<List> getQuotes(String loteName, bool allLotes, bool archive, String sell
       }
     }
   }
-  quotes.sort((a, b) => b['qid'].compareTo(a['qid']));
+  quotes.sort((a, b) => a['loteId'].compareTo(b['loteId']));
   return quotes;
 }
 
