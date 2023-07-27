@@ -108,7 +108,6 @@ class _EditarSeparacionState extends State<EditarSeparacion> {
     nroCuotasList = nroCuotasGenerator(maxCuotas);
     totalSeparacionController.text =
         (currencyCOP((vlrFijoSeparacion.toInt()).toString()));
-    await llenarInstallments();
 
     getSeller();
   }
@@ -160,11 +159,19 @@ class _EditarSeparacionState extends State<EditarSeparacion> {
   void toggleFormVisibility() {
     setState(() {
       isFormVisible = !isFormVisible;
+      if(isFormVisible == false){
+        counter = 0;
+      }
       if(isFormVisible == true){
-        llenarInstallments();
+        if(counter < 5){
+          llenarInstallments();
+        }
+        counter++;
       }
     });
   }
+
+  int counter = 0;
 
   List<String> dctoPersonalizado = ['0.0%', '2.0%', '4.0%', '6.0%', '8.0%',   '10.0%', '12.5%'];
   String selectedDctoPersonalizado = '0.0';
@@ -2376,6 +2383,20 @@ class _EditarSeparacionState extends State<EditarSeparacion> {
                                         errorTitle: "Oops!",
                                         errorText:
                                             "Verifique que todos los campos se hayan llenado correctamente.",
+                                        stateColor: dangerColor,
+                                      ),
+                                      behavior: SnackBarBehavior.floating,
+                                      backgroundColor: Colors.transparent,
+                                      elevation: 0,
+                                    ),
+                                  );
+                                } else if (paymentMethodSelectedItem == 'Personalizado' && valorAPagar != totalInstallmentAmount){
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: CustomAlertMessage(
+                                        errorTitle: "Oops!",
+                                        errorText:
+                                            "Verifique que la suma de los pagos sea correcta.",
                                         stateColor: dangerColor,
                                       ),
                                       behavior: SnackBarBehavior.floating,

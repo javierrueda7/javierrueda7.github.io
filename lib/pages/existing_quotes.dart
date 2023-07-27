@@ -313,7 +313,7 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
                                       leading: CircleAvatar(
                                           backgroundColor: stageColor(quotesSnapshot.data?[index]['quoteStage']),
                                           child: Text(
-                                            getNumbers(quotesSnapshot.data?[index]['loteName'])!,
+                                            getNumbers(quotesSnapshot.data?[index]['loteId'])!,
                                             textAlign: TextAlign.center,
                                             style: TextStyle(
                                                 color: primaryColor,
