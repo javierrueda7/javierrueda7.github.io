@@ -3603,6 +3603,7 @@ class _EditarSeparacionState extends State<EditarSeparacion> {
   }
 
   Widget installmentForm(List<Map<String, dynamic>> installments) {
+    
     totalInstallmentAmount = installments.fold(0.0, (sum, installment) => sum + installment['amount']);
 
     return Container(
