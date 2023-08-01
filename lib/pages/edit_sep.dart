@@ -144,8 +144,8 @@ class _EditarSeparacionState extends State<EditarSeparacion> {
         Map<String, dynamic> installment = {
           'id': doc.id,
           'conceptoPago': conceptoPago,
-          'date': fechaPago,
-          'amount': valorPago,
+          'fechaPago': fechaPago,
+          'valorPago': valorPago,
         };
 
         // Add the map to the installments list
@@ -3563,8 +3563,8 @@ class _EditarSeparacionState extends State<EditarSeparacion> {
   void showDatePickerDialog(int index) async {
     DateTime previousDate;
     DateTime firstDate;
-    if (index > 0 && installments[index - 1]['date'] != '') {
-      previousDate = DateFormat('dd-MM-yyyy').parse(installments[index - 1]['date']);
+    if (index > 0 && installments[index - 1]['fechaPago'] != '') {
+      previousDate = DateFormat('dd-MM-yyyy').parse(installments[index - 1]['fechaPago']);
       firstDate = previousDate.add(const Duration(days: 1));
     } else {
       firstDate = DateTime.now();
@@ -3581,7 +3581,7 @@ class _EditarSeparacionState extends State<EditarSeparacion> {
     if (pickedDate != null) {
       final formattedDate = DateFormat('dd-MM-yyyy').format(pickedDate);
       setState(() {
-        installments[index]['date'] = formattedDate;
+        installments[index]['fechaPago'] = formattedDate;
         lastDate = pickedDate;
       });
       // Update the corresponding TextEditingController with the selected date
@@ -3604,7 +3604,7 @@ class _EditarSeparacionState extends State<EditarSeparacion> {
 
   Widget installmentForm(List<Map<String, dynamic>> installments) {
     
-    totalInstallmentAmount = installments.fold(0.0, (sum, installment) => sum + installment['amount']);
+    totalInstallmentAmount = installments.fold(0.0, (sum, installment) => sum + installment['valorPago']);
 
     return Container(
       alignment: Alignment.center,
@@ -3639,8 +3639,8 @@ class _EditarSeparacionState extends State<EditarSeparacion> {
             shrinkWrap: true,
             itemCount: installments.length,
             itemBuilder: (context, index) {
-              TextEditingController dateController = TextEditingController(text: installments[index]['date']);
-              TextEditingController amountController = TextEditingController(text: currencyCOP(installments[index]['amount'].toString()));
+              TextEditingController dateController = TextEditingController(text: installments[index]['fechaPago']);
+              TextEditingController amountController = TextEditingController(text: currencyCOP(installments[index]['valorPago'].toString()));
               return Row(
                 children: [
                   Expanded(
@@ -3658,8 +3658,8 @@ class _EditarSeparacionState extends State<EditarSeparacion> {
                       onChanged: (value) {
                         double newValue = double.tryParse(value) ?? 0;
                         setState(() {
-                          installments[index]['amount'] = newValue;
-                          totalInstallmentAmount = installments.fold(0.0, (sum, installment) => sum + installment['amount']);
+                          installments[index]['valorPago'] = newValue;
+                          totalInstallmentAmount = installments.fold(0.0, (sum, installment) => sum + installment['valorPago']);
                           calculateRemainingAmount();
                           setAmountColor();
                           amountController.value = TextEditingValue(
@@ -3693,7 +3693,7 @@ class _EditarSeparacionState extends State<EditarSeparacion> {
                       onPressed: () {
                         setState(() {
                           installments.removeAt(index);
-                          totalInstallmentAmount = installments.fold(0.0, (sum, installment) => sum + installment['amount']);
+                          totalInstallmentAmount = installments.fold(0.0, (sum, installment) => sum + installment['valorPago']);
                           calculateRemainingAmount();
                         });
                       },
@@ -3709,14 +3709,14 @@ class _EditarSeparacionState extends State<EditarSeparacion> {
             onPressed: () {
               calculateRemainingAmount();
               Map<String, dynamic> newInstallment = {
-                'amount': remainingAmount,
-                'amountController': TextEditingController(text: currencyCOP((remainingAmount.toInt()).toString())),
-                'date': dateOnly(false, 1, lastDate, false),
+                'valorPago': remainingAmount,
+                'valorPagoController': TextEditingController(text: currencyCOP((remainingAmount.toInt()).toString())),
+                'fechaPago': dateOnly(false, 1, lastDate, false),
                 'controller': TextEditingController(text: dateOnly(false, 1, lastDate, false)),
               };
               installments.add(newInstallment);
               setState(() {
-                totalInstallmentAmount = installments.fold(0.0, (sum, installment) => sum + (installment['amount']));
+                totalInstallmentAmount = installments.fold(0.0, (sum, installment) => sum + (installment['valorPago']));
                 calculateRemainingAmount();
                 setAmountColor();
               });
