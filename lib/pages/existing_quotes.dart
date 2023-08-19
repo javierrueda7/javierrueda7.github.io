@@ -610,6 +610,8 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
                                             if (quotesSnapshot.data?[index]
                                                     ['quoteStage'] ==
                                                 'AUTORIZADA' && loteClicked['loteState'] == 'Disponible') {
+                                                  
+                                              print(quotesSnapshot.data?[index]['quoteDLDate']);
                                               // ignore: use_build_context_synchronously
                                               await Navigator.pushNamed(
                                                   context, "/genSep",

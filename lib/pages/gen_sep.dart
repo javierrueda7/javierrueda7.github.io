@@ -29,18 +29,13 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
     initCuotas();
     initSeller();
     initOcup();
-    timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      setState(() {
-        realtimeDateTime = dateOnly(true, 0, DateTime.now(), false);
-      });
-    });
+    
     updateNumberWords();
   }
 
   @override
   void dispose() {
-    timer.cancel(); //cancel the periodic task
-    timer; //clear the timer variable
+    
     ocupacionController.dispose();
     super.dispose();
   }
@@ -355,10 +350,46 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
         elevation: 0,
         centerTitle: true,
         title: Text(
-          'Orden de separación',
+          'ORDEN DE SEPARACIÓN ${(loteController.text).toUpperCase()}',
           style: TextStyle(
               color: primaryColor, fontSize: 18, fontWeight: FontWeight.bold),
         ),
+        actions: <Widget>[
+          Padding(
+              padding: const EdgeInsets.only(right: 20.0),
+              child: GestureDetector(
+                onTap: () {
+                  initPagos();
+                  sellerStream = FirebaseFirestore.instance
+                      .collection('sellers')
+                      .orderBy('lastnameSeller')
+                      .snapshots();
+                  getSeller();
+                  initCuotas();
+                  nroCuotasList = nroCuotasGenerator(maxCuotas);
+                  periodoCalculator(stringConverter(selectedNroCuotas));
+                  vlrBaseLote = stringConverter(priceloteController.text).toInt();
+                  precioFinal = vlrBaseLote * ((100 - discountValue()) / 100);
+                  cuotaInicial = precioFinal * (porcCuotaInicial / 100);
+                  saldoCI = cuotaInicial - vlrFijoSeparacion;
+                  valorCuota = valorAPagar / (double.parse(selectedNroCuotas));
+                  priceloteController.text = (currencyCOP((vlrBaseLote.toInt()).toString()));
+                  precioFinalController.text =
+                      (currencyCOP((precioFinal.toInt()).toString()));
+                  vlrCuotaIniController.text =
+                      (currencyCOP((cuotaInicial.toInt()).toString()));
+                  saldoCuotaIniController.text = (currencyCOP((saldoCI.toInt()).toString()));
+                  vlrCuotaController.text = (currencyCOP((valorCuota.toInt()).toString()));
+                  vlrPorPagarController.text =
+                      (currencyCOP((valorAPagar.toInt()).toString()));
+                  temController.text = '${vlrTEM.toString()}%';
+                  saldoTotalDateController.text = dateSaldo;
+                  updateNumberWords();
+                  setAmountColor();
+                },
+                child: const Icon(Icons.refresh_outlined),
+              )),
+        ],
       ),
       body: Center(
         child: Container(
@@ -688,17 +719,6 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
                               () {},
                             ),
                           ),
-                          Expanded(
-                            flex: 7,
-                            child: textFieldWidget(
-                                "Valor en letras",
-                                Icons.abc_outlined,
-                                false,
-                                letrasPrecioFinalController,
-                                true,
-                                'name',
-                                () {}),
-                          ),
                         ],
                       ),
                     ),
@@ -767,17 +787,6 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
                                   updateNumberWords();
                                 });
                               }))
-                              ),
-                              Expanded(
-                                flex: 7,
-                                child: textFieldWidget(
-                                    "Valor en letras",
-                                    Icons.abc_outlined,
-                                    false,
-                                    letrasSepController,
-                                    true,
-                                    'name',
-                                    () {}),
                               ),
                             ],
                           ),
@@ -1984,6 +1993,20 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
                                       elevation: 0,
                                     ),
                                   );
+                                } else if (paymentMethodSelectedItem == 'Personalizado' && valorAPagar != totalInstallmentAmount){
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: CustomAlertMessage(
+                                        errorTitle: "Oops!",
+                                        errorText:
+                                            "Verifique que la suma de los pagos sea correcta.",
+                                        stateColor: dangerColor,
+                                      ),
+                                      behavior: SnackBarBehavior.floating,
+                                      backgroundColor: Colors.transparent,
+                                      elevation: 0,
+                                    ),
+                                  );
                                 } else {
                                   updateNumberWords();
                                   Navigator.push(
@@ -2581,11 +2604,6 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
                       'number',
                       () {}),
                 ),
-                Expanded(
-                  flex: 7,
-                  child: textFieldWidget("Valor en letras", Icons.abc_outlined,
-                      false, letrasVlrPorPagarController, true, 'name', () {}),
-                ),
               ],
             ),
           ]));
@@ -2679,11 +2697,6 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
                       'number',
                       () {}),
                 ),
-                Expanded(
-                  flex: 7,
-                  child: textFieldWidget("Valor en letras", Icons.abc_outlined,
-                      false, letrasSaldoCIController, true, 'name', () {}),
-                ),
               ],
             ),
             const SizedBox(
@@ -2716,11 +2729,6 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
                       false,
                       'number',
                       () {}),
-                ),
-                Expanded(
-                  flex: 7,
-                  child: textFieldWidget("Valor en letras", Icons.abc_outlined,
-                      false, letrasSaldoLoteController, true, 'name', () {}),
                 ),
               ],
             ),
@@ -2834,11 +2842,6 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
                       false,
                       'number',
                       () {}),
-                ),
-                Expanded(
-                  flex: 7,
-                  child: textFieldWidget("Valor en letras", Icons.abc_outlined,
-                      false, letrasValorCuotasController, true, 'name', () {}),
                 ),
               ],
             ),

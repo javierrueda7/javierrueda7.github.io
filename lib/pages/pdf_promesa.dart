@@ -803,6 +803,9 @@ class PDFPromesa extends StatelessWidget {
       ],
     );
   } else if (evaluarMetodo == 'Personalizado') {
+    pw.Text(
+      '   1. La suma de ${letrasSeparacion.toUpperCase()} ($totalSeparacion) el día $dueDateSeparacion',
+      textAlign: pw.TextAlign.justify);
     final installmentsWidgets = await Future.wait(
       List.generate(installments.length, (index) async {
         final valorPago = installments[index]['valorPago'];
@@ -810,7 +813,7 @@ class PDFPromesa extends StatelessWidget {
         final valorLetras = await valorEnLetras(valorPago);
 
         return pw.Text(
-          '   ${index + 1}. La suma de ${valorLetras.toUpperCase()} (${currencyCOP((valorPago.toInt()).toString())}) el día $fechaPago',
+          '   ${index + 2}. La suma de ${valorLetras.toUpperCase()} (${currencyCOP((valorPago.toInt()).toString())}) el día $fechaPago',
           textAlign: pw.TextAlign.justify,
         );
       }),

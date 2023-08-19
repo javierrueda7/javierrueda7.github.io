@@ -29,18 +29,13 @@ class _EditarSeparacionState extends State<EditarSeparacion> {
     initCuotas();
     initSeller();
     initOcup();
-    timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      setState(() {
-        realtimeDateTime = dateOnly(true, 0, DateTime.now(), false);
-      });
-    });
+    
     updateNumberWords();
   }
 
   @override
   void dispose() {
-    timer.cancel(); //cancel the periodic task
-    timer; //clear the timer variable
+    
     ocupacionController.dispose();
     super.dispose();
   }
@@ -124,35 +119,7 @@ class _EditarSeparacionState extends State<EditarSeparacion> {
     dctoCuotas = await getPeriodoDiscount(periodoCuotas.toString());
   }
 
-  Future<void> llenarInstallments() async {
-    installments = [];
-    CollectionReference collection = FirebaseFirestore.instance.collection('planPagos').doc(loteId).collection('pagosEsperados');
-
-    // Fetch the documents
-    QuerySnapshot paymentSnapshot = await collection.get();
-
-    // Process each document
-    for (var doc in paymentSnapshot.docs) {
-      // Check if the document ID contains 'SEP' or 'TOTAL'
-      if (!doc.id.contains('SEP') && !doc.id.contains('TOTAL')) {
-        // Extract the fields from the document data
-        String conceptoPago = doc.get('conceptoPago');
-        String fechaPago = doc.get('fechaPago');
-        double valorPago = doc.get('valorPago');
-
-        // Create a map for each document, including the document ID
-        Map<String, dynamic> installment = {
-          'id': doc.id,
-          'conceptoPago': conceptoPago,
-          'fechaPago': fechaPago,
-          'valorPago': valorPago,
-        };
-
-        // Add the map to the installments list
-        installments.add(installment);
-      }
-    }
-  }
+  
 
   bool isFormVisible = false;
 
@@ -162,16 +129,19 @@ class _EditarSeparacionState extends State<EditarSeparacion> {
       if(isFormVisible == false){
         counter = 0;
       }
-      if(isFormVisible == true){
-        if(counter < 5){
-          llenarInstallments();
-        }
-        counter++;
+      if(isFormVisible == true){        
+        llenarInstallments();
       }
+      calculateRemainingAmount();
+      setAmountColor();
     });
   }
 
   int counter = 0;
+  int savedCursorPosition = 0;
+  
+  List<TextEditingController> amountControllers = [];
+  List<TextEditingController> dateControllers = [];
 
   List<String> dctoPersonalizado = ['0.0%', '2.0%', '4.0%', '6.0%', '8.0%',   '10.0%', '12.5%'];
   String selectedDctoPersonalizado = '0.0';
@@ -339,7 +309,6 @@ class _EditarSeparacionState extends State<EditarSeparacion> {
       vlrFijoSeparacion = saldoSeparacion + stringConverter(vlrSeparacionController.text);
       periodoCalculator(stringConverter(selectedNroCuotas));
       initCuotas();
-      llenarInstallments();
       updateNumberWords();
     } else {
       isInitialized = true;
@@ -389,10 +358,47 @@ class _EditarSeparacionState extends State<EditarSeparacion> {
         elevation: 0,
         centerTitle: true,
         title: Text(
-          'Orden de separación',
+          'ORDEN DE SEPARACIÓN ${(loteController.text).toUpperCase()}',
           style: TextStyle(
               color: primaryColor, fontSize: 18, fontWeight: FontWeight.bold),
         ),
+        actions: <Widget>[
+          Padding(
+              padding: const EdgeInsets.only(right: 20.0),
+              child: GestureDetector(
+                onTap: () {                  
+                  llenarInstallments();
+                  initPagos();
+                  sellerStream = FirebaseFirestore.instance
+                      .collection('sellers')
+                      .orderBy('lastnameSeller')
+                      .snapshots();
+                  getSeller();
+                  initCuotas();
+                  nroCuotasList = nroCuotasGenerator(maxCuotas);
+                  periodoCalculator(stringConverter(selectedNroCuotas));
+                  vlrBaseLote = stringConverter(priceloteController.text).toInt();
+                  precioFinal = vlrBaseLote * ((100 - discountValue()) / 100);
+                  cuotaInicial = precioFinal * (porcCuotaInicial / 100);
+                  saldoCI = cuotaInicial - vlrFijoSeparacion;
+                  valorCuota = valorAPagar / (double.parse(selectedNroCuotas));
+                  priceloteController.text = (currencyCOP((vlrBaseLote.toInt()).toString()));
+                  precioFinalController.text =
+                      (currencyCOP((precioFinal.toInt()).toString()));
+                  vlrCuotaIniController.text =
+                      (currencyCOP((cuotaInicial.toInt()).toString()));
+                  saldoCuotaIniController.text = (currencyCOP((saldoCI.toInt()).toString()));
+                  vlrCuotaController.text = (currencyCOP((valorCuota.toInt()).toString()));
+                  vlrPorPagarController.text =
+                      (currencyCOP((valorAPagar.toInt()).toString()));
+                  temController.text = '${vlrTEM.toString()}%';
+                  saldoTotalDateController.text = dateSaldo;
+                  updateNumberWords();
+                  setAmountColor();
+                },
+                child: const Icon(Icons.refresh_outlined),
+              )),
+        ],
       ),
       body: Center(
         child: Container(
@@ -575,17 +581,6 @@ class _EditarSeparacionState extends State<EditarSeparacion> {
                               () {},
                             ),
                           ),
-                          Expanded(
-                            flex: 7,
-                            child: textFieldWidget(
-                                "Valor en letras",
-                                Icons.abc_outlined,
-                                false,
-                                letrasPrecioFinalController,
-                                true,
-                                'name',
-                                () {}),
-                          ),
                         ],
                       ),
                     ),
@@ -694,17 +689,6 @@ class _EditarSeparacionState extends State<EditarSeparacion> {
                                   'number',
                                   () {},
                                 ),
-                              ),
-                              Expanded(
-                                flex: 7,
-                                child: textFieldWidget(
-                                    "Valor en letras",
-                                    Icons.abc_outlined,
-                                    false,
-                                    letrasSepController,
-                                    true,
-                                    'name',
-                                    () {}),
                               ),
                             ],
                           ),
@@ -1075,7 +1059,7 @@ class _EditarSeparacionState extends State<EditarSeparacion> {
                             child: Card(
                               child: Padding(
                                 padding: const EdgeInsets.all(16),
-                                child: installmentForm(installments),
+                                child: installmentForm(),
                               ),
                             ),
                           ),
@@ -2243,6 +2227,20 @@ class _EditarSeparacionState extends State<EditarSeparacion> {
                                       elevation: 0,
                                     ),
                                   );
+                                } else if (paymentMethodSelectedItem == 'Personalizado' && valorAPagar != totalInstallmentAmount){
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: CustomAlertMessage(
+                                        errorTitle: "Oops!",
+                                        errorText:
+                                            "Verifique que la suma de los pagos sea correcta.",
+                                        stateColor: dangerColor,
+                                      ),
+                                      behavior: SnackBarBehavior.floating,
+                                      backgroundColor: Colors.transparent,
+                                      elevation: 0,
+                                    ),
+                                  );
                                 } else {
                                   updateNumberWords();
                                   Navigator.push(
@@ -2483,7 +2481,7 @@ class _EditarSeparacionState extends State<EditarSeparacion> {
                                     vlrTEM,
                                     observacionesController.text,
                                     idController.text,
-                                  );                                                                                              
+                                  );
                                   if(saldoSeparacion == 0){
                                     await pagosEsperados(
                                       loteId,
@@ -2512,11 +2510,13 @@ class _EditarSeparacionState extends State<EditarSeparacion> {
                                     );
                                   }
                                   if(paymentMethodSelectedItem == 'Personalizado'){
+                                    await db.collection("planPagos").doc(loteId).collection("pagosEsperados").doc("TOTAL").delete();
                                     for (var i = 0; i < installments.length; i++) {
                                       final payment = installments[i];
                                       await pagosEsperados(loteId, (i + 1).toString(), payment['valorPago'], 'ABONO', payment['fechaPago'], separacionIdController.text);
                                     }
                                   } else if(paymentMethodSelectedItem == 'Financiación directa'){
+                                    await db.collection("planPagos").doc(loteId).collection("pagosEsperados").doc("TOTAL").delete();
                                     pagosEsperados(loteId, 'CINI', saldoCI, 'CUOTA INICIAL', saldoCuotaIniDeadlineController.text, separacionIdController.text);
                                     for (var i = 0; i < int.parse(selectedNroCuotas); i++) {
                                       pagosEsperados(loteId, (i + 1).toString(), valorCuota, 'ABONO', dateOnly(false, (diasValue*i).toDouble(), dateConverter(dateSaldo), true), separacionIdController.text);
@@ -2816,11 +2816,6 @@ class _EditarSeparacionState extends State<EditarSeparacion> {
                       'number',
                       () {}),
                 ),
-                Expanded(
-                  flex: 7,
-                  child: textFieldWidget("Valor en letras", Icons.abc_outlined,
-                      false, letrasVlrPorPagarController, true, 'name', () {}),
-                ),
               ],
             ),
           ]));
@@ -2914,11 +2909,6 @@ class _EditarSeparacionState extends State<EditarSeparacion> {
                       'number',
                       () {}),
                 ),
-                Expanded(
-                  flex: 7,
-                  child: textFieldWidget("Valor en letras", Icons.abc_outlined,
-                      false, letrasSaldoCIController, true, 'name', () {}),
-                ),
               ],
             ),
             const SizedBox(
@@ -2951,11 +2941,6 @@ class _EditarSeparacionState extends State<EditarSeparacion> {
                       false,
                       'number',
                       () {}),
-                ),
-                Expanded(
-                  flex: 7,
-                  child: textFieldWidget("Valor en letras", Icons.abc_outlined,
-                      false, letrasSaldoLoteController, true, 'name', () {}),
                 ),
               ],
             ),
@@ -3069,11 +3054,6 @@ class _EditarSeparacionState extends State<EditarSeparacion> {
                       false,
                       'number',
                       () {}),
-                ),
-                Expanded(
-                  flex: 7,
-                  child: textFieldWidget("Valor en letras", Icons.abc_outlined,
-                      false, letrasValorCuotasController, true, 'name', () {}),
                 ),
               ],
             ),
@@ -3602,7 +3582,37 @@ class _EditarSeparacionState extends State<EditarSeparacion> {
     }
   }
 
-  Widget installmentForm(List<Map<String, dynamic>> installments) {
+  Future<void> llenarInstallments() async {
+    installments = [];
+    CollectionReference collection = FirebaseFirestore.instance.collection('planPagos').doc(loteId).collection('pagosEsperados');
+
+    // Fetch the documents
+    QuerySnapshot paymentSnapshot = await collection.get();
+
+    // Process each document
+    for (var doc in paymentSnapshot.docs) {
+      // Check if the document ID contains 'SEP' or 'TOTAL'
+      if (!doc.id.contains('SEP') && !doc.id.contains('TOTAL')) {
+        // Extract the fields from the document data
+        String conceptoPago = doc.get('conceptoPago');
+        String fechaPago = doc.get('fechaPago');
+        double valorPago = doc.get('valorPago').toDouble();
+
+        // Create a map for each document, including the document ID
+        Map<String, dynamic> installment = {
+          'id': doc.id,
+          'conceptoPago': conceptoPago,
+          'fechaPago': fechaPago,
+          'valorPago': valorPago,
+        };
+
+        // Add the map to the installments list
+        installments.add(installment);
+      }
+    }
+  }
+
+  Widget installmentForm() {
     
     totalInstallmentAmount = installments.fold(0.0, (sum, installment) => sum + installment['valorPago']);
 
@@ -3695,6 +3705,7 @@ class _EditarSeparacionState extends State<EditarSeparacion> {
                           installments.removeAt(index);
                           totalInstallmentAmount = installments.fold(0.0, (sum, installment) => sum + installment['valorPago']);
                           calculateRemainingAmount();
+                          setAmountColor();
                         });
                       },
                       icon: Icon(Icons.delete_forever_outlined, color: dangerColor,),
