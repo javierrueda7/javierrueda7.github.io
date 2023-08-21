@@ -7,7 +7,6 @@ import 'package:albaterrapp/pages/resumen_pagos.dart';
 import 'package:albaterrapp/pages/sellers_page.dart';
 import 'package:albaterrapp/pages/signin_page.dart';
 import 'package:albaterrapp/pages/stats_page.dart';
-import 'package:albaterrapp/pages/test_page.dart';
 import 'package:albaterrapp/services/firebase_services.dart';
 import 'package:albaterrapp/utils/color_utils.dart';
 import 'package:albaterrapp/widgets/widgets.dart';

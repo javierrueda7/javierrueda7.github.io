@@ -1,3 +1,4 @@
+import 'package:albaterrapp/pages/test_page.dart';
 import 'package:albaterrapp/services/firebase_services.dart';
 import 'package:albaterrapp/utils/color_utils.dart';
 import 'package:albaterrapp/widgets/widgets.dart';
@@ -153,28 +154,46 @@ class _AddPaymentPageState extends State<AddPaymentPage> {
     return Scaffold(
         extendBodyBehindAppBar: false,
         appBar: AppBar(
-            backgroundColor: fifthColor,
-            foregroundColor: primaryColor,
-            elevation: 0,
-            title: Center(
-              child: Text(
-                "Agregar pago",
-                style: TextStyle(
-                    color: primaryColor,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold),
-              ),
-            )),
+          backgroundColor: fifthColor,
+          foregroundColor: primaryColor,
+          elevation: 0,
+          title: Center(
+            child: Text(
+              "Agregar pago",
+              style: TextStyle(
+                  color: primaryColor,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold),
+            ),
+          ),
+          actions: <Widget>[
+          Padding(
+              padding: const EdgeInsets.only(right: 20.0),
+              child: GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              const TestPage()));
+                  setState(() {});
+                },
+                child: const Icon(Icons.today_outlined),
+              )),
+        ],
+        ),
         body: Center(
           child: Container(
             width: MediaQuery.of(context).size.width,
             height: MediaQuery.of(context).size.height,
             decoration: const BoxDecoration(
-                gradient: LinearGradient(colors: [
+              gradient: LinearGradient(colors: [
               Color.fromARGB(255, 244, 246, 252),
               Color.fromARGB(255, 222, 224, 227),
               Color.fromARGB(255, 222, 224, 227)
-            ], begin: Alignment.topCenter, end: Alignment.bottomCenter)),
+              ], 
+              begin: Alignment.topCenter, end: Alignment.bottomCenter)
+            ),
             child: Container(
               constraints: const BoxConstraints(maxWidth: 1200),
               child: SingleChildScrollView(

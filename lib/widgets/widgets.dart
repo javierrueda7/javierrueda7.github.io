@@ -16,6 +16,12 @@ Image logoWidget(String imageName) {
   );
 }
 
+String? getNumbers(String value) {
+  final RegExp regex = RegExp(r'\d+');
+  final String? loteNumber = regex.stringMatch(value);
+  return loteNumber;
+}
+
 Widget loteImg(String imageName, String loteState) {
   Color loteColor = successColor;
   if (loteState == "null") {
