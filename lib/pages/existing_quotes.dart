@@ -1574,7 +1574,7 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
     if (value == 'CREADA') {
       return 'AUTORIZADA';
     }
-    if (value == 'AUTORIZADA') {
+    if (value == 'AUTORIZADA' || value == 'ACTIVA') {
       return 'LOTE SEPARADO';
     } else {
       return 'LOTE SEPARADO';
@@ -1585,7 +1585,7 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
     if (value == 'CREADA') {
       return 'Autorizar cotización';
     }
-    if (value == 'AUTORIZADA') {
+    if (value == 'AUTORIZADA' || value == 'ACTIVA') {
       return 'Generar separación';
     } else {
       return 'Lote separado';
@@ -1596,7 +1596,7 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
     if (value == 'CREADA') {
       return dangerColor;
     }
-    if (value == 'AUTORIZADA') {
+    if (value == 'AUTORIZADA' || value == 'ACTIVA') {
       return infoColor;
     }
     if (value == 'LOTE SEPARADO') {
@@ -1612,13 +1612,7 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
     } else {
       return ' ${loteInfo[1]}';
     }
-  }
-
-  String? getNumbers(String value) {
-    final RegExp regex = RegExp(r'\d+');
-    final String? loteNumber = regex.stringMatch(value);
-    return loteNumber;
-  }
+  } 
 }
 
 
