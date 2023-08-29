@@ -257,6 +257,10 @@ class _EditarSeparacionState extends State<EditarSeparacion> {
 
   @override
   Widget build(BuildContext context) {
+    sellerStream = FirebaseFirestore.instance
+        .collection('sellers')
+        .orderBy('lastnameSeller')
+        .snapshots();
     initOcup();
     Map arguments = ModalRoute.of(context)!.settings.arguments as Map;
     if (isInitialized == false) {
@@ -310,13 +314,12 @@ class _EditarSeparacionState extends State<EditarSeparacion> {
       periodoCalculator(stringConverter(selectedNroCuotas));
       initCuotas();
       updateNumberWords();
+      
+      getSeller();
     } else {
       isInitialized = true;
     }
-    sellerStream = FirebaseFirestore.instance
-        .collection('sellers')
-        .orderBy('lastnameSeller')
-        .snapshots();
+    
     getSeller();
     initCuotas();
     nroCuotasList = nroCuotasGenerator(maxCuotas);
@@ -349,6 +352,38 @@ class _EditarSeparacionState extends State<EditarSeparacion> {
       auxn++;
     }
     isInitialized = true;
+
+    if (auxn < 10 && auxn > 2){
+      
+      llenarInstallments();
+      initPagos();
+      sellerStream = FirebaseFirestore.instance
+          .collection('sellers')
+          .orderBy('lastnameSeller')
+          .snapshots();
+      getSeller();
+      initCuotas();
+      nroCuotasList = nroCuotasGenerator(maxCuotas);
+      periodoCalculator(stringConverter(selectedNroCuotas));
+      vlrBaseLote = stringConverter(priceloteController.text).toInt();
+      precioFinal = vlrBaseLote * ((100 - discountValue()) / 100);
+      cuotaInicial = precioFinal * (porcCuotaInicial / 100);
+      saldoCI = cuotaInicial - vlrFijoSeparacion;
+      valorCuota = valorAPagar / (double.parse(selectedNroCuotas));
+      priceloteController.text = (currencyCOP((vlrBaseLote.toInt()).toString()));
+      precioFinalController.text =
+          (currencyCOP((precioFinal.toInt()).toString()));
+      vlrCuotaIniController.text =
+          (currencyCOP((cuotaInicial.toInt()).toString()));
+      saldoCuotaIniController.text = (currencyCOP((saldoCI.toInt()).toString()));
+      vlrCuotaController.text = (currencyCOP((valorCuota.toInt()).toString()));
+      vlrPorPagarController.text =
+          (currencyCOP((valorAPagar.toInt()).toString()));
+      temController.text = '${vlrTEM.toString()}%';
+      saldoTotalDateController.text = dateSaldo;
+      updateNumberWords();
+      setAmountColor();
+    }
 
     return Scaffold(
       extendBodyBehindAppBar: false,

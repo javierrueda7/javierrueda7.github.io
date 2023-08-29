@@ -113,7 +113,8 @@ class PDFInvoice extends StatelessWidget {
               color: primaryColor, fontSize: 18, fontWeight: FontWeight.bold),
         ),
       ),
-      body: PdfPreview(
+      body: PdfPreview(        
+        pdfFileName: 'recibo_$recibo',
         build: (format) => generatePdf(context),
         // You can set the initial page format here
         initialPageFormat: PdfPageFormat.letter.copyWith(
