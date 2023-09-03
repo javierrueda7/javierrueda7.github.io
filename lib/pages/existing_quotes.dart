@@ -466,150 +466,7 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
                                           if (value == 'Opción 2') {
                                             if (quotesSnapshot.data?[index]
                                                     ['quoteStage'] ==
-                                                'CREADA') {
-                                              // ignore: use_build_context_synchronously
-                                              await Navigator.pushNamed(
-                                                  context, "/editQuote",
-                                                  arguments: {
-                                                    "selectedSeller":
-                                                        quotesSnapshot.data?[index]
-                                                            ['sellerID'],
-                                                    "sellerName":
-                                                        '${sellerData['nameSeller']} ${sellerData['lastnameSeller']}',
-                                                    "sellerEmail": sellerData[
-                                                        'emailSeller'],
-                                                    "sellerPhone": sellerData[
-                                                        'phoneSeller'],
-                                                    "quoteId": quotesSnapshot
-                                                        .data?[index]['qid'],
-                                                    "quoteDate":
-                                                        quotesSnapshot.data?[index]
-                                                            ['quoteDate'],
-                                                    "quoteDeadline":
-                                                        quotesSnapshot.data?[index]
-                                                            ['quoteDLDate'],
-                                                    "loteId": quotesSnapshot
-                                                        .data?[index]['loteId'],
-                                                    "lote":
-                                                        quotesSnapshot.data?[index]
-                                                            ['loteName'],
-                                                    "etapalote":
-                                                        quotesSnapshot.data?[index]
-                                                            ['etapaLote'],
-                                                    "arealote":
-                                                        quotesSnapshot.data?[index]
-                                                            ['areaLote'],
-                                                    "pricelote": (currencyCOP(
-                                                        (quotesSnapshot.data?[index][
-                                                                    'priceLote']
-                                                                .toInt())
-                                                            .toString())),
-                                                    "precioFinal": (currencyCOP(
-                                                        (quotesSnapshot.data?[index][
-                                                                    'precioFinal']
-                                                                .toInt())
-                                                            .toString())),
-                                                    "paymentMethod":
-                                                        quotesSnapshot.data?[index]
-                                                            ['metodoPagoLote'],
-                                                    "porcCuotaInicial":
-                                                        '${quotesSnapshot.data?[index]['perCILote'].toString()}%',
-                                                    "vlrCuotaIni": (currencyCOP(
-                                                        (quotesSnapshot.data?[index][
-                                                                    'vlrCILote']
-                                                                .toInt())
-                                                            .toString())),
-                                                    "periodoCuotas": quotesSnapshot
-                                                            .data?[index]
-                                                        ['periodoCuotasLote'],
-                                                    "nroCuotas":
-                                                        '${quotesSnapshot.data?[index]['nroCuotasLote'].toString()}',
-                                                    "vlrSeparacion":
-                                                        (currencyCOP((quotesSnapshot
-                                                                .data?[index][
-                                                                    'vlrSepLote']
-                                                                .toInt())
-                                                            .toString())),
-                                                    "saldoSeparacion":
-                                                        (currencyCOP((quotesSnapshot
-                                                                .data?[index][
-                                                                    'saldoSepLote']
-                                                                .toInt())
-                                                            .toString())),
-                                                    "separacionDeadline":
-                                                        quotesSnapshot.data?[index]
-                                                            ['sepDLDate'],
-                                                    "saldoSeparacionDeadline":
-                                                        quotesSnapshot.data?[index]
-                                                            ['saldoSepDLDate'],
-                                                    "saldoCuotaIni":
-                                                        (currencyCOP((quotesSnapshot
-                                                                .data?[index][
-                                                                    'saldoCILote']
-                                                                .toInt())
-                                                            .toString())),
-                                                    "saldoCuotaIniDeadline":
-                                                        quotesSnapshot.data?[index]
-                                                            ['saldoCIDLDate'],
-                                                    "vlrPorPagar": (currencyCOP(
-                                                        (quotesSnapshot.data?[index][
-                                                                    'vlrPorPagarLote']
-                                                                .toInt())
-                                                            .toString())),
-                                                    "saldoTotalDate":
-                                                        quotesSnapshot.data?[index]
-                                                            ['saldoTotalDate'],
-                                                    "vlrCuota": (currencyCOP(
-                                                        (quotesSnapshot.data?[index][
-                                                                    'vlrCuotasLote']
-                                                                .toInt())
-                                                            .toString())),
-                                                    "tem":
-                                                        '${quotesSnapshot.data?[index]['tem'].toString()}%',
-                                                    "observaciones": quotesSnapshot
-                                                            .data?[index]
-                                                        ['observacionesLote'],
-                                                    "quoteStage": newState(
-                                                        quotesSnapshot.data?[index]
-                                                            ['quoteStage']),
-                                                    "name":
-                                                        custData['nameCliente'],
-                                                    "lastname": custData[
-                                                        'lastnameCliente'],
-                                                    "gender": custData[
-                                                        'genderCliente'],
-                                                    "birthday":
-                                                        custData['bdayCliente'],
-                                                    "ocupacion": custData[
-                                                        'ocupacionCliente'],
-                                                    "phone":
-                                                        custData['telCliente'],
-                                                    "idtype": custData[
-                                                        'idTypeCliente'],
-                                                    "id": quotesSnapshot.data?[index]
-                                                        ['clienteID'],
-                                                    "issuedCountry": custData[
-                                                        'idIssueCountryCliente'],
-                                                    "issuedState": custData[
-                                                        'idIssueStateCliente'],
-                                                    "issuedCity": custData[
-                                                        'idIssueCityCliente'],
-                                                    "email": custData[
-                                                        'emailCliente'],
-                                                    "address": custData[
-                                                        'addressCliente'],
-                                                    "country": custData[
-                                                        'countryCliente'],
-                                                    "state": custData[
-                                                        'stateCliente'],
-                                                    "city":
-                                                        custData['cityCliente'],
-                                                    "cambioEstado": true,
-                                                  });
-                                            }
-                                            if (quotesSnapshot.data?[index]
-                                                    ['quoteStage'] ==
-                                                'AUTORIZADA' && loteClicked['loteState'] == 'Disponible') {
+                                                'CREADA' && loteClicked['loteState'] == 'Disponible') {
                                               // ignore: use_build_context_synchronously
                                               await Navigator.pushNamed(
                                                   context, "/genSep",
@@ -1571,10 +1428,7 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
   }
 
   String newState(String value) {
-    if (value == 'CREADA') {
-      return 'AUTORIZADA';
-    }
-    if (value == 'AUTORIZADA' || value == 'ACTIVA') {
+    if (value == 'AUTORIZADA' || value == 'CREADA') {
       return 'LOTE SEPARADO';
     } else {
       return 'LOTE SEPARADO';
@@ -1582,10 +1436,7 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
   }
 
   String changeState(String value) {
-    if (value == 'CREADA') {
-      return 'Autorizar cotización';
-    }
-    if (value == 'AUTORIZADA' || value == 'ACTIVA') {
+    if (value == 'AUTORIZADA' || value == 'CREADA') {
       return 'Generar separación';
     } else {
       return 'Lote separado';
@@ -1593,10 +1444,7 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
   }
 
   Color stageColor(String value) {
-    if (value == 'CREADA') {
-      return dangerColor;
-    }
-    if (value == 'AUTORIZADA' || value == 'ACTIVA') {
+    if (value == 'AUTORIZADA' || value == 'CREADA') {
       return infoColor;
     }
     if (value == 'LOTE SEPARADO') {

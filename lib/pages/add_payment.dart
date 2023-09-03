@@ -1,4 +1,4 @@
-import 'package:albaterrapp/pages/test_page.dart';
+import 'package:albaterrapp/pages/pagosesperados_page.dart';
 import 'package:albaterrapp/services/firebase_services.dart';
 import 'package:albaterrapp/utils/color_utils.dart';
 import 'package:albaterrapp/widgets/widgets.dart';
@@ -175,7 +175,7 @@ class _AddPaymentPageState extends State<AddPaymentPage> {
                       context,
                       MaterialPageRoute(
                           builder: (context) =>
-                              const TestPage()));
+                              const PagosEsperados()));
                   setState(() {});
                 },
                 child: const Icon(Icons.today_outlined),

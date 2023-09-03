@@ -29,7 +29,9 @@ class _EditarSeparacionState extends State<EditarSeparacion> {
     initCuotas();
     initSeller();
     initOcup();
-    
+    timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      setState(() {});
+    });
     updateNumberWords();
   }
 
@@ -103,7 +105,6 @@ class _EditarSeparacionState extends State<EditarSeparacion> {
     nroCuotasList = nroCuotasGenerator(maxCuotas);
     totalSeparacionController.text =
         (currencyCOP((vlrFijoSeparacion.toInt()).toString()));
-
     getSeller();
   }
 
@@ -119,8 +120,6 @@ class _EditarSeparacionState extends State<EditarSeparacion> {
     dctoCuotas = await getPeriodoDiscount(periodoCuotas.toString());
   }
 
-  
-
   bool isFormVisible = false;
 
   void toggleFormVisibility() {
@@ -129,8 +128,9 @@ class _EditarSeparacionState extends State<EditarSeparacion> {
       if(isFormVisible == false){
         counter = 0;
       }
-      if(isFormVisible == true){        
+      if(isFormVisible == true){
         llenarInstallments();
+        timer.cancel();
       }
       calculateRemainingAmount();
       setAmountColor();
@@ -352,38 +352,6 @@ class _EditarSeparacionState extends State<EditarSeparacion> {
       auxn++;
     }
     isInitialized = true;
-
-    if (auxn < 10 && auxn > 2){
-      
-      llenarInstallments();
-      initPagos();
-      sellerStream = FirebaseFirestore.instance
-          .collection('sellers')
-          .orderBy('lastnameSeller')
-          .snapshots();
-      getSeller();
-      initCuotas();
-      nroCuotasList = nroCuotasGenerator(maxCuotas);
-      periodoCalculator(stringConverter(selectedNroCuotas));
-      vlrBaseLote = stringConverter(priceloteController.text).toInt();
-      precioFinal = vlrBaseLote * ((100 - discountValue()) / 100);
-      cuotaInicial = precioFinal * (porcCuotaInicial / 100);
-      saldoCI = cuotaInicial - vlrFijoSeparacion;
-      valorCuota = valorAPagar / (double.parse(selectedNroCuotas));
-      priceloteController.text = (currencyCOP((vlrBaseLote.toInt()).toString()));
-      precioFinalController.text =
-          (currencyCOP((precioFinal.toInt()).toString()));
-      vlrCuotaIniController.text =
-          (currencyCOP((cuotaInicial.toInt()).toString()));
-      saldoCuotaIniController.text = (currencyCOP((saldoCI.toInt()).toString()));
-      vlrCuotaController.text = (currencyCOP((valorCuota.toInt()).toString()));
-      vlrPorPagarController.text =
-          (currencyCOP((valorAPagar.toInt()).toString()));
-      temController.text = '${vlrTEM.toString()}%';
-      saldoTotalDateController.text = dateSaldo;
-      updateNumberWords();
-      setAmountColor();
-    }
 
     return Scaffold(
       extendBodyBehindAppBar: false,
@@ -1067,6 +1035,7 @@ class _EditarSeparacionState extends State<EditarSeparacion> {
                                         // Call necessary functions for calculations or updates
                                         discountValue();
                                         updateNumberWords();
+                                        setAmountColor();
                                       });
                                     },
                                   ),                                  
@@ -1086,7 +1055,7 @@ class _EditarSeparacionState extends State<EditarSeparacion> {
                           ),
                           ElevatedButton(
                             onPressed: toggleFormVisibility,
-                            child: Text(isFormVisible ? 'Ocultar pagos' : 'Mostrar pagos'),
+                            child: Text(isFormVisible ? 'Ocultar ventana de pagos' : 'Mostrar ventana de pagos'),
                           ),
                           const SizedBox(height: 10),                          
                           Visibility(
@@ -1176,342 +1145,6 @@ class _EditarSeparacionState extends State<EditarSeparacion> {
                         ),
                       ),
                     ),
-                    /*Container(
-                      //Container de separación
-                      constraints: const BoxConstraints(maxWidth: 800),
-                      child: Column(
-                        children: [
-                          const SizedBox(
-                            height: 10,
-                          ),
-                          Container(
-                              alignment: Alignment.center,
-                              child: const Text('Separación',
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.bold,
-                                  ))),
-                          const SizedBox(
-                            height: 15,
-                            child: Text(
-                              'Valor total de separación',
-                              style: TextStyle(fontSize: 10),
-                            ),
-                          ),
-                          Container(
-                              constraints: const BoxConstraints(maxWidth: 800),
-                              child: textFieldWidget(
-                                  (currencyCOP(
-                                      (vlrFijoSeparacion.toInt()).toString())),
-                                  Icons.monetization_on_outlined,
-                                  false,
-                                  totalSeparacionController,
-                                  true,
-                                  'number', ((String value) {
-                                setState(() {
-                                  vlrFijoSeparacion = stringConverter(value);
-                                  vlrSeparacion = stringConverter(value);
-                                  saldoSeparacion =
-                                      stringConverter(value) - vlrSeparacion;
-                                  vlrSeparacionController.text = (currencyCOP(
-                                      (vlrSeparacion.toInt()).toString()));
-                                  saldoSeparacionController.text = (currencyCOP(
-                                      (saldoSeparacion.toInt()).toString()));
-                                  saldoCI =
-                                      cuotaInicial - stringConverter(value);
-                                  saldoCuotaIniController.text = (currencyCOP(
-                                      (saldoCI.toInt()).toString()));
-                                  totalSeparacionController.value =
-                                      TextEditingValue(
-                                    text: (currencyCOP(
-                                        (vlrFijoSeparacion.toInt())
-                                            .toString())),
-                                    selection: TextSelection.collapsed(
-                                        offset: (currencyCOP(
-                                                (vlrFijoSeparacion.toInt())
-                                                    .toString()))
-                                            .length),
-                                  );
-                                  updateNumberWords();
-                                });
-                              }))),
-                          Container(
-                              constraints: const BoxConstraints(maxWidth: 800),
-                              child: Row(children: [
-                                Expanded(
-                                  flex: 1,
-                                  child: Column(
-                                    children: [
-                                      const SizedBox(
-                                          height: 15,
-                                          child: Text(
-                                            'Valor inicial',
-                                            style: TextStyle(fontSize: 10),
-                                          )),
-                                      textFieldWidget(
-                                        (currencyCOP((vlrSeparacion.toInt())
-                                            .toString())),
-                                        Icons.monetization_on_outlined,
-                                        false,
-                                        vlrSeparacionController,
-                                        true,
-                                        'number',
-                                        (String value) {
-                                          if (value.isEmpty ||
-                                              stringConverter(value) <=
-                                                  vlrFijoSeparacion) {
-                                            setState(() {
-                                              vlrSeparacion =
-                                                  stringConverter(value);
-                                              saldoSeparacion =
-                                                  vlrFijoSeparacion -
-                                                      stringConverter(value);
-                                              saldoSeparacionController.text =
-                                                  (currencyCOP(
-                                                      (saldoSeparacion.toInt())
-                                                          .toString()));
-                                              saldoCuotaIniController.text =
-                                                  (currencyCOP((saldoCI.toInt())
-                                                      .toString()));
-                                              vlrSeparacionController.value =
-                                                  TextEditingValue(
-                                                text: (currencyCOP(
-                                                    (vlrSeparacion.toInt())
-                                                        .toString())),
-                                                selection:
-                                                    TextSelection.collapsed(
-                                                        offset: (currencyCOP(
-                                                                (vlrSeparacion
-                                                                        .toInt())
-                                                                    .toString()))
-                                                            .length),
-                                              );
-                                              updateNumberWords();
-                                            });
-                                          }
-                                          if (stringConverter(value) >=
-                                              vlrFijoSeparacion) {
-                                            setState(() {
-                                              vlrSeparacion = vlrFijoSeparacion;
-                                              vlrSeparacionController.text =
-                                                  vlrFijoSeparacion
-                                                      .toInt()
-                                                      .toString();
-                                              saldoSeparacion = 0;
-                                              saldoSeparacionController.text =
-                                                  (currencyCOP(
-                                                      (saldoSeparacion.toInt())
-                                                          .toString()));
-                                              vlrSeparacionController.value =
-                                                  TextEditingValue(
-                                                text: (currencyCOP(
-                                                    (vlrSeparacion.toInt())
-                                                        .toString())),
-                                                selection:
-                                                    TextSelection.collapsed(
-                                                        offset: (currencyCOP(
-                                                                (vlrSeparacion
-                                                                        .toInt())
-                                                                    .toString()))
-                                                            .length),
-                                              );
-                                              updateNumberWords();
-                                            });
-                                          }
-                                        },
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                Expanded(
-                                  flex: 1,
-                                  child: Column(
-                                    children: [
-                                      const SizedBox(
-                                          height: 15,
-                                          child: Text(
-                                            'Fecha límite',
-                                            style: TextStyle(fontSize: 10),
-                                          )),
-                                      Container(
-                                        decoration: BoxDecoration(
-                                          color: primaryColor.withOpacity(0.2),
-                                          borderRadius:
-                                              BorderRadius.circular(30.0),
-                                          border: Border.all(
-                                              width: 1,
-                                              style: BorderStyle.solid,
-                                              color:
-                                                  fifthColor.withOpacity(0.1)),
-                                        ),
-                                        child: Padding(
-                                          padding:
-                                              const EdgeInsets.only(left: 10),
-                                          child: TextField(
-                                            textAlign: TextAlign.center,
-                                            cursorColor: fifthColor,
-                                            style: TextStyle(
-                                                color: fifthColor
-                                                    .withOpacity(0.9)),
-                                            controller:
-                                                separacionDeadlineController,
-                                            decoration: InputDecoration(
-                                              border: InputBorder.none,
-                                              icon: Icon(
-                                                Icons.date_range_outlined,
-                                                color: fifthColor,
-                                              ),
-                                              hintText: DateFormat('dd-MM-yyyy')
-                                                  .format(quotePickedDate),
-                                            ),
-                                            readOnly: true,
-                                            onTap: () async {
-                                              DateTime? pickedDate =
-                                                  await showDatePicker(
-                                                locale:
-                                                    const Locale("es", "CO"),
-                                                context: context,
-                                                initialDate: dateConverter(
-                                                    separacionDeadlineController
-                                                        .text),
-                                                firstDate: DateTime(1900),
-                                                lastDate: DateTime(2050),
-                                              );
-                                              if (pickedDate != null) {
-                                                setState(() {
-                                                  separacionDeadlineController
-                                                          .text =
-                                                      DateFormat('dd-MM-yyyy')
-                                                          .format(pickedDate);
-                                                  promesaDeadlineController
-                                                          .text =
-                                                      dateOnly(
-                                                          false,
-                                                          plazoSaldoSep,
-                                                          pickedDate,
-                                                          false);
-                                                  saldoCuotaIniDeadlineController
-                                                          .text =
-                                                      dateOnly(false, plazoCI,
-                                                          pickedDate, true);
-                                                  updateDateSaldo(pickedDate);
-                                                  discountValue();
-                                                });
-                                              }
-                                            },
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ])),
-                          const SizedBox(
-                            height: 10,
-                          ),
-                          Container(
-                              constraints: const BoxConstraints(maxWidth: 800),
-                              child: Row(children: [
-                                Expanded(
-                                  flex: 1,
-                                  child: Column(
-                                    children: [
-                                      const SizedBox(
-                                          height: 15,
-                                          child: Text(
-                                            'Saldo separación',
-                                            style: TextStyle(fontSize: 10),
-                                          )),
-                                      textFieldWidget(
-                                        (currencyCOP((saldoSeparacion.toInt())
-                                            .toString())),
-                                        Icons.monetization_on_outlined,
-                                        false,
-                                        saldoSeparacionController,
-                                        false,
-                                        'number',
-                                        () {},
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                Expanded(
-                                  flex: 1,
-                                  child: Column(
-                                    children: [
-                                      const SizedBox(
-                                          height: 15,
-                                          child: Text(
-                                            'Fecha límite saldo separación',
-                                            style: TextStyle(fontSize: 10),
-                                          )),
-                                      Container(
-                                        decoration: BoxDecoration(
-                                          color: primaryColor.withOpacity(0.2),
-                                          borderRadius:
-                                              BorderRadius.circular(30.0),
-                                          border: Border.all(
-                                              width: 1,
-                                              style: BorderStyle.solid,
-                                              color:
-                                                  fifthColor.withOpacity(0.1)),
-                                        ),
-                                        child: Padding(
-                                          padding:
-                                              const EdgeInsets.only(left: 10),
-                                          child: TextField(
-                                            textAlign: TextAlign.center,
-                                            cursorColor: fifthColor,
-                                            style: TextStyle(
-                                                color: fifthColor
-                                                    .withOpacity(0.9)),
-                                            controller:
-                                                promesaDeadlineController,
-                                            decoration: InputDecoration(
-                                              border: InputBorder.none,
-                                              icon: Icon(
-                                                Icons.date_range_outlined,
-                                                color: fifthColor,
-                                              ),
-                                              hintText: DateFormat('dd-MM-yyyy')
-                                                  .format(quotePickedDate),
-                                            ),
-                                            readOnly: true,
-                                            onTap: () async {
-                                              DateTime? pickedDate =
-                                                  await showDatePicker(
-                                                locale:
-                                                    const Locale("es", "CO"),
-                                                context: context,
-                                                initialDate: dateConverter(
-                                                    promesaDeadlineController
-                                                        .text),
-                                                firstDate: DateTime(1900),
-                                                lastDate: DateTime(2050),
-                                              );
-                                              if (pickedDate != null) {
-                                                setState(() {
-                                                  promesaDeadlineController
-                                                          .text =
-                                                      DateFormat('dd-MM-yyyy')
-                                                          .format(pickedDate);
-                                                });
-                                              }
-                                            },
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ])),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    paymentMethod(paymentMethodSelectedItem),*/
                     const SizedBox(
                       height: 10,
                     ),
@@ -3645,6 +3278,11 @@ class _EditarSeparacionState extends State<EditarSeparacion> {
         installments.add(installment);
       }
     }
+    installments.sort((a, b) {
+      DateTime dateA = DateFormat('dd-MM-yyyy').parse(a['fechaPago']);
+      DateTime dateB = DateFormat('dd-MM-yyyy').parse(b['fechaPago']);
+      return dateA.compareTo(dateB);
+    });
   }
 
   Widget installmentForm() {

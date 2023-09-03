@@ -1151,7 +1151,7 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
                           ),
                           ElevatedButton(
                             onPressed: toggleFormVisibility,
-                            child: Text(isFormVisible ? 'Ocultar pagos' : 'Mostrar pagos'),
+                            child: Text(isFormVisible ? 'Ocultar ventana de pagos' : 'Mostrar ventana de pagos'),
                           ),
                           const SizedBox(height: 10),                          
                           Visibility(

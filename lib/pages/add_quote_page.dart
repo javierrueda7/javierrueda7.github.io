@@ -1870,7 +1870,7 @@ class _AddQuotePageState extends State<AddQuotePage> {
                                           vlrTEM,
                                           observacionesController.text,
                                           idController.text,
-                                          'AUTORIZADA')
+                                          'CREADA')
                                       .then((_) {
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(
