@@ -4,6 +4,7 @@ import 'package:albaterrapp/widgets/widgets.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
@@ -671,6 +672,11 @@ class PDFSeparacion extends StatelessWidget {
   } else if (evaluarMetodo == 'Personalizado') {
     final installmentsWidgets = await Future.wait(
       List.generate(installments.length, (index) async {
+        installments.sort((a, b) {
+          DateTime dateA = DateFormat('dd-MM-yyyy').parse(a['fechaPago']);
+          DateTime dateB = DateFormat('dd-MM-yyyy').parse(b['fechaPago']);
+          return dateA.compareTo(dateB);
+        });
         final valorPago = installments[index]['valorPago'];
         final fechaPago = installments[index]['fechaPago'];
         final valorLetras = await valorEnLetras(valorPago);

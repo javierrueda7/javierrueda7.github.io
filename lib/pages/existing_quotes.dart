@@ -481,13 +481,7 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
                                                     "sellerPhone": sellerData[
                                                         'phoneSeller'],
                                                     "quoteId": quotesSnapshot
-                                                        .data?[index]['qid'],
-                                                    "quoteDate":
-                                                        quotesSnapshot.data?[index]
-                                                            ['quoteDate'],
-                                                    "quoteDeadline":
-                                                        quotesSnapshot.data?[index]
-                                                            ['quoteDLDate'],
+                                                        .data?[index]['qid'],                                                    
                                                     "loteId": quotesSnapshot
                                                         .data?[index]['loteId'],
                                                     "lote":
@@ -884,7 +878,7 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
                                       updateQuoteStage(
                                         sepSnapshot.data?[
                                             index]['sepId'],
-                                        'AUTORIZADA');
+                                        'CREADA');
                                       cancSepLote(sepSnapshot
                                               .data?[index]
                                           ['loteId']);
@@ -1307,15 +1301,14 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
                                         await updateLoteInfo(sepSnapshot.data?[index]['loteId']);
                                         if (managerLogged == true && loteClicked['loteState'] == 'Lote separado') {
                                           // ignore: use_build_context_synchronously
-                                          Navigator.pushNamed(
-                                              context, "/editSep",
+                                          await Navigator.pushNamed(
+                                              context, "/genSep",
                                               arguments: {
                                                 "selectedSeller": sepSnapshot.data?[index]['sellerID'],
                                                 "sellerName": '${sellerData['nameSeller']} ${sellerData['lastnameSeller']}',
                                                 "sellerEmail": sellerData['emailSeller'],
                                                 "sellerPhone": sellerData['phoneSeller'],
-                                                "quoteId": sepSnapshot.data?[index]['quoteId'],
-                                                "sepId": sepSnapshot.data?[index]['sepId'],
+                                                "quoteId": sepSnapshot.data?[index]['sepId'],                                                
                                                 "loteId": sepSnapshot.data?[index]['loteId'],
                                                 "lote": loteClicked['loteName'],
                                                 "etapalote": loteClicked['loteEtapa'],
@@ -1329,8 +1322,8 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
                                                 "nroCuotas": '${sepSnapshot.data?[index]['nroCuotasLote'].toString()}',
                                                 "vlrSeparacion": (currencyCOP((sepSnapshot.data?[index]['vlrSepLote'].toInt()).toString())),
                                                 "saldoSeparacion": (currencyCOP((sepSnapshot.data?[index]['saldoSepLote'].toInt()).toString())),
-                                                "separacionDate": sepSnapshot.data?[index]['separacionDate'],
-                                                "promesaDLDate": sepSnapshot.data?[index]['promesaDLDate'],
+                                                "separacionDeadline": sepSnapshot.data?[index]['separacionDate'],
+                                                "saldoSeparacionDeadline": sepSnapshot.data?[index]['promesaDLDate'],
                                                 "saldoCuotaIni": (currencyCOP((sepSnapshot.data?[index]['saldoCILote'].toInt()).toString())),
                                                 "saldoCuotaIniDeadline":sepSnapshot.data?[index]['saldoCIDLDate'],
                                                 "vlrPorPagar": (currencyCOP((sepSnapshot.data?[index]['vlrPorPagarLote'].toInt()).toString())),
@@ -1338,7 +1331,7 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
                                                 "vlrCuota": (currencyCOP((sepSnapshot.data?[index]['vlrCuotasLote'].toInt()).toString())),
                                                 "tem": '${sepSnapshot.data?[index]['tem'].toString()}%',
                                                 "observaciones": sepSnapshot.data?[index]['observacionesLote'],
-                                                "stageSep": sepSnapshot.data?[index]['stageSep'],
+                                                "quoteStage": 'LOTE SEPARADO',
                                                 "name": custData['nameCliente'],
                                                 "lastname":custData['lastnameCliente'],
                                                 "gender":custData['genderCliente'],

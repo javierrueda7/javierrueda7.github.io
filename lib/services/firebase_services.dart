@@ -1180,10 +1180,12 @@ Future<void> updateLote(
   });
 }
 
-Future<void> cambioEstadoLote(String idLote, String statusLote) async {
+Future<void> cambioEstadoLote(String idLote, String statusLote, bool cambioEst) async {
   String tempState = 'Disponible';
-  if (statusLote == 'LOTE SEPARADO') {
+  if (statusLote == 'LOTE SEPARADO' ) {
     tempState = 'Lote separado';
+  } else if(cambioEst == false){
+    tempState = statusLote;
   } else {
     tempState = 'Lote vendido';
   }

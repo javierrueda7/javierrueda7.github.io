@@ -29,7 +29,9 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
     initCuotas();
     initSeller();
     initOcup();
-    
+    timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      setState(() {});
+    });
     updateNumberWords();
   }
 
@@ -102,7 +104,6 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
     nroCuotasList = nroCuotasGenerator(maxCuotas);
     totalSeparacionController.text =
         (currencyCOP((vlrFijoSeparacion.toInt()).toString()));
-
     getSeller();
   }
 
@@ -138,9 +139,9 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
   void completo = false;
 
   late int vlrBaseLote;
-  late double saldoCI;
-  late double valorAPagar;
-  late double valorCuota;
+  double saldoCI = 0;
+  double valorAPagar = 0;
+  double valorCuota = 0;
   late String dateSaldo;
   List<String> nroCuotasList = [''];
   String selectedNroCuotas = '1';
@@ -165,8 +166,6 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
   String paymentMethodSelectedItem = 'Pago de contado';
   Stream<QuerySnapshot>? citiesStream;
   Stream<QuerySnapshot>? sellerStream;
-  final CollectionReference collectionReference =
-      FirebaseFirestore.instance.collection('quotes');
 
   TextEditingController letrasPrecioFinalController =
       TextEditingController(text: "");
@@ -185,9 +184,6 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
   String sellerEmail = '';
   String sellerPhone = '';
   TextEditingController quoteIdController = TextEditingController(text: "");
-  TextEditingController quoteDateController = TextEditingController(text: "");
-  TextEditingController quoteDeadlineController =
-      TextEditingController(text: "");
   String loteId = "";
   TextEditingController loteController = TextEditingController(text: "");
   TextEditingController etapaloteController = TextEditingController(text: "");
@@ -239,9 +235,14 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
   bool isInitialized = false;
   int auxn = 0;
   int nAux = 0;
+  bool cambioEst = false;
 
   @override
   Widget build(BuildContext context) {
+    sellerStream = FirebaseFirestore.instance
+        .collection('sellers')
+        .orderBy('lastnameSeller')
+        .snapshots();
     initOcup();
     Map arguments = ModalRoute.of(context)!.settings.arguments as Map;
     if (isInitialized == false) {
@@ -253,8 +254,6 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
       quoteIdController.text = arguments['quoteId'];
       quotePickedDate =
           DateFormat("dd-MM-yyyy").parse(arguments['separacionDeadline']);
-      quoteDateController.text = arguments['quoteDate'];
-      quoteDeadlineController.text = arguments['quoteDeadline'];
       loteId = arguments['loteId'];
       loteController.text = arguments['lote'];
       etapaloteController.text = arguments['etapalote'];
@@ -296,11 +295,13 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
       selectedCountry = arguments['country'];
       selectedState = arguments['state'];
       selectedCity = arguments['city'];
+      cambioEst = arguments['cambioEstado'];
       vlrFijoSeparacion =
           saldoSeparacion + stringConverter(vlrSeparacionController.text);
       periodoCalculator(stringConverter(selectedNroCuotas));
       initCuotas();
       updateNumberWords();
+      getSeller();
     } else {
       isInitialized = true;
     }
@@ -419,156 +420,6 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
                     ),
                     const SizedBox(
                       height: 15,
-                    ),
-                    Container(
-                      constraints: const BoxConstraints(maxWidth: 800),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            flex: 1,
-                            child: Column(
-                              children: [
-                                const SizedBox(
-                                  height: 15,
-                                  child: Text(
-                                    'Desde',
-                                    style: TextStyle(fontSize: 10),
-                                  ),
-                                ),
-                                Container(
-                                  decoration: BoxDecoration(
-                                    color: primaryColor.withOpacity(0.2),
-                                    borderRadius: BorderRadius.circular(30.0),
-                                    border: Border.all(
-                                        width: 1,
-                                        style: BorderStyle.solid,
-                                        color: fifthColor.withOpacity(0.1)),
-                                  ),
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(left: 10),
-                                    child: TextField(
-                                      textAlign: TextAlign.center,
-                                      cursorColor: fifthColor,
-                                      style: TextStyle(
-                                          color: fifthColor.withOpacity(0.9)),
-                                      controller: quoteDateController,
-                                      decoration: InputDecoration(
-                                        border: InputBorder.none,
-                                        icon: Icon(
-                                          Icons.date_range_outlined,
-                                          color: fifthColor,
-                                        ),
-                                        hintText: DateFormat('dd-MM-yyyy')
-                                            .format(quotePickedDate),
-                                      ),
-                                      readOnly: true,
-                                      onTap: () async {
-                                        DateTime? pickedDate =
-                                            await showDatePicker(
-                                          locale: const Locale("es", "CO"),
-                                          context: context,
-                                          initialDate: dateConverter(
-                                              quoteDateController.text),
-                                          firstDate: DateTime(1900),
-                                          lastDate: DateTime.now(),
-                                        );
-                                        if (pickedDate != null) {
-                                          setState(() {
-                                            quoteDateController.text =
-                                                DateFormat('dd-MM-yyyy')
-                                                    .format(pickedDate);
-                                            quoteDeadlineController.text =
-                                                dateOnly(false, 15, pickedDate,
-                                                    true);
-                                            separacionDeadlineController.text =
-                                                dateOnly(false, 0, pickedDate,
-                                                    false);
-                                            saldoSeparacionDeadlineController
-                                                    .text =
-                                                dateOnly(false, plazoSaldoSep,
-                                                    pickedDate, false);
-                                            saldoCuotaIniDeadlineController
-                                                    .text =
-                                                dateOnly(false, plazoCI,
-                                                    pickedDate, true);
-                                            updateDateSaldo(pickedDate);
-                                            discountValue();
-                                          });
-                                        }
-                                      },
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Expanded(
-                            flex: 1,
-                            child: Column(
-                              children: [
-                                const SizedBox(
-                                  height: 15,
-                                  child: Text(
-                                    'Hasta',
-                                    style: TextStyle(fontSize: 10),
-                                  ),
-                                ),
-                                Container(
-                                  decoration: BoxDecoration(
-                                    color: primaryColor.withOpacity(0.2),
-                                    borderRadius: BorderRadius.circular(30.0),
-                                    border: Border.all(
-                                        width: 1,
-                                        style: BorderStyle.solid,
-                                        color: fifthColor.withOpacity(0.1)),
-                                  ),
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(left: 10),
-                                    child: TextField(
-                                      textAlign: TextAlign.center,
-                                      cursorColor: fifthColor,
-                                      style: TextStyle(
-                                          color: fifthColor.withOpacity(0.9)),
-                                      controller: quoteDeadlineController,
-                                      decoration: InputDecoration(
-                                        border: InputBorder.none,
-                                        icon: Icon(
-                                          Icons.date_range_outlined,
-                                          color: fifthColor,
-                                        ),
-                                        hintText: DateFormat('dd-MM-yyyy')
-                                            .format(quotePickedDate),
-                                      ),
-                                      readOnly: true,
-                                      onTap: () async {
-                                        DateTime? pickedDate =
-                                            await showDatePicker(
-                                          locale: const Locale("es", "CO"),
-                                          context: context,
-                                          initialDate: dateConverter(
-                                              quoteDeadlineController.text),
-                                          firstDate: DateTime(1900),
-                                          lastDate: DateTime(2050),
-                                        );
-                                        if (pickedDate != null) {
-                                          setState(() {
-                                            quoteDeadlineController.text =
-                                                DateFormat('dd-MM-yyyy')
-                                                    .format(pickedDate);
-                                          });
-                                        }
-                                      },
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 5,
                     ),
                     Container(
                       constraints: const BoxConstraints(maxWidth: 800),
@@ -735,14 +586,78 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
                                 'Separación',
                                 style: TextStyle(
                                     fontSize: 16, fontWeight: FontWeight.bold),
-                              )),                          
+                              )),
+                          const SizedBox(
+                              height: 20,
+                              child: Text(
+                                'Fecha de separacion',
+                                style: TextStyle(fontSize: 14),
+                              )),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          Container(
+                            decoration: BoxDecoration(
+                              color: primaryColor.withOpacity(0.2),
+                              borderRadius: BorderRadius.circular(30.0),
+                              border: Border.all(
+                                  width: 1,
+                                  style: BorderStyle.solid,
+                                  color: fifthColor.withOpacity(0.1)),
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.only(left: 10),
+                              child: TextField(
+                                textAlign: TextAlign.center,
+                                cursorColor: fifthColor,
+                                style: TextStyle(
+                                    color: fifthColor.withOpacity(0.9)),
+                                controller: separacionDeadlineController,
+                                decoration: InputDecoration(
+                                  border: InputBorder.none,
+                                  icon: Icon(
+                                    Icons.date_range_outlined,
+                                    color: fifthColor,
+                                  ),
+                                  hintText: DateFormat('dd-MM-yyyy')
+                                      .format(quotePickedDate),
+                                ),
+                                readOnly: true,
+                                onTap: () async {
+                                  DateTime? pickedDate = await showDatePicker(
+                                    locale: const Locale("es", "CO"),
+                                    context: context,
+                                    initialDate: dateConverter(
+                                        separacionDeadlineController.text),
+                                    firstDate: DateTime(1900),
+                                    lastDate: DateTime(2050),
+                                  );
+                                  if (pickedDate != null) {
+                                    setState(() {
+                                      separacionDeadlineController.text =
+                                          DateFormat('dd-MM-yyyy')
+                                              .format(pickedDate);
+                                      separacionDeadlineController.text =
+                                          dateOnly(false, plazoSaldoSep,
+                                              pickedDate, false);
+                                      saldoCuotaIniDeadlineController.text =
+                                          dateOnly(
+                                              false, plazoCI, pickedDate, true);
+                                      updateDateSaldo(pickedDate);
+                                      discountValue();
+                                    });
+                                  }
+                                },
+                              ),
+                            ),
+                          ),
                           const SizedBox(
                             height: 10,
                           ),
                           const SizedBox(
                               height: 15,
                               child: Text(
-                                'Valor total de separación',
+                                'Valor de separación',
                                 style: TextStyle(fontSize: 14),
                               )),
                           const SizedBox(
@@ -758,313 +673,290 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
                                   Icons.monetization_on_outlined,
                                   false,
                                   totalSeparacionController,
-                                  true,
-                                  'number', ((String value) {
-                                setState(() {
-                                  vlrFijoSeparacion = stringConverter(value);
-                                  vlrSeparacion = stringConverter(value);
-                                  saldoSeparacion =
-                                      stringConverter(value) - vlrSeparacion;
-                                  vlrSeparacionController.text = (currencyCOP(
-                                      (vlrSeparacion.toInt()).toString()));
-                                  saldoSeparacionController.text = (currencyCOP(
-                                      (saldoSeparacion.toInt()).toString()));
-                                  saldoCI =
-                                      cuotaInicial - stringConverter(value);
-                                  saldoCuotaIniController.text = (currencyCOP(
-                                      (saldoCI.toInt()).toString()));
-                                  totalSeparacionController.value =
-                                      TextEditingValue(
-                                    text: (currencyCOP(
-                                        (vlrFijoSeparacion.toInt())
-                                            .toString())),
-                                    selection: TextSelection.collapsed(
-                                        offset: (currencyCOP(
-                                                (vlrFijoSeparacion.toInt())
-                                                    .toString()))
-                                            .length),
-                                  );
-                                  updateNumberWords();
-                                });
-                              }))
+                                  false,
+                                  'number',
+                                  () {},
+                                ),
                               ),
                             ],
                           ),
-                          const SizedBox(
-                            height: 10,
+                        ],
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    Container(
+                      constraints: const BoxConstraints(maxWidth: 800),
+                      child: Row(children: [
+                        Expanded(
+                          flex: 1,
+                          child: Column(
+                            children: [
+                              const SizedBox(
+                                  height: 15,
+                                  child: Text(
+                                    'Valor inicial',
+                                    style: TextStyle(fontSize: 10),
+                                  )),
+                              textFieldWidget(
+                                (currencyCOP((vlrSeparacion.toInt())
+                                    .toString())),
+                                Icons.monetization_on_outlined,
+                                false,
+                                vlrSeparacionController,
+                                true,
+                                'number',
+                                (String value) {
+                                  if (value.isEmpty ||
+                                      stringConverter(value) <=
+                                          vlrFijoSeparacion) {
+                                    setState(() {
+                                      vlrSeparacion =
+                                          stringConverter(value);
+                                      saldoSeparacion =
+                                          vlrFijoSeparacion -
+                                              stringConverter(value);
+                                      saldoSeparacionController.text =
+                                          (currencyCOP(
+                                              (saldoSeparacion.toInt())
+                                                  .toString()));
+                                      saldoCuotaIniController.text =
+                                          (currencyCOP((saldoCI.toInt())
+                                              .toString()));
+                                      vlrSeparacionController.value =
+                                          TextEditingValue(
+                                        text: (currencyCOP(
+                                            (vlrSeparacion.toInt())
+                                                .toString())),
+                                        selection:
+                                            TextSelection.collapsed(
+                                                offset: (currencyCOP(
+                                                        (vlrSeparacion
+                                                                .toInt())
+                                                            .toString()))
+                                                    .length),
+                                      );
+                                      updateNumberWords();
+                                    });
+                                  }
+                                  if (stringConverter(value) >=
+                                      vlrFijoSeparacion) {
+                                    setState(() {
+                                      vlrSeparacion = vlrFijoSeparacion;
+                                      vlrSeparacionController.text =
+                                          vlrFijoSeparacion
+                                              .toInt()
+                                              .toString();
+                                      saldoSeparacion = 0;
+                                      saldoSeparacionController.text =
+                                          (currencyCOP(
+                                              (saldoSeparacion.toInt())
+                                                  .toString()));
+                                      vlrSeparacionController.value =
+                                          TextEditingValue(
+                                        text: (currencyCOP(
+                                            (vlrSeparacion.toInt())
+                                                .toString())),
+                                        selection:
+                                            TextSelection.collapsed(
+                                                offset: (currencyCOP(
+                                                        (vlrSeparacion
+                                                                .toInt())
+                                                            .toString()))
+                                                    .length),
+                                      );
+                                      updateNumberWords();
+                                    });
+                                  }
+                                },
+                              ),
+                            ],
                           ),
-                          Container(
-                            constraints: const BoxConstraints(maxWidth: 800),
-                            child: Row(children: [
-                              Expanded(
-                                flex: 1,
-                                child: Column(
-                                  children: [
-                                    const SizedBox(
-                                        height: 15,
-                                        child: Text(
-                                          'Valor inicial',
-                                          style: TextStyle(fontSize: 10),
-                                        )),
-                                    textFieldWidget(
-                                      (currencyCOP((vlrSeparacion.toInt())
-                                          .toString())),
-                                      Icons.monetization_on_outlined,
-                                      false,
-                                      vlrSeparacionController,
-                                      true,
-                                      'number',
-                                      (String value) {
-                                        if (value.isEmpty ||
-                                            stringConverter(value) <=
-                                                vlrFijoSeparacion) {
+                        ),
+                        Expanded(
+                          flex: 1,
+                          child: Column(
+                            children: [
+                              const SizedBox(
+                                  height: 15,
+                                  child: Text(
+                                    'Fecha de separación',
+                                    style: TextStyle(fontSize: 10),
+                                  )),
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: primaryColor.withOpacity(0.2),
+                                  borderRadius:
+                                      BorderRadius.circular(30.0),
+                                  border: Border.all(
+                                      width: 1,
+                                      style: BorderStyle.solid,
+                                      color:
+                                          fifthColor.withOpacity(0.1)),
+                                ),
+                                child: Padding(
+                                  padding:
+                                      const EdgeInsets.only(left: 10),
+                                  child: TextField(
+                                    textAlign: TextAlign.center,
+                                    cursorColor: fifthColor,
+                                    style: TextStyle(
+                                        color: fifthColor
+                                            .withOpacity(0.9)),
+                                    controller:
+                                        separacionDeadlineController,
+                                    decoration: InputDecoration(
+                                      border: InputBorder.none,
+                                      icon: Icon(
+                                        Icons.date_range_outlined,
+                                        color: fifthColor,
+                                      ),
+                                      hintText: DateFormat('dd-MM-yyyy')
+                                          .format(quotePickedDate),
+                                    ),
+                                    readOnly: true,
+                                    onTap: () async {
+                                      DateTime? pickedDate =
+                                          await showDatePicker(
+                                        locale:
+                                            const Locale("es", "CO"),
+                                        context: context,
+                                        initialDate: dateConverter(
+                                            separacionDeadlineController
+                                                .text),
+                                        firstDate: DateTime(1900),
+                                        lastDate: DateTime(2050),
+                                      );
+                                      if (pickedDate != null) {
+                                        setState(() {
+                                          separacionDeadlineController
+                                                  .text =
+                                              DateFormat('dd-MM-yyyy')
+                                                  .format(pickedDate);
+                                          saldoSeparacionDeadlineController
+                                                  .text =
+                                              dateOnly(
+                                                  false,
+                                                  plazoSaldoSep,
+                                                  pickedDate,
+                                                  false);
+                                          saldoCuotaIniDeadlineController
+                                                  .text =
+                                              dateOnly(false, plazoCI,
+                                                  pickedDate, true);
+                                          updateDateSaldo(pickedDate);
+                                          discountValue();
+                                        });
+                                      }
+                                    },
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ])),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    Container(
+                        constraints: const BoxConstraints(maxWidth: 800),
+                        child: Row(children: [
+                          Expanded(
+                            flex: 1,
+                            child: Column(
+                              children: [
+                                const SizedBox(
+                                    height: 15,
+                                    child: Text(
+                                      'Saldo separación',
+                                      style: TextStyle(fontSize: 10),
+                                    )),
+                                textFieldWidget(
+                                  (currencyCOP((saldoSeparacion.toInt())
+                                      .toString())),
+                                  Icons.monetization_on_outlined,
+                                  false,
+                                  saldoSeparacionController,
+                                  false,
+                                  'number',
+                                  () {},
+                                ),
+                              ],
+                            ),
+                          ),
+                          Expanded(
+                            flex: 1,
+                            child: Column(
+                              children: [
+                                const SizedBox(
+                                    height: 15,
+                                    child: Text(
+                                      'Fecha límite saldo separación',
+                                      style: TextStyle(fontSize: 10),
+                                    )),
+                                Container(
+                                  decoration: BoxDecoration(
+                                    color: primaryColor.withOpacity(0.2),
+                                    borderRadius:
+                                        BorderRadius.circular(30.0),
+                                    border: Border.all(
+                                        width: 1,
+                                        style: BorderStyle.solid,
+                                        color:
+                                            fifthColor.withOpacity(0.1)),
+                                  ),
+                                  child: Padding(
+                                    padding:
+                                        const EdgeInsets.only(left: 10),
+                                    child: TextField(
+                                      textAlign: TextAlign.center,
+                                      cursorColor: fifthColor,
+                                      style: TextStyle(
+                                          color: fifthColor
+                                              .withOpacity(0.9)),
+                                      controller:
+                                          saldoSeparacionDeadlineController,
+                                      decoration: InputDecoration(
+                                        border: InputBorder.none,
+                                        icon: Icon(
+                                          Icons.date_range_outlined,
+                                          color: fifthColor,
+                                        ),
+                                        hintText: DateFormat('dd-MM-yyyy')
+                                            .format(quotePickedDate),
+                                      ),
+                                      readOnly: true,
+                                      onTap: () async {
+                                        DateTime? pickedDate =
+                                            await showDatePicker(
+                                          locale:
+                                              const Locale("es", "CO"),
+                                          context: context,
+                                          initialDate: dateConverter(
+                                              saldoSeparacionDeadlineController
+                                                  .text),
+                                          firstDate: DateTime(1900),
+                                          lastDate: DateTime(2050),
+                                        );
+                                        if (pickedDate != null) {
                                           setState(() {
-                                            vlrSeparacion =
-                                                stringConverter(value);
-                                            saldoSeparacion =
-                                                vlrFijoSeparacion -
-                                                    stringConverter(value);
-                                            saldoSeparacionController.text =
-                                                (currencyCOP(
-                                                    (saldoSeparacion.toInt())
-                                                        .toString()));
-                                            saldoCuotaIniController.text =
-                                                (currencyCOP((saldoCI.toInt())
-                                                    .toString()));
-                                            vlrSeparacionController.value =
-                                                TextEditingValue(
-                                              text: (currencyCOP(
-                                                  (vlrSeparacion.toInt())
-                                                      .toString())),
-                                              selection:
-                                                  TextSelection.collapsed(
-                                                      offset: (currencyCOP(
-                                                              (vlrSeparacion
-                                                                      .toInt())
-                                                                  .toString()))
-                                                          .length),
-                                            );
-                                            updateNumberWords();
-                                          });
-                                        }
-                                        if (stringConverter(value) >=
-                                            vlrFijoSeparacion) {
-                                          setState(() {
-                                            vlrSeparacion = vlrFijoSeparacion;
-                                            vlrSeparacionController.text =
-                                                vlrFijoSeparacion
-                                                    .toInt()
-                                                    .toString();
-                                            saldoSeparacion = 0;
-                                            saldoSeparacionController.text =
-                                                (currencyCOP(
-                                                    (saldoSeparacion.toInt())
-                                                        .toString()));
-                                            vlrSeparacionController.value =
-                                                TextEditingValue(
-                                              text: (currencyCOP(
-                                                  (vlrSeparacion.toInt())
-                                                      .toString())),
-                                              selection:
-                                                  TextSelection.collapsed(
-                                                      offset: (currencyCOP(
-                                                              (vlrSeparacion
-                                                                      .toInt())
-                                                                  .toString()))
-                                                          .length),
-                                            );
-                                            updateNumberWords();
+                                            saldoSeparacionDeadlineController
+                                                    .text =
+                                                DateFormat('dd-MM-yyyy')
+                                                    .format(pickedDate);
                                           });
                                         }
                                       },
                                     ),
-                                  ],
+                                  ),
                                 ),
-                              ),
-                              Expanded(
-                                flex: 1,
-                                child: Column(
-                                  children: [
-                                    const SizedBox(
-                                        height: 15,
-                                        child: Text(
-                                          'Fecha de separación',
-                                          style: TextStyle(fontSize: 10),
-                                        )),
-                                    Container(
-                                      decoration: BoxDecoration(
-                                        color: primaryColor.withOpacity(0.2),
-                                        borderRadius:
-                                            BorderRadius.circular(30.0),
-                                        border: Border.all(
-                                            width: 1,
-                                            style: BorderStyle.solid,
-                                            color:
-                                                fifthColor.withOpacity(0.1)),
-                                      ),
-                                      child: Padding(
-                                        padding:
-                                            const EdgeInsets.only(left: 10),
-                                        child: TextField(
-                                          textAlign: TextAlign.center,
-                                          cursorColor: fifthColor,
-                                          style: TextStyle(
-                                              color: fifthColor
-                                                  .withOpacity(0.9)),
-                                          controller:
-                                              separacionDeadlineController,
-                                          decoration: InputDecoration(
-                                            border: InputBorder.none,
-                                            icon: Icon(
-                                              Icons.date_range_outlined,
-                                              color: fifthColor,
-                                            ),
-                                            hintText: DateFormat('dd-MM-yyyy')
-                                                .format(quotePickedDate),
-                                          ),
-                                          readOnly: true,
-                                          onTap: () async {
-                                            DateTime? pickedDate =
-                                                await showDatePicker(
-                                              locale:
-                                                  const Locale("es", "CO"),
-                                              context: context,
-                                              initialDate: dateConverter(
-                                                  separacionDeadlineController
-                                                      .text),
-                                              firstDate: DateTime(1900),
-                                              lastDate: DateTime(2050),
-                                            );
-                                            if (pickedDate != null) {
-                                              setState(() {
-                                                separacionDeadlineController
-                                                        .text =
-                                                    DateFormat('dd-MM-yyyy')
-                                                        .format(pickedDate);
-                                                saldoSeparacionDeadlineController
-                                                        .text =
-                                                    dateOnly(
-                                                        false,
-                                                        plazoSaldoSep,
-                                                        pickedDate,
-                                                        false);
-                                                saldoCuotaIniDeadlineController
-                                                        .text =
-                                                    dateOnly(false, plazoCI,
-                                                        pickedDate, true);
-                                                updateDateSaldo(pickedDate);
-                                                discountValue();
-                                              });
-                                            }
-                                          },
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ])),
-                          const SizedBox(
-                            height: 10,
+                              ],
+                            ),
                           ),
-                          Container(
-                              constraints: const BoxConstraints(maxWidth: 800),
-                              child: Row(children: [
-                                Expanded(
-                                  flex: 1,
-                                  child: Column(
-                                    children: [
-                                      const SizedBox(
-                                          height: 15,
-                                          child: Text(
-                                            'Saldo separación',
-                                            style: TextStyle(fontSize: 10),
-                                          )),
-                                      textFieldWidget(
-                                        (currencyCOP((saldoSeparacion.toInt())
-                                            .toString())),
-                                        Icons.monetization_on_outlined,
-                                        false,
-                                        saldoSeparacionController,
-                                        false,
-                                        'number',
-                                        () {},
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                Expanded(
-                                  flex: 1,
-                                  child: Column(
-                                    children: [
-                                      const SizedBox(
-                                          height: 15,
-                                          child: Text(
-                                            'Fecha límite saldo separación',
-                                            style: TextStyle(fontSize: 10),
-                                          )),
-                                      Container(
-                                        decoration: BoxDecoration(
-                                          color: primaryColor.withOpacity(0.2),
-                                          borderRadius:
-                                              BorderRadius.circular(30.0),
-                                          border: Border.all(
-                                              width: 1,
-                                              style: BorderStyle.solid,
-                                              color:
-                                                  fifthColor.withOpacity(0.1)),
-                                        ),
-                                        child: Padding(
-                                          padding:
-                                              const EdgeInsets.only(left: 10),
-                                          child: TextField(
-                                            textAlign: TextAlign.center,
-                                            cursorColor: fifthColor,
-                                            style: TextStyle(
-                                                color: fifthColor
-                                                    .withOpacity(0.9)),
-                                            controller:
-                                                saldoSeparacionDeadlineController,
-                                            decoration: InputDecoration(
-                                              border: InputBorder.none,
-                                              icon: Icon(
-                                                Icons.date_range_outlined,
-                                                color: fifthColor,
-                                              ),
-                                              hintText: DateFormat('dd-MM-yyyy')
-                                                  .format(quotePickedDate),
-                                            ),
-                                            readOnly: true,
-                                            onTap: () async {
-                                              DateTime? pickedDate =
-                                                  await showDatePicker(
-                                                locale:
-                                                    const Locale("es", "CO"),
-                                                context: context,
-                                                initialDate: dateConverter(
-                                                    saldoSeparacionDeadlineController
-                                                        .text),
-                                                firstDate: DateTime(1900),
-                                                lastDate: DateTime(2050),
-                                              );
-                                              if (pickedDate != null) {
-                                                setState(() {
-                                                  saldoSeparacionDeadlineController
-                                                          .text =
-                                                      DateFormat('dd-MM-yyyy')
-                                                          .format(pickedDate);
-                                                });
-                                              }
-                                            },
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ])),
-                        ],
-                      ),
+                        ]
+                      )
                     ),
                     const SizedBox(
                       height: 10,
@@ -1132,6 +1024,7 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
                                         // Call necessary functions for calculations or updates
                                         discountValue();
                                         updateNumberWords();
+                                        setAmountColor();
                                       });
                                     },
                                   ),                                  
@@ -1945,8 +1838,6 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
                                       (saldoCI.toInt()).toString()));
                                 });
                                 if (selectedSeller.isEmpty ||
-                                    quoteDateController.text.isEmpty ||
-                                    quoteDeadlineController.text.isEmpty ||
                                     priceloteController.text.isEmpty ||
                                     vlrCuotaIniController.text.isEmpty ||
                                     vlrSeparacionController.text.isEmpty ||
@@ -2027,8 +1918,8 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
                                         address: addressController.text,
                                         email: emailController.text,
                                         city: selectedCity,
-                                        date: quoteDateController.text,
-                                        dueDate: quoteDeadlineController.text,
+                                        date: separacionDeadlineController.text,
+                                        dueDate: saldoSeparacionDeadlineController.text,
                                         lote: loteController.text,
                                         area: arealoteController.text,
                                         price: priceloteController.text,
@@ -2112,8 +2003,6 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
                                       (saldoCI.toInt()).toString()));
                                 });
                                 if (selectedSeller.isEmpty ||
-                                    quoteDateController.text.isEmpty ||
-                                    quoteDeadlineController.text.isEmpty ||
                                     priceloteController.text.isEmpty ||
                                     vlrCuotaIniController.text.isEmpty ||
                                     vlrSeparacionController.text.isEmpty ||
@@ -2192,11 +2081,9 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
                                     selectedState,
                                     selectedCity,
                                   );
-                                  await updateQuote(
+                                  await updateQuoteForSep(
                                       quoteIdController.text,
                                       selectedSeller,
-                                      quoteDateController.text,
-                                      quoteDeadlineController.text,
                                       loteId,
                                       loteController.text,
                                       etapaloteController.text,
@@ -2264,6 +2151,16 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
                                     precioFinal,
                                     0
                                   );
+                                  CollectionReference paymentsCollection = FirebaseFirestore.instance
+                                    .collection('planPagos')
+                                    .doc(loteId)
+                                    .collection('pagosEsperados');
+
+                                  QuerySnapshot querySnapshot = await paymentsCollection.get();
+
+                                  for (DocumentSnapshot documentSnapshot in querySnapshot.docs) {
+                                    await documentSnapshot.reference.delete();
+                                  }
                                   if(saldoSeparacion == 0){
                                     await pagosEsperados(
                                       loteId,
@@ -2306,7 +2203,7 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
                                     await pagosEsperados(loteId, 'TOTAL', valorAPagar, 'PAGO CONTADO', dateSaldo, quoteIdController.text);                                    
                                   }
                                   cambioEstadoLote(
-                                          loteId, quoteStageController.text)
+                                          loteId, quoteStageController.text, cambioEst)
                                       .then((_) {
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(
