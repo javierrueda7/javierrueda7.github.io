@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'package:albaterrapp/pages/pdf_preinvoice.dart';
+import 'package:albaterrapp/services/firebase_services.dart';
 import 'package:albaterrapp/widgets/widgets.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -31,45 +33,73 @@ class _PagosEsperadosState extends State<PagosEsperados> {
     return dateConverted;
   }
 
-  DateTime startDate = DateTime.now(); // Fecha de inicio del rango
-  DateTime endDate= DateTime.now();   // Fecha de fin del rango
+  DateTime startDate = DateTime((DateTime.now()).year, (DateTime.now()).month, 1); // Fecha de inicio del rango
+  DateTime endDate= DateTime((DateTime.now()).year, (DateTime.now()).month + 1, 0);   // Fecha de fin del rango
 
   TextEditingController startDateController = TextEditingController(text: "");
   TextEditingController endDateController = TextEditingController(text: "");
 
 
-  Future<List> getMatchingDocuments() async {
-    List matchingDocuments = [];
+  Future<List<Map<String, dynamic>>> getMatchingDocuments() async {
+    List<Map<String, dynamic>> matchingDocuments = [];
 
-    QuerySnapshot planPagosSnapshot = await FirebaseFirestore.instance
+    final QuerySnapshot planPagosSnapshot = await FirebaseFirestore.instance
         .collection('planPagos')
         .get();
 
+    final List<Future<Map<String, dynamic>>> quoteAndCustomerFutures = [];
+
     for (QueryDocumentSnapshot planPagoSnapshot in planPagosSnapshot.docs) {
-      String planPagoId = planPagoSnapshot.id; // Get the document ID
-      CollectionReference pagosEsperadosRef =
+      final String planPagoId = planPagoSnapshot.id;
+
+      final CollectionReference pagosEsperadosRef =
           planPagoSnapshot.reference.collection('pagosEsperados');
 
-      QuerySnapshot pagosSnapshot = await pagosEsperadosRef.get();
+      final QuerySnapshot pagosSnapshot = await pagosEsperadosRef.get();
 
-      for (QueryDocumentSnapshot pagoSnapshot in pagosSnapshot.docs) {        
-        final Map<String, dynamic> data = pagoSnapshot.data() as Map<String, dynamic>;
-        String fechaPagoString = data['fechaPago']; // Get the fechaPago as string
-        DateTime fechaPago = DateFormat('dd-MM-yyyy').parse(fechaPagoString);
+      for (QueryDocumentSnapshot pagoSnapshot in pagosSnapshot.docs) {
+        final Map<String, dynamic> data =
+            pagoSnapshot.data() as Map<String, dynamic>;
+        final String fechaPagoString = data['fechaPago'];
+        final DateTime fechaPago =
+            DateFormat('dd-MM-yyyy').parse(fechaPagoString);
+
+        // Collect the planPago IDs for concurrent fetching
+        final String idPlanPagos = data['idPlanPagos'];
+        quoteAndCustomerFutures.add(fetchQuoteAndCustomer(idPlanPagos));
 
         if (fechaPago.isAfter(startDate) && fechaPago.isBefore(endDate)) {
           final pagoEsperado = {
             "lote": planPagoId,
             "idPago": pagoSnapshot.id,
-            "idPlan": data['idPlanPagos'],
+            "idPlan": idPlanPagos,
             "fechaPago": data['fechaPago'],
             "valorPago": data['valorPago'],
             "conceptoPago": data['conceptoPago'],
           };
-          matchingDocuments.add(pagoEsperado); // Add the planPago document if pagosEsperados match
+          matchingDocuments.add(pagoEsperado);
         }
       }
     }
+
+    // Wait for all quoteSnap and customer data to be fetched
+    final List<Map<String, dynamic>> quoteAndCustomerData =
+        await Future.wait(quoteAndCustomerFutures);
+
+    // Combine quoteSnap and customer data into matchingDocuments
+    for (int i = 0; i < matchingDocuments.length; i++) {
+      final Map<String, dynamic> matchingDocument = matchingDocuments[i];
+      final Map<String, dynamic> quoteSnapData = quoteAndCustomerData[i]['quoteSnap'];
+      final Map<String, dynamic> customerData = quoteAndCustomerData[i]['customer'];
+
+      matchingDocument["idCliente"] = quoteSnapData["clienteID"];
+      matchingDocument["nameCliente"] =
+          "${customerData["nameCliente"]} ${customerData["lastnameCliente"]}";
+      matchingDocument["telCliente"] = customerData["telCliente"];
+      matchingDocument["emailCliente"] = customerData["emailCliente"];
+    }
+
+    // Sort the matchingDocuments by fechaPago
     matchingDocuments.sort((a, b) {
       DateTime dateA = DateFormat('dd-MM-yyyy').parse(a['fechaPago']);
       DateTime dateB = DateFormat('dd-MM-yyyy').parse(b['fechaPago']);
@@ -78,6 +108,20 @@ class _PagosEsperadosState extends State<PagosEsperados> {
 
     return matchingDocuments;
   }
+
+  Future<Map<String, dynamic>> fetchQuoteAndCustomer(String idPlanPagos) async {
+    final DocumentSnapshot<Map<String, dynamic>> quoteSnap =
+        await db.collection('quotes').doc(idPlanPagos).get();
+
+    final Map<String, dynamic> customer =
+        await getCustomerInfo(quoteSnap["clienteID"]);
+
+    return {
+      'quoteSnap': quoteSnap.data(),
+      'customer': customer,
+    };
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -251,28 +295,84 @@ class _PagosEsperadosState extends State<PagosEsperados> {
                     }
                 
                     if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                      return const Text('No se encontraron pagos en el rango seleccionado.');
+                      return const Column(
+                        children: [
+                          SizedBox(height: 20),
+                          Text('No se encontraron pagos en el rango seleccionado.'),
+                        ],
+                      );
                     }
                 
                     return Expanded(
                       child: ListView.builder(
                         itemCount: snapshot.data!.length,
                         itemBuilder: (context, index) {
-                              
+                          String conceptoText = '';
+                          var idPago = snapshot.data?[index]['idPago'];
+                          if (idPago == 'SEP1') {
+                            conceptoText = 'Abono de separación #1';
+                          } else if (idPago == 'SEP2') {
+                            conceptoText = 'Abono de separación #2';
+                          } else if (idPago == 'TOTAL') {
+                            conceptoText = 'Pago total';
+                          } else if (idPago == 'CINI') {
+                            conceptoText = 'Abono de cuota inicial';
+                          } else{
+                            conceptoText = 'Cuota #$idPago';
+                          }
                           return ListTile(
-                            leading: CircleAvatar(
-                              backgroundColor: fourthColor,
-                              child: Text(
-                                getNumbers(snapshot.data?[index]['lote'])!,
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                    color: primaryColor,
-                                    fontWeight: FontWeight.bold),
-                              )
+                            leading: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                CircleAvatar(
+                                  backgroundColor: fourthColor,
+                                  child: Text(
+                                    getNumbers(snapshot.data?[index]['lote'])!,
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                        color: primaryColor,
+                                        fontWeight: FontWeight.bold),
+                                  )
+                                ),
+                              ],
                             ),
-                            title: Text('Valor: ${currencyCOP((snapshot.data?[index]['valorPago'].toInt()).toString())}'),
-                            subtitle: Text('Fecha: ${snapshot.data?[index]['fechaPago']}'),
-                            trailing: Text('Concepto: ${snapshot.data?[index]['idPago']}'),
+                            title: Column(
+                              children: [
+                                Text('Valor: ${currencyCOP((snapshot.data?[index]['valorPago'].toInt()).toString())}'),
+                                Text('Fecha: ${snapshot.data?[index]['fechaPago']}'),
+                              ],
+                            ),
+                            subtitle: Column(
+                              children: [
+                                Text('Concepto: $conceptoText', style: const TextStyle(fontSize: 10),),
+                                Text('Cliente: ${snapshot.data?[index]['nameCliente']}', style: const TextStyle(fontSize: 10),)
+                              ],
+                            ),
+                            trailing: IconButton(
+                              onPressed:  (() async {
+                                String valorEnLetras = await numeroEnLetras(snapshot.data?[index]['valorPago'].toDouble(), 'pesos');
+                                // ignore: use_build_context_synchronously
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => PDFPreInvoice(
+                                      idPlan: snapshot.data?[index]['idPlan'],
+                                      lote: getNumbers(snapshot.data?[index]['lote'])!,                                
+                                      nameCliente: snapshot.data?[index]['nameCliente'],
+                                      idCliente: snapshot.data?[index]['idCliente'],
+                                      phoneCliente: snapshot.data?[index]['telCliente'],
+                                      emailCliente: snapshot.data?[index]['emailCliente'],                                        
+                                      paymentDate: snapshot.data?[index]['fechaPago'],                                  
+                                      paymentValue: snapshot.data?[index]['valorPago'].toDouble(),
+                                      paymentValueLetters: valorEnLetras,
+                                      conceptoPago: conceptoText,
+                                    ),
+                                  ),
+                                );
+                                setState(() {});
+                              }), 
+                              icon: const Icon(Icons.picture_as_pdf_outlined)
+                            )
                             // Display other relevant information about the document
                             // ...
                           );

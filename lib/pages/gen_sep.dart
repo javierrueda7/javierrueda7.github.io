@@ -32,7 +32,10 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
     timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       setState(() {});
     });
-    updateNumberWords();
+    updateNumberWords(); 
+    Future.delayed(Duration.zero, () {
+      editWarning(context);
+    });
   }
 
   @override
@@ -239,6 +242,7 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
 
   @override
   Widget build(BuildContext context) {
+    
     sellerStream = FirebaseFirestore.instance
         .collection('sellers')
         .orderBy('lastnameSeller')
@@ -318,6 +322,7 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
     cuotaInicial = precioFinal * (porcCuotaInicial / 100);
     saldoCI = cuotaInicial - vlrFijoSeparacion;
     valorCuota = valorAPagar / (double.parse(selectedNroCuotas));
+    
 
     if (nAux <= 5) {
       updateDateSaldo(quotePickedDate);
@@ -1134,7 +1139,6 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
                         ),
                       ),
                     ),                    
-                    paymentMethod(paymentMethodSelectedItem),
                     const SizedBox(
                       height: 10,
                     ),
@@ -2105,8 +2109,8 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
                                       paymentMethodSelectedItem,
                                       saldoTotalDateController.text,
                                       selectedPeriodoCuotas,
-                                      int.parse(selectedNroCuotas),
-                                      valorCuota,
+                                      cantidadCuotas(),
+                                      paymentMethodSelectedItem == 'Financiación directa' ? valorCuota : 0,
                                       vlrTEM,
                                       observacionesController.text,
                                       idController.text,
@@ -2132,8 +2136,8 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
                                     paymentMethodSelectedItem,
                                     saldoTotalDateController.text,
                                     selectedPeriodoCuotas,
-                                    int.parse(selectedNroCuotas),
-                                    valorCuota,
+                                    cantidadCuotas(),
+                                    paymentMethodSelectedItem == 'Financiación directa' ? valorCuota : 0,
                                     vlrTEM,
                                     observacionesController.text,
                                     idController.text,
@@ -2149,7 +2153,8 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
                                     porcCuotaInicial,
                                     'Pendiente',
                                     precioFinal,
-                                    0
+                                    0,
+                                    idController.text
                                   );
                                   CollectionReference paymentsCollection = FirebaseFirestore.instance
                                     .collection('planPagos')
@@ -2802,416 +2807,6 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
     }
   }
 
-  Widget paymentMethod(String paymentMethodSelection) {
-    if (paymentMethodSelection == 'Pago de contado') {
-      return Container(
-        constraints: const BoxConstraints(maxWidth: 800),
-        child: Column(
-          children: [
-            SizedBox(
-                height: 20,
-                child: Text(
-                  'Precio final${isDiscount(discountValue())}',
-                  style: const TextStyle(fontSize: 14),
-                )),
-            SizedBox(
-                height: 20,
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 8.0),
-                  child: discountText(discountValue()),
-                )),
-            Container(
-              child: textFieldWidget(
-                  (currencyCOP(precioFinal.toInt().toString())),
-                  Icons.monetization_on_outlined,
-                  false,
-                  precioFinalController,
-                  false,
-                  'number',
-                  () {}),
-            ),
-            const SizedBox(
-              height: 10,
-            ),
-            Row(children: [
-              Expanded(
-                flex: 1,
-                child: Column(
-                  children: [
-                    const SizedBox(
-                        height: 20,
-                        child: Text(
-                          'Valor restante a pagar',
-                          style: TextStyle(fontSize: 10),
-                          textAlign: TextAlign.center,
-                        )),
-                    textFieldWidget(
-                        (currencyCOP(valorAPagar.toInt().toString())),
-                        Icons.monetization_on_outlined,
-                        false,
-                        vlrPorPagarController,
-                        false,
-                        'number',
-                        () {}),
-                  ],
-                ),
-              ),
-              Expanded(
-                flex: 1,
-                child: Column(
-                  children: [
-                    SizedBox(
-                        height: 20,
-                        child: Text(
-                          'Fecha límite (${plazoContado.toInt().toString()} días)',
-                          style: const TextStyle(fontSize: 10),
-                          textAlign: TextAlign.center,
-                        )),
-                    Container(
-                      decoration: BoxDecoration(
-                        color: primaryColor.withOpacity(0.2),
-                        borderRadius: BorderRadius.circular(30.0),
-                        border: Border.all(
-                            width: 1,
-                            style: BorderStyle.solid,
-                            color: fifthColor.withOpacity(0.1)),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.only(left: 10),
-                        child: TextField(
-                          textAlign: TextAlign.center,
-                          cursorColor: fifthColor,
-                          style: TextStyle(color: fifthColor.withOpacity(0.9)),
-                          controller: saldoTotalDateController,
-                          decoration: InputDecoration(
-                            border: InputBorder.none,
-                            icon: Icon(
-                              Icons.date_range_outlined,
-                              color: fifthColor,
-                            ),
-                            hintText: DateFormat('dd-MM-yyyy')
-                                .format(quotePickedDate),
-                          ),
-                          readOnly: true,
-                          onTap: () async {
-                            DateTime? pickedDate = await showDatePicker(
-                              locale: const Locale("es", "CO"),
-                              context: context,
-                              initialDate:
-                                  dateConverter(saldoTotalDateController.text),
-                              firstDate: DateTime(1900),
-                              lastDate: DateTime(2050),
-                            );
-                            if (pickedDate != null) {
-                              setState(() {
-                                dateSaldo =
-                                    DateFormat('dd-MM-yyyy').format(pickedDate);
-                              });
-                            }
-                          },
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ]),
-          ],
-        ),
-      );
-    } else if (paymentMethodSelection == 'Financiación directa') {
-      return Container(
-        constraints: const BoxConstraints(maxWidth: 800),
-        child: Column(
-          children: [
-            SizedBox(
-                height: 20,
-                child: Text(
-                  'Precio final${isDiscount(discountValue())}',
-                  style: const TextStyle(
-                      fontSize: 14, fontWeight: FontWeight.bold),
-                )),
-            SizedBox(
-                height: 20,
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 8.0),
-                  child: discountText(discountValue()),
-                )),
-            Container(
-              constraints: const BoxConstraints(maxWidth: 800),
-              child: textFieldWidget(
-                  (currencyCOP(precioFinal.toInt().toString())),
-                  Icons.monetization_on_outlined,
-                  false,
-                  precioFinalController,
-                  false,
-                  'number',
-                  () {}),
-            ),
-            const SizedBox(
-              height: 10,
-            ),
-            SizedBox(
-                height: 20,
-                child: Text(
-                  'Cuota inicial (${((porcCuotaInicial).toInt()).toString()}%)',
-                  style: const TextStyle(
-                      fontSize: 14, fontWeight: FontWeight.bold),
-                )),
-            const SizedBox(
-                height: 20,
-                child: Padding(
-                  padding: EdgeInsets.only(left: 8.0),
-                  child: Text(
-                    'Cuota inicial = Separación + Saldo cuota inicial',
-                    style: TextStyle(
-                      fontSize: 10,
-                    ),
-                  ),
-                )),
-            Container(
-              constraints: const BoxConstraints(maxWidth: 800),
-              child: textFieldWidget(
-                  (currencyCOP(cuotaInicial.toInt().toString())),
-                  Icons.monetization_on_outlined,
-                  false,
-                  vlrCuotaIniController,
-                  false,
-                  'number',
-                  () {}),
-            ),
-            const SizedBox(
-              height: 10,
-            ),
-            Row(children: [
-              Expanded(
-                flex: 1,
-                child: Column(
-                  children: [
-                    const SizedBox(
-                        height: 20,
-                        child: Text(
-                          'Saldo cuota inicial',
-                          style: TextStyle(fontSize: 10),
-                          textAlign: TextAlign.center,
-                        )),
-                    textFieldWidget(
-                        (currencyCOP(saldoCI.toInt().toString())),
-                        Icons.monetization_on_outlined,
-                        false,
-                        saldoCuotaIniController,
-                        false,
-                        'number',
-                        () {}),
-                  ],
-                ),
-              ),
-              Expanded(
-                flex: 1,
-                child: Column(
-                  children: [
-                    SizedBox(
-                        height: 20,
-                        child: Text(
-                          'Fecha límite (${(plazoCI).toInt().toString()} días)',
-                          style: const TextStyle(fontSize: 10),
-                          textAlign: TextAlign.center,
-                        )),
-                    Container(
-                      decoration: BoxDecoration(
-                        color: primaryColor.withOpacity(0.2),
-                        borderRadius: BorderRadius.circular(30.0),
-                        border: Border.all(
-                            width: 1,
-                            style: BorderStyle.solid,
-                            color: fifthColor.withOpacity(0.1)),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.only(left: 10),
-                        child: TextField(
-                          textAlign: TextAlign.center,
-                          cursorColor: fifthColor,
-                          style: TextStyle(color: fifthColor.withOpacity(0.9)),
-                          controller: saldoCuotaIniDeadlineController,
-                          decoration: InputDecoration(
-                            border: InputBorder.none,
-                            icon: Icon(
-                              Icons.date_range_outlined,
-                              color: fifthColor,
-                            ),
-                            hintText: DateFormat('dd-MM-yyyy')
-                                .format(quotePickedDate),
-                          ),
-                          readOnly: true,
-                          onTap: () async {
-                            DateTime? pickedDate = await showDatePicker(
-                              locale: const Locale("es", "CO"),
-                              context: context,
-                              initialDate: dateConverter(
-                                  saldoCuotaIniDeadlineController.text),
-                              firstDate: DateTime(1900),
-                              lastDate: DateTime(2050),
-                            );
-                            if (pickedDate != null) {
-                              setState(() {
-                                saldoCuotaIniDeadlineController.text =
-                                    DateFormat('dd-MM-yyyy').format(pickedDate);
-                                dateSaldo =
-                                    dateOnly(false, 30, pickedDate, true);
-                              });
-                            }
-                          },
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ]),
-            const SizedBox(
-              height: 10,
-            ),
-            SizedBox(
-                height: 20,
-                child: Text(
-                  'Valor por pagar (${((100 - porcCuotaInicial).toInt()).toString()}%)',
-                  style: const TextStyle(
-                      fontSize: 14, fontWeight: FontWeight.bold),
-                )),
-            textFieldWidget(
-                (currencyCOP(valorAPagar.toInt().toString())),
-                Icons.monetization_on_outlined,
-                false,
-                vlrPorPagarController,
-                false,
-                'number',
-                () {}),
-            const SizedBox(
-              height: 10,
-            ),
-            Row(children: [
-              Expanded(
-                flex: 4,
-                child: Column(
-                  children: [
-                    const SizedBox(
-                        height: 15,
-                        child: Text(
-                          'Valor de cada cuota',
-                          style: TextStyle(fontSize: 10),
-                        )),
-                    textFieldWidget(
-                        (currencyCOP(valorCuota.toInt().toString())),
-                        Icons.monetization_on_outlined,
-                        false,
-                        vlrCuotaController,
-                        false,
-                        'number',
-                        () {}),
-                  ],
-                ),
-              ),
-              Expanded(
-                flex: 3,
-                child: Column(
-                  children: [
-                    const SizedBox(
-                        height: 15,
-                        child: Text(
-                          'Periodicidad',
-                          style: TextStyle(fontSize: 10),
-                        )),
-                    easyDropdown(periodoCuotasList, selectedPeriodoCuotas,
-                        (tempPeriodoCuotas) {
-                      setState(() {
-                        selectedPeriodoCuotas = tempPeriodoCuotas!;
-                        nroCuotasGenerator(maxCuotas);
-                        selectedNroCuotas = "1";
-                        periodoCalculator(stringConverter(selectedNroCuotas));
-                        initCuotas();
-                        updateNumberWords();
-                      });
-                    }),
-                  ],
-                ),
-              ),              
-              Expanded(
-                flex: 2,
-                child: Column(
-                  children: [
-                    const SizedBox(
-                      height: 15,
-                      child: Text(
-                        'Nro Cuotas',
-                        style: TextStyle(fontSize: 10),
-                      )),
-                      easyDropdown(nroCuotasList, selectedNroCuotas,
-                        (tempNroCuotas) {
-                          setState(() {
-                            selectedNroCuotas = tempNroCuotas!;
-                            periodoCalculator(stringConverter(selectedNroCuotas));
-                            initCuotas();
-                            updateNumberWords();
-                          }
-                        );
-                      }
-                    ),
-                  ],
-                ),
-              ),
-            ]),
-            Row(children: [
-              Expanded(
-                flex: 1,
-                child: Column(
-                  children: [
-                    const SizedBox(
-                        height: 15,
-                        child: Text(
-                          'Intereses',
-                          style: TextStyle(fontSize: 10),
-                        )),
-                    textFieldWidget(
-                        '${(vlrTEM.toString())} %',
-                        Icons.percent_outlined,
-                        false,
-                        temController,
-                        false,
-                        'number',
-                        () {}),
-                  ],
-                ),
-              ),
-              Expanded(
-                flex: 1,
-                child: Column(
-                  children: [
-                    const SizedBox(
-                        height: 15,
-                        child: Text(
-                          'A partir de',
-                          style: TextStyle(fontSize: 10),
-                        )),
-                    textFieldWidget(
-                        dateOnly(false, (plazoCI) + 30, quotePickedDate, true),
-                        Icons.date_range_outlined,
-                        false,
-                        saldoTotalDateController,
-                        false,
-                        'date',
-                        () {}),
-                  ],
-                ),
-              ),
-            ]),
-          ],
-        ),
-      );
-    } else {
-      return Container();
-    }
-  }
-
   void updateNumberWords() async {
     letrasSepController.text = await numeroEnLetras(vlrFijoSeparacion, 'pesos');
     letrasSaldoCIController.text = await numeroEnLetras(saldoCI, 'pesos');
@@ -3259,7 +2854,18 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
     }
   }
 
-
+  int cantidadCuotas(){
+    int tempCuotas = 1;
+    if(paymentMethodSelectedItem == 'Financiación directa')
+    {
+      tempCuotas = int.parse(selectedNroCuotas);
+    }
+    else if(paymentMethodSelectedItem == 'Personalizado')
+    {
+      tempCuotas = installments.length;
+    }
+    return tempCuotas;
+  }
 
   void setAmountColor(){
     if(valorAPagar==totalInstallmentAmount){
@@ -3403,6 +3009,19 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
         return const AlertDialog(
           title: Text('Importante'),
           content: Text('Tener presente que el valor de la separación ya se definió, por lo tanto no está incluído en el método de pago personalizado.'),
+        );
+      },
+    );
+  }
+
+  Future<void> editWarning(BuildContext context) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: true, // Dialog can be dismissed by tapping outside
+      builder: (BuildContext context) {
+        return const AlertDialog(
+          title: Text('Importante'),
+          content: Text('Tener presente que al guardar este formulario se va a sobreescribir la información relacionada al plan de pagos.'),
         );
       },
     );

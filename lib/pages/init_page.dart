@@ -162,7 +162,7 @@ class _InitPageState extends State<InitPage> {
                 PopupMenuItem(
                   value: 'Opción 5',
                   enabled: userLoggedIn,
-                  child: const Text('Estadisticas'),
+                  child: const Text('Consultas'),
                 ),
                 PopupMenuItem(
                   value: 'Opción 6',

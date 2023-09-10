@@ -39,7 +39,7 @@ Future<Map<String, dynamic>> getLoteInfo(String id) async {
   return lote;
 }
 
-Future<void> addPlanPagos(String lote, String idPlanPagos, String paymentMethod, double precioIni, double precioFin, double dcto, double valorSeparacion, double porcCI, String estadoPago, double saldoPorPagar, double valorPagado) async{
+Future<void> addPlanPagos(String lote, String idPlanPagos, String paymentMethod, double precioIni, double precioFin, double dcto, double valorSeparacion, double porcCI, String estadoPago, double saldoPorPagar, double valorPagado, String idCliente) async{
   await db.collection("planPagos").doc(lote).set({
     "idPlanPagos": idPlanPagos,
     "paymentMethod": paymentMethod,
@@ -50,7 +50,8 @@ Future<void> addPlanPagos(String lote, String idPlanPagos, String paymentMethod,
     "porcCI": porcCI,
     "estadoPago": estadoPago,
     "saldoPorPagar": saldoPorPagar,
-    "valorPagado": valorPagado
+    "valorPagado": valorPagado,
+    "idCliente": idCliente
   });
 }
 
@@ -74,7 +75,7 @@ Future<void> pagosEsperados(String lote, String idPago, double valorPago, String
   });
 }
 
-Future<void> pagosRealizados(String lote, String idPago, double valorPago, String conceptoPago, String fechaRecibo, String fechaPago, String metodoPago, String nombreCliente, String idCliente, String telCliente, String emailCliente, String dirCliente, String ciudadCliente, String obsPago) async{
+Future<void> pagosRealizados(String lote, String idPago, double valorPago, String conceptoPago, String fechaRecibo, String fechaPago, String metodoPago, String nombreCliente, String idCliente, String telCliente, String emailCliente, String dirCliente, String ciudadCliente, String obsPago, String idPlanPagos) async{
   await db.collection("pagos").doc(idPago).set({
     "valorPago": valorPago,
     "conceptoPago": conceptoPago,
@@ -87,7 +88,8 @@ Future<void> pagosRealizados(String lote, String idPago, double valorPago, Strin
     "emailCliente": emailCliente,
     "dirCliente": dirCliente,
     "ciudadCliente": ciudadCliente,
-    "obsPago": obsPago
+    "obsPago": obsPago,
+    "idPlanPagos": idPlanPagos
   });
 }
 

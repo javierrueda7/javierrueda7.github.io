@@ -75,7 +75,7 @@ class _AddPaymentPageState extends State<AddPaymentPage> {
       "precioFin": data['precioFin'],
       "saldoPorPagar": data['saldoPorPagar'],
       "valorPagado": data['valorPagado'],
-      "valorSeparacion": data['valorSeparacion'],
+      "valorSeparacion": data['valorSeparacion']
     };
     planPagos = temp;
   }
@@ -799,7 +799,8 @@ class _AddPaymentPageState extends State<AddPaymentPage> {
                               emailController.text,
                               addressController.text,
                               selectedCity,
-                              observacionesController.text
+                              observacionesController.text,
+                              lote['sid']
                             );
                             await updatePlanPagos(
                               selectedLote,                               
