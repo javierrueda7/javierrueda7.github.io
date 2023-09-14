@@ -1,5 +1,4 @@
 import 'package:albaterrapp/pages/pagosesperados_page.dart';
-import 'package:albaterrapp/pages/pdf_invoice.dart';
 import 'package:albaterrapp/services/firebase_services.dart';
 import 'package:albaterrapp/utils/color_utils.dart';
 import 'package:albaterrapp/widgets/widgets.dart';
@@ -76,7 +75,8 @@ class _AddPaymentPageState extends State<AddPaymentPage> {
       "precioFin": data['precioFin'],
       "saldoPorPagar": data['saldoPorPagar'],
       "valorPagado": data['valorPagado'],
-      "valorSeparacion": data['valorSeparacion']
+      "valorSeparacion": data['valorSeparacion'],
+      "idPlanPagos": data['idPlanPagos']
     };
     planPagos = temp;
   }
@@ -801,7 +801,7 @@ class _AddPaymentPageState extends State<AddPaymentPage> {
                               addressController.text,
                               selectedCity,
                               observacionesController.text,
-                              lote['sid']
+                              planPagos['idPlanPagos']
                             );
                             await updatePlanPagos(
                               selectedLote,                               
