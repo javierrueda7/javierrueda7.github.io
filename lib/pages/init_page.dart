@@ -1,8 +1,8 @@
-import 'package:albaterrapp/pages/add_payment.dart';
 import 'package:albaterrapp/pages/add_quote_page.dart';
 import 'package:albaterrapp/pages/existing_quotes.dart';
 import 'package:albaterrapp/pages/info_gral.dart';
 import 'package:albaterrapp/pages/lotes_page.dart';
+import 'package:albaterrapp/pages/pagosesperados_page.dart';
 import 'package:albaterrapp/pages/resumen_pagos.dart';
 import 'package:albaterrapp/pages/sellers_page.dart';
 import 'package:albaterrapp/pages/signin_page.dart';
@@ -213,10 +213,10 @@ class _InitPageState extends State<InitPage> {
                 }
                 if (value == 'Opción 6') {
                   Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) =>
-                              const AddPaymentPage()));
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                        const PagosEsperados()));
                   setState(() {});
                 }
                 else {

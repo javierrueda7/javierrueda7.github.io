@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:albaterrapp/pages/add_custpayment.dart';
 import 'package:albaterrapp/pages/pdf_preinvoice.dart';
 import 'package:albaterrapp/services/firebase_services.dart';
 import 'package:albaterrapp/widgets/widgets.dart';
@@ -122,7 +123,6 @@ class _PagosEsperadosState extends State<PagosEsperados> {
     };
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -134,6 +134,22 @@ class _PagosEsperadosState extends State<PagosEsperados> {
         title: Text('PAGOS ESPERADOS',
           style: TextStyle(color: primaryColor, fontSize: 18, fontWeight: FontWeight.bold),
         ),
+        actions: <Widget>[
+          Padding(
+            padding: const EdgeInsets.only(right: 20.0),
+            child: GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>
+                      const AddCustomPaymentPage()));
+                setState(() {});
+              },
+              child: const Icon(Icons.today_outlined),
+            )
+          ),
+        ],
       ),
       body: Center(
         child: Container(
@@ -372,7 +388,30 @@ class _PagosEsperadosState extends State<PagosEsperados> {
                                 setState(() {});
                               }), 
                               icon: const Icon(Icons.picture_as_pdf_outlined)
-                            )
+                            ),
+                            onTap: ( (){}/*() async {
+                              String valorEnLetras = await numeroEnLetras(snapshot.data?[index]['valorPago'].toDouble(), 'pesos');
+                              // ignore: use_build_context_synchronously
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => AddPaymentPage(
+                                    idPlan: snapshot.data?[index]['idPlan'],
+                                    lote: getNumbers(snapshot.data?[index]['lote'])!,                                
+                                    nameCliente: snapshot.data?[index]['nameCliente'],
+                                    idCliente: snapshot.data?[index]['idCliente'],
+                                    phoneCliente: snapshot.data?[index]['telCliente'],
+                                    emailCliente: snapshot.data?[index]['emailCliente'],                                        
+                                    paymentDate: snapshot.data?[index]['fechaPago'],                                  
+                                    paymentValue: snapshot.data?[index]['valorPago'].toDouble(),
+                                    paymentValueLetters: valorEnLetras,
+                                    conceptoPago: conceptoText,
+                                  ),
+                                ),
+                              );
+                              setState(() {});                      
+                              }*/
+                            ),
                             // Display other relevant information about the document
                             // ...
                           );

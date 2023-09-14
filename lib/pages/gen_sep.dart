@@ -2095,20 +2095,20 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
                                       vlrBaseLote.toDouble(),
                                       precioFinal,
                                       discountValue(),
-                                      porcCuotaInicial,
-                                      cuotaInicial,
+                                      paymentMethodSelectedItem == 'Financiación directa' ? porcCuotaInicial : 0,
+                                      paymentMethodSelectedItem == 'Financiación directa' ? cuotaInicial : vlrSeparacion,
                                       vlrSeparacion,
                                       separacionDeadlineController.text,
                                       saldoSeparacion,
                                       saldoSeparacionDeadlineController.text,
                                       plazoCI,
                                       plazoContado,
-                                      saldoCI,
+                                      paymentMethodSelectedItem == 'Financiación directa' ? saldoCI : 0,
                                       saldoCuotaIniDeadlineController.text,
                                       valorAPagar,
                                       paymentMethodSelectedItem,
                                       saldoTotalDateController.text,
-                                      selectedPeriodoCuotas,
+                                      paymentMethodSelectedItem == 'Financiación directa' ? selectedPeriodoCuotas : '-',
                                       cantidadCuotas(),
                                       paymentMethodSelectedItem == 'Financiación directa' ? valorCuota : 0,
                                       vlrTEM,
@@ -2122,20 +2122,20 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
                                     vlrBaseLote.toDouble(),
                                     precioFinal,
                                     discountValue(),
-                                    porcCuotaInicial,
-                                    cuotaInicial,
+                                    paymentMethodSelectedItem == 'Financiación directa' ? porcCuotaInicial : 0,
+                                    paymentMethodSelectedItem == 'Financiación directa' ? cuotaInicial : vlrSeparacion,
                                     vlrSeparacion,
                                     separacionDeadlineController.text,
                                     saldoSeparacion,
                                     saldoSeparacionDeadlineController.text,
                                     plazoCI,
                                     plazoContado,
-                                    saldoCI,
+                                    paymentMethodSelectedItem == 'Financiación directa' ? saldoCI : 0,
                                     saldoCuotaIniDeadlineController.text,
                                     valorAPagar,
                                     paymentMethodSelectedItem,
                                     saldoTotalDateController.text,
-                                    selectedPeriodoCuotas,
+                                    paymentMethodSelectedItem == 'Financiación directa' ? selectedPeriodoCuotas : '-',
                                     cantidadCuotas(),
                                     paymentMethodSelectedItem == 'Financiación directa' ? valorCuota : 0,
                                     vlrTEM,
@@ -2355,7 +2355,7 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
       periodoNumValue = 0.5;
       diasValue = 14;
     }
-    if (selectedPeriodoCuotas == 'Mensual') {
+    if (selectedPeriodoCuotas == 'Mensual' || selectedPeriodoCuotas == '-') {
       periodoNumValue = 1;
       diasValue = 30;
     }
@@ -2862,7 +2862,7 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
     }
     else if(paymentMethodSelectedItem == 'Personalizado')
     {
-      tempCuotas = installments.length;
+      tempCuotas = installments.length+1;
     }
     return tempCuotas;
   }
