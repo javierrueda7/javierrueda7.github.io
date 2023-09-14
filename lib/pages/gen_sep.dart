@@ -2983,8 +2983,8 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
               Map<String, dynamic> newInstallment = {
                 'valorPago': remainingAmount,
                 'valorPagoController': TextEditingController(text: currencyCOP((remainingAmount.toInt()).toString())),
-                'fechaPago': dateOnly(false, 1, lastDate, false),
-                'controller': TextEditingController(text: dateOnly(false, 1, lastDate, false)),
+                'fechaPago': dateOnly(false, 30, lastDate, false),
+                'controller': TextEditingController(text: dateOnly(false, 30, lastDate, false)),
               };
               installments.add(newInstallment);
               setState(() {

@@ -1,4 +1,5 @@
 import 'package:albaterrapp/pages/pagosesperados_page.dart';
+import 'package:albaterrapp/pages/pdf_invoice.dart';
 import 'package:albaterrapp/services/firebase_services.dart';
 import 'package:albaterrapp/utils/color_utils.dart';
 import 'package:albaterrapp/widgets/widgets.dart';
@@ -127,7 +128,7 @@ class _AddPaymentPageState extends State<AddPaymentPage> {
   String selectedPaymentMethod = 'EFECTIVO';
   String selectedCity = 'Bucaramanga';
   TextEditingController paymentDateController = TextEditingController(text: DateFormat('dd-MM-yyyy').format(DateTime.now()));
-  TextEditingController conceptoPagoController = TextEditingController(text: "");
+  TextEditingController conceptoPagoController = TextEditingController(text: "ABONO");
   TextEditingController paymentNumberController = TextEditingController(text: "");
   TextEditingController paymentValueController = TextEditingController(text: "");
   late int paymentCounter;
@@ -757,84 +758,121 @@ class _AddPaymentPageState extends State<AddPaymentPage> {
                         height: 20,
                       ),
                       Container(
-                      constraints: const BoxConstraints(maxWidth: 800),
-                      child: ElevatedButton(
-                        style: ButtonStyle(
+                        constraints: const BoxConstraints(maxWidth: 800),
+                        child: ElevatedButton(
+                          style: ButtonStyle(
                             fixedSize:
                                 MaterialStateProperty.all(const Size(250, 50))),
-                        onPressed: () async {                          
-                          if (nameController.text.isEmpty ||
-                          emailController.text.isEmpty ||
-                          phoneController.text.isEmpty ||
-                          addressController.text.isEmpty || 
-                          paymentValue <= 1) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: CustomAlertMessage(
-                                  errorTitle: "Oops!",
-                                  errorText:
-                                      "Verifique que todos los campos se hayan llenado correctamente.",
-                                  stateColor: dangerColor,
+                          onPressed: () async {
+                            if (nameController.text.isEmpty ||
+                                emailController.text.isEmpty ||
+                                phoneController.text.isEmpty ||
+                                addressController.text.isEmpty ||
+                                paymentValue <= 1) {
+                              // Show a validation error message
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: CustomAlertMessage(
+                                    errorTitle: "Oops!",
+                                    errorText:
+                                        "Verifique que todos los campos se hayan llenado correctamente.",
+                                    stateColor: dangerColor,
+                                  ),
+                                  behavior: SnackBarBehavior.floating,
+                                  backgroundColor: Colors.transparent,
+                                  elevation: 0,
                                 ),
-                                behavior: SnackBarBehavior.floating,
-                                backgroundColor: Colors.transparent,
-                                elevation: 0,
-                              ),
-                            );
-                          } else {
-                            setState(() {
-                              pagosCounter++;
-                            });
-                            await pagosRealizados(
-                              selectedLote,
-                              paymentIdGenerator(paymentCounter),
-                              paymentValue,
-                              'ABONO',
-                              receiptDateController.text,
-                              paymentDateController.text,
-                              selectedPaymentMethod,
-                              nameController.text,
-                              idController.text,
-                              phoneController.text,
-                              emailController.text,
-                              addressController.text,
-                              selectedCity,
-                              observacionesController.text,
-                              lote['sid']
-                            );
-                            await updatePlanPagos(
-                              selectedLote,                               
-                              planPagos['precioIni'], 
-                              totalPrice, 
-                              discount, 
-                              nextState(),
-                              saldoPendiente - paymentValue,
-                              valorPagado + paymentValue
                               );
-                            // ignore: use_build_context_synchronously
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: CustomAlertMessage(
-                                  errorTitle: "Genial!",
-                                  errorText:
-                                      "Datos almacenados de manera satisfactoria.",
-                                  stateColor: successColor,
-                                ),
-                                behavior: SnackBarBehavior.floating,
-                                backgroundColor: Colors.transparent,
-                                elevation: 0,
-                              ),
-                            );                            
-                            // ignore: use_build_context_synchronously
-                            Navigator.pop(context);
-                          }
-                        },
-                        child: const Text("Guardar"),
+                            } else {
+                              // Increment pagosCounter
+                              setState(() {
+                                pagosCounter++;
+                              });
+
+                              // Perform asynchronous operations
+                              try {
+                                await pagosRealizados(
+                                  selectedLote,
+                                  paymentIdGenerator(paymentCounter),
+                                  paymentValue,
+                                  conceptoPagoController.text,
+                                  receiptDateController.text,
+                                  paymentDateController.text,
+                                  selectedPaymentMethod,
+                                  nameController.text,
+                                  idController.text,
+                                  phoneController.text,
+                                  emailController.text,
+                                  addressController.text,
+                                  selectedCity,
+                                  observacionesController.text,
+                                  lote['sid']
+                                );
+
+                                await updatePlanPagos(
+                                  selectedLote,
+                                  planPagos['precioIni'],
+                                  totalPrice,
+                                  discount,
+                                  nextState(),
+                                  saldoPendiente - paymentValue,
+                                  valorPagado + paymentValue
+                                );
+
+                                // Show a success message
+                                // ignore: use_build_context_synchronously
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: CustomAlertMessage(
+                                      errorTitle: "Genial!",
+                                      errorText: "Datos almacenados de manera satisfactoria.",
+                                      stateColor: successColor,
+                                    ),
+                                    behavior: SnackBarBehavior.floating,
+                                    backgroundColor: Colors.transparent,
+                                    elevation: 0,
+                                  ),
+                                );
+
+                                // Generate PDF and navigate
+                                String valorEnLetras = await numeroEnLetras(paymentValue, 'pesos');
+                                // ignore: use_build_context_synchronously
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => PDFInvoice(
+                                      lote: selectedLote,
+                                      recibo: paymentIdGenerator(paymentCounter),                                  
+                                      nameCliente: nameController.text,
+                                      idCliente: idController.text,
+                                      phoneCliente: phoneController.text,
+                                      addressCliente: addressController.text,
+                                      emailCliente: emailController.text,
+                                      cityCliente: selectedCity,
+                                      receiptDate: receiptDateController.text,
+                                      paymentDate: paymentDateController.text,                                  
+                                      paymentValue: paymentValue,
+                                      paymentValueLetters: valorEnLetras,
+                                      saldoPorPagar: saldoPendiente - paymentValue,
+                                      valorTotal: valorPagado + paymentValue,
+                                      paymentMethod: selectedPaymentMethod,
+                                      observaciones: observacionesController.text,
+                                      conceptoPago: conceptoPagoController.text,
+                                    ),
+                                  ),
+                                );
+                              } catch (e) {
+                                // Handle any exceptions that might occur during the asynchronous operations
+                                print("Error: $e");
+                              }
+                            }
+                          },
+                          child: const Text("Guardar"),
+                        ),
+                      ),   
+                      const SizedBox(
+                        height: 20,
                       ),
-                    ),
-                    const SizedBox(
-                      height: 20,
-                    ),
                     ]
                   ),
                 ),

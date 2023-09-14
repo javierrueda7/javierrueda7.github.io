@@ -95,11 +95,13 @@ class PDFInvoice extends StatelessWidget {
   Map<String, dynamic> vision = {};
   Map<String, dynamic> invertaga = {};
   Map<String, dynamic> metodoPago = {};
+  String savedName = '';
 
   @override
   Widget build(BuildContext context) {    
     getInv();
     getMetodoPago();
+    savedName = recibo.replaceAll(RegExp(r'[.\s]'), ''); // Remove dots and spaces
     return Scaffold(
       extendBodyBehindAppBar: false,
       appBar: AppBar(
@@ -114,7 +116,7 @@ class PDFInvoice extends StatelessWidget {
         ),
       ),
       body: PdfPreview(        
-        pdfFileName: 'recibo_$recibo',
+        pdfFileName: 'recibo_${savedName.toLowerCase()}',
         build: (format) => generatePdf(context),
         // You can set the initial page format here
         initialPageFormat: PdfPageFormat.letter.copyWith(

@@ -69,10 +69,12 @@ class PDFPreInvoice extends StatelessWidget {
   Map<String, dynamic> vision = {};
   Map<String, dynamic> invertaga = {};
   Map<String, dynamic> metodoPago = {};
+  String savedName = '';
 
   @override
   Widget build(BuildContext context) {    
     getInv();
+    savedName = idPlan + conceptoPago.replaceAll(RegExp(r'[.\s#]'), ''); // Remove dots, spaces, and #
     return Scaffold(
       extendBodyBehindAppBar: false,
       appBar: AppBar(
@@ -87,7 +89,7 @@ class PDFPreInvoice extends StatelessWidget {
         ),
       ),
       body: PdfPreview(        
-        pdfFileName: 'cobro_$idPlan$conceptoPago',
+        pdfFileName: 'cobro_${savedName.toLowerCase()}',
         build: (format) => generatePdf(context),
         // You can set the initial page format here
         initialPageFormat: PdfPageFormat.letter.copyWith(

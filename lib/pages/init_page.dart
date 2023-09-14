@@ -1,3 +1,4 @@
+import 'dart:io' show Platform;
 import 'package:albaterrapp/pages/add_quote_page.dart';
 import 'package:albaterrapp/pages/existing_quotes.dart';
 import 'package:albaterrapp/pages/info_gral.dart';
@@ -13,6 +14,7 @@ import 'package:albaterrapp/widgets/widgets.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 FirebaseFirestore db = FirebaseFirestore.instance;
 
@@ -70,6 +72,14 @@ class _InitPageState extends State<InitPage> {
 
   Future<void> initEtapas() async {
     etapasInfo = await getEtapas();
+  }
+
+  final Uri _url = Uri.parse('https://app.powerbi.com/view?r=eyJrIjoiYjFjMjk0ZTYtY2VjNi00NjYxLTgwZDgtYjFlNjAxYTU2YTk3IiwidCI6IjJlZDU1NzRjLWY5YmEtNDQyNi05NjU4LWU0NzdhZDc0MzlkYiIsImMiOjR9');
+
+  Future<void> abrirLink() async {
+    if (!await launchUrl(_url)) {
+      throw Exception('No se pudo abrir el link $_url');
+    }
   }
 
   List<dynamic> etapasInfo = [];
@@ -206,10 +216,14 @@ class _InitPageState extends State<InitPage> {
                   setState(() {});
                 } 
                 if (value == 'Opción 5') {
-                  Navigator.of(context).push(MaterialPageRoute(
-                    builder: (BuildContext context) => const PowerBIReportScreen()
-                  ));
-                  setState(() {});
+                  if (Platform.isAndroid) {
+                    // On Android or iOS, navigate to PowerBIReportScreen
+                    Navigator.of(context).push(MaterialPageRoute(
+                      builder: (BuildContext context) => const PowerBIReportScreen()
+                    ));
+                  } else {
+                    abrirLink();                    
+                  }
                 }
                 if (value == 'Opción 6') {
                   Navigator.push(

@@ -218,7 +218,8 @@ class _PagosEsperadosState extends State<PagosEsperados> {
                                     initialDate: dateConverter(
                                         startDateController.text),
                                     firstDate: DateTime(1900),
-                                    lastDate: DateTime.now(),
+                                    lastDate: dateConverter(
+                                    endDateController.text),
                                   );
                                   if (pickedDate != null) {
                                     setState(() {
