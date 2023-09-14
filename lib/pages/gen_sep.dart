@@ -239,6 +239,7 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
   int auxn = 0;
   int nAux = 0;
   bool cambioEst = false;
+  String lastId = '';
 
   @override
   Widget build(BuildContext context) {
@@ -291,6 +292,7 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
       phoneController.text = arguments['phone'];
       idtypeController.text = arguments['idtype'];
       idController.text = arguments['id'];
+      lastId = arguments['id'];
       selectedIssuedCountry = arguments['issuedCountry'];
       selectedIssuedState = arguments['issuedState'];
       selectedIssuedCity = arguments['issuedCity'];
@@ -1822,6 +1824,112 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
                     const SizedBox(
                       height: 15,
                     ),
+
+                    Container(
+                      constraints: const BoxConstraints(maxWidth: 800),
+                      child: Center(
+                        child: ElevatedButton(
+                          style: ButtonStyle(
+                              fixedSize: MaterialStateProperty.all(
+                                  const Size(250, 50))),
+                          onPressed: () async {                                
+                            if (idController.text.isEmpty ||
+                                nameController.text.isEmpty ||
+                                lastnameController.text.isEmpty ||
+                                selectedGender.isEmpty ||
+                                birthdayController.text.isEmpty ||
+                                ocupacionController.text.isEmpty ||
+                                phoneController.text.isEmpty ||
+                                selectedItemIdtype.isEmpty ||
+                                selectedIssuedCountry.isEmpty ||
+                                selectedIssuedState.isEmpty ||
+                                selectedIssuedCity.isEmpty ||
+                                emailController.text.isEmpty ||
+                                addressController.text.isEmpty ||
+                                selectedCountry.isEmpty ||
+                                selectedState.isEmpty ||
+                                selectedCity.isEmpty) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: CustomAlertMessage(
+                                    errorTitle: "Oops!",
+                                    errorText:
+                                        "Verifique que todos los campos se hayan llenado correctamente.",
+                                    stateColor: dangerColor,
+                                  ),
+                                  behavior: SnackBarBehavior.floating,
+                                  backgroundColor: Colors.transparent,
+                                  elevation: 0,
+                                ),
+                              );
+                            } else {
+                              if (!ocupacionList
+                                  .contains(ocupacionController.text)) {
+                                saveOcupacion(ocupacionController.text);
+                              }
+                              await db.collection("ordSep").doc(quoteIdController.text).update({    
+                                "clienteID": idController.text,
+                              });
+                              await db.collection("quotes").doc(quoteIdController.text).update({    
+                                "clienteID": idController.text,
+                              });
+                              await db.collection("planPagos").doc(loteId).update({    
+                                "idCliente": idController.text,
+                              });                              
+                              await addCustomer(
+                                idController.text,
+                                nameController.text,
+                                lastnameController.text,
+                                selectedGender,
+                                birthdayController.text,
+                                ocupacionController.text,
+                                phoneController.text,
+                                selectedItemIdtype,
+                                selectedIssuedCountry,
+                                selectedIssuedState,
+                                selectedIssuedCity,
+                                emailController.text,
+                                addressController.text,
+                                selectedCountry,
+                                selectedState,
+                                selectedCity,
+                              );
+                              await db.collection("customers").doc(lastId).delete().then((_) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: CustomAlertMessage(
+                                      errorTitle: "Genial!",
+                                      errorText:
+                                          "Datos actualizados de manera satisfactoria.",
+                                      stateColor: successColor,
+                                    ),
+                                    behavior: SnackBarBehavior.floating,
+                                    backgroundColor: Colors.transparent,
+                                    elevation: 0,
+                                  ),
+                                );
+                                Navigator.pop(context);
+                              });
+                            }
+                          },
+                          child: const Text(
+                            "Actualizar cliente",
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ),
+                    ),
+                    
+                    const SizedBox(
+                      height: 15,
+                    ),
+                    const Divider(
+                      thickness: 5,
+                    ),
+                    const SizedBox(
+                      height: 15,
+                    ),
+
                     Container(
                       constraints: const BoxConstraints(maxWidth: 800),
                       child: Row(

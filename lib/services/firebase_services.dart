@@ -421,6 +421,20 @@ Future<void> addOrdenSep(
   });
 }
 
+Future<void> updateCustomerGeneral(
+  String qid, String lid, String cid
+) async {
+  await db.collection("ordSep").doc(qid).update({    
+    "clienteID": cid,
+  });
+  await db.collection("quotes").doc(qid).update({    
+    "clienteID": cid,
+  });
+  await db.collection("planPagos").doc(lid).update({    
+    "idCliente": cid,
+  });
+}
+
 Future<void> updateSepPromesa(
   String oid,  
   String observacionesLote
