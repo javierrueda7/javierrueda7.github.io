@@ -2970,7 +2970,7 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
     }
     else if(paymentMethodSelectedItem == 'Personalizado')
     {
-      tempCuotas = installments.length+1;
+      tempCuotas = installments.length;
     }
     return tempCuotas;
   }
