@@ -680,9 +680,43 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
                                   Icons.monetization_on_outlined,
                                   false,
                                   totalSeparacionController,
-                                  false,
+                                  true,
                                   'number',
-                                  () {},
+                                  ((String value) {
+                                      if (stringConverter(value) >=
+                                      precioFinal) {
+                                        setState(() {
+                                          value = currencyCOP((precioFinal.toInt()).toString());                                          
+                                        });
+                                      }
+                                      setState(() {
+                                        vlrFijoSeparacion = stringConverter(value);
+                                          vlrSeparacion = stringConverter(value);
+                                          saldoSeparacion =
+                                              stringConverter(value) - vlrSeparacion;
+                                          vlrSeparacionController.text = (currencyCOP(
+                                              (vlrSeparacion.toInt()).toString()));
+                                          saldoSeparacionController.text = (currencyCOP(
+                                              (saldoSeparacion.toInt()).toString()));
+                                          saldoCI =
+                                              cuotaInicial - stringConverter(value);
+                                          saldoCuotaIniController.text = (currencyCOP(
+                                              (saldoCI.toInt()).toString()));
+                                          totalSeparacionController.value =
+                                              TextEditingValue(
+                                            text: (currencyCOP(
+                                                (vlrFijoSeparacion.toInt())
+                                                    .toString())),
+                                            selection: TextSelection.collapsed(
+                                                offset: (currencyCOP(
+                                                        (vlrFijoSeparacion.toInt())
+                                                            .toString()))
+                                                    .length),
+                                          );
+                                          updateNumberWords();
+                                      });
+                                    }
+                                  ),
                                 ),
                               ),
                             ],
