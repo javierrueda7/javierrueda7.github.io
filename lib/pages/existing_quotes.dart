@@ -51,7 +51,7 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
 
   Future<bool> isManager(String value) async {
     String mainValue = await getGerenteEmail();
-    if (value == mainValue || value == 'javieruedase@gmail.com') {
+    if (value == mainValue || value == 'javieruedase@gmail.com' || value == 'lauramelissaagudelovelez@gmail.com') {
       return true;
     } else {
       return false;
