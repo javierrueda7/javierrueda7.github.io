@@ -8,6 +8,7 @@ import 'package:albaterrapp/utils/color_utils.dart';
 import 'package:albaterrapp/widgets/widgets.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 FirebaseFirestore db = FirebaseFirestore.instance;
 
@@ -95,6 +96,11 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
         // Add the map to the installments list
         installments.add(installment);
       }
+      installments.sort((a, b) {
+        DateTime dateA = DateFormat('dd-MM-yyyy').parse(a['fechaPago']);
+        DateTime dateB = DateFormat('dd-MM-yyyy').parse(b['fechaPago']);
+        return dateA.compareTo(dateB);
+      });
     }
   }
 

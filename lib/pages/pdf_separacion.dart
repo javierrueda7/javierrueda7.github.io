@@ -636,69 +636,64 @@ class PDFSeparacion extends StatelessWidget {
   }
 
   Future<pw.Widget> metodoPago(String evaluarMetodo, context) async {
-  if (evaluarMetodo == 'Pago de contado') {
-    return pw.Column(
-      crossAxisAlignment: pw.CrossAxisAlignment.stretch,
-      children: [
-        pw.Text('VALOR SALDO: $vlrPorPagar',
-            textAlign: pw.TextAlign.justify),
-        pw.Text(
-            '   1. La suma de ${letrasSeparacion.toUpperCase()} ($totalSeparacion) el día $dueDateSeparacion',
-            textAlign: pw.TextAlign.justify),
-        pw.Text(
-            '   2. La suma de ${letrasSaldoContado.toUpperCase()} ($vlrPorPagar) que corresponde al saldo del lote, en menos de $plazoContado, teniendo como fecha límite el $saldoTotalDate',
-            textAlign: pw.TextAlign.justify),
-      ],
-    );
-  } else if (evaluarMetodo == 'Financiación directa') {
-    return pw.Column(
-      crossAxisAlignment: pw.CrossAxisAlignment.stretch,
-      children: [
-        pw.Text('VALOR CUOTA INICIAL $porcCuotaIni: $vlrCuotaIni',
-            textAlign: pw.TextAlign.justify),
-        pw.Text('VALOR SALDO $porcPorPagar: $vlrPorPagar',
-            textAlign: pw.TextAlign.justify),
-        pw.Text(
-            '   1. La suma de ${letrasSeparacion.toUpperCase()} ($totalSeparacion) el día $dueDateSeparacion',
-            textAlign: pw.TextAlign.justify),
-        pw.Text(
-            '   2. La suma de ${letrasSaldoCI.toUpperCase()} ($saldoCI) que corresponde al saldo de la cuota inicial del lote ($porcCuotaIni del valor total), en menos de $plazoCI, teniendo como fecha límite el $dueDateSaldoCI',
-            textAlign: pw.TextAlign.justify),
-        pw.Text(
-            '   3. La suma de ${letrasSaldoTotal.toUpperCase()} ($vlrPorPagar) que corresponde al saldo del lote ($porcPorPagar del valor total), en $nroCuotas cuotas con periodicidad ${periodoCuotas.toUpperCase()} por valor de $letrasVlrCuota ($vlrCuota) pagaderas el último día hábil del mes, iniciando el $saldoTotalDate',
-            textAlign: pw.TextAlign.justify),
-      ],
-    );
-  } else if (evaluarMetodo == 'Personalizado') {
-    final installmentsWidgets = await Future.wait(
-      List.generate(installments.length, (index) async {
-        installments.sort((a, b) {
-          DateTime dateA = DateFormat('dd-MM-yyyy').parse(a['fechaPago']);
-          DateTime dateB = DateFormat('dd-MM-yyyy').parse(b['fechaPago']);
-          return dateA.compareTo(dateB);
-        });
-        final valorPago = installments[index]['valorPago'];
-        final fechaPago = installments[index]['fechaPago'];
-        final valorLetras = await valorEnLetras(valorPago);
+    if (evaluarMetodo == 'Pago de contado') {
+      return pw.Column(
+        crossAxisAlignment: pw.CrossAxisAlignment.stretch,
+        children: [
+          pw.Text('VALOR SALDO: $vlrPorPagar',
+              textAlign: pw.TextAlign.justify),
+          pw.Text(
+              '   1. La suma de ${letrasSeparacion.toUpperCase()} ($totalSeparacion) el día $dueDateSeparacion',
+              textAlign: pw.TextAlign.justify),
+          pw.Text(
+              '   2. La suma de ${letrasSaldoContado.toUpperCase()} ($vlrPorPagar) que corresponde al saldo del lote, en menos de $plazoContado, teniendo como fecha límite el $saldoTotalDate',
+              textAlign: pw.TextAlign.justify),
+        ],
+      );
+    } else if (evaluarMetodo == 'Financiación directa') {
+      return pw.Column(
+        crossAxisAlignment: pw.CrossAxisAlignment.stretch,
+        children: [
+          pw.Text('VALOR CUOTA INICIAL $porcCuotaIni: $vlrCuotaIni',
+              textAlign: pw.TextAlign.justify),
+          pw.Text('VALOR SALDO $porcPorPagar: $vlrPorPagar',
+              textAlign: pw.TextAlign.justify),
+          pw.Text(
+              '   1. La suma de ${letrasSeparacion.toUpperCase()} ($totalSeparacion) el día $dueDateSeparacion',
+              textAlign: pw.TextAlign.justify),
+          pw.Text(
+              '   2. La suma de ${letrasSaldoCI.toUpperCase()} ($saldoCI) que corresponde al saldo de la cuota inicial del lote ($porcCuotaIni del valor total), en menos de $plazoCI, teniendo como fecha límite el $dueDateSaldoCI',
+              textAlign: pw.TextAlign.justify),
+          pw.Text(
+              '   3. La suma de ${letrasSaldoTotal.toUpperCase()} ($vlrPorPagar) que corresponde al saldo del lote ($porcPorPagar del valor total), en $nroCuotas cuotas con periodicidad ${periodoCuotas.toUpperCase()} por valor de $letrasVlrCuota ($vlrCuota) pagaderas el último día hábil del mes, iniciando el $saldoTotalDate',
+              textAlign: pw.TextAlign.justify),
+        ],
+      );
+    } else if (evaluarMetodo == 'Personalizado') {
+      final installmentsWidgets = await Future.wait(
+        List.generate(installments.length, (index) async {
+          final valorPago = installments[index]['valorPago'];
+          final fechaPago = installments[index]['fechaPago'];
+          final valorLetras = await valorEnLetras(valorPago);
 
-        return pw.Text(
-          '   ${index + 1}. La suma de ${valorLetras.toUpperCase()} (${currencyCOP((valorPago.toInt()).toString())}) el día $fechaPago',
-          textAlign: pw.TextAlign.justify,
-        );
-      }),
-    );
+          return pw.Text(
+            '   ${index + 1}. La suma de ${valorLetras.toUpperCase()} (${currencyCOP((valorPago.toInt()).toString())}) el día $fechaPago',
+            textAlign: pw.TextAlign.justify,
+          );
+        }),
+      );
 
-    return pw.Column(
-      crossAxisAlignment: pw.CrossAxisAlignment.start,
-      children: [
-        pw.Text('VALOR SALDO: $vlrPorPagar', textAlign: pw.TextAlign.justify),
-        ...installmentsWidgets,
-      ],
-    );
-  } else {
-    return pw.Container();
+      return pw.Column(
+        crossAxisAlignment: pw.CrossAxisAlignment.start,
+        children: [
+          pw.Text('VALOR SALDO: $vlrPorPagar', textAlign: pw.TextAlign.justify),
+          ...installmentsWidgets,
+        ],
+      );
+    } else {
+      return pw.Container();
+    }
   }
-}
 
 
   Future<String> valorEnLetras(double valor) async {
