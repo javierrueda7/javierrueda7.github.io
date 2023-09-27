@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'package:albaterrapp/pages/add_custpayment.dart';
+import 'package:albaterrapp/pages/add_payment.dart';
 import 'package:albaterrapp/pages/pdf_preinvoice.dart';
 import 'package:albaterrapp/services/firebase_services.dart';
 import 'package:albaterrapp/widgets/widgets.dart';
@@ -143,7 +143,7 @@ class _PagosEsperadosState extends State<PagosEsperados> {
                   context,
                   MaterialPageRoute(
                     builder: (context) =>
-                      const AddCustomPaymentPage()));
+                      const AddPaymentPage()));
                 setState(() {});
               },
               child: const Icon(Icons.today_outlined),
