@@ -52,6 +52,7 @@ dependencies:
   intl: ^0.18.0
   webview_flutter: ^2.0.14
   url_launcher: ^6.1.14
+  universal_html: ^2.2.4
     
 
 dev_dependencies:

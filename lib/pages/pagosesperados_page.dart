@@ -426,6 +426,44 @@ class _PagosEsperadosState extends State<PagosEsperados> {
           ),
         ),
       ),
+      /*floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          updatePagosWithPlanIds();
+          
+        },
+        backgroundColor: Colors.green,
+        child: const Icon(Icons.add),
+      ),*/
     );
   }
+
+  void updatePagosWithPlanIds() async {
+    final firestore = FirebaseFirestore.instance;
+
+    // Query the planPagos collection to retrieve doc.id and idPlanPagos
+    final planPagosQuery = await firestore.collection('planPagos').get();
+
+    // Query the pagos collection
+    final pagosQuery = await firestore.collection('pagos').get();
+
+    // Loop through each document in planPagos
+    for (final planPagosDoc in planPagosQuery.docs) {
+      final idLoteAux = planPagosDoc.id;
+      final idPPAux = planPagosDoc['idPlanPagos'];      
+
+      // Loop through each document in pagos
+      for (final pagosDoc in pagosQuery.docs) {
+        final pagosData = pagosDoc.id;
+
+        // Compare doc.id in pagos with idPlanPagos from planPagos
+        if (pagosData.contains(idLoteAux)) {
+          // Update the idPlanPagos field in the pagos document
+          await firestore.collection('pagos').doc(pagosDoc.id).update({
+            'idPlanPagos': idPPAux,
+          });
+        }
+      }
+    }
+  }
+
 }
