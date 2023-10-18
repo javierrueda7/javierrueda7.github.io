@@ -426,14 +426,14 @@ class _PagosEsperadosState extends State<PagosEsperados> {
           ),
         ),
       ),
-      /*floatingActionButton: FloatingActionButton(
+      floatingActionButton: FloatingActionButton(
         onPressed: () {
-          updatePagosWithPlanIds();
+          ajustarPagosEsperados();
           
         },
         backgroundColor: Colors.green,
         child: const Icon(Icons.add),
-      ),*/
+      ),
     );
   }
 
@@ -466,4 +466,153 @@ class _PagosEsperadosState extends State<PagosEsperados> {
     }
   }
 
+  Future<void> obtenerPagosEsperados() async {
+    List<Map<String, dynamic>> listaPagos = [];
+    // Referencia al documento "L03" en la colección "planPagos"
+    DocumentReference documentoL03Ref = FirebaseFirestore.instance.collection('planPagos').doc('L67');
+    DocumentSnapshot documentoL03Snapshot = await documentoL03Ref.get();
+
+    
+    double valorPagado = documentoL03Snapshot['valorPagado'];
+    // Obtener la subcolección "pagosEsperados" del documento "L03"
+    QuerySnapshot pagosEsperados = await documentoL03Ref.collection('pagosEsperados').get();
+
+    for (QueryDocumentSnapshot pago in pagosEsperados.docs) {
+      String docId = pago.id;
+      double valorPago = pago.get('valorPago');
+
+      listaPagos.add({
+        'docId': docId,
+        'valorPago': valorPago,
+      });
+    }
+
+    final List<String> ordenEsperado = ['SEP1', 'SEP2', 'CINI', 'TOTAL'];
+
+    listaPagos.sort((a, b) {
+      final int indexA = ordenEsperado.indexOf(a['docId']);
+      final int indexB = ordenEsperado.indexOf(b['docId']);
+
+      // Manejar documentos no encontrados en ordenEsperado
+      if (indexA == -1 && indexB == -1) {
+        return a['docId'].compareTo(b['docId']);
+      } else if (indexA == -1) {
+        return 1; // Mover documentos no encontrados al final
+      } else if (indexB == -1) {
+        return -1; // Mover documentos no encontrados al final
+      } else {
+        return indexA - indexB;
+      }
+    });
+
+    for (int i = 0; i < listaPagos.length; i++) {
+      String docId = listaPagos[i]['docId'];
+      double valorPago = listaPagos[i]['valorPago'];
+
+      String estadoPago;
+      if(valorPagado-valorPago == 0){
+        estadoPago = 'PAGO COMPLETO';
+        valorPagado = valorPagado - valorPago;
+      } else if (valorPagado == 0) {
+        estadoPago = 'PAGO PENDIENTE';
+      } else if(valorPagado-valorPago < 0){
+        estadoPago = 'PAGO INCOMPLETO';
+        valorPagado = 0;
+      } else if(valorPagado-valorPago > 0){
+        estadoPago = 'PAGO COMPLETO';
+        valorPagado = valorPagado - valorPago;        
+      } else {
+        estadoPago = 'N/A';
+      }
+
+      print('$docId: $valorPago $estadoPago');
+    }
+  }
+
+  bool esNumero(String str) {
+    return double.tryParse(str) != null;
+  }
+
+  Future<void> ajustarPagosEsperados() async {
+    final firestore = FirebaseFirestore.instance;  
+    final QuerySnapshot planPagosSnapshot =
+      await FirebaseFirestore.instance.collection('planPagos').get();
+
+    for (QueryDocumentSnapshot document in planPagosSnapshot.docs) {
+      final String tempLoteId = document.id;
+      List<Map<String, dynamic>> listaPagos = [];
+
+      DocumentReference documentoRef = FirebaseFirestore.instance.collection('planPagos').doc(tempLoteId);
+      DocumentSnapshot documentoSnapshot = await documentoRef.get();
+      
+      
+      double valorPagado = documentoSnapshot['valorPagado'];
+
+      QuerySnapshot pagosEsperados = await documentoRef.collection('pagosEsperados').get();
+      
+      for (QueryDocumentSnapshot pago in pagosEsperados.docs) {
+        String docId = pago.id;
+        double valorPago = pago.get('valorPago');
+      
+        listaPagos.add({
+          'docId': docId,
+          'valorPago': valorPago,
+        });
+      }
+      
+      final List<String> ordenEsperado = ['SEP1', 'SEP2', 'CINI', 'TOTAL'];
+
+      listaPagos.sort((a, b) {
+        final int indexA = ordenEsperado.indexOf(a['docId']);
+        final int indexB = ordenEsperado.indexOf(b['docId']);
+
+        if (indexA == -1 && indexB == -1) {
+          // Si ambos no están en ordenEsperado, compara como cadenas de texto
+          if (!esNumero(a['docId']) || !esNumero(b['docId'])) {
+            return a['docId'].compareTo(b['docId']);
+          } else {
+            return int.parse(a['docId']) - int.parse(b['docId']);
+          }
+        } else if (indexA == -1) {
+          return 1; // Mover documentos no encontrados al final
+        } else if (indexB == -1) {
+          return -1; // Mover documentos no encontrados al final
+        } else if (indexA != indexB) {
+          // Si están en ordenEsperado, compara por su índice en ordenEsperado
+          return indexA - indexB;
+        } else {
+          // Si tienen el mismo índice en ordenEsperado, compara como números
+          return int.parse(a['docId']) - int.parse(b['docId']);
+        }
+      });
+
+      print('$tempLoteId');
+
+      for (int i = 0; i < listaPagos.length; i++) {
+        String docId = listaPagos[i]['docId'];
+        double valorPago = listaPagos[i]['valorPago'];
+      
+        String estadoPago;
+        if(valorPagado-valorPago == 0){
+          estadoPago = 'PAGO COMPLETO';
+          valorPagado = valorPagado - valorPago;
+        } else if (valorPagado == 0) {
+          estadoPago = 'PAGO PENDIENTE';
+        } else if(valorPagado-valorPago < 0){
+          estadoPago = 'PAGO INCOMPLETO';
+          valorPagado = 0;
+        } else if(valorPagado-valorPago > 0){
+          estadoPago = 'PAGO COMPLETO';
+          valorPagado = valorPagado - valorPago;        
+        } else {
+          estadoPago = 'N/A';
+        }
+      
+        print('$docId: $valorPago $estadoPago');
+        await firestore.collection('planPagos').doc(tempLoteId).collection('pagosEsperados').doc(docId).update({
+              'estadoPago': estadoPago,
+            });
+      }
+    }
+  }
 }

@@ -2315,7 +2315,8 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
                                       vlrSeparacion,
                                       'SEPARACIÓN',
                                       saldoSeparacionDeadlineController.text,
-                                      quoteIdController.text
+                                      quoteIdController.text,
+                                      'PAGO PENDIENTE'
                                     );
                                   } else{
                                     await pagosEsperados(
@@ -2324,7 +2325,8 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
                                       vlrSeparacion,
                                       'SEPARACIÓN',
                                       separacionDeadlineController.text,
-                                      quoteIdController.text
+                                      quoteIdController.text,
+                                      'PAGO PENDIENTE'
                                     );
                                     await pagosEsperados(
                                       loteId,
@@ -2332,22 +2334,23 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
                                       saldoSeparacion,
                                       'SEPARACIÓN',
                                       saldoSeparacionDeadlineController.text,
-                                      quoteIdController.text
+                                      quoteIdController.text,
+                                      'PAGO PENDIENTE'
                                     );
                                   }
                                   if(paymentMethodSelectedItem == 'Personalizado'){
                                     for (var i = 0; i < installments.length; i++) {
                                       final payment = installments[i];
-                                      await pagosEsperados(loteId, (i + 1).toString(), payment['valorPago'], 'ABONO', payment['fechaPago'], quoteIdController.text);
+                                      await pagosEsperados(loteId, (i + 1).toString(), payment['valorPago'], 'ABONO', payment['fechaPago'], quoteIdController.text, 'PAGO PENDIENTE');
                                     }
                                   } else if(paymentMethodSelectedItem == 'Financiación directa'){
-                                    pagosEsperados(loteId, 'CINI', saldoCI, 'CUOTA INICIAL', saldoCuotaIniDeadlineController.text, quoteIdController.text);
+                                    pagosEsperados(loteId, 'CINI', saldoCI, 'CUOTA INICIAL', saldoCuotaIniDeadlineController.text, quoteIdController.text, 'PAGO PENDIENTE');
                                     for (var i = 0; i < int.parse(selectedNroCuotas); i++) {
-                                      pagosEsperados(loteId, (i + 1).toString(), valorCuota, 'ABONO', dateOnly(false, (diasValue*i).toDouble(), dateConverter(dateSaldo), true), quoteIdController.text);
+                                      pagosEsperados(loteId, (i + 1).toString(), valorCuota, 'ABONO', dateOnly(false, (diasValue*i).toDouble(), dateConverter(dateSaldo), true), quoteIdController.text, 'PAGO PENDIENTE');
                                     }
                                   }
                                   else if(paymentMethodSelectedItem == 'Pago de contado'){
-                                    await pagosEsperados(loteId, 'TOTAL', valorAPagar, 'PAGO CONTADO', dateSaldo, quoteIdController.text);                                    
+                                    await pagosEsperados(loteId, 'TOTAL', valorAPagar, 'PAGO CONTADO', dateSaldo, quoteIdController.text, 'PAGO PENDIENTE');                                    
                                   }
                                   cambioEstadoLote(
                                           loteId, quoteStageController.text, cambioEst)

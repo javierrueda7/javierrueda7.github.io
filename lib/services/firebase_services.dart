@@ -66,12 +66,13 @@ Future<void> updatePlanPagos(String lote, double precioIni, double precioFin, do
   });
 }
 
-Future<void> pagosEsperados(String lote, String idPago, double valorPago, String conceptoPago, String fechaPago, String idPlanPagos) async{
+Future<void> pagosEsperados(String lote, String idPago, double valorPago, String conceptoPago, String fechaPago, String idPlanPagos, String estadoPago) async{
   await db.collection("planPagos").doc(lote).collection("pagosEsperados").doc(idPago).set({
     "valorPago": valorPago,
     "conceptoPago": conceptoPago,
     "fechaPago": fechaPago,
     "idPlanPagos": idPlanPagos,
+    "estadoPago": estadoPago
   });
 }
 

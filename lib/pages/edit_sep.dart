@@ -2154,7 +2154,8 @@ class _EditarSeparacionState extends State<EditarSeparacion> {
                                       vlrSeparacion,
                                       'Separación',
                                       promesaDeadlineController.text,
-                                      separacionIdController.text
+                                      separacionIdController.text,
+                                      'PAGO PENDIENTE'
                                     );
                                   } else{
                                     await pagosEsperados(
@@ -2163,7 +2164,8 @@ class _EditarSeparacionState extends State<EditarSeparacion> {
                                       vlrSeparacion,
                                       'Separación',
                                       separacionDeadlineController.text,
-                                      separacionIdController.text
+                                      separacionIdController.text,
+                                      'PAGO PENDIENTE'
                                     );
                                     await pagosEsperados(
                                       loteId,
@@ -2171,24 +2173,25 @@ class _EditarSeparacionState extends State<EditarSeparacion> {
                                       saldoSeparacion,
                                       'Separación',
                                       promesaDeadlineController.text,
-                                      separacionIdController.text
+                                      separacionIdController.text,
+                                      'PAGO PENDIENTE'
                                     );
                                   }
                                   if(paymentMethodSelectedItem == 'Personalizado'){
                                     await db.collection("planPagos").doc(loteId).collection("pagosEsperados").doc("TOTAL").delete();
                                     for (var i = 0; i < installments.length; i++) {
                                       final payment = installments[i];
-                                      await pagosEsperados(loteId, (i + 1).toString(), payment['valorPago'], 'ABONO', payment['fechaPago'], separacionIdController.text);
+                                      await pagosEsperados(loteId, (i + 1).toString(), payment['valorPago'], 'ABONO', payment['fechaPago'], separacionIdController.text, 'PAGO PENDIENTE');
                                     }
                                   } else if(paymentMethodSelectedItem == 'Financiación directa'){
                                     await db.collection("planPagos").doc(loteId).collection("pagosEsperados").doc("TOTAL").delete();
-                                    pagosEsperados(loteId, 'CINI', saldoCI, 'CUOTA INICIAL', saldoCuotaIniDeadlineController.text, separacionIdController.text);
+                                    pagosEsperados(loteId, 'CINI', saldoCI, 'CUOTA INICIAL', saldoCuotaIniDeadlineController.text, separacionIdController.text, 'PAGO PENDIENTE');
                                     for (var i = 0; i < int.parse(selectedNroCuotas); i++) {
-                                      pagosEsperados(loteId, (i + 1).toString(), valorCuota, 'ABONO', dateOnly(false, (diasValue*i).toDouble(), dateConverter(dateSaldo), true), separacionIdController.text);
+                                      pagosEsperados(loteId, (i + 1).toString(), valorCuota, 'ABONO', dateOnly(false, (diasValue*i).toDouble(), dateConverter(dateSaldo), true), separacionIdController.text, 'PAGO PENDIENTE');
                                     }
                                   }
                                   else if(paymentMethodSelectedItem == 'Pago de contado'){
-                                    await pagosEsperados(loteId, 'TOTAL', valorAPagar, 'PAGO CONTADO', dateSaldo, separacionIdController.text);                                    
+                                    await pagosEsperados(loteId, 'TOTAL', valorAPagar, 'PAGO CONTADO', dateSaldo, separacionIdController.text, 'PAGO PENDIENTE');                                    
                                   }                                 
                                   updatePlanPagos(
                                     loteId, 
