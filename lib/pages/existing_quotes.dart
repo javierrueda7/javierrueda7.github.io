@@ -939,7 +939,7 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
                                     key: Key(sepSnapshot.data?[index]['sepId']),
                                     child: ListTile(
                                       leading: CircleAvatar(
-                                          backgroundColor: stageColor('LOTE SEPARADO'),
+                                          backgroundColor: stageColor(sepSnapshot.data?[index]['stageSep']),
                                           child: Text(
                                             getNumbers(sepSnapshot.data?[index]['loteId'])!,
                                             textAlign: TextAlign.center,

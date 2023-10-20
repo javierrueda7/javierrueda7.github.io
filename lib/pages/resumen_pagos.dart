@@ -362,7 +362,6 @@ class _ResumenPagosState extends State<ResumenPagos> {
         estadoPago = 'N/A';
       }
 
-      print('$docId: $valorPago $estadoPago');
       await firestore.collection('planPagos').doc(loteid).collection('pagosEsperados').doc(docId).update({
             'estadoPago': estadoPago,
           });

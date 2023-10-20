@@ -466,7 +466,7 @@ class _PagosEsperadosState extends State<PagosEsperados> {
     }
   }
 
-  Future<void> obtenerPagosEsperados() async {
+  /*Future<void> obtenerPagosEsperados() async {
     List<Map<String, dynamic>> listaPagos = [];
     // Referencia al documento "L03" en la colección "planPagos"
     DocumentReference documentoL03Ref = FirebaseFirestore.instance.collection('planPagos').doc('L67');
@@ -525,9 +525,8 @@ class _PagosEsperadosState extends State<PagosEsperados> {
         estadoPago = 'N/A';
       }
 
-      print('$docId: $valorPago $estadoPago');
     }
-  }
+  }*/
 
   bool esNumero(String str) {
     return double.tryParse(str) != null;
@@ -547,6 +546,9 @@ class _PagosEsperadosState extends State<PagosEsperados> {
       
       
       double valorPagado = documentoSnapshot['valorPagado'];
+      double saldoPorPagar = documentoSnapshot['saldoPorPagar'];
+      double precioFin = documentoSnapshot['precioFin'];
+      String idPlanPagos = documentoSnapshot['idPlanPagos'];
 
       QuerySnapshot pagosEsperados = await documentoRef.collection('pagosEsperados').get();
       
@@ -586,14 +588,16 @@ class _PagosEsperadosState extends State<PagosEsperados> {
         }
       });
 
-      print('$tempLoteId');
 
       for (int i = 0; i < listaPagos.length; i++) {
         String docId = listaPagos[i]['docId'];
         double valorPago = listaPagos[i]['valorPago'];
       
         String estadoPago;
-        if(valorPagado-valorPago == 0){
+        
+        if(saldoPorPagar<1){
+          estadoPago = 'PAGO COMPLETO';
+        } else if(valorPagado-valorPago == 0){
           estadoPago = 'PAGO COMPLETO';
           valorPagado = valorPagado - valorPago;
         } else if (valorPagado == 0) {
@@ -607,11 +611,20 @@ class _PagosEsperadosState extends State<PagosEsperados> {
         } else {
           estadoPago = 'N/A';
         }
-      
-        print('$docId: $valorPago $estadoPago');
+        
         await firestore.collection('planPagos').doc(tempLoteId).collection('pagosEsperados').doc(docId).update({
-              'estadoPago': estadoPago,
-            });
+          'estadoPago': estadoPago,
+        });
+      }
+      if(saldoPorPagar<1){
+        await firestore.collection('planPagos').doc(tempLoteId).update({
+          'saldoPorPagar': 0,
+          'estadoPago': 'Completo',
+          'valorPagado': precioFin
+        });
+        await db.collection("lotes").doc(tempLoteId).update({"loteState": 'Lote vendido'});
+        await db.collection("quotes").doc(idPlanPagos).update({"quoteStage": 'LOTE VENDIDO'});
+        await db.collection("ordSep").doc(idPlanPagos).update({"stageSep": 'LOTE VENDIDO'});
       }
     }
   }

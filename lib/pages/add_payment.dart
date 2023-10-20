@@ -880,13 +880,16 @@ class _AddPaymentPageState extends State<AddPaymentPage> {
   Future<void> obtenerPagosEsperados() async {    
     final firestore = FirebaseFirestore.instance;
     List<Map<String, dynamic>> listaPagos = [];
-    // Referencia al documento "L03" en la colección "planPagos"
+    
     DocumentReference documentoRef = FirebaseFirestore.instance.collection('planPagos').doc(selectedLote);
     DocumentSnapshot documentoSnapshot = await documentoRef.get();
 
     
     double valorPagado = documentoSnapshot['valorPagado'];
-    // Obtener la subcolección "pagosEsperados" del documento "L03"
+    double saldoPorPagar = documentoSnapshot['saldoPorPagar'];
+    double precioFin = documentoSnapshot['precioFin'];
+    String idPlanPagos = documentoSnapshot['idPlanPagos'];
+
     QuerySnapshot pagosEsperados = await documentoRef.collection('pagosEsperados').get();
 
     for (QueryDocumentSnapshot pago in pagosEsperados.docs) {
@@ -930,7 +933,9 @@ class _AddPaymentPageState extends State<AddPaymentPage> {
       double valorPago = listaPagos[i]['valorPago'];
 
       String estadoPago;
-      if(valorPagado-valorPago == 0){
+      if(saldoPorPagar<1){
+          estadoPago = 'PAGO COMPLETO';
+        } else if(valorPagado-valorPago == 0){
         estadoPago = 'PAGO COMPLETO';
         valorPagado = valorPagado - valorPago;
       } else if (valorPagado == 0) {
@@ -945,10 +950,19 @@ class _AddPaymentPageState extends State<AddPaymentPage> {
         estadoPago = 'N/A';
       }
 
-      print('$docId: $valorPago $estadoPago');
       await firestore.collection('planPagos').doc(selectedLote).collection('pagosEsperados').doc(docId).update({
-            'estadoPago': estadoPago,
-          });
+        'estadoPago': estadoPago,
+      });
+    }
+    if(saldoPorPagar<1){
+      await firestore.collection('planPagos').doc(selectedLote).update({
+        'saldoPorPagar': 0,
+        'estadoPago': 'Completo',
+        'valorPagado': precioFin
+      });
+      await db.collection("lotes").doc(selectedLote).update({"loteState": 'Lote vendido'});
+      await db.collection("quotes").doc(idPlanPagos).update({"quoteStage": 'LOTE VENDIDO'});
+      await db.collection("ordSep").doc(idPlanPagos).update({"stageSep": 'LOTE VENDIDO'});
     }
   }
 
@@ -973,7 +987,7 @@ class _AddPaymentPageState extends State<AddPaymentPage> {
   }
 
   Future<void> loteStatus() async {
-    await db.collection("lotes").doc(selectedLote).update({"loteState": 'Lote separado'});
+    await db.collection("lotes").doc(selectedLote).update({"loteState": 'Lote vendido'});
   }
 
   void updateNumberWords() async {

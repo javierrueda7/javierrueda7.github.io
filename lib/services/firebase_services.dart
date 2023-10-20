@@ -507,7 +507,7 @@ Future<List> getOrdenSep(String loteId, bool allLotes, String sellerId) async {
   QuerySnapshot? querySeparaciones = await db.collection('ordSep').get();
   for (var doc in querySeparaciones.docs) {
     final Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-    if(sellerId == 'All'){
+    if(sellerId == 'All' && data['stageSep']!="LOTE VENDIDO"){
       if (allLotes == false) {
         if (data['loteId'] == loteId) {
           final sep = {
@@ -572,7 +572,7 @@ Future<List> getOrdenSep(String loteId, bool allLotes, String sellerId) async {
         separaciones.add(sep);    
       }
     } else {
-      if (allLotes == false) {
+      if (allLotes == false && data['stageSep']!="LOTE VENDIDO") {
         if (data['loteId'] == loteId && data['sellerID'] == sellerId) {
           final sep = {
             "sepId": doc.id,
@@ -605,7 +605,7 @@ Future<List> getOrdenSep(String loteId, bool allLotes, String sellerId) async {
           separaciones.add(sep);
         }
       } else {      
-        if(data['sellerID'] == sellerId){
+        if(data['sellerID'] == sellerId && data['stageSep']!="LOTE VENDIDO"){
           final sep = {
             "sepId": doc.id,
             "sellerID":data['sellerID'],

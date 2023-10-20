@@ -12,7 +12,7 @@ import 'package:albaterrapp/widgets/widgets.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'dart:html' as html;
+import 'dart:js' as js;
 
 FirebaseFirestore db = FirebaseFirestore.instance;
 
@@ -206,7 +206,10 @@ class _InitPageState extends State<InitPage> {
                   setState(() {});
                 } 
                 if (value == 'Opción 5') {
-                  html.window.location.href = "https://app.powerbi.com/view?r=eyJrIjoiYjFjMjk0ZTYtY2VjNi00NjYxLTgwZDgtYjFlNjAxYTU2YTk3IiwidCI6IjJlZDU1NzRjLWY5YmEtNDQyNi05NjU4LWU0NzdhZDc0MzlkYiIsImMiOjR9";
+                  js.context.callMethod('open', [
+                    "https://app.powerbi.com/view?r=eyJrIjoiYjFjMjk0ZTYtY2VjNi00NjYxLTgwZDgtYjFlNjAxYTU2YTk3IiwidCI6IjJlZDU1NzRjLWY5YmEtNDQyNi05NjU4LWU0NzdhZDc0MzlkYiIsImMiOjR9",
+                    '_blank', // This opens the link in a new tab or window
+                  ]);
                 }
                 if (value == 'Opción 6') {
                   Navigator.push(
@@ -442,7 +445,7 @@ class _InitPageState extends State<InitPage> {
                                 );
                               });
                             } else {
-                              if(currentLote[10] == "Lote separado"){
+                              if(currentLote[10] == "Lote separado" || currentLote[10] == "Lote vendido"){
                                 setState(() {
                                   Navigator.push(
                                     context,
