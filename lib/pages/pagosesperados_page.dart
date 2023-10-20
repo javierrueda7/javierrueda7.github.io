@@ -134,22 +134,17 @@ class _PagosEsperadosState extends State<PagosEsperados> {
         title: Text('PAGOS ESPERADOS',
           style: TextStyle(color: primaryColor, fontSize: 18, fontWeight: FontWeight.bold),
         ),
-        actions: <Widget>[
+        /*actions: <Widget>[
           Padding(
             padding: const EdgeInsets.only(right: 20.0),
             child: GestureDetector(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) =>
-                      const AddPaymentPage()));
-                setState(() {});
+              onTap: () {                
+                ajustarPagosEsperados();                
               },
               child: const Icon(Icons.today_outlined),
             )
           ),
-        ],
+        ],*/
       ),
       body: Center(
         child: Container(
@@ -428,8 +423,12 @@ class _PagosEsperadosState extends State<PagosEsperados> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          ajustarPagosEsperados();
-          
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) =>
+                const AddPaymentPage()));
+          setState(() {});          
         },
         backgroundColor: Colors.green,
         child: const Icon(Icons.add),
@@ -620,11 +619,12 @@ class _PagosEsperadosState extends State<PagosEsperados> {
         await firestore.collection('planPagos').doc(tempLoteId).update({
           'saldoPorPagar': 0,
           'estadoPago': 'Completo',
-          'valorPagado': precioFin
+          'valorPagado': precioFin.toInt(),
+          'precioFin': precioFin.toInt()
         });
         await db.collection("lotes").doc(tempLoteId).update({"loteState": 'Lote vendido'});
-        await db.collection("quotes").doc(idPlanPagos).update({"quoteStage": 'LOTE VENDIDO'});
-        await db.collection("ordSep").doc(idPlanPagos).update({"stageSep": 'LOTE VENDIDO'});
+        await db.collection("quotes").doc(idPlanPagos).update({"quoteStage": 'LOTE VENDIDO', "precioFinal": precioFin.toInt()});
+        await db.collection("ordSep").doc(idPlanPagos).update({"stageSep": 'LOTE VENDIDO', "precioFinal": precioFin.toInt()});
       }
     }
   }

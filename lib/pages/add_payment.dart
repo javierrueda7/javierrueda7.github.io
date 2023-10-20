@@ -958,11 +958,12 @@ class _AddPaymentPageState extends State<AddPaymentPage> {
       await firestore.collection('planPagos').doc(selectedLote).update({
         'saldoPorPagar': 0,
         'estadoPago': 'Completo',
-        'valorPagado': precioFin
+        'valorPagado': precioFin.toInt(),
+        'precioFin': precioFin.toInt()
       });
       await db.collection("lotes").doc(selectedLote).update({"loteState": 'Lote vendido'});
-      await db.collection("quotes").doc(idPlanPagos).update({"quoteStage": 'LOTE VENDIDO'});
-      await db.collection("ordSep").doc(idPlanPagos).update({"stageSep": 'LOTE VENDIDO'});
+      await db.collection("quotes").doc(idPlanPagos).update({"quoteStage": 'LOTE VENDIDO', "precioFinal": precioFin.toInt()});
+      await db.collection("ordSep").doc(idPlanPagos).update({"stageSep": 'LOTE VENDIDO', "precioFinal": precioFin.toInt()});
     }
   }
 
