@@ -220,26 +220,77 @@ class PDFInvoice extends StatelessWidget {
                 ),
                 pw.SizedBox(height: 20),
                 pw.Row(
+                  mainAxisSize: pw.MainAxisSize.max,
                   children: [
                     pw.Expanded(
                       flex: 1,
                       child: pw.Text('Recibimos de',
-                          textAlign: pw.TextAlign.left, style: pw.TextStyle(fontSize: 10, fontWeight: pw.FontWeight.bold)),
+                        textAlign: pw.TextAlign.left, style: pw.TextStyle(fontSize: 10, fontWeight: pw.FontWeight.bold)
+                      ),
                     ),
                     pw.Expanded(
-                      flex: 5,
+                      flex: 4,
                       child: pw.Text(nameCliente,
-                          textAlign: pw.TextAlign.left, style: const pw.TextStyle(fontSize: 10)),
+                        textAlign: pw.TextAlign.left, style: const pw.TextStyle(fontSize: 10)
+                      ),
                     ),
                     pw.Expanded(
                       flex: 1,
                       child: pw.Text('Fecha recibo',
-                          textAlign: pw.TextAlign.center, style: pw.TextStyle(fontSize: 10, fontWeight: pw.FontWeight.bold)),
+                        textAlign: pw.TextAlign.center, style: pw.TextStyle(fontSize: 10, fontWeight: pw.FontWeight.bold)
+                      ),
+                    ),
+                    pw.Expanded(
+                      flex: 1,
+                      child: pw.Text('Forma de pago',
+                        textAlign: pw.TextAlign.center, style: pw.TextStyle(fontSize: 10, fontWeight: pw.FontWeight.bold)
+                      ),
+                    ),
+                  ],
+                ),
+
+                pw.Row(
+                  children: [
+                    pw.Expanded(
+                      flex: 2,
+                      child: pw.Text('Documento de identificación',
+                        textAlign: pw.TextAlign.left, style: pw.TextStyle(fontSize: 10, fontWeight: pw.FontWeight.bold)
+                      ),
+                    ),
+                    pw.Expanded(
+                      flex: 1,
+                      child: pw.Text(idCliente,
+                        textAlign: pw.TextAlign.left, style: const pw.TextStyle(fontSize: 10)
+                      ),                      
+                    ),
+                    pw.Expanded(
+                      flex: 1,
+                      child: pw.Text('Teléfono',
+                        textAlign: pw.TextAlign.left, style: pw.TextStyle(fontSize: 10, fontWeight: pw.FontWeight.bold)
+                      ),                                             
                     ),
                     pw.Expanded(
                       flex: 2,
-                      child: pw.Text('Forma de pago',
-                          textAlign: pw.TextAlign.center, style: pw.TextStyle(fontSize: 10, fontWeight: pw.FontWeight.bold)),
+                      child: pw.Text(phoneCliente,
+                        textAlign: pw.TextAlign.left, style: const pw.TextStyle(fontSize: 10)
+                      ),                                                                   
+                    ),
+                    pw.Expanded(
+                      flex: 1,
+                      child: pw.Text(receiptDate,
+                        textAlign: pw.TextAlign.center, style: const pw.TextStyle(fontSize: 10)
+                      ),
+                    ),
+                    pw.Expanded(
+                      flex: 1,
+                      child: pw.Column(
+                        crossAxisAlignment: pw.CrossAxisAlignment.center,
+                        children: [
+                          pw.Text(metodoPago['banco'],
+                            textAlign: pw.TextAlign.center, style: const pw.TextStyle(fontSize: 10)
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),
@@ -247,73 +298,57 @@ class PDFInvoice extends StatelessWidget {
                   children: [
                     pw.Expanded(
                       flex: 1,
-                      child: pw.Column(
-                        crossAxisAlignment: pw.CrossAxisAlignment.start,
-                        children: [
-                          pw.Text('Documento de identificación',
-                            textAlign: pw.TextAlign.left, style: pw.TextStyle(fontSize: 10, fontWeight: pw.FontWeight.bold)
-                          ),
-                          pw.Text('Dirección',
-                            textAlign: pw.TextAlign.left, style: pw.TextStyle(fontSize: 10, fontWeight: pw.FontWeight.bold)
-                          ),
-                        ],
-                      ),
+                      child: pw.Text('Dirección',
+                        textAlign: pw.TextAlign.left, style: pw.TextStyle(fontSize: 10, fontWeight: pw.FontWeight.bold)
+                      ),                                       
                     ),
                     pw.Expanded(
                       flex: 2,
-                      child: pw.Column(
-                        crossAxisAlignment: pw.CrossAxisAlignment.start,
-                        children: [
-                          pw.Text(idCliente,
-                            textAlign: pw.TextAlign.left, style: const pw.TextStyle(fontSize: 10)),
-                            pw.Text(addressCliente,
-                            textAlign: pw.TextAlign.left, style: const pw.TextStyle(fontSize: 10)),
-                        ],
+                      child: pw.Text(addressCliente,
+                        textAlign: pw.TextAlign.left, style: const pw.TextStyle(fontSize: 10)
                       ),
                     ),
                     pw.Expanded(
                       flex: 1,
-                      child: pw.Column(
-                        crossAxisAlignment: pw.CrossAxisAlignment.start,
-                        children: [
-                          pw.Text('Teléfono',
-                            textAlign: pw.TextAlign.left, style: pw.TextStyle(fontSize: 10, fontWeight: pw.FontWeight.bold)),
-                          pw.Text('Ciudad',
-                            textAlign: pw.TextAlign.left, style: pw.TextStyle(fontSize: 10, fontWeight: pw.FontWeight.bold)),
-                        ],
+                      child: pw.Text('Ciudad',
+                        textAlign: pw.TextAlign.left, style: pw.TextStyle(fontSize: 10, fontWeight: pw.FontWeight.bold)
                       ),
                     ),
                     pw.Expanded(
                       flex: 2,
-                      child: pw.Column(
-                        crossAxisAlignment: pw.CrossAxisAlignment.start,
-                        children: [
-                          pw.Text(phoneCliente,
-                            textAlign: pw.TextAlign.left, style: const pw.TextStyle(fontSize: 10)),
-                          pw.Text(cityCliente,
-                            textAlign: pw.TextAlign.left, style: const pw.TextStyle(fontSize: 10)),
-                        ],
+                      child: pw.Text(cityCliente,
+                        textAlign: pw.TextAlign.left, style: const pw.TextStyle(fontSize: 10)
                       ),
                     ),
                     pw.Expanded(
                       flex: 1,
-                      child: pw.Text(receiptDate,
-                          textAlign: pw.TextAlign.center, style: const pw.TextStyle(fontSize: 10)),
+                      child: pw.SizedBox(),
                     ),
                     pw.Expanded(
-                      flex: 2,
+                      flex: 1,
                       child: pw.Column(
                         crossAxisAlignment: pw.CrossAxisAlignment.center,
                         children: [
-                          pw.Text(metodoPago['banco'],
-                            textAlign: pw.TextAlign.center, style: const pw.TextStyle(fontSize: 10)),
                           pw.Text(metodoPago['tipoCuenta'] + ' ' + metodoPago['nroCuenta'],
-                            textAlign: pw.TextAlign.center, style: const pw.TextStyle(fontSize: 10)),
+                            textAlign: pw.TextAlign.center, style: const pw.TextStyle(fontSize: 10)
+                          ),
                         ],
                       ),
                     ),
-                  ],
-                ),
+                  ]
+                ),   
+
+
+
+
+
+
+                           
+                  
+
+
+
+
                 pw.SizedBox(height: 20),
                 pw.Divider(thickness: 1),
                 pw.SizedBox(height: 20),

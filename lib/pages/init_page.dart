@@ -6,6 +6,7 @@ import 'package:albaterrapp/pages/pagosesperados_page.dart';
 import 'package:albaterrapp/pages/resumen_pagos.dart';
 import 'package:albaterrapp/pages/sellers_page.dart';
 import 'package:albaterrapp/pages/signin_page.dart';
+import 'package:albaterrapp/pages/stats_page.dart';
 import 'package:albaterrapp/services/firebase_services.dart';
 import 'package:albaterrapp/utils/color_utils.dart';
 import 'package:albaterrapp/widgets/widgets.dart';
@@ -210,6 +211,12 @@ class _InitPageState extends State<InitPage> {
                     "https://app.powerbi.com/view?r=eyJrIjoiYjFjMjk0ZTYtY2VjNi00NjYxLTgwZDgtYjFlNjAxYTU2YTk3IiwidCI6IjJlZDU1NzRjLWY5YmEtNDQyNi05NjU4LWU0NzdhZDc0MzlkYiIsImMiOjR9",
                     '_blank', // This opens the link in a new tab or window
                   ]);
+
+                  /*Navigator.of(context).push(MaterialPageRoute(
+                    builder: (BuildContext context) => const PowerBIReportScreen()
+                  ));
+                  setState(() {});*/
+                  
                 }
                 if (value == 'Opción 6') {
                   Navigator.push(

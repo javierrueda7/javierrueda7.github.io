@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:albaterrapp/pages/add_payment.dart';
+import 'package:albaterrapp/pages/pdf_estadocuenta.dart';
 import 'package:albaterrapp/pages/pdf_invoice.dart';
 import 'package:albaterrapp/services/firebase_services.dart';
 import 'package:albaterrapp/utils/color_utils.dart';
@@ -48,12 +49,15 @@ class _ResumenPagosState extends State<ResumenPagos> {
         await db.collection('planPagos').doc(loteid).get();
     final Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
     final temp = {
-      "precioIni": data['precioIni'],
-      "precioFin": data['precioFin'],
-      "dcto": data['dcto'],
+      "precioIni": data['precioIni'].toDouble(),
+      "precioFin": data['precioFin'].toDouble(),
+      "dcto": data['dcto'].toDouble(),
       "estadoPago": data['estadoPago'],
-      "saldoPorPagar": data['saldoPorPagar'],
-      "valorPagado": data['valorPagado']
+      "saldoPorPagar": data['saldoPorPagar'].toDouble(),
+      "valorPagado": data['valorPagado'].toDouble(),
+      "idPlanPagos": data['idPlanPagos'],
+      "idCliente": data['idCliente'],
+      "paymentMethod": data['paymentMethod'],
     };
     planPagos = temp;
   }
@@ -83,7 +87,7 @@ class _ResumenPagosState extends State<ResumenPagos> {
         child: Container(
           constraints: const BoxConstraints(maxWidth: 1200),
           child: Stack(
-            children: [
+            children: [              
               Positioned(
                 top: 0,
                 left: 0,
@@ -95,9 +99,10 @@ class _ResumenPagosState extends State<ResumenPagos> {
                     alignment: Alignment.center,
                     constraints: const BoxConstraints(maxWidth: 800),
                     width: MediaQuery.of(context).size.width-50,
-                    height: 180,
+                    height: 200,
                     padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
                     child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
                           'Etapa del pago',
@@ -158,8 +163,39 @@ class _ResumenPagosState extends State<ResumenPagos> {
                   ),
                 )
               ),
+              /*Positioned(
+                top: 180,
+                left: 0,
+                right: 0,
+                child: Container(
+                  alignment: Alignment.center,
+                  constraints: const BoxConstraints(maxWidth: 300),
+                  child: ElevatedButton(style: ButtonStyle(
+                    minimumSize: MaterialStateProperty.all(const Size(100, 50))),
+                    onPressed: () async {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => PDFEstadoCuenta(
+                            idPlanPagos: planPagos['idPlanPagos'],
+                            idCliente: planPagos['idCliente'],
+                            lote: lote['loteName'],
+                            paymentMethod: planPagos['paymentMethod'],
+                            valorInicial: planPagos['precioIni'],
+                            descuento: planPagos['dcto'],
+                            valorPagado: planPagos['valorPagado'],
+                            saldoPorPagar: planPagos['saldoPorPagar'],
+                            valorTotal: planPagos['precioFin'],
+                          ),
+                        ),
+                      );
+                      setState(() {});
+                    }, child: const Text("Estado de cuenta", textAlign: TextAlign.center,)
+                  ),
+                )
+              ),*/
               Positioned(
-                top: 200, // Adjust the value to position the list below the card
+                top: 240, // Adjust the value to position the list below the card
                 left: 0,
                 right: 0,
                 bottom: 0,
@@ -217,45 +253,54 @@ class _ResumenPagosState extends State<ResumenPagos> {
                             ),
                             direction: DismissDirection.endToStart,
                             key: Key(pagosSnapshot.data?[index]['pid']),
-                            child: ListTile(
-                              leading: Text('Pago ${pagosSnapshot.data?[index]['pid']}'),
-                              title: Text('Valor pagado: ${currencyCOP((pagosSnapshot.data?[index]['valorPago'].toInt()).toString())}'),
-                              subtitle: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text('Fecha de pago: ${pagosSnapshot.data?[index]['fechaPago']}'),
-                                  Text('Método de pago: ${pagosSnapshot.data?[index]['metodoPago']}')
-                                ],
-                              ),
-                              onTap: (() async {
-                                String valorEnLetras = await numeroEnLetras(pagosSnapshot.data?[index]['valorPago'].toDouble(), 'pesos');
-                                  // ignore: use_build_context_synchronously
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => PDFInvoice(
-                                        lote: lote['loteName'],
-                                        recibo: 'No. ${pagosSnapshot.data?[index]['pid']}',                                  
-                                        nameCliente: pagosSnapshot.data?[index]['nombreCliente'],
-                                        idCliente: pagosSnapshot.data?[index]['idCliente'],
-                                        phoneCliente: pagosSnapshot.data?[index]['telCliente'],
-                                        addressCliente: pagosSnapshot.data?[index]['dirCliente'],
-                                        emailCliente: pagosSnapshot.data?[index]['emailCliente'],
-                                        cityCliente: pagosSnapshot.data?[index]['ciudadCliente'],
-                                        receiptDate: pagosSnapshot.data?[index]['fechaRecibo'],
-                                        paymentDate: pagosSnapshot.data?[index]['fechaPago'],                                  
-                                        paymentValue: pagosSnapshot.data?[index]['valorPago'].toDouble(),
-                                        paymentValueLetters: valorEnLetras,
-                                        saldoPorPagar: planPagos['saldoPorPagar'],
-                                        valorTotal: planPagos['precioFin'],
-                                        paymentMethod: pagosSnapshot.data?[index]['metodoPago'],
-                                        observaciones: pagosSnapshot.data?[index]['obsPago'],
-                                        conceptoPago: pagosSnapshot.data?[index]['conceptoPago'],
+                            child: Center(
+                              child: Container(
+                                constraints: const BoxConstraints(maxWidth: 800),
+                                child: Column(
+                                  children: [
+                                    ListTile(
+                                      leading: Text('Pago ${pagosSnapshot.data?[index]['pid']}', textAlign: TextAlign.end,),
+                                      title: Text('Valor pagado: ${currencyCOP((pagosSnapshot.data?[index]['valorPago'].toInt()).toString())}', textAlign: TextAlign.center),
+                                      subtitle: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.center,
+                                        children: [
+                                          Text('Fecha de pago: ${pagosSnapshot.data?[index]['fechaPago']}'),
+                                          Text('Método de pago: ${pagosSnapshot.data?[index]['metodoPago']}')
+                                        ],
                                       ),
+                                      onTap: (() async {
+                                        String valorEnLetras = await numeroEnLetras(pagosSnapshot.data?[index]['valorPago'].toDouble(), 'pesos');
+                                          // ignore: use_build_context_synchronously
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) => PDFInvoice(
+                                                lote: lote['loteName'],
+                                                recibo: 'No. ${pagosSnapshot.data?[index]['pid']}',                                  
+                                                nameCliente: pagosSnapshot.data?[index]['nombreCliente'],
+                                                idCliente: pagosSnapshot.data?[index]['idCliente'],
+                                                phoneCliente: pagosSnapshot.data?[index]['telCliente'],
+                                                addressCliente: pagosSnapshot.data?[index]['dirCliente'],
+                                                emailCliente: pagosSnapshot.data?[index]['emailCliente'],
+                                                cityCliente: pagosSnapshot.data?[index]['ciudadCliente'],
+                                                receiptDate: pagosSnapshot.data?[index]['fechaRecibo'],
+                                                paymentDate: pagosSnapshot.data?[index]['fechaPago'],                                  
+                                                paymentValue: pagosSnapshot.data?[index]['valorPago'].toDouble(),
+                                                paymentValueLetters: valorEnLetras,
+                                                saldoPorPagar: planPagos['saldoPorPagar'],
+                                                valorTotal: planPagos['precioFin'],
+                                                paymentMethod: pagosSnapshot.data?[index]['metodoPago'],
+                                                observaciones: pagosSnapshot.data?[index]['obsPago'],
+                                                conceptoPago: pagosSnapshot.data?[index]['conceptoPago'],
+                                              ),
+                                            ),
+                                          );
+                                        setState(() {});
+                                      }),
                                     ),
-                                  );
-                                setState(() {});
-                              }),
+                                  ],
+                                ),
+                              ),
                             ),
                           );
                         },
