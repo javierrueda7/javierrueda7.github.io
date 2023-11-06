@@ -65,6 +65,9 @@ class _ResumenPagosState extends State<ResumenPagos> {
   String loteid = '';
   Map<String, dynamic> lote = {};
   Map<String, dynamic> planPagos = {};
+  List<dynamic> pagosReal = [];
+  List<dynamic> pagosEsp = [];
+  DateTime startDate = DateTime.now();
 
   @override
   Widget build(BuildContext context) {
@@ -163,7 +166,7 @@ class _ResumenPagosState extends State<ResumenPagos> {
                   ),
                 )
               ),
-              /*Positioned(
+              Positioned(
                 top: 180,
                 left: 0,
                 right: 0,
@@ -173,6 +176,10 @@ class _ResumenPagosState extends State<ResumenPagos> {
                   child: ElevatedButton(style: ButtonStyle(
                     minimumSize: MaterialStateProperty.all(const Size(100, 50))),
                     onPressed: () async {
+                      pagosReal = await getPagos(loteid);
+                      pagosEsp = await getPagosEsp(loteid);
+                      startDate = await getStartDate(planPagos['idPlanPagos']);
+                      // ignore: use_build_context_synchronously
                       Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -186,6 +193,9 @@ class _ResumenPagosState extends State<ResumenPagos> {
                             valorPagado: planPagos['valorPagado'],
                             saldoPorPagar: planPagos['saldoPorPagar'],
                             valorTotal: planPagos['precioFin'],
+                            pagosEsp: pagosEsp,
+                            pagosRea: pagosReal,
+                            startDate: startDate,
                           ),
                         ),
                       );
@@ -193,7 +203,7 @@ class _ResumenPagosState extends State<ResumenPagos> {
                     }, child: const Text("Estado de cuenta", textAlign: TextAlign.center,)
                   ),
                 )
-              ),*/
+              ),
               Positioned(
                 top: 240, // Adjust the value to position the list below the card
                 left: 0,

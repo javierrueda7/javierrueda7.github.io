@@ -1,4 +1,3 @@
-import 'package:albaterrapp/pages/pagosesperados_page.dart';
 import 'package:albaterrapp/services/firebase_services.dart';
 import 'package:albaterrapp/utils/color_utils.dart';
 import 'package:albaterrapp/widgets/widgets.dart';
@@ -22,6 +21,9 @@ class PDFEstadoCuenta extends StatelessWidget {
   final double valorPagado;
   final double saldoPorPagar;
   final double valorTotal;
+  final List<dynamic> pagosEsp;
+  final List<dynamic> pagosRea;
+  final DateTime startDate;
 
   PDFEstadoCuenta(
       {super.key,
@@ -34,12 +36,12 @@ class PDFEstadoCuenta extends StatelessWidget {
       required this.valorPagado,
       required this.saldoPorPagar,
       required this.valorTotal,
+      required this.pagosEsp,
+      required this.pagosRea,
+      required this.startDate,
     });
 
   void initState() {
-    getPagosEsperados();
-    getInv();
-    getMatchingDocuments();
   }
   
   User? user = FirebaseAuth.instance.currentUser;
@@ -61,91 +63,23 @@ class PDFEstadoCuenta extends StatelessWidget {
     }
     return loggedName;
   }
-  
-  Future<void> getMatchingDocuments() async {
 
-    List<Map<String, dynamic>> matchingDocuments = [];
-
-    final QuerySnapshot pagosSnapshot = await FirebaseFirestore.instance
-        .collection('planPagos').doc(savedName).collection('pagosEsperados')
-        .get();
-
-    final List<Future<Map<String, dynamic>>> quoteAndCustomerFutures = [];
-
-    for (QueryDocumentSnapshot pagoSnapshot in pagosSnapshot.docs) {
-      final Map<String, dynamic> data =
-          pagoSnapshot.data() as Map<String, dynamic>;
-      quoteAndCustomerFutures.add(fetchQuoteAndCustomer(idPlanPagos));
-      
-      final pagoEsperado = {
-        "lote": savedName,
-        "idPago": pagoSnapshot.id,
-        "idPlan": idPlanPagos,
-        "fechaPago": data['fechaPago'],
-        "valorPago": data['valorPago'],
-        "conceptoPago": data['conceptoPago'],
-        "estadoPago": data['estadoPago'],
-      };
-      matchingDocuments.add(pagoEsperado);        
-    }
-    
-
-    // Wait for all quoteSnap and customer data to be fetched
-    final List<Map<String, dynamic>> quoteAndCustomerData =
-        await Future.wait(quoteAndCustomerFutures);
-
-    // Combine quoteSnap and customer data into matchingDocuments
-    for (int i = 0; i < matchingDocuments.length; i++) {
-      final Map<String, dynamic> matchingDocument = matchingDocuments[i];
-      final Map<String, dynamic> quoteSnapData = quoteAndCustomerData[i]['quoteSnap'];
-      final Map<String, dynamic> customerData = quoteAndCustomerData[i]['customer'];
-
-      matchingDocument["idCliente"] = quoteSnapData["clienteID"];
-      matchingDocument["nameCliente"] =
-          "${customerData["nameCliente"]} ${customerData["lastnameCliente"]}";
-      matchingDocument["telCliente"] = customerData["telCliente"];
-      matchingDocument["emailCliente"] = customerData["emailCliente"];
-    }
-
-    // Sort the matchingDocuments by fechaPago
-    matchingDocuments.sort((a, b) {
-      DateTime dateA = DateFormat('dd-MM-yyyy').parse(a['fechaPago']);
-      DateTime dateB = DateFormat('dd-MM-yyyy').parse(b['fechaPago']);
-      return dateA.compareTo(dateB);
-    });
-    pagosEsperadosList = matchingDocuments;
-  }
-
-  Future<Map<String, dynamic>> fetchQuoteAndCustomer(String idPlanPagos) async {
-    final DocumentSnapshot<Map<String, dynamic>> quoteSnap =
-        await db.collection('quotes').doc(idPlanPagos).get();
-
-    final Map<String, dynamic> customer =
-        await getCustomerInfo(quoteSnap["clienteID"]);
-
-    return {
-      'quoteSnap': quoteSnap.data(),
-      'customer': customer,
-    };
-  }
-
-  Future<void> getPagosEsperados() async {
-    loteIdGen();
+  Future<String> getClienteName() async {
     DocumentSnapshot? doc =
-        await db.collection('planPagos').doc(savedName).get();
+        await db.collection('customers').doc(idCliente).get();
     final Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
     final temp = {
-      "banco": data['banco'],
-      "nroCuenta": data['nroCuenta'],  
-      "tipoCuenta": data['tipoCuenta'],
+      "name": data['nameCliente'],
+      "lastName": data['lastnameCliente'],
     };
-    metodoPago = temp;
+    return temp['name'] + ' ' + temp['lastName'];
   }
 
-  void loteIdGen(){
+  Future<void> loteIdGen() async {
     String numericPart = lote.replaceAll(RegExp(r'[^0-9]'), ''); // Extract the numeric part
     int numericValue = int.tryParse(numericPart) ?? 0; // Parse the numeric part as an integer
-    savedName = "L${numericValue.toString().padLeft(2, '0')}";    
+    savedName = "L${numericValue.toString().padLeft(2, '0')}";
+    clienteName = await getClienteName();
   }
 
   Future<void> getInv() async {
@@ -157,13 +91,11 @@ class PDFEstadoCuenta extends StatelessWidget {
   Map<String, dynamic> invertaga = {};
   Map<String, dynamic> metodoPago = {};
   String savedName = '';
-  List<Map<String, dynamic>> pagosEsperadosList = [];
+  String clienteName = '';
 
   @override
   Widget build(BuildContext context) {   
     loteIdGen();
-    getMatchingDocuments();
-    print(pagosEsperadosList);
     
     return Scaffold(
       extendBodyBehindAppBar: false,
@@ -194,14 +126,6 @@ class PDFEstadoCuenta extends StatelessWidget {
 
     final pdf = pw.Document();
 
-    //final ByteData photo1 = await rootBundle.load('assets/images/logo.png');
-    //final Uint8List byteList1 = photo1.buffer.asUint8List();
-    final ByteData photo2 =
-        await rootBundle.load('assets/images/invertaga.png');
-    final Uint8List byteList2 = photo2.buffer.asUint8List();
-    final ByteData photo3 = await rootBundle.load('assets/images/vision.png');
-    final Uint8List byteList3 = photo3.buffer.asUint8List();  
-
     loggedName = await getLoggedName();  
 
     pdf.addPage(
@@ -218,55 +142,44 @@ class PDFEstadoCuenta extends StatelessWidget {
             ),
             pw.SizedBox(height: 10),
             pw.Text('Número de cuenta: $idPlanPagos'),
-            pw.Text('Nombre del titular: Juan Pérez'),
-            pw.Text('Período del estado de cuenta: 01/10/2023 - 31/10/2023'),
+            pw.Text('Nombre del titular: $clienteName'),
+            pw.Text('Período del estado de cuenta: ${DateFormat('dd-MM-yyyy').format(startDate)} - ${DateFormat('dd-MM-yyyy').format(DateTime.now())}'),
             pw.Text('Fecha de emisión: ${DateFormat('dd-MM-yyyy').format(DateTime.now())}'),
+            pw.SizedBox(height: 10),
+            pw.Text('Valor total: ${currencyCOP((valorTotal.toInt()).toString())}'),
+            pw.Text('Total pagos recibidos: ${currencyCOP((valorPagado.toInt()).toString())}'),
             pw.SizedBox(height: 10),
             pw.Text('Saldo actual: ${currencyCOP((saldoPorPagar.toInt()).toString())}'),
             pw.SizedBox(height: 10),
 
-            // Pagos Esperados
-            pw.Header(level: 1, text: 'Pagos Esperados'),
+            // Pagos Recibidos
+            pw.Header(level: 1, text: 'Pagos Recibidos'),
+            // ignore: deprecated_member_use
             pw.Table.fromTextArray(context: context, data: <List<String>>[
-              <String>['Fecha de Vencimiento', 'Concepto', 'Monto Esperado (\$)', 'Estado del pago'],
-              for (var document in pagosEsperadosList)
+              <String>['Fecha de Pago', 'Concepto', 'Monto Recibido (\$)', 'Método de Pago'],
+              for (var doc1 in pagosRea)
                 <String>[
-                  document['fechaPago'], // Date
-                  document['conceptoPago'], // Concept
-                  currencyCOP((document['valorPago'].toInt()).toString()), // Amount (formatted as 2 decimal places)
-                  document['estadoPago'], // Payment Status
+                  doc1['fechaPago'], // Date
+                  doc1['conceptoPago'].toUpperCase(), // Concept
+                  currencyCOP((doc1['valorPago'].toInt()).toString()), // Amount (formatted as 2 decimal places)
+                  doc1['metodoPago'], // Payment Status
                 ],
             ]),
 
-            // Pagos Recibidos
-            pw.Header(level: 1, text: 'Pagos Recibidos'),
+            // Pagos Esperados
+            pw.Header(level: 1, text: 'Pagos Esperados'),
+            // ignore: deprecated_member_use
             pw.Table.fromTextArray(context: context, data: <List<String>>[
-              <String>['Fecha de Pago', 'Descripción', 'Monto Recibido (\$)'],
-              <String>['05/10/2023', 'Cuota de Préstamo', '500.00'],
-              <String>['12/10/2023', 'Tarjeta de Crédito', '100.00'],
-              <String>['21/10/2023', 'Alquiler', '800.00'],
-              <String>['25/10/2023', 'Electricidad', '75.00'],
-              <String>['30/10/2023', 'Teléfono', '50.00'],
+              <String>['Fecha de Vencimiento', 'Concepto', 'Monto Esperado (\$)', 'Estado del pago'],
+              for (var doc2 in pagosEsp)
+                <String>[
+                  doc2['fechaPago'], // Date
+                  doc2['conceptoPago'].toUpperCase(), // Concept
+                  currencyCOP((doc2['valorPago'].toInt()).toString()), // Amount (formatted as 2 decimal places)
+                  doc2['estadoPago'], // Payment Status
+                ],
             ]),
 
-            // Resumen
-            pw.Header(level: 1, text: 'Resumen'),
-            pw.Text('Saldo Anterior: \$2,500.00'),
-            pw.Text('Total Pagos Esperados: \$1,525.00'),
-            pw.Text('Total Pagos Recibidos: \$1,525.00'),
-            pw.Text('Saldo Actual: \$1,000.00'),
-            pw.SizedBox(height: 10),
-
-            // Transacciones Recientes
-            pw.Header(level: 1, text: 'Transacciones Recientes'),
-            pw.Table.fromTextArray(context: context, data: <List<String>>[
-              <String>['Fecha', 'Descripción', 'Monto (\$)'],
-              <String>['05/10/2023', 'Pago de Cuota de Préstamo', '-500.00'],
-              <String>['12/10/2023', 'Pago de Tarjeta de Crédito', '-100.00'],
-              <String>['21/10/2023', 'Pago de Alquiler', '-800.00'],
-              <String>['25/10/2023', 'Pago de Electricidad', '-75.00'],
-              <String>['30/10/2023', 'Pago de Teléfono', '-50.00'],
-            ]),
           ];
         },
       ),

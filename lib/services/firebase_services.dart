@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:intl/intl.dart';
 
 FirebaseFirestore db = FirebaseFirestore.instance;
 
@@ -94,6 +95,16 @@ Future<void> pagosRealizados(String lote, String idPago, double valorPago, Strin
   });
 }
 
+Future<DateTime> getStartDate(String idPlanPagos) async {
+  DocumentSnapshot? doc =
+      await db.collection('ordSep').doc(idPlanPagos).get();
+  final Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+  final temp = {
+    "fecha": data['separacionDate'],
+  };
+  return DateFormat('dd-MM-yyyy').parse(temp['fecha']);
+}
+
 Future<List> getPagos(String lote) async {
   List pagos = [];
   QuerySnapshot? queryPagos = await db.collection('pagos').get();
@@ -117,8 +128,46 @@ Future<List> getPagos(String lote) async {
       };
       pagos.add(pago);
     }
-  }
+  }  
+  // Sort the matchingDocuments by fechaPago
+  pagos.sort((a, b) {
+    DateTime dateA = DateFormat('dd-MM-yyyy').parse(a['fechaPago']);
+    DateTime dateB = DateFormat('dd-MM-yyyy').parse(b['fechaPago']);
+    return dateA.compareTo(dateB);
+  });
   return pagos;
+}
+
+Future<List> getPagosEsp(String lote) async {
+  List<Map<String, dynamic>> matchingDocuments = [];
+
+    final QuerySnapshot pagosSnapshot = await FirebaseFirestore.instance
+        .collection('planPagos').doc(lote).collection('pagosEsperados')
+        .get();
+
+    for (QueryDocumentSnapshot pagoSnapshot in pagosSnapshot.docs) {
+      final Map<String, dynamic> data =
+          pagoSnapshot.data() as Map<String, dynamic>;
+      
+      final pagoEsperado = {
+        "lote": lote,
+        "idPago": pagoSnapshot.id,
+        "idPlan": data['idPlanPagos'],
+        "fechaPago": data['fechaPago'],
+        "valorPago": data['valorPago'],
+        "conceptoPago": data['conceptoPago'],
+        "estadoPago": data['estadoPago'],
+      };
+      matchingDocuments.add(pagoEsperado);        
+    }   
+
+    // Sort the matchingDocuments by fechaPago
+    matchingDocuments.sort((a, b) {
+      DateTime dateA = DateFormat('dd-MM-yyyy').parse(a['fechaPago']);
+      DateTime dateB = DateFormat('dd-MM-yyyy').parse(b['fechaPago']);
+      return dateA.compareTo(dateB);
+    });
+    return matchingDocuments;
 }
 
 Future<void> deletePagos(String pid, String lote, double valor) async {
