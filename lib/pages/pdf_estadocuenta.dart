@@ -87,11 +87,47 @@ class PDFEstadoCuenta extends StatelessWidget {
     invertaga = await getInversionista('invertaga');
   }
 
+  int totalEsp(List<dynamic> pagosList) {
+    double totalValorPago = 0;
+
+    // Get the current date
+    DateTime currentDate = DateTime.now();
+
+    for (var pago in pagosEsp) {
+      // Parse the fechaPago from the document as a DateTime
+      DateTime fechaPago = DateFormat('dd-MM-yyyy').parse(pago['fechaPago']);
+
+      // Check if the fechaPago is on or before the current date
+      if (fechaPago.isBefore(currentDate) || fechaPago.isAtSameMomentAs(currentDate)) {
+        totalValorPago += pago['valorPago'];
+      }
+    }
+
+    return totalValorPago.toInt();
+  }
+
+  int valorFalt(List<dynamic> pagosList) {
+    double totalPago = 0;
+    double faltante = 0;
+
+    for (var pago in pagosEsp) {
+      if (pago['estadoPago'] == "PAGO COMPLETO") {
+        totalPago += pago['valorPago'];
+      } if (pago['estadoPago'] == "PAGO INCOMPLETO") {
+        totalPago += pago['valorPago'];
+      }
+    }
+    faltante = totalPago - valorPagado;
+
+    return faltante.toInt();
+  }
+
   Map<String, dynamic> vision = {};
   Map<String, dynamic> invertaga = {};
   Map<String, dynamic> metodoPago = {};
   String savedName = '';
   String clienteName = '';
+  int valorEsp = 0;
 
   @override
   Widget build(BuildContext context) {   
@@ -146,10 +182,13 @@ class PDFEstadoCuenta extends StatelessWidget {
             pw.Text('Período del estado de cuenta: ${DateFormat('dd-MM-yyyy').format(startDate)} - ${DateFormat('dd-MM-yyyy').format(DateTime.now())}'),
             pw.Text('Fecha de emisión: ${DateFormat('dd-MM-yyyy').format(DateTime.now())}'),
             pw.SizedBox(height: 10),
-            pw.Text('Valor total: ${currencyCOP((valorTotal.toInt()).toString())}'),
-            pw.Text('Total pagos recibidos: ${currencyCOP((valorPagado.toInt()).toString())}'),
+            pw.Text('Total pagos recibidos: ${currencyCOP((valorPagado.toInt()).toString())}'),          
+            pw.Text('Total pagos esperados hasta la fecha: ${currencyCOP((totalEsp(pagosEsp).toInt()).toString())}'),            
+            pw.Text('Porcentaje de pago hasta la fecha: ${100*valorPagado/totalEsp(pagosEsp)}%'),
             pw.SizedBox(height: 10),
             pw.Text('Saldo actual: ${currencyCOP((saldoPorPagar.toInt()).toString())}'),
+            pw.SizedBox(height: 10),
+            pw.Text('Valor total: ${currencyCOP((valorTotal.toInt()).toString())}'),
             pw.SizedBox(height: 10),
 
             // Pagos Recibidos
@@ -176,7 +215,7 @@ class PDFEstadoCuenta extends StatelessWidget {
                   doc2['fechaPago'], // Date
                   doc2['conceptoPago'].toUpperCase(), // Concept
                   currencyCOP((doc2['valorPago'].toInt()).toString()), // Amount (formatted as 2 decimal places)
-                  doc2['estadoPago'], // Payment Status
+                  doc2['estadoPago'] == "PAGO INCOMPLETO" ? "SALDO ${currencyCOP((valorFalt(pagosEsp).toInt()).toString())}" : doc2['estadoPago'], // Payment Status
                 ],
             ]),
 
