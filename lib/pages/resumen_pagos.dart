@@ -58,10 +58,40 @@ class _ResumenPagosState extends State<ResumenPagos> {
       "idPlanPagos": data['idPlanPagos'],
       "idCliente": data['idCliente'],
       "paymentMethod": data['paymentMethod'],
+      "valorSeparacion": data['valorSeparacion'],
     };
     planPagos = temp;
   }
 
+  Future<void> getCI(String idPlan) async {
+    DocumentSnapshot? doc =
+        await db.collection('ordSep').doc(idPlan).get();
+    final Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+    cuotaIni = data['vlrCILote'];
+  }
+
+  Future<void> actConcepto() async {
+    final firestore = FirebaseFirestore.instance;
+    List<dynamic> pagosReal = await getPagos(loteid);    
+    double totalPagado = 0;
+    String concepto = '';
+    for (var pagoR in pagosReal){
+      totalPagado = totalPagado + pagoR['valorPago'];
+      if(totalPagado <= planPagos['valorSeparacion']){
+        concepto = 'SEPARACIÓN';
+      } else if(planPagos['paymentMethod'] == 'Financiación directa' && totalPagado <= cuotaIni){
+        concepto = 'CUOTA INICIAL';
+      } else{
+        concepto = 'ABONO SALDO TOTAL';
+      }
+      await firestore.collection('pagos').doc(pagoR['pid']).update({
+            'conceptoPago': concepto,
+          });
+    }
+
+  }
+
+  double cuotaIni = 0;
   String loteid = '';
   Map<String, dynamic> lote = {};
   Map<String, dynamic> planPagos = {};
@@ -73,6 +103,7 @@ class _ResumenPagosState extends State<ResumenPagos> {
   Widget build(BuildContext context) {
     getLote();
     getPlanPagos();
+    getCI(planPagos['idPlanPagos']);
     return Scaffold(
       extendBodyBehindAppBar: false,
       appBar: AppBar(

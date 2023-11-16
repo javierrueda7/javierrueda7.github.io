@@ -41,7 +41,8 @@ class PDFEstadoCuenta extends StatelessWidget {
       required this.startDate,
     });
 
-  void initState() {
+  void initState() {    
+    getInv();
   }
   
   User? user = FirebaseAuth.instance.currentUser;
@@ -63,6 +64,9 @@ class PDFEstadoCuenta extends StatelessWidget {
     }
     return loggedName;
   }
+
+  Map<String, dynamic> infoInvertaga = {};
+  Map<String, dynamic> infoVision = {};
 
   Future<String> getClienteName() async {
     DocumentSnapshot? doc =
@@ -122,16 +126,45 @@ class PDFEstadoCuenta extends StatelessWidget {
     return faltante.toInt();
   }
 
+  Future<void> ordSepAct() async {
+    DocumentReference doc = FirebaseFirestore.instance.collection('ordSep').doc(idPlanPagos);
+    DocumentSnapshot doc1 = await doc.get();
+    cuotaIni = doc1['vlrCILote'].toDouble();
+    vlrPorPagar = doc1['vlrPorPagarLote'].toDouble();
+    nroCuotas = doc1['nroCuotasLote'];
+  }
+
   Map<String, dynamic> vision = {};
   Map<String, dynamic> invertaga = {};
   Map<String, dynamic> metodoPago = {};
   String savedName = '';
   String clienteName = '';
   int valorEsp = 0;
+  int counter = 0;
+  double cuotaIni = 0;
+  double vlrPorPagar = 0;
+  int nroCuotas = 0;
+
+  pw.Widget buildFooter(pw.Context context) {
+    return pw.Container(
+      alignment: pw.Alignment.centerRight,
+      margin: const pw.EdgeInsets.only(top: 20.0),
+      child: pw.Row(
+        mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: pw.CrossAxisAlignment.center,
+        children:[ 
+          pw.Text('Carrera 54#73-85 2piso, 3164449510, visionahora@hotmail.com', style: const pw.TextStyle(fontSize: 8)),
+          pw.Text('Carrera 54#73-65, 6076344876, invertaga@hotmail.com', style: const pw.TextStyle(fontSize: 8))
+          ]
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {   
     loteIdGen();
+    getInv();
+    ordSepAct();
     
     return Scaffold(
       extendBodyBehindAppBar: false,
@@ -162,65 +195,229 @@ class PDFEstadoCuenta extends StatelessWidget {
 
     final pdf = pw.Document();
 
-    loggedName = await getLoggedName();  
+    final ByteData photo1 = await rootBundle.load('assets/images/logo.png');
+    final Uint8List byteList1 = photo1.buffer.asUint8List();
+    final ByteData photo2 =
+        await rootBundle.load('assets/images/invertaga.png');
+    final Uint8List byteList2 = photo2.buffer.asUint8List();
+    final ByteData photo3 = await rootBundle.load('assets/images/vision.png');
+    final Uint8List byteList3 = photo3.buffer.asUint8List();  
 
+    loggedName = await getLoggedName();
+  
     pdf.addPage(
       pw.MultiPage(
         pageFormat: PdfPageFormat.a4,
         margin: const pw.EdgeInsets.all(32.0),
         build: (pw.Context context) {
           return <pw.Widget>[
-            // Encabezado
-            pw.Header(
-              level: 0,
-              child: pw.Text('Estado de Cuenta - $lote',
-                  style: pw.TextStyle(fontSize: 24, fontWeight: pw.FontWeight.bold)),
-            ),
-            pw.SizedBox(height: 10),
-            pw.Text('Número de cuenta: $idPlanPagos'),
-            pw.Text('Nombre del titular: $clienteName'),
-            pw.Text('Período del estado de cuenta: ${DateFormat('dd-MM-yyyy').format(startDate)} - ${DateFormat('dd-MM-yyyy').format(DateTime.now())}'),
-            pw.Text('Fecha de emisión: ${DateFormat('dd-MM-yyyy').format(DateTime.now())}'),
-            pw.SizedBox(height: 10),
-            pw.Text('Total pagos recibidos: ${currencyCOP((valorPagado.toInt()).toString())}'),          
-            pw.Text('Total pagos esperados hasta la fecha: ${currencyCOP((totalEsp(pagosEsp).toInt()).toString())}'),            
-            pw.Text('Porcentaje de pago hasta la fecha: ${100*valorPagado/totalEsp(pagosEsp)}%'),
-            pw.SizedBox(height: 10),
-            pw.Text('Saldo actual: ${currencyCOP((saldoPorPagar.toInt()).toString())}'),
-            pw.SizedBox(height: 10),
-            pw.Text('Valor total: ${currencyCOP((valorTotal.toInt()).toString())}'),
-            pw.SizedBox(height: 10),
-
-            // Pagos Recibidos
-            pw.Header(level: 1, text: 'Pagos Recibidos'),
-            // ignore: deprecated_member_use
-            pw.Table.fromTextArray(context: context, data: <List<String>>[
-              <String>['Fecha de Pago', 'Concepto', 'Monto Recibido (\$)', 'Método de Pago'],
-              for (var doc1 in pagosRea)
-                <String>[
-                  doc1['fechaPago'], // Date
-                  doc1['conceptoPago'].toUpperCase(), // Concept
-                  currencyCOP((doc1['valorPago'].toInt()).toString()), // Amount (formatted as 2 decimal places)
-                  doc1['metodoPago'], // Payment Status
+              pw.Row(
+                mainAxisAlignment: pw.MainAxisAlignment.center,
+                crossAxisAlignment: pw.CrossAxisAlignment.center,
+                children: [
+                  pw.Expanded(
+                    flex: 1,
+                    child: pw.Column(
+                      mainAxisAlignment: pw.MainAxisAlignment.center,
+                      crossAxisAlignment: pw.CrossAxisAlignment.center,
+                      children: [
+                        pw.Image(
+                          pw.MemoryImage(
+                            byteList3,
+                          ),
+                          height: 30),
+                      ],
+                    ),
+                  ),
+                  pw.Expanded(
+                    flex: 1,
+                    child: pw.Column(
+                      mainAxisAlignment: pw.MainAxisAlignment.center,
+                      crossAxisAlignment: pw.CrossAxisAlignment.center,
+                      children: [
+                        pw.Text(vision['name'], style: pw.TextStyle(fontSize: 12, fontWeight: pw.FontWeight.bold)),
+                        pw.Text('NIT ${vision['nit']}', style: const pw.TextStyle(fontSize: 12)),
+                      ],
+                    ),
+                  ),
+                  pw.Expanded(
+                    flex: 1,
+                    child: pw.Column(
+                      mainAxisAlignment: pw.MainAxisAlignment.center,
+                      crossAxisAlignment: pw.CrossAxisAlignment.end,
+                      children: [
+                        pw.Image(
+                            pw.MemoryImage(
+                              byteList2,
+                            ),
+                            height: 20),
+                      ],
+                    ),
+                  ),
+                  pw.Expanded(
+                    flex: 1,
+                    child: pw.Column(
+                      mainAxisAlignment: pw.MainAxisAlignment.center,
+                      crossAxisAlignment: pw.CrossAxisAlignment.center,
+                      children: [
+                        pw.Text(invertaga['name'], style: pw.TextStyle(fontSize: 12, fontWeight: pw.FontWeight.bold)),
+                        pw.Text('NIT ${invertaga['nit']}', style: const pw.TextStyle(fontSize: 12)),
+                      ],
+                    ),
+                  ),
                 ],
-            ]),
+              ),
+              pw.SizedBox(height: 10),
+              pw.Center(
+                child: pw.Column(
+                  mainAxisAlignment: pw.MainAxisAlignment.center,
+                  crossAxisAlignment: pw.CrossAxisAlignment.center,
+                  children: [
+                    pw.Image(
+                      pw.MemoryImage(
+                        byteList1,
+                      ),
+                      height: 100
+                    ),
+                    pw.Text('CONDOMINIO CAMPESTRE ALBATERRA PH', style: pw.TextStyle(fontSize: 12, fontWeight: pw.FontWeight.bold)),
+                    pw.Divider(thickness: 1),
+                    pw.Text('INFORMACIÓN DEL INMUEBLE', style: pw.TextStyle(fontSize: 12, fontWeight: pw.FontWeight.bold)),
+                  ]
+                ),
+              ),
+              pw.SizedBox(height: 10),
 
-            // Pagos Esperados
-            pw.Header(level: 1, text: 'Pagos Esperados'),
-            // ignore: deprecated_member_use
-            pw.Table.fromTextArray(context: context, data: <List<String>>[
-              <String>['Fecha de Vencimiento', 'Concepto', 'Monto Esperado (\$)', 'Estado del pago'],
-              for (var doc2 in pagosEsp)
-                <String>[
-                  doc2['fechaPago'], // Date
-                  doc2['conceptoPago'].toUpperCase(), // Concept
-                  currencyCOP((doc2['valorPago'].toInt()).toString()), // Amount (formatted as 2 decimal places)
-                  doc2['estadoPago'] == "PAGO INCOMPLETO" ? "SALDO ${currencyCOP((valorFalt(pagosEsp).toInt()).toString())}" : doc2['estadoPago'], // Payment Status
+              pw.Column(
+                mainAxisAlignment: pw.MainAxisAlignment.center,
+                crossAxisAlignment: pw.CrossAxisAlignment.center,
+                children: [
+                  pw.Row(
+                    mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: pw.CrossAxisAlignment.center,
+                    children: [
+                      pw.Text('COMPRADOR: $clienteName', style: pw.TextStyle(fontSize: 12, fontWeight: pw.FontWeight.bold)),
+                      pw.Text('FECHA: ${DateFormat('dd/MM/yyyy').format(DateTime.now())}', style: pw.TextStyle(fontSize: 12, fontWeight: pw.FontWeight.bold)),
+                    ],
+                  ),
+                  pw.Row(
+                    mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: pw.CrossAxisAlignment.center,
+                    children: [
+                      pw.Text('NÚMERO DE IDENTIFICACIÓN: $idCliente', style: pw.TextStyle(fontSize: 12, fontWeight: pw.FontWeight.bold)),
+                    ],
+                  ),
+                  pw.Row(
+                    mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: pw.CrossAxisAlignment.center,
+                    children: [
+                      pw.Text(lote.toUpperCase(), style: pw.TextStyle(fontSize: 12, fontWeight: pw.FontWeight.bold)),
+                    ],
+                  ),
                 ],
-            ]),
+              ),
+              pw.SizedBox(height: 10),
+              // ignore: deprecated_member_use
+              pw.Table.fromTextArray(
+                context: context,
+                data: [
+                  ['VALOR TOTAL', 'VALOR CUOTA INICIAL', 'VALOR SALDO TOTAL', 'NÚMERO DE CUOTAS', 'VALOR PAGADO EN CUOTAS'],
+                  [currencyCOP((valorTotal.toInt()).toString()), currencyCOP((cuotaIni.toInt()).toString()), currencyCOP((vlrPorPagar.toInt()).toString()), nroCuotas, currencyCOP((valorPagado.toInt()).toString())],
+                ],
+              ),
+              pw.SizedBox(height: 10),
+              pw.Center(
+                child: pw.Column(
+                  mainAxisAlignment: pw.MainAxisAlignment.center,
+                  crossAxisAlignment: pw.CrossAxisAlignment.center,
+                  children: [
+                    pw.Text('ESTADO DE CARTERA', style: pw.TextStyle(fontSize: 12, fontWeight: pw.FontWeight.bold)),
+                  ]
+                ),
+              ),
+              pw.SizedBox(height: 10),
+              // ignore: deprecated_member_use
+              pw.Table.fromTextArray(
+                context: context,
+                data: [
+                  ['ITEM', 'FECHA', 'DESCRIPCIÓN', 'DÍA DE PAGO', 'VALOR PAGADO'],
+                  for (var doc1 in pagosRea)
+                    [
+                      (++counter).toString(),
+                      doc1['fechaRecibo'], // Date
+                      doc1['conceptoPago'].toUpperCase(), // Concept
+                      doc1['fechaPago'], // Payment Status
+                      currencyCOP((doc1['valorPago'].toInt()).toString()) // Amount (formatted as 2 decimal places)
+                    ],
+                  ['', '', '', 'TOTAL', currencyCOP((valorPagado.toInt()).toString())],
+                  ['', '', 'VALOR TOTAL', '', currencyCOP((valorTotal.toInt()).toString())],
+                  ['', '', 'VALOR PAGADO', '', currencyCOP((valorPagado.toInt()).toString())],
+                  ['', '', 'SALDO', '', currencyCOP((saldoPorPagar.toInt()).toString())],
+                ],
+              ),
+              pw.SizedBox(height: 60),
+              pw.Row(
+                  children: [
+                    pw.Expanded(
+                      flex: 1,
+                      child: pw.Column(
+                        crossAxisAlignment: pw.CrossAxisAlignment.center,
+                        children: [
+                          pw.Text(
+                            'VICTOR ALFONSO OROSTEGUI P.',
+                            textAlign: pw.TextAlign.center,
+                            style: pw.TextStyle(fontSize: 10, 
+                              fontWeight: pw.FontWeight.bold,
+                            ),                            
+                          ),
+                          pw.Text(
+                            'GERENTE CONDOMINIO CAMPESTRE',
+                            textAlign: pw.TextAlign.center,
+                            style: const pw.TextStyle(fontSize: 10,
+                            ),
+                          ),
+                          pw.Text(
+                            'ALBATERRA PH',
+                            textAlign: pw.TextAlign.center,
+                            style: const pw.TextStyle(fontSize: 10,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    pw.Expanded(
+                      flex: 1,
+                      child: pw.Column(
+                        crossAxisAlignment: pw.CrossAxisAlignment.center,
+                        children: [
+                          pw.Text(
+                            'LAURA MELISSA AGUDELO V.',
+                            textAlign: pw.TextAlign.center,
+                            style: pw.TextStyle(fontSize: 10, 
+                              fontWeight: pw.FontWeight.bold,
+                            ),
+                          ),
+                          pw.Text(
+                            'AUX. CARTERA CONDOMINIO',
+                            textAlign: pw.TextAlign.center,
+                            style: const pw.TextStyle(fontSize: 10,
+                            ),
+                          ),
+                          pw.Text(
+                            'CAMPESTRE ALBATERRA PH',
+                            textAlign: pw.TextAlign.center,
+                            style: const pw.TextStyle(fontSize: 10,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              
 
           ];
         },
+        footer: buildFooter,
       ),
     );
 

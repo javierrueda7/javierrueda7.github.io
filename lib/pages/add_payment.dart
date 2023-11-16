@@ -1,4 +1,3 @@
-import 'package:albaterrapp/pages/pagosesperados_page.dart';
 import 'package:albaterrapp/services/firebase_services.dart';
 import 'package:albaterrapp/utils/color_utils.dart';
 import 'package:albaterrapp/widgets/widgets.dart';
@@ -167,8 +166,8 @@ class _AddPaymentPageState extends State<AddPaymentPage> {
                   fontWeight: FontWeight.bold),
             ),
           ),
-          actions: <Widget>[
-          Padding(
+          /*actions: <Widget>[
+            Padding(
               padding: const EdgeInsets.only(right: 20.0),
               child: GestureDetector(
                 onTap: () {
@@ -180,8 +179,9 @@ class _AddPaymentPageState extends State<AddPaymentPage> {
                   setState(() {});
                 },
                 child: const Icon(Icons.today_outlined),
-              )),
-        ],
+              )
+            ),
+          ],*/
         ),
         body: Center(
           child: Container(
@@ -481,10 +481,10 @@ class _AddPaymentPageState extends State<AddPaymentPage> {
                                               selectedLote = loteValue!;
                                               await getLote();
                                               await getPlanPagos();                                              
-                                              discount = planPagos['dcto'];
+                                              discount = planPagos['dcto'].toDouble();
                                               totalPrice = planPagos['precioIni']*(100-discount)/100;
-                                              saldoPendiente = planPagos['saldoPorPagar'];
-                                              valorPagado = planPagos['valorPagado'];                                              
+                                              saldoPendiente = planPagos['saldoPorPagar'].toDouble();
+                                              valorPagado = planPagos['valorPagado'].toDouble();                                              
                                             });
                                           },
                                           isExpanded: true,
@@ -827,6 +827,7 @@ class _AddPaymentPageState extends State<AddPaymentPage> {
                               ),
                             );
                             obtenerPagosEsperados();
+                            actConcepto();
                             // ignore: use_build_context_synchronously
                             Navigator.pop(context);
                             
@@ -966,6 +967,35 @@ class _AddPaymentPageState extends State<AddPaymentPage> {
       await db.collection("ordSep").doc(idPlanPagos).update({"stageSep": 'LOTE VENDIDO', "precioFinal": precioFin.toInt()});
     }
   }
+
+  Future<void> actConcepto() async {
+    final firestore = FirebaseFirestore.instance;
+      
+    List<dynamic> pagosReal = await getPagos(selectedLote);
+    DocumentReference documentoRef = FirebaseFirestore.instance.collection('planPagos').doc(selectedLote);
+    DocumentSnapshot documentoSnapshot = await documentoRef.get();
+    DocumentReference ordSep = FirebaseFirestore.instance.collection('ordSep').doc(documentoSnapshot['idPlanPagos']);
+    DocumentSnapshot ordSepTemp = await ordSep.get();
+    cuotaIni = ordSepTemp['vlrCILote'].toInt();
+    double totalPagado = 0;
+    String concepto = '';
+    for (var pagoR in pagosReal){
+      totalPagado = totalPagado + pagoR['valorPago'];
+      if(totalPagado <= documentoSnapshot['valorSeparacion']){
+        concepto = 'SEPARACIÓN';
+      } else if(documentoSnapshot['paymentMethod'] == 'Financiación directa' && totalPagado <= cuotaIni){
+        concepto = 'CUOTA INICIAL';
+      } else{
+        concepto = 'ABONO SALDO TOTAL';
+      }
+      await firestore.collection('pagos').doc(pagoR['pid']).update({
+        'conceptoPago': concepto,
+      });
+    }
+    
+  }
+
+  int cuotaIni = 0;
 
   String paymentIdGenerator(int paymentCount) {
     paymentCount++;

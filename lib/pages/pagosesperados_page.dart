@@ -139,7 +139,7 @@ class _PagosEsperadosState extends State<PagosEsperados> {
             padding: const EdgeInsets.only(right: 20.0),
             child: GestureDetector(
               onTap: () {                
-                ajustarPagosEsperados();                
+                actConcepto();                
               },
               child: const Icon(Icons.today_outlined),
             )
@@ -530,6 +530,39 @@ class _PagosEsperadosState extends State<PagosEsperados> {
   bool esNumero(String str) {
     return double.tryParse(str) != null;
   }
+
+  Future<void> actConcepto() async {
+    final firestore = FirebaseFirestore.instance;  
+    final QuerySnapshot planPagosSnapshot =
+      await FirebaseFirestore.instance.collection('planPagos').get();
+
+    for (QueryDocumentSnapshot document in planPagosSnapshot.docs) {
+      final String tempLoteId = document.id;
+      List<dynamic> pagosReal = await getPagos(tempLoteId);
+      DocumentReference documentoRef = FirebaseFirestore.instance.collection('planPagos').doc(tempLoteId);
+      DocumentSnapshot documentoSnapshot = await documentoRef.get();
+      DocumentReference ordSep = FirebaseFirestore.instance.collection('ordSep').doc(documentoSnapshot['idPlanPagos']);
+      DocumentSnapshot ordSepTemp = await ordSep.get();
+      cuotaIni = ordSepTemp['vlrCILote'].toInt();
+      double totalPagado = 0;
+      String concepto = '';
+      for (var pagoR in pagosReal){
+        totalPagado = totalPagado + pagoR['valorPago'];
+        if(totalPagado <= documentoSnapshot['valorSeparacion']){
+          concepto = 'SEPARACIÓN';
+        } else if(documentoSnapshot['paymentMethod'] == 'Financiación directa' && totalPagado <= cuotaIni){
+          concepto = 'CUOTA INICIAL';
+        } else{
+          concepto = 'ABONO SALDO TOTAL';
+        }
+        await firestore.collection('pagos').doc(pagoR['pid']).update({
+          'conceptoPago': concepto,
+        });
+      }
+    }
+  }
+
+  int cuotaIni = 0;
 
   Future<void> ajustarPagosEsperados() async {
     final firestore = FirebaseFirestore.instance;  
