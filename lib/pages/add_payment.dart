@@ -111,7 +111,8 @@ class _AddPaymentPageState extends State<AddPaymentPage> {
   Map<String, dynamic> metodoPago = {};
   Stream<QuerySnapshot>? metodoPagoStream;
   String selectedLote = '';
-  double paymentValue = 0;
+  double paymentValue = 0;  
+  double interestsValue = 0;
   double discount = 0;
   double totalPrice = 0;
   double saldoPendiente = 0;
@@ -124,13 +125,16 @@ class _AddPaymentPageState extends State<AddPaymentPage> {
   TextEditingController observacionesController = TextEditingController(text: "");
   TextEditingController receiptDateController = TextEditingController(text: DateFormat('dd-MM-yyyy').format(DateTime.now()));
   TextEditingController valorLetrasController = TextEditingController(text: "");
+  TextEditingController interestsLetrasController = TextEditingController(text: "");
   String selectedPaymentMethod = 'EFECTIVO';
   String selectedCity = 'Bucaramanga';
   TextEditingController paymentDateController = TextEditingController(text: DateFormat('dd-MM-yyyy').format(DateTime.now()));
   TextEditingController conceptoPagoController = TextEditingController(text: "ABONO");
   TextEditingController paymentNumberController = TextEditingController(text: "");
   TextEditingController paymentValueController = TextEditingController(text: "");
+  TextEditingController interestsValueController = TextEditingController(text: "");
   late int paymentCounter;
+  bool interestsVisible = false;
   final CollectionReference collectionReference =
       FirebaseFirestore.instance.collection('pagos');
 
@@ -556,6 +560,15 @@ class _AddPaymentPageState extends State<AddPaymentPage> {
                         height: 5,
                       ),
                       Container(
+                        alignment: Alignment.center,
+                        child: const Text('Valor de la cuota (Excluyendo intereses)',
+                            style: TextStyle(
+                              fontSize: 14,
+                            ))),
+                      const SizedBox(
+                        height: 5,
+                      ),
+                      Container(
                         constraints: const BoxConstraints(maxWidth: 800),
                         child: Row(
                           children: [
@@ -609,10 +622,112 @@ class _AddPaymentPageState extends State<AddPaymentPage> {
                             ),
                           ],
                         ),
-                      ),                                         
+                      ),
                       const SizedBox(
                         height: 5,
                       ),
+                      /*Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Container(
+                              alignment: Alignment.center,
+                              child: const Text('¿El pago posee intereses?',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                  ))),
+                          Switch(
+                            value: interestsVisible,
+                            onChanged: (bool value) { setState(() {
+                              interestsVisible = value;
+                                            interestsValue = 0;
+                                            interestsValueController.value = TextEditingValue(
+                                              text: (currencyCOP((interestsValue.toInt()).toString())),
+                                              selection:TextSelection.collapsed(
+                                                offset: (currencyCOP((interestsValue.toInt()).toString())).length
+                                              ),
+                                            );
+                              updateNumberWords();
+                            });  },
+                          ),
+                        ],
+                      ),
+                      Container(child: interestsVisible ?
+                        Column(
+                          children: [                                                                   
+                            const SizedBox(
+                              height: 5,
+                            ),  
+                            Container(
+                              alignment: Alignment.center,
+                              child: const Text('Valor de intereses',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                  ))),
+                            const SizedBox(
+                              height: 5,
+                            ),
+                            Container(
+                              constraints: const BoxConstraints(maxWidth: 800),
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    flex: 1,
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(right: 5),
+                                      child: textFieldWidget(
+                                        (currencyCOP((interestsValue.toInt())
+                                            .toString())),
+                                        Icons.monetization_on_outlined,
+                                        false,
+                                        interestsValueController,
+                                        true,
+                                        'number',
+                                        (String value) {                          
+                                          setState(() {
+                                            final double newValue = stringConverter(value);
+                                            interestsValue = newValue;
+                                            interestsValueController.value = TextEditingValue(
+                                              text: (currencyCOP((interestsValue.toInt()).toString())),
+                                              selection:TextSelection.collapsed(
+                                                offset: (currencyCOP((interestsValue.toInt()).toString())).length
+                                              ),
+                                            );
+                                            updateNumberWords();
+                                          });
+                                        }                        
+                                      ),
+                                    ),
+                                  ),
+                                  Expanded(
+                                    flex:1,
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(left: 5),
+                                      child: textFieldWidget(
+                                        "Valor en letras",
+                                        Icons.abc_outlined,
+                                        false,
+                                        interestsLetrasController,
+                                        true,
+                                        'name',
+                                        () {}
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),                                                            
+                            const SizedBox(
+                              height: 5,
+                            ),
+                          ],
+                        ) :
+                        const SizedBox(
+                          height: 5,
+                        ),  
+                      ),*/                                         
+                      
+
+
                       selectedLote != '' ? Card(
                         color: fifthColor.withOpacity(0.4),
                         elevation: 2,
@@ -1022,7 +1137,8 @@ class _AddPaymentPageState extends State<AddPaymentPage> {
   }
 
   void updateNumberWords() async {
-    valorLetrasController.text = await numeroEnLetras(paymentValue, 'pesos');
+    valorLetrasController.text = await numeroEnLetras(paymentValue, 'pesos');    
+    interestsLetrasController.text = await numeroEnLetras(interestsValue, 'pesos');
   }
   
   double stringConverter(String valorAConvertir) {

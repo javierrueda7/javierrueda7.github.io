@@ -111,6 +111,7 @@ class _AddCustomPaymentPageState extends State<AddCustomPaymentPage> {
   Stream<QuerySnapshot>? metodoPagoStream;
   String selectedLote = '';
   double paymentValue = 0;
+  double interestsValue = 0;
   double discount = 0;
   double totalPrice = 0;
   double saldoPendiente = 0;
@@ -123,12 +124,14 @@ class _AddCustomPaymentPageState extends State<AddCustomPaymentPage> {
   TextEditingController observacionesController = TextEditingController(text: "");
   TextEditingController receiptDateController = TextEditingController(text: DateFormat('dd-MM-yyyy').format(DateTime.now()));
   TextEditingController valorLetrasController = TextEditingController(text: "");
+  TextEditingController interestsLetrasController = TextEditingController(text: "");
   String selectedPaymentMethod = 'EFECTIVO';
   String selectedCity = 'Bucaramanga';
   TextEditingController paymentDateController = TextEditingController(text: DateFormat('dd-MM-yyyy').format(DateTime.now()));
   TextEditingController conceptoPagoController = TextEditingController(text: "");
   TextEditingController paymentNumberController = TextEditingController(text: "");
-  TextEditingController paymentValueController = TextEditingController(text: "");
+  TextEditingController paymentValueController = TextEditingController(text: "");  
+  TextEditingController interestsValueController = TextEditingController(text: "");
   late int paymentCounter;
   final CollectionReference collectionReference =
       FirebaseFirestore.instance.collection('pagos');
@@ -592,7 +595,60 @@ class _AddCustomPaymentPageState extends State<AddCustomPaymentPage> {
                           ),
                         ],
                       ),
-                    ),                                         
+                    ),
+                    
+                    Container(
+                      constraints: const BoxConstraints(maxWidth: 800),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            flex: 1,
+                            child: Padding(
+                              padding: const EdgeInsets.only(right: 5),
+                              child: textFieldWidget(
+                                (currencyCOP((interestsValue.toInt())
+                                    .toString())),
+                                Icons.monetization_on_outlined,
+                                false,
+                                interestsValueController,
+                                true,
+                                'number',
+                                (String value) {                          
+                                  setState(() {
+                                    final double newValue = stringConverter(value);
+                                    interestsValue = newValue;
+                                    interestsValueController.value = TextEditingValue(
+                                      text: (currencyCOP((interestsValue.toInt()).toString())),
+                                      selection:TextSelection.collapsed(
+                                        offset: (currencyCOP((interestsValue.toInt()).toString())).length
+                                      ),
+                                    );
+                                    updateNumberWords();
+                                  });
+                                }                        
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            flex:1,
+                            child: Padding(
+                              padding: const EdgeInsets.only(left: 5),
+                              child: textFieldWidget(
+                                "Valor en letras",
+                                Icons.abc_outlined,
+                                false,
+                                interestsLetrasController,
+                                true,
+                                'name',
+                                () {}
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ), 
+
+
                     const SizedBox(
                       height: 5,
                     ),

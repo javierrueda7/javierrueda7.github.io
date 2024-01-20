@@ -1,4 +1,6 @@
 import 'package:albaterrapp/utils/color_utils.dart';
+import 'package:albaterrapp/widgets/widgets.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import '../services/firebase_services.dart';
 
@@ -44,12 +46,28 @@ class _LotesPageState extends State<LotesPage> {
                     itemCount: snapshot.data?.length,
                     itemBuilder: (context, index) {
                       return ListTile(
+                        leading: SizedBox(width: 100, child: Text(snapshot.data?[index]['loteState'])),
                         title: Text(snapshot.data?[index]['loteName']),
-                        trailing: Text(snapshot.data?[index]['loteState']),
+                        trailing: snapshot.data?[index]['loteState'] == 'Disponible'
+                        ? Text(currencyCOP((snapshot.data?[index]['lotePrice'].toInt()).toString()))
+                        : FutureBuilder<double>(
+                          future: getFinalPrice(snapshot.data?[index]['loteId']),
+                          builder: (context, AsyncSnapshot<double> priceSnapshot) {
+                            if (priceSnapshot.connectionState == ConnectionState.waiting) {
+                              return const CircularProgressIndicator();
+                            } else if (priceSnapshot.hasError) {
+                              return const Text('Error');
+                            } else {
+                              double price = priceSnapshot.data ?? 0.0;
+                              return Text(currencyCOP(price.toString()));
+                            }
+                          },
+                        ),
                         tileColor:
                             setStatusColor(snapshot.data?[index]['loteState']),
                         onTap: (() async {
                           if (allAccess == true) {
+                            // ignore: use_build_context_synchronously
                             await Navigator.pushNamed(context, "/editLote",
                                 arguments: {
                                   "loteId": snapshot.data?[index]['loteId'],
@@ -109,4 +127,42 @@ class _LotesPageState extends State<LotesPage> {
       return 'activar';
     }
   }
+  
+  Future<String?> getIdPlanPagos(String idLote) async {
+    try {
+      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+          .collection('ordSep')
+          .where('loteId', isEqualTo: idLote)
+          .limit(1)
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        return querySnapshot.docs.first.id;
+      } else {
+        return null; // Return null if no matching document is found
+      }
+    } catch (e) {
+      return null;
+    }
+  }
+
+  Future<double> getFinalPrice(String idLote) async {
+    String? idPlanPagos = await getIdPlanPagos(idLote);
+    double precio = 0;
+
+    if (idPlanPagos != null) {
+      DocumentSnapshot? doc = await FirebaseFirestore.instance
+          .collection('ordSep')
+          .doc(idPlanPagos)
+          .get();
+      precio = doc['precioFinal'].toDouble();
+      return precio;
+
+      // Use the retrieved document ('doc') as needed
+    }
+    else{
+      return precio;
+    }
+  }
+
 }
