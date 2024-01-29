@@ -21,6 +21,7 @@ class PDFEstadoCuenta extends StatelessWidget {
   final double valorPagado;
   final double saldoPorPagar;
   final double valorTotal;
+  final double totalIntereses;
   final List<dynamic> pagosEsp;
   final List<dynamic> pagosRea;
   final DateTime startDate;
@@ -36,6 +37,7 @@ class PDFEstadoCuenta extends StatelessWidget {
       required this.valorPagado,
       required this.saldoPorPagar,
       required this.valorTotal,
+      required this.totalIntereses,
       required this.pagosEsp,
       required this.pagosRea,
       required this.startDate,
@@ -322,6 +324,7 @@ class PDFEstadoCuenta extends StatelessWidget {
                 data: [
                   ['VALOR TOTAL', 'VALOR CUOTA INICIAL', 'VALOR SALDO TOTAL', 'NÚMERO DE CUOTAS', 'VALOR PAGADO EN CUOTAS'],
                   [currencyCOP((valorTotal.toInt()).toString()), currencyCOP((cuotaIni.toInt()).toString()), currencyCOP((vlrPorPagar.toInt()).toString()), nroCuotas, currencyCOP((valorPagado.toInt()).toString())],
+                  [' ', ' ', ' ', 'INTERESES', currencyCOP((totalIntereses.toInt()).toString())],
                 ],
               ),
               pw.SizedBox(height: 10),
@@ -339,19 +342,21 @@ class PDFEstadoCuenta extends StatelessWidget {
               pw.Table.fromTextArray(
                 context: context,
                 data: [
-                  ['ITEM', 'FECHA', 'DESCRIPCIÓN', 'DÍA DE PAGO', 'VALOR PAGADO'],
+                  ['ITEM', 'FECHA', 'DESCRIPCIÓN', 'DÍA DE PAGO', 'VALOR PAGADO', 'INTERESES', 'TOTAL'],
                   for (var doc1 in pagosRea)
                     [
                       (++counter).toString(),
                       doc1['fechaRecibo'], // Date
                       doc1['conceptoPago'].toUpperCase(), // Concept
                       doc1['fechaPago'], // Payment Status
-                      currencyCOP((doc1['valorPago'].toInt()).toString()) // Amount (formatted as 2 decimal places)
+                      currencyCOP((doc1['valorPago'].toInt()).toString()), // Amount (formatted as 2 decimal places)
+                      currencyCOP((doc1['valorIntereses'].toInt()).toString()),
+                      currencyCOP(((doc1['valorPago'] + doc1['valorIntereses']).toInt()).toString())
                     ],
-                  ['', '', '', 'TOTAL', currencyCOP((valorPagado.toInt()).toString())],
-                  ['', '', 'VALOR TOTAL', '', currencyCOP((valorTotal.toInt()).toString())],
-                  ['', '', 'VALOR PAGADO', '', currencyCOP((valorPagado.toInt()).toString())],
-                  ['', '', 'SALDO', '', currencyCOP((saldoPorPagar.toInt()).toString())],
+                  [' '],
+                  ['', '', '', 'TOTAL LOTE', currencyCOP((valorTotal.toInt()).toString())],
+                  ['', '', '', 'TOTAL PAGADO', currencyCOP((valorPagado.toInt()).toString()), currencyCOP((totalIntereses.toInt()).toString()), currencyCOP(((valorPagado + totalIntereses).toInt()).toString())],
+                  ['', '', '', 'SALDO LOTE', currencyCOP((saldoPorPagar.toInt()).toString())],
                 ],
               ),
               pw.SizedBox(height: 60),

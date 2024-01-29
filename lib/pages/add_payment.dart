@@ -75,7 +75,8 @@ class _AddPaymentPageState extends State<AddPaymentPage> {
       "saldoPorPagar": data['saldoPorPagar'],
       "valorPagado": data['valorPagado'],
       "valorSeparacion": data['valorSeparacion'],
-      "idPlanPagos": data['idPlanPagos']
+      "idPlanPagos": data['idPlanPagos'],
+      "valorIntereses": data['valorIntereses']
     };
     planPagos = temp;
   }
@@ -113,6 +114,7 @@ class _AddPaymentPageState extends State<AddPaymentPage> {
   String selectedLote = '';
   double paymentValue = 0;  
   double interestsValue = 0;
+  double totalIntereses = 0;
   double discount = 0;
   double totalPrice = 0;
   double saldoPendiente = 0;
@@ -488,7 +490,8 @@ class _AddPaymentPageState extends State<AddPaymentPage> {
                                               discount = planPagos['dcto'].toDouble();
                                               totalPrice = planPagos['precioIni']*(100-discount)/100;
                                               saldoPendiente = planPagos['saldoPorPagar'].toDouble();
-                                              valorPagado = planPagos['valorPagado'].toDouble();                                              
+                                              valorPagado = planPagos['valorPagado'].toDouble();
+                                              totalIntereses = planPagos['valorIntereses'].toDouble();                                             
                                             });
                                           },
                                           isExpanded: true,
@@ -626,32 +629,37 @@ class _AddPaymentPageState extends State<AddPaymentPage> {
                       const SizedBox(
                         height: 5,
                       ),
-                      /*Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Container(
-                              alignment: Alignment.center,
-                              child: const Text('¿El pago posee intereses?',
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                  ))),
-                          Switch(
-                            value: interestsVisible,
-                            onChanged: (bool value) { setState(() {
-                              interestsVisible = value;
-                                            interestsValue = 0;
-                                            interestsValueController.value = TextEditingValue(
-                                              text: (currencyCOP((interestsValue.toInt()).toString())),
-                                              selection:TextSelection.collapsed(
-                                                offset: (currencyCOP((interestsValue.toInt()).toString())).length
-                                              ),
-                                            );
-                              updateNumberWords();
-                            });  },
-                          ),
-                        ],
+                      Container(
+                        constraints: const BoxConstraints(maxWidth: 800),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Container(
+                                alignment: Alignment.center,
+                                child: const Text('¿El pago posee intereses?',
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                    ))),
+                            Switch(
+                              value: interestsVisible,
+                              onChanged: (bool value) { setState(() {
+                                interestsVisible = value;
+                                interestsValue = 0;
+                                interestsValueController.value = TextEditingValue(
+                                  text: (currencyCOP((interestsValue.toInt()).toString())),
+                                  selection:TextSelection.collapsed(
+                                    offset: (currencyCOP((interestsValue.toInt()).toString())).length
+                                  ),
+                                );
+                                updateNumberWords();
+                              });  },
+                            ),
+                          ],
+                        ),
                       ),
-                      Container(child: interestsVisible ?
+                      Container(
+                        constraints: const BoxConstraints(maxWidth: 800),
+                        child: interestsVisible ?
                         Column(
                           children: [                                                                   
                             const SizedBox(
@@ -724,7 +732,7 @@ class _AddPaymentPageState extends State<AddPaymentPage> {
                         const SizedBox(
                           height: 5,
                         ),  
-                      ),*/                                         
+                      ),           
                       
 
 
@@ -798,6 +806,16 @@ class _AddPaymentPageState extends State<AddPaymentPage> {
                               const SizedBox(height: 8),
                               Text( 
                                 currencyCOP(((totalPrice - planPagos['valorPagado'] - paymentValue).toInt()).toString()),
+                                style: TextStyle(color: primaryColor.withOpacity(0.8), fontSize: 16, fontWeight: FontWeight.bold),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                'Intereses totales después del pago',
+                                style: TextStyle(color: primaryColor.withOpacity(0.8), fontSize: 12),
+                              ),
+                              const SizedBox(height: 8),
+                              Text( 
+                                currencyCOP(((planPagos['valorIntereses'] + interestsValue).toInt()).toString()),
                                 style: TextStyle(color: primaryColor.withOpacity(0.8), fontSize: 16, fontWeight: FontWeight.bold),
                               ),
                               const SizedBox(height: 8),
@@ -916,7 +934,8 @@ class _AddPaymentPageState extends State<AddPaymentPage> {
                               addressController.text,
                               selectedCity,
                               observacionesController.text,
-                              planPagos['idPlanPagos']
+                              planPagos['idPlanPagos'],
+                              interestsValue
                             );
                             await updatePlanPagos(
                               selectedLote,                               
@@ -925,7 +944,8 @@ class _AddPaymentPageState extends State<AddPaymentPage> {
                               discount, 
                               nextState(),
                               saldoPendiente - paymentValue,
-                              valorPagado + paymentValue
+                              valorPagado + paymentValue,
+                              totalIntereses + interestsValue
                               );
                             // ignore: use_build_context_synchronously
                             ScaffoldMessenger.of(context).showSnackBar(

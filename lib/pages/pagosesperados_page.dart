@@ -557,7 +557,12 @@ class _PagosEsperadosState extends State<PagosEsperados> {
         }
         await firestore.collection('pagos').doc(pagoR['pid']).update({
           'conceptoPago': concepto,
+          'valorIntereses': 0
         });
+        /*await firestore.collection('planPagos').doc(tempLoteId).update({
+          //'conceptoPago': concepto,
+          'valorIntereses': 0
+        });*/
       }
     }
   }

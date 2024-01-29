@@ -214,8 +214,8 @@ class _InitPageState extends State<InitPage> {
 
                   /*Navigator.of(context).push(MaterialPageRoute(
                     builder: (BuildContext context) => const PowerBIReportScreen()
-                  ));
-                  setState(() {});*/
+                  ));*/
+                  setState(() {});
                   
                 }
                 if (value == 'Opción 6') {
@@ -457,8 +457,8 @@ class _InitPageState extends State<InitPage> {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                        builder: (context) =>
-                                            ResumenPagos(loteid: currentLote[2])),
+                                      builder: (context) =>
+                                        ResumenPagos(loteid: currentLote[2])),
                                   );
                                 });
                               } else {

@@ -22,6 +22,9 @@ class PDFInvoice extends StatelessWidget {
   final String receiptDate;
   final String paymentDate;  
   final double paymentValue;
+  final double interestValue;
+  final String intValueLetters;
+  final String totalValueLetters;
   final String paymentValueLetters;
   final double saldoPorPagar;
   final double valorTotal;
@@ -42,6 +45,9 @@ class PDFInvoice extends StatelessWidget {
       required this.receiptDate,
       required this.paymentDate,
       required this.paymentValue,
+      required this.interestValue,
+      required this.intValueLetters,
+      required this.totalValueLetters,
       required this.paymentValueLetters,
       required this.saldoPorPagar,
       required this.valorTotal,
@@ -337,18 +343,6 @@ class PDFInvoice extends StatelessWidget {
                     ),
                   ]
                 ),   
-
-
-
-
-
-
-                           
-                  
-
-
-
-
                 pw.SizedBox(height: 20),
                 pw.Divider(thickness: 1),
                 pw.SizedBox(height: 20),
@@ -356,17 +350,17 @@ class PDFInvoice extends StatelessWidget {
                   children: [
                     pw.Expanded(
                       flex: 1,
-                      child: pw.Text('El valor de',
+                      child: pw.Text('El pago de',
                             textAlign: pw.TextAlign.left, style: pw.TextStyle(fontSize: 10, fontWeight: pw.FontWeight.bold)),
                     ),
                     pw.Expanded(
                       flex: 6,
-                      child: pw.Text('${paymentValueLetters.toUpperCase()} M/CTE',
+                      child: pw.Text('${totalValueLetters.toUpperCase()} M/CTE',
                             textAlign: pw.TextAlign.center, style: pw.TextStyle(fontSize: 10, fontWeight: pw.FontWeight.bold)),
                     ),
                     pw.Expanded(
                       flex: 1,
-                      child: pw.Text(currencyCOP((paymentValue.toInt()).toString()),
+                      child: pw.Text(currencyCOP(((paymentValue + interestValue).toInt()).toString()),
                             textAlign: pw.TextAlign.center, style: pw.TextStyle(fontSize: 10, fontWeight: pw.FontWeight.bold)),
                     ),
                   ],
@@ -375,13 +369,18 @@ class PDFInvoice extends StatelessWidget {
                 pw.Row(
                   children: [
                     pw.Expanded(
-                      flex: 7,
+                      flex: 6,
                       child: pw.Text('Concepto',
                             textAlign: pw.TextAlign.center, style: pw.TextStyle(fontSize: 10, fontWeight: pw.FontWeight.bold)),
                     ),
                     pw.Expanded(
                       flex: 1,
-                      child: pw.Text('Valor',
+                      child: pw.Text('Valor abono',
+                            textAlign: pw.TextAlign.center, style: pw.TextStyle(fontSize: 10, fontWeight: pw.FontWeight.bold)),
+                    ),
+                    pw.Expanded(
+                      flex: 1,
+                      child: pw.Text('Intereses',
                             textAlign: pw.TextAlign.center, style: pw.TextStyle(fontSize: 10, fontWeight: pw.FontWeight.bold)),
                     ),
                   ],
@@ -404,7 +403,7 @@ class PDFInvoice extends StatelessWidget {
                       ),
                     ),
                     pw.Expanded(
-                      flex: 1,
+                      flex: 2,
                       child: pw.Column(
                         crossAxisAlignment: pw.CrossAxisAlignment.center,
                         children: [
@@ -419,10 +418,6 @@ class PDFInvoice extends StatelessWidget {
                     ),
                     pw.Expanded(
                       flex: 1,
-                      child: pw.Container(),
-                    ),
-                    pw.Expanded(
-                      flex: 1,
                       child: pw.Column(
                         crossAxisAlignment: pw.CrossAxisAlignment.center,
                         children: [
@@ -451,7 +446,17 @@ class PDFInvoice extends StatelessWidget {
                     ),
                     pw.Expanded(
                       flex: 1,
-                      child: pw.Container(),
+                      child: pw.Column(
+                        crossAxisAlignment: pw.CrossAxisAlignment.center,
+                        children: [
+                          pw.Text(' ',
+                            textAlign: pw.TextAlign.center, style: const pw.TextStyle(fontSize: 10)),
+                          pw.Text(currencyCOP((paymentValue~/2).toString()),
+                            textAlign: pw.TextAlign.center, style: const pw.TextStyle(fontSize: 10)),
+                          pw.Text(' ',
+                            textAlign: pw.TextAlign.center, style: const pw.TextStyle(fontSize: 10)),
+                        ],
+                      ),
                     ),
                     pw.Expanded(
                       flex: 1,
@@ -460,7 +465,7 @@ class PDFInvoice extends StatelessWidget {
                         children: [
                           pw.Text(' ',
                             textAlign: pw.TextAlign.center, style: const pw.TextStyle(fontSize: 10)),
-                          pw.Text(currencyCOP((paymentValue~/2).toString()),
+                          pw.Text(currencyCOP((interestValue~/2).toString()),
                             textAlign: pw.TextAlign.center, style: const pw.TextStyle(fontSize: 10)),
                           pw.Text(' ',
                             textAlign: pw.TextAlign.center, style: const pw.TextStyle(fontSize: 10)),
@@ -487,7 +492,7 @@ class PDFInvoice extends StatelessWidget {
                       ),
                     ),
                     pw.Expanded(
-                      flex: 1,
+                      flex: 2,
                       child: pw.Column(
                         crossAxisAlignment: pw.CrossAxisAlignment.center,
                         children: [
@@ -499,10 +504,6 @@ class PDFInvoice extends StatelessWidget {
                             textAlign: pw.TextAlign.center, style: const pw.TextStyle(fontSize: 10)),
                         ],
                       ),
-                    ),
-                    pw.Expanded(
-                      flex: 1,
-                      child: pw.Container(),
                     ),
                     pw.Expanded(
                       flex: 1,
@@ -534,7 +535,17 @@ class PDFInvoice extends StatelessWidget {
                     ),
                     pw.Expanded(
                       flex: 1,
-                      child: pw.Container(),
+                      child: pw.Column(
+                        crossAxisAlignment: pw.CrossAxisAlignment.center,
+                        children: [
+                          pw.Text(' ',
+                            textAlign: pw.TextAlign.center, style: const pw.TextStyle(fontSize: 10)),
+                          pw.Text(currencyCOP((paymentValue~/2).toString()),
+                            textAlign: pw.TextAlign.center, style: const pw.TextStyle(fontSize: 10)),
+                          pw.Text(' ',
+                            textAlign: pw.TextAlign.center, style: const pw.TextStyle(fontSize: 10)),
+                        ],
+                      ),
                     ),
                     pw.Expanded(
                       flex: 1,
@@ -543,7 +554,7 @@ class PDFInvoice extends StatelessWidget {
                         children: [
                           pw.Text(' ',
                             textAlign: pw.TextAlign.center, style: const pw.TextStyle(fontSize: 10)),
-                          pw.Text(currencyCOP((paymentValue~/2).toString()),
+                          pw.Text(currencyCOP((interestValue~/2).toString()),
                             textAlign: pw.TextAlign.center, style: const pw.TextStyle(fontSize: 10)),
                           pw.Text(' ',
                             textAlign: pw.TextAlign.center, style: const pw.TextStyle(fontSize: 10)),

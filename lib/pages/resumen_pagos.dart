@@ -59,6 +59,7 @@ class _ResumenPagosState extends State<ResumenPagos> {
       "idCliente": data['idCliente'],
       "paymentMethod": data['paymentMethod'],
       "valorSeparacion": data['valorSeparacion'],
+      "valorIntereses": data['valorIntereses']
     };
     planPagos = temp;
   }
@@ -67,7 +68,7 @@ class _ResumenPagosState extends State<ResumenPagos> {
     DocumentSnapshot? doc =
         await db.collection('ordSep').doc(idPlan).get();
     final Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-    cuotaIni = data['vlrCILote'];
+    cuotaIni = data['vlrCILote'].toDouble();
   }
 
   Future<void> actConcepto() async {
@@ -85,10 +86,9 @@ class _ResumenPagosState extends State<ResumenPagos> {
         concepto = 'ABONO SALDO TOTAL';
       }
       await firestore.collection('pagos').doc(pagoR['pid']).update({
-            'conceptoPago': concepto,
-          });
+        'conceptoPago': concepto,
+      });
     }
-
   }
 
   double cuotaIni = 0;
@@ -133,7 +133,7 @@ class _ResumenPagosState extends State<ResumenPagos> {
                     alignment: Alignment.center,
                     constraints: const BoxConstraints(maxWidth: 800),
                     width: MediaQuery.of(context).size.width-50,
-                    height: 200,
+                    height: 240,
                     padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -165,7 +165,7 @@ class _ResumenPagosState extends State<ResumenPagos> {
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
                                 Text(
-                                  'Valor pagado',
+                                  'Total abonado',
                                   style: TextStyle(color: primaryColor.withOpacity(0.8), fontSize: 12),
                                 ),
                                 const SizedBox(height: 8),
@@ -176,6 +176,26 @@ class _ResumenPagosState extends State<ResumenPagos> {
                               ],
                             ),
                             Column(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  'Intereses pagados',
+                                  style: TextStyle(color: primaryColor.withOpacity(0.8), fontSize: 12),
+                                ),
+                                const SizedBox(height: 8),
+                                Text( 
+                                  currencyCOP((planPagos['valorIntereses'].toInt()).toString()),
+                                  style: TextStyle(color: primaryColor.withOpacity(0.8), fontSize: 16, fontWeight: FontWeight.bold),
+                                ),
+                              ],
+                            ),      
+                          ],
+                        ),                    
+                        const SizedBox(height: 10),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Column(
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
                                 Text(
@@ -185,6 +205,20 @@ class _ResumenPagosState extends State<ResumenPagos> {
                                 const SizedBox(height: 8),
                                 Text(
                                   currencyCOP((planPagos['saldoPorPagar'].toInt()).toString()),
+                                  style: TextStyle(color: fourthColor.withOpacity(0.8), fontSize: 16, fontWeight: FontWeight.bold),
+                                ),
+                              ],
+                            ),                                          
+                            Column(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  'Total pagado',
+                                  style: TextStyle(color: primaryColor.withOpacity(0.8), fontSize: 12),
+                                ),
+                                const SizedBox(height: 8),
+                                Text( 
+                                  currencyCOP(((planPagos['valorPagado'] + planPagos['valorIntereses']).toInt()).toString()),
                                   style: TextStyle(color: primaryColor.withOpacity(0.8), fontSize: 16, fontWeight: FontWeight.bold),
                                 ),
                               ],
@@ -198,7 +232,7 @@ class _ResumenPagosState extends State<ResumenPagos> {
                 )
               ),
               Positioned(
-                top: 180,
+                top: 220,
                 left: 0,
                 right: 0,
                 child: Container(
@@ -224,6 +258,7 @@ class _ResumenPagosState extends State<ResumenPagos> {
                             valorPagado: planPagos['valorPagado'],
                             saldoPorPagar: planPagos['saldoPorPagar'],
                             valorTotal: planPagos['precioFin'],
+                            totalIntereses: planPagos['valorIntereses'].toDouble(),
                             pagosEsp: pagosEsp,
                             pagosRea: pagosReal,
                             startDate: startDate,
@@ -236,7 +271,7 @@ class _ResumenPagosState extends State<ResumenPagos> {
                 )
               ),
               Positioned(
-                top: 240, // Adjust the value to position the list below the card
+                top: 280, // Adjust the value to position the list below the card
                 left: 0,
                 right: 0,
                 bottom: 0,
@@ -249,7 +284,7 @@ class _ResumenPagosState extends State<ResumenPagos> {
                         itemBuilder: (context, index) {
                           return Dismissible(
                             onDismissed: (direction) async {
-                              await deletePagos(pagosSnapshot.data?[index]['pid'], loteid, pagosSnapshot.data?[index]['valorPago']);
+                              await deletePagos(pagosSnapshot.data?[index]['pid'], loteid, pagosSnapshot.data?[index]['valorPago'], pagosSnapshot.data?[index]['valorIntereses']);
                               setState(() {
                                 pagosSnapshot.data?.removeAt(index);
                               });
@@ -311,6 +346,8 @@ class _ResumenPagosState extends State<ResumenPagos> {
                                       ),
                                       onTap: (() async {
                                         String valorEnLetras = await numeroEnLetras(pagosSnapshot.data?[index]['valorPago'].toDouble(), 'pesos');
+                                        String intEnLetras = await numeroEnLetras(pagosSnapshot.data?[index]['valorIntereses'].toDouble(), 'pesos');
+                                        String totalEnLetras = await numeroEnLetras((pagosSnapshot.data?[index]['valorIntereses'] + pagosSnapshot.data?[index]['valorPago']).toDouble(), 'pesos');
                                           // ignore: use_build_context_synchronously
                                           Navigator.push(
                                             context,
@@ -327,6 +364,9 @@ class _ResumenPagosState extends State<ResumenPagos> {
                                                 receiptDate: pagosSnapshot.data?[index]['fechaRecibo'],
                                                 paymentDate: pagosSnapshot.data?[index]['fechaPago'],                                  
                                                 paymentValue: pagosSnapshot.data?[index]['valorPago'].toDouble(),
+                                                interestValue: pagosSnapshot.data?[index]['valorIntereses'].toDouble(),
+                                                intValueLetters: intEnLetras,
+                                                totalValueLetters: totalEnLetras,
                                                 paymentValueLetters: valorEnLetras,
                                                 saldoPorPagar: planPagos['saldoPorPagar'],
                                                 valorTotal: planPagos['precioFin'],

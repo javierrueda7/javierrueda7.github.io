@@ -2200,6 +2200,7 @@ class _EditarSeparacionState extends State<EditarSeparacion> {
                                     discountValue(),
                                     'Pendiente',
                                     precioFinal,
+                                    0,
                                     0
                                   ).then((_) {
                                     ScaffoldMessenger.of(context).showSnackBar(

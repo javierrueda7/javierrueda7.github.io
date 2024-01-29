@@ -52,18 +52,20 @@ Future<void> addPlanPagos(String lote, String idPlanPagos, String paymentMethod,
     "estadoPago": estadoPago,
     "saldoPorPagar": saldoPorPagar,
     "valorPagado": valorPagado,
-    "idCliente": idCliente
+    "idCliente": idCliente,
+    "valorIntereses": 0,
   });
 }
 
-Future<void> updatePlanPagos(String lote, double precioIni, double precioFin, double dcto, String estadoPago, double saldoPorPagar, double valorPagado) async{
+Future<void> updatePlanPagos(String lote, double precioIni, double precioFin, double dcto, String estadoPago, double saldoPorPagar, double valorPagado, double valorIntereses) async{
   await db.collection("planPagos").doc(lote).update({
     "precioIni": precioIni,
     "precioFin": precioFin,
     "dcto": dcto,
     "estadoPago": estadoPago,
     "saldoPorPagar": saldoPorPagar,
-    "valorPagado": valorPagado
+    "valorPagado": valorPagado,
+    "valorIntereses": valorIntereses
   });
 }
 
@@ -77,7 +79,7 @@ Future<void> pagosEsperados(String lote, String idPago, double valorPago, String
   });
 }
 
-Future<void> pagosRealizados(String lote, String idPago, double valorPago, String conceptoPago, String fechaRecibo, String fechaPago, String metodoPago, String nombreCliente, String idCliente, String telCliente, String emailCliente, String dirCliente, String ciudadCliente, String obsPago, String idPlanPagos) async{
+Future<void> pagosRealizados(String lote, String idPago, double valorPago, String conceptoPago, String fechaRecibo, String fechaPago, String metodoPago, String nombreCliente, String idCliente, String telCliente, String emailCliente, String dirCliente, String ciudadCliente, String obsPago, String idPlanPagos, double valorIntereses) async{
   await db.collection("pagos").doc(idPago).set({
     "valorPago": valorPago,
     "conceptoPago": conceptoPago,
@@ -91,7 +93,8 @@ Future<void> pagosRealizados(String lote, String idPago, double valorPago, Strin
     "dirCliente": dirCliente,
     "ciudadCliente": ciudadCliente,
     "obsPago": obsPago,
-    "idPlanPagos": idPlanPagos
+    "idPlanPagos": idPlanPagos,
+    "valorIntereses": valorIntereses
   });
 }
 
@@ -124,7 +127,8 @@ Future<List> getPagos(String lote) async {
         "emailCliente": data['emailCliente'],
         "dirCliente": data['dirCliente'],
         "ciudadCliente": data['ciudadCliente'],
-        "obsPago": data['obsPago']
+        "obsPago": data['obsPago'],
+        "valorIntereses": data['valorIntereses']
       };
       pagos.add(pago);
     }
@@ -170,7 +174,7 @@ Future<List> getPagosEsp(String lote) async {
     return matchingDocuments;
 }
 
-Future<void> deletePagos(String pid, String lote, double valor) async {
+Future<void> deletePagos(String pid, String lote, double valor, double valorInt) async {
   await db.collection("pagos").doc(pid).delete();
   
   final DocumentSnapshot doc = await db.collection("planPagos").doc(lote).get();
@@ -178,6 +182,7 @@ Future<void> deletePagos(String pid, String lote, double valor) async {
   
   final double saldoPorPagar = (data["saldoPorPagar"] ?? 0) + valor;
   final double valorPagado = (data["valorPagado"] ?? 0) - valor;
+  final double valorIntereses = (data["valorIntereses"] ?? 0) - valorInt;
   String estado = data["estadoPago"];
   if (valorPagado < data["valorSeparacion"]){
     estado = 'Pendiente';
@@ -190,6 +195,7 @@ Future<void> deletePagos(String pid, String lote, double valor) async {
     "saldoPorPagar": saldoPorPagar,
     "valorPagado": valorPagado,
     "estadoPago": estado,
+    "valorIntereses": valorIntereses
   });
 }
 
