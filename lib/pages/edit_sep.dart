@@ -12,7 +12,7 @@ import 'package:flutter_typeahead/flutter_typeahead.dart';
 FirebaseFirestore db = FirebaseFirestore.instance;
 
 class EditarSeparacion extends StatefulWidget {
-  const EditarSeparacion({Key? key}) : super(key: key);
+  const EditarSeparacion({super.key});
 
   @override
   State<EditarSeparacion> createState() => _EditarSeparacionState();
@@ -2882,6 +2882,7 @@ class _EditarSeparacionState extends State<EditarSeparacion> {
 
   Widget installmentForm() {
     
+    // ignore: avoid_types_as_parameter_names
     totalInstallmentAmount = installments.fold(0.0, (sum, installment) => sum + installment['valorPago']);
 
     return Container(
@@ -2937,6 +2938,7 @@ class _EditarSeparacionState extends State<EditarSeparacion> {
                         double newValue = double.tryParse(value) ?? 0;
                         setState(() {
                           installments[index]['valorPago'] = newValue;
+                          // ignore: avoid_types_as_parameter_names
                           totalInstallmentAmount = installments.fold(0.0, (sum, installment) => sum + installment['valorPago']);
                           calculateRemainingAmount();
                           setAmountColor();
@@ -2971,6 +2973,7 @@ class _EditarSeparacionState extends State<EditarSeparacion> {
                       onPressed: () {
                         setState(() {
                           installments.removeAt(index);
+                          // ignore: avoid_types_as_parameter_names
                           totalInstallmentAmount = installments.fold(0.0, (sum, installment) => sum + installment['valorPago']);
                           calculateRemainingAmount();
                           setAmountColor();
@@ -2995,6 +2998,7 @@ class _EditarSeparacionState extends State<EditarSeparacion> {
               };
               installments.add(newInstallment);
               setState(() {
+                // ignore: avoid_types_as_parameter_names
                 totalInstallmentAmount = installments.fold(0.0, (sum, installment) => sum + (installment['valorPago']));
                 calculateRemainingAmount();
                 setAmountColor();

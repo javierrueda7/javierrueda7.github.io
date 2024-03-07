@@ -117,6 +117,7 @@ class _SignInPageState extends State<SignInPage> {
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) => const InitPage()));
+                            // ignore: sdk_version_since
                             }).onError((error, stackTrace) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
@@ -191,6 +192,7 @@ class _SignInPageState extends State<SignInPage> {
           FirebaseAuth.instance.signInAnonymously().then((value) {
             Navigator.push(context,
                 MaterialPageRoute(builder: (context) => const InitPage()));
+          // ignore: sdk_version_since
           }).onError((error, stackTrace) {});
         },
         child: Container(

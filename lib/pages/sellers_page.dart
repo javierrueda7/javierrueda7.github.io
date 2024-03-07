@@ -5,7 +5,7 @@ import '../services/firebase_services.dart';
 
 class SellersPage extends StatefulWidget {
   final bool allAccess;
-  const SellersPage({Key? key, required this.allAccess}) : super(key: key);
+  const SellersPage({super.key, required this.allAccess});
 
   @override
   State<SellersPage> createState() => _SellersPageState();

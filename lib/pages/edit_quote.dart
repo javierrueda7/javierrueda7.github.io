@@ -11,7 +11,7 @@ import 'package:flutter_typeahead/flutter_typeahead.dart';
 FirebaseFirestore db = FirebaseFirestore.instance;
 
 class EditQuotePage extends StatefulWidget {
-  const EditQuotePage({Key? key}) : super(key: key);
+  const EditQuotePage({super.key});
 
   @override
   State<EditQuotePage> createState() => _EditQuotePageState();

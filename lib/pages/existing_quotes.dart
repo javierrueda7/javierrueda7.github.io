@@ -1,4 +1,7 @@
+// ignore_for_file: avoid_print
+
 import 'dart:async';
+import 'package:file_picker/file_picker.dart';
 import 'package:albaterrapp/pages/archived_quotes.dart';
 import 'package:albaterrapp/pages/pdf_generator.dart';
 import 'package:albaterrapp/pages/pdf_promesa.dart';
@@ -7,7 +10,10 @@ import 'package:albaterrapp/services/firebase_services.dart';
 import 'package:albaterrapp/utils/color_utils.dart';
 import 'package:albaterrapp/widgets/widgets.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 
 FirebaseFirestore db = FirebaseFirestore.instance;
@@ -17,11 +23,10 @@ class ExistingQuotes extends StatefulWidget {
   final bool needAll;
   final String loggedEmail;
   const ExistingQuotes(
-      {Key? key,
+      {super.key,
       required this.loteInfo,
       required this.needAll,
-      required this.loggedEmail})
-      : super(key: key);
+      required this.loggedEmail});
 
   @override
   State<ExistingQuotes> createState() => _ExistingQuotesState();
@@ -146,7 +151,8 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
     _observacionesController.dispose();
     super.dispose();
   }
-
+  // ignore: deprecated_member_use
+  final mainReference = FirebaseDatabase.instance.reference().child('Database');
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -232,7 +238,7 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
     } if (selOpt == 1) {
       return widgetSeparaciones(context);
     } else {
-      return Container();
+      return widgetPromesas(context);
     }
   }
 
@@ -369,6 +375,7 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
                                               } else{
                                               // ignore: use_build_context_synchronously
                                                 Navigator.pushNamed(
+                                                  // ignore: use_build_context_synchronously
                                                   context, "/editQuote",
                                                   arguments: {
                                                     "selectedSeller": quotesSnapshot
@@ -503,6 +510,7 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
                                                 'CREADA' && loteClicked['loteState'] == 'Disponible') {
                                               // ignore: use_build_context_synchronously
                                               await Navigator.pushNamed(
+                                                  // ignore: use_build_context_synchronously
                                                   context, "/genSep",
                                                   arguments: {
                                                     "selectedSeller":
@@ -639,6 +647,7 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
                                             'LOTE SEPARADO') {
                                               // ignore: use_build_context_synchronously
                                               showDialog(
+                                                // ignore: use_build_context_synchronously
                                                 context: context,
                                                 builder: (BuildContext context) {
                                                   return AlertDialog(
@@ -706,6 +715,7 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
                                         await updateLoteInfo(quotesSnapshot.data?[index]['loteId']);
                                         // ignore: use_build_context_synchronously
                                         Navigator.push(
+                                          // ignore: use_build_context_synchronously
                                           context,
                                           MaterialPageRoute(
                                             builder: (context) =>
@@ -973,6 +983,7 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
                                             if (managerLogged == true && loteClicked['loteState'] == 'Lote separado') {
                                               // ignore: use_build_context_synchronously
                                               await Navigator.pushNamed(
+                                                  // ignore: use_build_context_synchronously
                                                   context, "/genSep",
                                                   arguments: {
                                                     "selectedSeller": sepSnapshot.data?[index]['sellerID'],
@@ -1043,6 +1054,7 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
                                             _observacionesController.text = sepSnapshot.data?[index]['observacionesLote'];
                                             // ignore: use_build_context_synchronously
                                             showDialog(
+                                              // ignore: use_build_context_synchronously
                                               context: context,
                                               builder: (BuildContext context) {
                                                 return AlertDialog(
@@ -1250,6 +1262,7 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
                                           });
                                         // ignore: use_build_context_synchronously
                                         Navigator.push(
+                                          // ignore: use_build_context_synchronously
                                           context,
                                           MaterialPageRoute(
                                             builder: (context) =>
@@ -1405,6 +1418,82 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
           })),
     );
   }
+
+  Container widgetPromesas(context) {   
+    return Container(
+      constraints: const BoxConstraints(maxWidth: 1200),
+      child: Column(
+        children: [
+          FloatingActionButton(
+              onPressed: () {
+                getPDFAndUpload();
+              },
+              backgroundColor: fourthColor,
+              child: const Icon(Icons.add, color: Colors.white,),
+            ),
+            FloatingActionButton(
+              onPressed: () {
+                listExample();
+              },
+              backgroundColor: fourthColor,
+              child: const Icon(Icons.preview_outlined, color: Colors.white,),
+            )
+        ],
+      ),
+    );
+  }
+
+  Future<void> listExample() async {  
+    ListResult result =  
+    await FirebaseStorage.instance.ref().child('Promesas').listAll();  
+    
+    for (var ref in result.items) {  
+      print('Found file: $ref');  
+    }  
+    
+    for (var ref in result.prefixes) {  
+      print('Found directory: $ref');  
+    }  
+  }
+
+  Future<void> getPDFAndUpload() async {
+    String fileName = "LOTE 01";
+    FilePickerResult? file =
+        await FilePicker.platform.pickFiles(type: FileType.custom, allowedExtensions: ['pdf']);
+
+    if (file != null) {
+      Uint8List asset = file.files.single.bytes!;
+      await savePdf(asset, "$fileName.pdf");
+    } else {
+      // Handle file picking cancellation or error
+    }
+  }
+
+  Future<void> savePdf(Uint8List asset, String name) async {
+    Reference reference = FirebaseStorage.instance.ref('Promesas').child(name);
+    final metadata = SettableMetadata(  
+      contentType: 'file/pdf');  
+    UploadTask uploadTask = reference.putData(asset, metadata);
+
+    try {
+      TaskSnapshot snapshot = await uploadTask;
+      String url = await snapshot.ref.getDownloadURL();
+      documentFileUpload(url);
+    } catch (e) {
+      print('Error uploading PDF: $e');
+    }
+  }
+
+  void documentFileUpload(String str){
+    var data = {
+      "PDF": str,
+      "FileName":"Lote1",
+    };
+    mainReference.child("Lote 01").set(data).then((v){
+      print("Store successfully");
+    });
+  }
+
 
   Future<Map<String, dynamic>> getLoteInfo(String lid) async {
 

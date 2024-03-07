@@ -7,7 +7,7 @@ import 'package:intl/intl.dart';
 import 'dart:async';
 
 class AddPaymentPage extends StatefulWidget {
-  const AddPaymentPage({Key? key}) : super(key: key);
+  const AddPaymentPage({super.key});
 
   @override
   State<AddPaymentPage> createState() => _AddPaymentPageState();
@@ -103,6 +103,7 @@ class _AddPaymentPageState extends State<AddPaymentPage> {
         }
   }
 
+  int wasPressed = 0;
   late int pagosCounter;
   DateTime quotePickedDate = DateTime.now();
   List<String> paymentMethodList = ['Corriente', 'Ahorros'];
@@ -916,8 +917,10 @@ class _AddPaymentPageState extends State<AddPaymentPage> {
                               ),
                             );
                           } else {
-                            setState(() {
-                              pagosCounter++;
+                            if(wasPressed == 0){
+                              setState(() {
+                                pagosCounter++;
+                                wasPressed++;
                             });
                             await pagosRealizados(
                               selectedLote,
@@ -943,55 +946,31 @@ class _AddPaymentPageState extends State<AddPaymentPage> {
                               totalPrice, 
                               discount, 
                               nextState(),
-                              saldoPendiente - paymentValue,
-                              valorPagado + paymentValue,
-                              totalIntereses + interestsValue
+                                nextState() == 'Completo' ? 0 : saldoPendiente - paymentValue,
+                                nextState() == 'Completo' ? totalPrice.toDouble() : valorPagado + paymentValue,
+                                totalIntereses + interestsValue
+                                );
+                              // ignore: use_build_context_synchronously
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: CustomAlertMessage(
+                                    errorTitle: "Genial!",
+                                    errorText:
+                                        "Datos almacenados de manera satisfactoria.",
+                                    stateColor: successColor,
+                                  ),
+                                  behavior: SnackBarBehavior.floating,
+                                  backgroundColor: Colors.transparent,
+                                  elevation: 0,
+                                ),
                               );
-                            // ignore: use_build_context_synchronously
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: CustomAlertMessage(
-                                  errorTitle: "Genial!",
-                                  errorText:
-                                      "Datos almacenados de manera satisfactoria.",
-                                  stateColor: successColor,
-                                ),
-                                behavior: SnackBarBehavior.floating,
-                                backgroundColor: Colors.transparent,
-                                elevation: 0,
-                              ),
-                            );
-                            obtenerPagosEsperados();
-                            actConcepto();
-                            // ignore: use_build_context_synchronously
-                            Navigator.pop(context);
-                            
-                            /*String valorEnLetras = await numeroEnLetras(paymentValue, 'pesos');                                               
-                            // ignore: use_build_context_synchronously
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => PDFInvoice(
-                                  lote: selectedLote,
-                                  recibo: paymentIdGenerator(paymentCounter),                                  
-                                  nameCliente: nameController.text,
-                                  idCliente: idController.text,
-                                  phoneCliente: phoneController.text,
-                                  addressCliente: addressController.text,
-                                  emailCliente: emailController.text,
-                                  cityCliente: selectedCity,
-                                  receiptDate: receiptDateController.text,
-                                  paymentDate: paymentDateController.text,                                  
-                                  paymentValue: paymentValue,
-                                  paymentValueLetters: valorEnLetras,
-                                  saldoPorPagar: saldoPendiente - paymentValue,
-                                  valorTotal: valorPagado + paymentValue,
-                                  paymentMethod: selectedPaymentMethod,
-                                  observaciones: observacionesController.text,
-                                  conceptoPago: conceptoPagoController.text,
-                                ),
-                              ),
-                            );*/
+                              obtenerPagosEsperados();
+                              actConcepto();
+                              // ignore: use_build_context_synchronously
+                              Navigator.pop(context);
+                            } else {
+                              const CircularProgressIndicator();
+                            }
                           }
                         },
                         child: const Text("Guardar"),
@@ -1069,7 +1048,7 @@ class _AddPaymentPageState extends State<AddPaymentPage> {
       double valorPago = listaPagos[i]['valorPago'];
 
       String estadoPago;
-      if(saldoPorPagar<1){
+      if(saldoPorPagar<=100){
           estadoPago = 'PAGO COMPLETO';
         } else if(valorPagado-valorPago == 0){
         estadoPago = 'PAGO COMPLETO';
@@ -1090,7 +1069,7 @@ class _AddPaymentPageState extends State<AddPaymentPage> {
         'estadoPago': estadoPago,
       });
     }
-    if(saldoPorPagar<1){
+    if(saldoPorPagar<=1){
       await firestore.collection('planPagos').doc(selectedLote).update({
         'saldoPorPagar': 0,
         'estadoPago': 'Completo',
@@ -1133,7 +1112,10 @@ class _AddPaymentPageState extends State<AddPaymentPage> {
   int cuotaIni = 0;
 
   String paymentIdGenerator(int paymentCount) {
-    paymentCount++;
+    collectionReference.get().then((QuerySnapshot paymentSnapshot) {
+      paymentCounter = paymentSnapshot.size;
+    });
+    paymentCount = paymentCounter++;
     String idGenerated = paymentCount.toString().padLeft(5, '0');
     idGenerated = '$idGenerated-$selectedLote';
     return idGenerated;
@@ -1146,7 +1128,7 @@ class _AddPaymentPageState extends State<AddPaymentPage> {
     } else {
       temp = 'En proceso';
     }
-    if(planPagos['saldoPorPagar'] == paymentValue){
+    if(planPagos['saldoPorPagar'] - paymentValue <= 1 && planPagos['saldoPorPagar'] - paymentValue > 0){
       temp = 'Completo';
     }
     return temp;

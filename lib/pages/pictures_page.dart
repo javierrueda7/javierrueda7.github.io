@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class PicturesPage extends StatefulWidget {
   final List<dynamic> loteInfo;
-  const PicturesPage({Key? key, required this.loteInfo}) : super(key: key);
+  const PicturesPage({super.key, required this.loteInfo});
 
   @override
   State<PicturesPage> createState() => _PicturesPageState();

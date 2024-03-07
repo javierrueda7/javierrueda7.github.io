@@ -13,7 +13,7 @@ FirebaseFirestore db = FirebaseFirestore.instance;
 
 class ResumenPagos extends StatefulWidget {
   final String loteid;
-  const ResumenPagos({Key? key, required this.loteid}) : super(key: key);
+  const ResumenPagos({super.key, required this.loteid});
 
   @override
   State<ResumenPagos> createState() => _ResumenPagosState();
@@ -246,6 +246,7 @@ class _ResumenPagosState extends State<ResumenPagos> {
                       startDate = await getStartDate(planPagos['idPlanPagos']);
                       // ignore: use_build_context_synchronously
                       Navigator.push(
+                        // ignore: use_build_context_synchronously
                         context,
                         MaterialPageRoute(
                           builder: (context) => PDFEstadoCuenta(
@@ -350,6 +351,7 @@ class _ResumenPagosState extends State<ResumenPagos> {
                                         String totalEnLetras = await numeroEnLetras((pagosSnapshot.data?[index]['valorIntereses'] + pagosSnapshot.data?[index]['valorPago']).toDouble(), 'pesos');
                                           // ignore: use_build_context_synchronously
                                           Navigator.push(
+                                            // ignore: use_build_context_synchronously
                                             context,
                                             MaterialPageRoute(
                                               builder: (context) => PDFInvoice(

@@ -12,7 +12,7 @@ import 'package:flutter_typeahead/flutter_typeahead.dart';
 FirebaseFirestore db = FirebaseFirestore.instance;
 
 class GenerarSeparacion extends StatefulWidget {
-  const GenerarSeparacion({Key? key}) : super(key: key);
+  const GenerarSeparacion({super.key});
 
   @override
   State<GenerarSeparacion> createState() => _GenerarSeparacionState();
@@ -3076,6 +3076,7 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
                         double newValue = double.tryParse(value) ?? 0;
                         setState(() {
                           installments[index]['valorPago'] = newValue;
+                          // ignore: avoid_types_as_parameter_names
                           totalInstallmentAmount = installments.fold(0.0, (sum, installment) => sum + installment['valorPago']);
                           calculateRemainingAmount();
                           setAmountColor();
@@ -3110,6 +3111,7 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
                       onPressed: () {
                         setState(() {
                           installments.removeAt(index);
+                          // ignore: avoid_types_as_parameter_names
                           totalInstallmentAmount = installments.fold(0.0, (sum, installment) => sum + installment['valorPago']);
                           calculateRemainingAmount();
                         });
@@ -3133,6 +3135,7 @@ class _GenerarSeparacionState extends State<GenerarSeparacion> {
               };
               installments.add(newInstallment);
               setState(() {
+                // ignore: avoid_types_as_parameter_names
                 totalInstallmentAmount = installments.fold(0.0, (sum, installment) => sum + (installment['valorPago']));
                 calculateRemainingAmount();
                 setAmountColor();

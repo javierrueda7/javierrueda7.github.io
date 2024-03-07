@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 FirebaseFirestore db = FirebaseFirestore.instance;
 
 class InfoBancos extends StatefulWidget {
-  const InfoBancos({Key? key}) : super(key: key);
+  const InfoBancos({super.key});
 
   @override
   State<InfoBancos> createState() => _InfoBancosState();

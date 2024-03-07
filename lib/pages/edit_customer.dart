@@ -10,7 +10,7 @@ import 'package:flutter_typeahead/flutter_typeahead.dart';
 FirebaseFirestore db = FirebaseFirestore.instance;
 
 class EditCustomerPage extends StatefulWidget {
-  const EditCustomerPage({Key? key}) : super(key: key);
+  const EditCustomerPage({super.key});
 
   @override
   State<EditCustomerPage> createState() => _EditCustomerPageState();

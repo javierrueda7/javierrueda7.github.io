@@ -6,6 +6,7 @@ import 'package:albaterrapp/pages/pagosesperados_page.dart';
 import 'package:albaterrapp/pages/resumen_pagos.dart';
 import 'package:albaterrapp/pages/sellers_page.dart';
 import 'package:albaterrapp/pages/signin_page.dart';
+import 'package:albaterrapp/pages/stats_page.dart';
 //import 'package:albaterrapp/pages/stats_page.dart';
 import 'package:albaterrapp/services/firebase_services.dart';
 import 'package:albaterrapp/utils/color_utils.dart';
@@ -13,7 +14,7 @@ import 'package:albaterrapp/widgets/widgets.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'dart:js' as js;
+//import 'dart:js' as js;
 
 FirebaseFirestore db = FirebaseFirestore.instance;
 
@@ -207,14 +208,14 @@ class _InitPageState extends State<InitPage> {
                   setState(() {});
                 } 
                 if (value == 'Opción 5') {
-                  js.context.callMethod('open', [
+                  /*js.context.callMethod('open', [
                     "https://app.powerbi.com/view?r=eyJrIjoiYjFjMjk0ZTYtY2VjNi00NjYxLTgwZDgtYjFlNjAxYTU2YTk3IiwidCI6IjJlZDU1NzRjLWY5YmEtNDQyNi05NjU4LWU0NzdhZDc0MzlkYiIsImMiOjR9",
                     '_blank', // This opens the link in a new tab or window
-                  ]);
+                  ]);*/
 
-                  /*Navigator.of(context).push(MaterialPageRoute(
+                  Navigator.of(context).push(MaterialPageRoute(
                     builder: (BuildContext context) => const PowerBIReportScreen()
-                  ));*/
+                  ));
                   setState(() {});
                   
                 }
@@ -537,8 +538,8 @@ class _InitPageState extends State<InitPage> {
 
 class LoteGeneral extends StatelessWidget {
   const LoteGeneral({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {

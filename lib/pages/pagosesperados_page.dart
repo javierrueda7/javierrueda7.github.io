@@ -365,6 +365,7 @@ class _PagosEsperadosState extends State<PagosEsperados> {
                                 String valorEnLetras = await numeroEnLetras(snapshot.data?[index]['valorPago'].toDouble(), 'pesos');
                                 // ignore: use_build_context_synchronously
                                 Navigator.push(
+                                  // ignore: use_build_context_synchronously
                                   context,
                                   MaterialPageRoute(
                                     builder: (context) => PDFPreInvoice(

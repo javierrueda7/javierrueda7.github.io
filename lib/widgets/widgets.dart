@@ -170,11 +170,11 @@ Container firebaseButton(BuildContext context, String title, Function onTap) {
 
 class CustomAlertMessage extends StatelessWidget {
   const CustomAlertMessage({
-    Key? key,
+    super.key,
     required this.errorTitle,
     required this.errorText,
     required this.stateColor,
-  }) : super(key: key);
+  });
 
   final String errorTitle;
   final String errorText;

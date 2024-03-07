@@ -12,11 +12,10 @@ class ArchivedQuotes extends StatefulWidget {
   final bool needAll;
   final String loggedEmail;
   const ArchivedQuotes(
-      {Key? key,
+      {super.key,
       required this.loteInfo,
       required this.needAll,
-      required this.loggedEmail})
-      : super(key: key);
+      required this.loggedEmail});
 
   @override
   State<ArchivedQuotes> createState() => _ArchivedQuotesState();
@@ -489,6 +488,7 @@ class _ArchivedQuotesState extends State<ArchivedQuotes> {
                                                   'AUTORIZADA') {
                                                 // ignore: use_build_context_synchronously
                                                 await Navigator.pushNamed(
+                                                    // ignore: use_build_context_synchronously
                                                     context, "/genSep",
                                                     arguments: {
                                                       "selectedSeller":

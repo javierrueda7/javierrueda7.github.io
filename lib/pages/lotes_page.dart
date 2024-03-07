@@ -6,7 +6,7 @@ import '../services/firebase_services.dart';
 
 class LotesPage extends StatefulWidget {
   final bool allAccess;
-  const LotesPage({Key? key, required this.allAccess}) : super(key: key);
+  const LotesPage({super.key, required this.allAccess});
 
   @override
   State<LotesPage> createState() => _LotesPageState();

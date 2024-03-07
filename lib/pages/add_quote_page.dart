@@ -12,7 +12,7 @@ FirebaseFirestore db = FirebaseFirestore.instance;
 
 class AddQuotePage extends StatefulWidget {
   final List<dynamic> loteInfo;
-  const AddQuotePage({Key? key, required this.loteInfo}) : super(key: key);
+  const AddQuotePage({super.key, required this.loteInfo});
 
   @override
   State<AddQuotePage> createState() => _AddQuotePageState();
@@ -1848,7 +1848,7 @@ class _AddQuotePageState extends State<AddQuotePage> {
                                           loteInfo[7],
                                           '${((loteInfo[8].toInt()).toString())} m²',
                                           vlrBaseLote.toDouble(),
-                                          precioFinal,
+                                          precioFinal.toDouble(),
                                           discountValue(),
                                           porcCuotaInicial,
                                           cuotaInicial,
