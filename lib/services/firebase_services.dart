@@ -1,4 +1,6 @@
+import 'package:albaterrapp/widgets/widgets.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:intl/intl.dart';
 
 FirebaseFirestore db = FirebaseFirestore.instance;
@@ -697,6 +699,83 @@ Future<List> getOrdenSep(String loteId, bool allLotes, String sellerId) async {
   separaciones.sort((a, b) => a['loteId'].compareTo(b['loteId']));
   return separaciones;
 }
+
+Future<List> getPromesa(String loteId, bool allLotes, String sellerId) async {
+  List promesa = [];
+  ListResult result = await FirebaseStorage.instance.ref('Promesas').listAll();
+  QuerySnapshot? queryProm = await db.collection('ordSep').get();
+  for (var doc in queryProm.docs) {
+    final Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+    String pdfName = 'LOTE ${getNumbers(data['loteId'])!}.pdf';    
+    String? link; // Change to nullable
+    for (var ref in result.items) {
+      if (ref.name == pdfName) {
+        link = await ref.getDownloadURL();
+        break; // No need to continue if found
+      }
+    }
+    // Handle null values gracefully
+    link ??= '';
+    if (sellerId == 'All' && (data['stageSep']=="ACTIVA" || data['stageSep']=="LOTE VENDIDO")){
+      if (!allLotes) {
+        if (data['loteId'] == loteId) {
+          final prom = {
+            "sepId": doc.id,
+            "sellerID": data['sellerID'],
+            "loteId": data['loteId'],
+            "clienteID": data['clienteID'],
+            "stageSep": data['stageSep'],
+            "PdfName": pdfName,
+            "PdfLink": link
+          };
+          promesa.add(prom);
+        }
+      } else {      
+        final prom = {
+            "sepId": doc.id,
+            "sellerID": data['sellerID'],
+            "loteId": data['loteId'],
+            "clienteID": data['clienteID'],
+            "stageSep": data['stageSep'],
+            "PdfName": pdfName,
+            "PdfLink": link
+        };
+        promesa.add(prom);    
+      }
+    } else {
+      if (!allLotes && (data['stageSep']=="ACTIVA" || data['stageSep']=="LOTE VENDIDO")) {
+        if (data['loteId'] == loteId && data['sellerID'] == sellerId) {
+          final prom = {
+            "sepId": doc.id,
+            "sellerID": data['sellerID'],
+            "loteId": data['loteId'],
+            "clienteID": data['clienteID'],
+            "stageSep": data['stageSep'],
+            "PdfName": pdfName,
+            "PdfLink": link
+          };
+          promesa.add(prom);
+        }
+      } else {      
+        if(data['sellerID'] == sellerId && (data['stageSep']=="ACTIVA" || data['stageSep']=="LOTE VENDIDO")){
+          final prom = {
+            "sepId": doc.id,
+            "sellerID": data['sellerID'],
+            "loteId": data['loteId'],
+            "clienteID": data['clienteID'],
+            "stageSep": data['stageSep'],
+            "PdfName": pdfName,
+            "PdfLink": link
+          };
+          promesa.add(prom);
+        }
+      }
+    }
+  }
+  promesa.sort((a, b) => a['loteId'].compareTo(b['loteId']));
+  return promesa;
+}
+
 
 Future<void> deleteSep(String oid, String lote) async {
   await db.collection("ordSep").doc(oid).delete();
