@@ -58,7 +58,7 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
 
   Future<bool> isManager(String value) async {
     String mainValue = await getGerenteEmail();
-    if (value == mainValue || value == 'javieruedase@gmail.com' || value == 'lauramelissaagudelovelez@gmail.com') {
+    if (value == mainValue || value == 'javieruedass@gmail.com' || value == 'lauramelissaagudelovelez@gmail.com') {
       return true;
     } else {
       return false;
@@ -204,19 +204,20 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
       ),
       bottomNavigationBar: needAll
       ? BottomNavigationBar(
-          items: const <BottomNavigationBarItem>[
-            BottomNavigationBarItem(
+          items: <BottomNavigationBarItem>[
+            const BottomNavigationBarItem(
               icon: Icon(Icons.document_scanner_outlined),
               label: 'Cotizaciones',
             ),
-            BottomNavigationBarItem(
+            const BottomNavigationBarItem(
               icon: Icon(Icons.task_outlined),
               label: 'Separaciones',
             ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.handshake_outlined),
-              label: 'Promesas',
-            ),
+            if(managerLogged) // Conditionally add the third item
+              const BottomNavigationBarItem(
+                icon: Icon(Icons.handshake_outlined),
+                label: 'Promesas',              
+              ),
           ],
           currentIndex: _selectedIndex,
           selectedItemColor: Colors.amber[800],
@@ -1591,7 +1592,6 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
               return ListView.builder(
                 itemCount: promesaSnapshot.data?.length,
                 itemBuilder: (context, index) {
-                          print(promesaSnapshot.data?[index]['PdfLink']);
                   return FutureBuilder(
                       future: db
                           .collection('customers')
