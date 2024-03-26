@@ -1,6 +1,4 @@
-import 'package:albaterrapp/widgets/widgets.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:intl/intl.dart';
 
 FirebaseFirestore db = FirebaseFirestore.instance;
@@ -559,6 +557,34 @@ Future<void> updateOrdenSep(
   });
 }
 
+Future<String?> getSepID(String selectedLote) async {
+  QuerySnapshot querySnapshot = await db.collection("ordSep").get();
+
+  // Iterate through the documents
+  for (DocumentSnapshot doc in querySnapshot.docs) {
+    // Check if the document ID contains the value of selectedLote
+    if (doc.id.contains(selectedLote)) {
+      // Return the document ID
+      return doc.id;
+    }
+  }
+
+  // If no document is found, return null
+  return null;
+}
+
+
+Future<void> updatePdfLink(
+  String selectedLote,
+  String pdfLote,
+  String fileName,
+) async {
+  await db.collection("ordSep").doc(selectedLote).update({    
+    "PDF": pdfLote,
+    "FileName": fileName,
+  });
+}
+
 Future<List> getOrdenSep(String loteId, bool allLotes, String sellerId) async {
   List separaciones = [];
   QuerySnapshot? querySeparaciones = await db.collection('ordSep').get();
@@ -702,20 +728,9 @@ Future<List> getOrdenSep(String loteId, bool allLotes, String sellerId) async {
 
 Future<List> getPromesa(String loteId, bool allLotes, String sellerId) async {
   List promesa = [];
-  ListResult result = await FirebaseStorage.instance.ref('Promesas').listAll();
   QuerySnapshot? queryProm = await db.collection('ordSep').get();
   for (var doc in queryProm.docs) {
     final Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-    String pdfName = 'LOTE ${getNumbers(data['loteId'])!}.pdf';    
-    String? link; // Change to nullable
-    for (var ref in result.items) {
-      if (ref.name == pdfName) {
-        link = await ref.getDownloadURL();
-        break; // No need to continue if found
-      }
-    }
-    // Handle null values gracefully
-    link ??= '';
     if (sellerId == 'All' && (data['stageSep']=="ACTIVA" || data['stageSep']=="LOTE VENDIDO")){
       if (!allLotes) {
         if (data['loteId'] == loteId) {
@@ -725,8 +740,8 @@ Future<List> getPromesa(String loteId, bool allLotes, String sellerId) async {
             "loteId": data['loteId'],
             "clienteID": data['clienteID'],
             "stageSep": data['stageSep'],
-            "PdfName": pdfName,
-            "PdfLink": link
+            "PdfName": data['FileName'],
+            "PdfLink": data['PDF']
           };
           promesa.add(prom);
         }
@@ -737,8 +752,8 @@ Future<List> getPromesa(String loteId, bool allLotes, String sellerId) async {
             "loteId": data['loteId'],
             "clienteID": data['clienteID'],
             "stageSep": data['stageSep'],
-            "PdfName": pdfName,
-            "PdfLink": link
+            "PdfName": data['FileName'],
+            "PdfLink": data['PDF']
         };
         promesa.add(prom);    
       }
@@ -751,8 +766,8 @@ Future<List> getPromesa(String loteId, bool allLotes, String sellerId) async {
             "loteId": data['loteId'],
             "clienteID": data['clienteID'],
             "stageSep": data['stageSep'],
-            "PdfName": pdfName,
-            "PdfLink": link
+            "PdfName": data['FileName'],
+            "PdfLink": data['PDF']
           };
           promesa.add(prom);
         }
@@ -764,8 +779,8 @@ Future<List> getPromesa(String loteId, bool allLotes, String sellerId) async {
             "loteId": data['loteId'],
             "clienteID": data['clienteID'],
             "stageSep": data['stageSep'],
-            "PdfName": pdfName,
-            "PdfLink": link
+            "PdfName": data['FileName'],
+            "PdfLink": data['PDF']
           };
           promesa.add(prom);
         }

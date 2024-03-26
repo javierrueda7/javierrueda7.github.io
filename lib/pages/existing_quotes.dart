@@ -58,7 +58,7 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
 
   Future<bool> isManager(String value) async {
     String mainValue = await getGerenteEmail();
-    if (value == mainValue || value == 'javieruedass@gmail.com' || value == 'lauramelissaagudelovelez@gmail.com') {
+    if (value == mainValue || value == 'javieruedase@gmail.com' || value == 'lauramelissaagudelovelez@gmail.com') {
       return true;
     } else {
       return false;
@@ -119,6 +119,7 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
   late Uint8List asset;
   bool uploadedFile = false;
   late String fileName;
+  late String sepId;
 
   Future<String> getGerenteEmail() async {
     final gerenteEmail = await db
@@ -303,7 +304,7 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
                             onChanged: (loteValue) {
                               setState(() {
                                 selectedLote = loteValue!;
-                                fileName = 'LOTE ${getNumbers(selectedLote)}';                            
+                                fileName = 'LOTE ${getNumbers(selectedLote)}';               
                               });
                             },
                             isExpanded: true,
@@ -315,9 +316,10 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
                   const SizedBox(height: 20),
                   ElevatedButton(
                     onPressed: selectedLote.isNotEmpty
-                        ? () { 
-                          getPDFAndUpload('LOTE ${getNumbers(selectedLote)}').whenComplete(() {
+                        ? () {
+                          getPDFAndUpload('LOTE ${getNumbers(selectedLote)}').whenComplete(() async {
                             setState((){});
+                              sepId = (await getSepID(selectedLote))!;  
                             });
                           }                     
                         
@@ -334,7 +336,7 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
                   ElevatedButton(
                     onPressed: uploadedFile && selectedLote.isNotEmpty
                       ? () {
-                          savePdf(asset, 'LOTE ${getNumbers(selectedLote)}');
+                          savePdf(sepId, asset, 'LOTE ${getNumbers(selectedLote)}');
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               content: CustomAlertMessage(
@@ -351,6 +353,7 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
                           setState((() {
                             uploadedFile = false;
                             selectedLote = '';
+                            sepId = '';
                           }));
                           Navigator.pop(context);                 
                         }
@@ -371,6 +374,7 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
                     setState((() {
                       uploadedFile = false;
                       selectedLote = '';
+                      sepId = '';
                     }));   
                     Navigator.pop(context);
                   },
@@ -1660,7 +1664,7 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
                                         }
                                       },
                                       child: Icon(Icons.download_outlined,
-                                          color: uploadedColor(
+                                          color: promesaSnapshot.data?[index]['PdfLink'] == null ? Colors.grey : uploadedColor(
                                               promesaSnapshot.data?[index]['PdfLink'])),
                                     ),
                                     const SizedBox(width: 10),
@@ -1701,11 +1705,9 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
                                               Reference storageRef = FirebaseStorage.instance
                                                   .ref()
                                                   .child('Promesas/$filename.pdf');
-                                              DatabaseReference fileRef =
-                                                  mainReference.child(filename);
                                               // Delete the file
                                               await storageRef.delete();
-                                              await fileRef.remove();
+                                              await updatePdfLink(promesaSnapshot.data?[index]['sepId'], 'null', 'null');
                                               setState(() {
                                                 promesaSnapshot.data?.removeAt(index);
                                               });
@@ -1741,7 +1743,7 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
                                           );
                                         }
                                       },
-                                      child: Icon(Icons.delete_outline, color: canDeleteColor(promesaSnapshot.data?[index]['PdfLink']),),
+                                      child: Icon(Icons.delete_outline, color: promesaSnapshot.data?[index]['PdfLink'] == null ? Colors.grey : canDeleteColor(promesaSnapshot.data?[index]['PdfLink']),),
                                     ),
                               
                                   ],
@@ -1784,7 +1786,7 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
     }
   }
 
-  Future<void> savePdf(Uint8List asset, String name) async {
+  Future<void> savePdf(String id, Uint8List asset, String name) async {
     Reference reference = FirebaseStorage.instance.ref('Promesas').child('$name.pdf');
     final metadata = SettableMetadata(  
       contentType: 'file/pdf');  
@@ -1793,7 +1795,7 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
     try {
       TaskSnapshot snapshot = await uploadTask;
       String url = await snapshot.ref.getDownloadURL();
-      documentFileUpload(name, url);
+      updatePdfLink(id, url, name);
     } catch (e) {
       print('Error uploading PDF: $e');
     }
@@ -1864,7 +1866,7 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
   }
 
   Color uploadedColor(String value) {
-    if (value == '') {
+    if (value == 'null') {
       return Colors.grey;
     } else {
       return infoColor;
@@ -1872,7 +1874,7 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
   }
 
   Color canDeleteColor(String value) {
-    if (value == '') {
+    if (value == 'null') {
       return Colors.grey;
     } else {
       return dangerColor;
