@@ -94,7 +94,8 @@ Future<void> pagosRealizados(String lote, String idPago, double valorPago, Strin
     "ciudadCliente": ciudadCliente,
     "obsPago": obsPago,
     "idPlanPagos": idPlanPagos,
-    "valorIntereses": valorIntereses
+    "valorIntereses": valorIntereses,
+    "date": DateTime.now()
   });
 }
 
@@ -573,17 +574,70 @@ Future<String?> getSepID(String selectedLote) async {
   return null;
 }
 
+Future<int> getPDFCount(String selectedLote) async {
+  int count = 0;
+  try {
+    final QuerySnapshot querySnapshot = await FirebaseFirestore.instance.collection("ordSep").doc(selectedLote).collection('pdf').get();
 
-Future<void> updatePdfLink(
-  String selectedLote,
-  String pdfLote,
-  String fileName,
-) async {
-  await db.collection("ordSep").doc(selectedLote).update({    
+    if (querySnapshot.docs.isEmpty) {
+      print("No documents found");
+      // You can name the document as per your logic here
+    } else {
+      count = querySnapshot.docs.length;
+      print("Number of documents: ${querySnapshot.docs.length}");
+      // You can proceed with naming the document using the next possible value
+    }
+  } catch (e) {
+    print("Error getting documents: $e");
+  }
+  return count;
+}
+
+Future<void> deletePDF(String sid, String pdf) async {
+  int value = await getPDFCount(sid);
+  await db.collection("ordSep").doc(sid).collection('pdf').doc(pdf).delete().whenComplete(() async {
+    if(value <= 1) {
+      await db.collection("ordSep").doc(sid).update({
+        "PDFbool": false
+    });
+    }
+  });
+  
+}
+
+Future<void> updatePdfLink(String selectedLote, String pdfLote, String fileName, String obs) async {
+  await db.collection("ordSep").doc(selectedLote).update({
+    "PDFbool": true
+  });
+  await db.collection("ordSep").doc(selectedLote).collection('pdf').doc(fileName).set({    
     "PDF": pdfLote,
     "FileName": fileName,
+    "Observaciones": obs,
+    "date": DateTime.now()
   });
 }
+
+Future<List> getPDFList(String sepId) async {
+  List pdfs = [];
+  QuerySnapshot? queryPDF = await db.collection('ordSep').doc(sepId).collection('pdf').get();
+  for (var doc in queryPDF.docs) {
+    final Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+    // Convert timestamp to DateTime
+    DateTime date = (data['date'] as Timestamp).toDate();
+    final sep = {
+      "pdfID": doc.id,
+      "FileName": data['FileName'],
+      "URL": data['PDF'],
+      "obs": data['Observaciones'],
+      "date": date.toString() // Convert DateTime to string
+    };
+    pdfs.add(sep);
+  }
+  // Sort the list based on date
+  pdfs.sort((a, b) => a['date'].compareTo(b['date']));
+  return pdfs;
+}
+
 
 Future<List> getOrdenSep(String loteId, bool allLotes, String sellerId) async {
   List separaciones = [];
@@ -619,7 +673,8 @@ Future<List> getOrdenSep(String loteId, bool allLotes, String sellerId) async {
             "tem": data['tem'],
             "observacionesLote": data['observacionesLote'],
             "clienteID": data['clienteID'],
-            "stageSep": data['stageSep']
+            "stageSep": data['stageSep'],            
+            "PDFbool": data['PDFbool'] == true
           };
           separaciones.add(sep);
         }
@@ -650,7 +705,8 @@ Future<List> getOrdenSep(String loteId, bool allLotes, String sellerId) async {
           "tem": data['tem'],
           "observacionesLote": data['observacionesLote'],
           "clienteID": data['clienteID'],
-          "stageSep": data['stageSep']
+          "stageSep": data['stageSep'],            
+            "PDFbool": data['PDFbool'] == true
         };
         separaciones.add(sep);    
       }
@@ -683,7 +739,8 @@ Future<List> getOrdenSep(String loteId, bool allLotes, String sellerId) async {
             "tem": data['tem'],
             "observacionesLote": data['observacionesLote'],
             "clienteID": data['clienteID'],
-            "stageSep": data['stageSep']
+            "stageSep": data['stageSep'],            
+            "PDFbool": data['PDFbool'] == true
           };
           separaciones.add(sep);
         }
@@ -715,7 +772,8 @@ Future<List> getOrdenSep(String loteId, bool allLotes, String sellerId) async {
             "tem": data['tem'],
             "observacionesLote": data['observacionesLote'],
             "clienteID": data['clienteID'],
-            "stageSep": data['stageSep']
+            "stageSep": data['stageSep'],            
+            "PDFbool": data['PDFbool'] == true
           };
           separaciones.add(sep);
         }
@@ -741,7 +799,8 @@ Future<List> getPromesa(String loteId, bool allLotes, String sellerId) async {
             "clienteID": data['clienteID'],
             "stageSep": data['stageSep'],
             "PdfName": data['FileName'],
-            "PdfLink": data['PDF']
+            "PdfLink": data['PDF'],            
+            "PDFbool": data['PDFbool'] == true
           };
           promesa.add(prom);
         }
@@ -753,7 +812,8 @@ Future<List> getPromesa(String loteId, bool allLotes, String sellerId) async {
             "clienteID": data['clienteID'],
             "stageSep": data['stageSep'],
             "PdfName": data['FileName'],
-            "PdfLink": data['PDF']
+            "PdfLink": data['PDF'],            
+            "PDFbool": data['PDFbool'] == true
         };
         promesa.add(prom);    
       }
@@ -767,7 +827,8 @@ Future<List> getPromesa(String loteId, bool allLotes, String sellerId) async {
             "clienteID": data['clienteID'],
             "stageSep": data['stageSep'],
             "PdfName": data['FileName'],
-            "PdfLink": data['PDF']
+            "PdfLink": data['PDF'],            
+            "PDFbool": data['PDFbool'] == true
           };
           promesa.add(prom);
         }
@@ -780,7 +841,8 @@ Future<List> getPromesa(String loteId, bool allLotes, String sellerId) async {
             "clienteID": data['clienteID'],
             "stageSep": data['stageSep'],
             "PdfName": data['FileName'],
-            "PdfLink": data['PDF']
+            "PdfLink": data['PDF'],            
+            "PDFbool": data['PDFbool'] == true
           };
           promesa.add(prom);
         }

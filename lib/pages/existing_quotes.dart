@@ -1,6 +1,7 @@
-// ignore_for_file: avoid_print
+// ignore_for_file: avoid_print, avoid_web_libraries_in_flutter
 
 import 'dart:async';
+import 'package:albaterrapp/pages/list_pdf.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:albaterrapp/pages/archived_quotes.dart';
 import 'package:albaterrapp/pages/pdf_generator.dart';
@@ -152,11 +153,13 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
   Map<String, dynamic> lote = {};
   Stream<QuerySnapshot>? lotesStream;
   // ignore: prefer_final_fields
-  TextEditingController _observacionesController = TextEditingController(text: '');
+  TextEditingController _observacionesController = TextEditingController(text: '');  
+  TextEditingController pdfController = TextEditingController(text: '');
 
   @override
   void dispose() {
     _observacionesController.dispose();
+    pdfController.dispose();
     super.dispose();
   }
   // ignore: deprecated_member_use
@@ -304,7 +307,7 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
                             onChanged: (loteValue) {
                               setState(() {
                                 selectedLote = loteValue!;
-                                fileName = 'LOTE ${getNumbers(selectedLote)}';               
+                                fileName = 'LOTE ${getNumbers(selectedLote)}';           
                               });
                             },
                             isExpanded: true,
@@ -314,29 +317,66 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
                     ),
                   ),
                   const SizedBox(height: 20),
+                  TextField(
+                    controller: pdfController,
+                    maxLines: null,
+                    obscureText: false,
+                    enableSuggestions: true,
+                    autocorrect: true,
+                    cursorColor: fifthColor,
+                    enabled: true,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(color: fifthColor.withOpacity(0.9)),
+                    decoration: InputDecoration(
+                      prefixIcon: Icon(
+                        Icons.search_outlined,
+                        color: fifthColor,
+                      ),
+                      hintText: 'Observaciones PDF',
+                      hintStyle:
+                          TextStyle(color: fifthColor.withOpacity(0.9)),
+                      filled: true,
+                      floatingLabelBehavior: FloatingLabelBehavior.never,
+                      fillColor: primaryColor.withOpacity(0.2),
+                      enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(30.0),
+                          borderSide: BorderSide(
+                              width: 1,
+                              style: BorderStyle.solid,
+                              color: fifthColor.withOpacity(0.1))),
+                      focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(30.0),
+                          borderSide: BorderSide(
+                              width: 2,
+                              style: BorderStyle.solid,
+                              color: fifthColor)),
+                    ),
+                    keyboardType: TextInputType.emailAddress,
+                  ),
                   ElevatedButton(
                     onPressed: selectedLote.isNotEmpty
                         ? () {
                           getPDFAndUpload('LOTE ${getNumbers(selectedLote)}').whenComplete(() async {
                             setState((){});
-                              sepId = (await getSepID(selectedLote))!;  
+                              sepId = (await getSepID(selectedLote))!;
                             });
                           }                     
                         
                         : null,
                     style: ButtonStyle(
                       backgroundColor: selectedLote.isNotEmpty
-                          ? MaterialStateProperty.all<Color>(Colors.blue) // Active color
+                          ? MaterialStateProperty.all<Color>(fifthColor) // Active color
                           : MaterialStateProperty.all<Color>(Colors.grey.withOpacity(0.5)), // Inactive color
                       // Add more styling here as needed
                     ),
-                    child: const Text('Cargar archivo PDF'),
+                    child: Text('Cargar archivo PDF', style: TextStyle(
+              color: primaryColor, fontWeight: FontWeight.bold, fontSize: 16),),
                   ),
                   const SizedBox(height: 20,),
                   ElevatedButton(
                     onPressed: uploadedFile && selectedLote.isNotEmpty
                       ? () {
-                          savePdf(sepId, asset, 'LOTE ${getNumbers(selectedLote)}');
+                          savePdf(sepId, asset, 'LOTE${getNumbers(selectedLote)}_${formatDate()}', pdfController.text);
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               content: CustomAlertMessage(
@@ -354,17 +394,19 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
                             uploadedFile = false;
                             selectedLote = '';
                             sepId = '';
+                            pdfController.text = '';
                           }));
                           Navigator.pop(context);                 
                         }
                       : null,
                     style: ButtonStyle(
                       backgroundColor: uploadedFile && selectedLote.isNotEmpty
-                        ? MaterialStateProperty.all<Color>(Colors.blue) // Active color
+                        ? MaterialStateProperty.all<Color>(fifthColor) // Active color
                         : MaterialStateProperty.all<Color>(Colors.grey.withOpacity(0.5)), // Inactive color
                       // Add more styling here as needed
                     ),
-                    child: const Text('Subir promesa de compraventa PDF'),
+                    child: Text('Subir promesa de compraventa PDF', style: TextStyle(
+              color: primaryColor, fontWeight: FontWeight.bold, fontSize: 16),),
                   ),
                 ],
               ),
@@ -375,6 +417,7 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
                       uploadedFile = false;
                       selectedLote = '';
                       sepId = '';
+                      pdfController.text = '';
                     }));   
                     Navigator.pop(context);
                   },
@@ -1623,17 +1666,32 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
                                 title: Text(
                                     'LOTE ${getNumbers(promesaSnapshot.data?[index]['loteId'])!}'),
                                 subtitle: Text('Cliente: $fullName'),
-                                trailing: Row(
+                                trailing: ElevatedButton(
+                                  onPressed: () async {
+                                    promesaSnapshot.data?[index]['PDFbool'] == true ? Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => ListPdf(lote:'LOTE ${getNumbers(promesaSnapshot.data?[index]['loteId'])!}', sepId: promesaSnapshot.data?[index]['sepId'])
+                                      ),
+                                    ) : setState(() {});                                        
+                                  },
+                                  child: Icon(Icons.picture_as_pdf_outlined,
+                                      color: promesaSnapshot.data?[index]['PDFbool'] == true ? infoColor : Colors.grey),
+                                ),
+                                
+                                /*Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
                                     ElevatedButton(
                                       onPressed: () async {
                                         if (promesaSnapshot.data?[index]['PdfLink'] != null &&
                                             promesaSnapshot.data?[index]['PdfLink'] != 'null') {
-                                          js.context.callMethod('open', [
-                                            promesaSnapshot.data?[index]['PdfLink'],
-                                            '_blank',
-                                          ]);
+                                          js.context.callMethod('open', [promesaSnapshot.data?[index]['PdfLink'], '_blank']);
+                                          /*String url = promesaSnapshot.data?[index]['PdfLink'];
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) => PdfViewer(context, url: url)));*/
                                           ScaffoldMessenger.of(context).showSnackBar(
                                             SnackBar(
                                               content: CustomAlertMessage(
@@ -1707,7 +1765,7 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
                                                   .child('Promesas/$filename.pdf');
                                               // Delete the file
                                               await storageRef.delete();
-                                              await updatePdfLink(promesaSnapshot.data?[index]['sepId'], 'null', 'null');
+                                              await updatePdfLink(promesaSnapshot.data?[index]['sepId'], 'null', 'null', 'null');
                                               setState(() {
                                                 promesaSnapshot.data?.removeAt(index);
                                               });
@@ -1747,7 +1805,7 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
                                     ),
                               
                                   ],
-                                ),
+                                ),*/
                                 onTap: ((){}),
                               );
                             }
@@ -1771,6 +1829,12 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
     );
   }
 
+  String formatDate() {
+    DateTime now = DateTime.now();
+    String formattedDate = DateFormat('HHmmssddMMyyyy').format(now);
+    return formattedDate;
+  }
+
   Future<void> getPDFAndUpload(String fileName) async {
     FilePickerResult? file = await FilePicker.platform.pickFiles(type: FileType.custom, allowedExtensions: ['pdf']);
     if (file != null) {
@@ -1786,33 +1850,22 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
     }
   }
 
-  Future<void> savePdf(String id, Uint8List asset, String name) async {
+  Future<void> savePdf(String id, Uint8List asset, String name, String obs) async {
     Reference reference = FirebaseStorage.instance.ref('Promesas').child('$name.pdf');
     final metadata = SettableMetadata(  
-      contentType: 'file/pdf');  
+      contentType: 'application/pdf');  
     UploadTask uploadTask = reference.putData(asset, metadata);
 
     try {
       TaskSnapshot snapshot = await uploadTask;
       String url = await snapshot.ref.getDownloadURL();
-      updatePdfLink(id, url, name);
+      updatePdfLink(id, url, name, obs);
     } catch (e) {
       print('Error uploading PDF: $e');
     }
   }
 
-  void documentFileUpload(String name, String str){
-    var data = {
-      "PDF": str,
-      "FileName":name,
-    };
-    mainReference.child(name).set(data).then((v){
-      print("Store successfully");
-    });
-  }
-
   Future<Map<String, dynamic>> getLoteInfo(String lid) async {
-
     DocumentSnapshot<Map<String, dynamic>> infoLote = await db.collection('lotes').doc(lid).get();
     final Map<String, dynamic> data = infoLote.data() as Map<String, dynamic>;
     final lote = {
@@ -1862,14 +1915,6 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
       return separadoColor;
     } else {
       return vendidoColor;
-    }
-  }
-
-  Color uploadedColor(String value) {
-    if (value == 'null') {
-      return Colors.grey;
-    } else {
-      return infoColor;
     }
   }
 

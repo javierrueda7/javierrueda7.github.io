@@ -938,7 +938,7 @@ class _AddPaymentPageState extends State<AddPaymentPage> {
                               selectedCity,
                               observacionesController.text,
                               planPagos['idPlanPagos'],
-                              interestsValue
+                              interestsValue,
                             );
                             await updatePlanPagos(
                               selectedLote,                               

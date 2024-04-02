@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_web_libraries_in_flutter
+
 import 'package:albaterrapp/pages/add_quote_page.dart';
 import 'package:albaterrapp/pages/existing_quotes.dart';
 import 'package:albaterrapp/pages/info_gral.dart';
