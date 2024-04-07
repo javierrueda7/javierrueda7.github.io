@@ -580,15 +580,13 @@ Future<int> getPDFCount(String selectedLote) async {
     final QuerySnapshot querySnapshot = await FirebaseFirestore.instance.collection("ordSep").doc(selectedLote).collection('pdf').get();
 
     if (querySnapshot.docs.isEmpty) {
-      print("No documents found");
       // You can name the document as per your logic here
     } else {
       count = querySnapshot.docs.length;
-      print("Number of documents: ${querySnapshot.docs.length}");
       // You can proceed with naming the document using the next possible value
     }
+  // ignore: empty_catches
   } catch (e) {
-    print("Error getting documents: $e");
   }
   return count;
 }

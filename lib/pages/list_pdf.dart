@@ -41,7 +41,7 @@ class _ListPdfState extends State<ListPdf> {
         foregroundColor: primaryColor,
         elevation: 0,
         centerTitle: true,
-        title: Text('PDFs ',
+        title: Text('PDFs $lote',
           style: TextStyle(color: primaryColor, fontSize: 18, fontWeight: FontWeight.bold),
         ),
       ),

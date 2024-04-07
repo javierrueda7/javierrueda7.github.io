@@ -16,7 +16,6 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
-import 'dart:js' as js;
 
 FirebaseFirestore db = FirebaseFirestore.instance;
 
@@ -353,6 +352,7 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
                     ),
                     keyboardType: TextInputType.emailAddress,
                   ),
+                  const SizedBox(height: 20),
                   ElevatedButton(
                     onPressed: selectedLote.isNotEmpty
                         ? () {
@@ -369,7 +369,7 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
                           : MaterialStateProperty.all<Color>(Colors.grey.withOpacity(0.5)), // Inactive color
                       // Add more styling here as needed
                     ),
-                    child: Text('Cargar archivo PDF', style: TextStyle(
+                    child: Text('Buscar archivo PDF', style: TextStyle(
               color: primaryColor, fontWeight: FontWeight.bold, fontSize: 16),),
                   ),
                   const SizedBox(height: 20,),
@@ -405,7 +405,7 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
                         : MaterialStateProperty.all<Color>(Colors.grey.withOpacity(0.5)), // Inactive color
                       // Add more styling here as needed
                     ),
-                    child: Text('Subir promesa de compraventa PDF', style: TextStyle(
+                    child: Text('Subir archivo seleccionado', style: TextStyle(
               color: primaryColor, fontWeight: FontWeight.bold, fontSize: 16),),
                   ),
                 ],
@@ -1678,134 +1678,6 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
                                   child: Icon(Icons.picture_as_pdf_outlined,
                                       color: promesaSnapshot.data?[index]['PDFbool'] == true ? infoColor : Colors.grey),
                                 ),
-                                
-                                /*Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    ElevatedButton(
-                                      onPressed: () async {
-                                        if (promesaSnapshot.data?[index]['PdfLink'] != null &&
-                                            promesaSnapshot.data?[index]['PdfLink'] != 'null') {
-                                          js.context.callMethod('open', [promesaSnapshot.data?[index]['PdfLink'], '_blank']);
-                                          /*String url = promesaSnapshot.data?[index]['PdfLink'];
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                  builder: (context) => PdfViewer(context, url: url)));*/
-                                          ScaffoldMessenger.of(context).showSnackBar(
-                                            SnackBar(
-                                              content: CustomAlertMessage(
-                                                errorTitle: "Genial!",
-                                                errorText: "Descarga exitosa.",
-                                                stateColor: successColor,
-                                              ),
-                                              behavior: SnackBarBehavior.floating,
-                                              backgroundColor: Colors.transparent,
-                                              elevation: 0,
-                                              width: 1200,
-                                            ),
-                                          );
-                                        } else {
-                                          ScaffoldMessenger.of(context).showSnackBar(
-                                            SnackBar(
-                                              content: CustomAlertMessage(
-                                                errorTitle: "Oops!",
-                                                errorText: "PDF no existente.",
-                                                stateColor: dangerColor,
-                                              ),
-                                              behavior: SnackBarBehavior.floating,
-                                              backgroundColor: Colors.transparent,
-                                              elevation: 0,
-                                              width: 1200,
-                                            ),
-                                          );
-                                        }
-                                      },
-                                      child: Icon(Icons.download_outlined,
-                                          color: promesaSnapshot.data?[index]['PdfLink'] == null ? Colors.grey : uploadedColor(
-                                              promesaSnapshot.data?[index]['PdfLink'])),
-                                    ),
-                                    const SizedBox(width: 10),
-                                    ElevatedButton(
-                                      onPressed: () async {
-                                        if (promesaSnapshot.data?[index]['PdfLink'] != null &&
-                                        promesaSnapshot.data?[index]['PdfLink'] != 'null') {
-                                          bool confirmDelete = await showDialog(
-                                            context: context,
-                                            builder: (context) {
-                                              return AlertDialog(
-                                                title: const Text("Eliminar PDF"),
-                                                content: Text("¿Está seguro de eliminar la promesa de compraventa del lote ${getNumbers(promesaSnapshot.data?[index]['loteId'])!}?"),
-                                                actions: [
-                                                  TextButton(
-                                                    onPressed: () {
-                                                      Navigator.of(context).pop(false);
-                                                    },
-                                                    child: const Text("Cancelar"),
-                                                  ),
-                                                  TextButton(
-                                                    onPressed: () {
-                                                      Navigator.of(context).pop(true);
-                                                    },
-                                                    child: const Text("Eliminar"),
-                                                  ),
-                                                ],
-                                              );
-                                            },
-                                          );
-                              
-                                          if (confirmDelete) {
-                                            String filename = 'LOTE ${getNumbers(promesaSnapshot.data?[index]['loteId'])!}';
-                                            // Delete file from Firebase Storage
-                                            if (promesaSnapshot.data?[index]['PdfLink'] != null &&
-                                                promesaSnapshot.data?[index]['PdfLink'] != 'null') {
-                                              // Get a reference to the file
-                                              Reference storageRef = FirebaseStorage.instance
-                                                  .ref()
-                                                  .child('Promesas/$filename.pdf');
-                                              // Delete the file
-                                              await storageRef.delete();
-                                              await updatePdfLink(promesaSnapshot.data?[index]['sepId'], 'null', 'null', 'null');
-                                              setState(() {
-                                                promesaSnapshot.data?.removeAt(index);
-                                              });
-                                            }
-                                          }
-                                          // ignore: use_build_context_synchronously
-                                          ScaffoldMessenger.of(context).showSnackBar(
-                                            SnackBar(
-                                              content: CustomAlertMessage(
-                                                errorTitle: "Eliminado!",
-                                                errorText: "PDF eliminado.",
-                                                stateColor: infoColor,
-                                              ),
-                                              behavior: SnackBarBehavior.floating,
-                                              backgroundColor: Colors.transparent,
-                                              elevation: 0,
-                                              width: 1200,
-                                            ),
-                                          );
-                                        } else {
-                                          ScaffoldMessenger.of(context).showSnackBar(
-                                            SnackBar(
-                                              content: CustomAlertMessage(
-                                                errorTitle: "Oops!",
-                                                errorText: "PDF no existente.",
-                                                stateColor: dangerColor,
-                                              ),
-                                              behavior: SnackBarBehavior.floating,
-                                              backgroundColor: Colors.transparent,
-                                              elevation: 0,
-                                              width: 1200,
-                                            ),
-                                          );
-                                        }
-                                      },
-                                      child: Icon(Icons.delete_outline, color: promesaSnapshot.data?[index]['PdfLink'] == null ? Colors.grey : canDeleteColor(promesaSnapshot.data?[index]['PdfLink']),),
-                                    ),
-                              
-                                  ],
-                                ),*/
                                 onTap: ((){}),
                               );
                             }
