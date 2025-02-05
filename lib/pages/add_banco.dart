@@ -143,7 +143,7 @@ class _AddBancoPageState extends State<AddBancoPage> {
                       child: ElevatedButton(
                         style: ButtonStyle(
                             fixedSize:
-                                MaterialStateProperty.all(const Size(250, 50))),
+                                WidgetStateProperty.all(const Size(250, 50))),
                         onPressed: () async {
                           if (nameController.text.isEmpty ||
                               bancoController.text.isEmpty ||

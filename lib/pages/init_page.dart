@@ -1,4 +1,4 @@
-// ignore_for_file: avoid_web_libraries_in_flutter
+// ignore_for_file: avoid_web_libraries_in_flutter, use_build_context_synchronously
 
 import 'package:albaterrapp/pages/add_quote_page.dart';
 import 'package:albaterrapp/pages/existing_quotes.dart';

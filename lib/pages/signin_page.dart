@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:albaterrapp/pages/init_page.dart';
 import 'package:albaterrapp/pages/reset_password_page.dart';
 import 'package:albaterrapp/services/firebase_services.dart';

@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:albaterrapp/pages/info_banco.dart';
 import 'package:albaterrapp/services/firebase_services.dart';
 import 'package:albaterrapp/utils/color_utils.dart';
@@ -480,7 +482,7 @@ class _InfoGeneralState extends State<InfoGeneral> {
                     ElevatedButton(
                       style: ButtonStyle(
                           fixedSize:
-                              MaterialStateProperty.all(const Size(250, 50))),
+                              WidgetStateProperty.all(const Size(250, 50))),
                       onPressed: () async {
                         if (nameIController.text.isEmpty ||
                             nitIController.text.isEmpty ||

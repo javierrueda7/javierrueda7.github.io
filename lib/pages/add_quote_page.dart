@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:albaterrapp/pages/pdf_generator.dart';
 import 'package:albaterrapp/services/firebase_services.dart';
 import 'package:albaterrapp/utils/color_utils.dart';
@@ -1630,7 +1632,7 @@ class _AddQuotePageState extends State<AddQuotePage> {
                             flex: 4,
                             child: ElevatedButton(
                               style: ButtonStyle(
-                                  fixedSize: MaterialStateProperty.all(
+                                  fixedSize: WidgetStateProperty.all(
                                       const Size(250, 50))),
                               onPressed: () async {
                                 setState(() {
@@ -1760,7 +1762,7 @@ class _AddQuotePageState extends State<AddQuotePage> {
                             flex: 4,
                             child: ElevatedButton(
                               style: ButtonStyle(
-                                  fixedSize: MaterialStateProperty.all(
+                                  fixedSize: WidgetStateProperty.all(
                                       const Size(250, 50))),
                               onPressed: () async {
                                 setState(() {

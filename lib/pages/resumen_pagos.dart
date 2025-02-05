@@ -239,7 +239,7 @@ class _ResumenPagosState extends State<ResumenPagos> {
                   alignment: Alignment.center,
                   constraints: const BoxConstraints(maxWidth: 300),
                   child: ElevatedButton(style: ButtonStyle(
-                    minimumSize: MaterialStateProperty.all(const Size(100, 50))),
+                    minimumSize: WidgetStateProperty.all(const Size(100, 50))),
                     onPressed: () async {
                       pagosReal = await getPagos(loteid);
                       pagosEsp = await getPagosEsp(loteid);

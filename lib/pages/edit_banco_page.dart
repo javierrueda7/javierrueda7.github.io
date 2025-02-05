@@ -155,7 +155,7 @@ class _EditBancoPageState extends State<EditBancoPage> {
                         constraints: const BoxConstraints(maxWidth: 800),
                         child: ElevatedButton(
                           style: ButtonStyle(
-                              fixedSize: MaterialStateProperty.all(
+                              fixedSize: WidgetStateProperty.all(
                                   const Size(250, 50))),
                           onPressed: () async {
                             if (nameController.text.isEmpty ||

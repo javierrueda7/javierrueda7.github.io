@@ -365,8 +365,8 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
                         : null,
                     style: ButtonStyle(
                       backgroundColor: selectedLote.isNotEmpty
-                          ? MaterialStateProperty.all<Color>(fifthColor) // Active color
-                          : MaterialStateProperty.all<Color>(Colors.grey.withOpacity(0.5)), // Inactive color
+                          ? WidgetStateProperty.all<Color>(fifthColor) // Active color
+                          : WidgetStateProperty.all<Color>(Colors.grey.withOpacity(0.5)), // Inactive color
                       // Add more styling here as needed
                     ),
                     child: Text('Buscar archivo PDF', style: TextStyle(
@@ -401,8 +401,8 @@ class _ExistingQuotesState extends State<ExistingQuotes> {
                       : null,
                     style: ButtonStyle(
                       backgroundColor: uploadedFile && selectedLote.isNotEmpty
-                        ? MaterialStateProperty.all<Color>(fifthColor) // Active color
-                        : MaterialStateProperty.all<Color>(Colors.grey.withOpacity(0.5)), // Inactive color
+                        ? WidgetStateProperty.all<Color>(fifthColor) // Active color
+                        : WidgetStateProperty.all<Color>(Colors.grey.withOpacity(0.5)), // Inactive color
                       // Add more styling here as needed
                     ),
                     child: Text('Subir archivo seleccionado', style: TextStyle(

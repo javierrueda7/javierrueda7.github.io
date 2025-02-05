@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously, duplicate_ignore
+
 import 'package:albaterrapp/services/firebase_services.dart';
 import 'package:albaterrapp/utils/color_utils.dart';
 import 'package:albaterrapp/widgets/widgets.dart';
@@ -298,7 +300,7 @@ class _AddSellerPageState extends State<AddSellerPage> {
                       child: ElevatedButton(
                         style: ButtonStyle(
                             fixedSize:
-                                MaterialStateProperty.all(const Size(250, 50))),
+                                WidgetStateProperty.all(const Size(250, 50))),
                         onPressed: () async {
                           if (_nameTextController.text.isEmpty ||
                               _lastnameTextController.text.isEmpty ||

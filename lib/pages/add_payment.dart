@@ -896,7 +896,7 @@ class _AddPaymentPageState extends State<AddPaymentPage> {
                       child: ElevatedButton(
                         style: ButtonStyle(
                             fixedSize:
-                                MaterialStateProperty.all(const Size(250, 50))),
+                                WidgetStateProperty.all(const Size(250, 50))),
                         onPressed: () async {                          
                           if (nameController.text.isEmpty ||
                           emailController.text.isEmpty ||
@@ -917,6 +917,7 @@ class _AddPaymentPageState extends State<AddPaymentPage> {
                               ),
                             );
                           } else {
+                            String generatedId = await paymentIdGenerator(selectedLote);                            
                             if(wasPressed == 0){
                               setState(() {
                                 pagosCounter++;
@@ -924,7 +925,7 @@ class _AddPaymentPageState extends State<AddPaymentPage> {
                             });
                             await pagosRealizados(
                               selectedLote,
-                              paymentIdGenerator(paymentCounter),
+                              generatedId,
                               paymentValue,
                               conceptoPagoController.text,
                               receiptDateController.text,
@@ -1111,14 +1112,34 @@ class _AddPaymentPageState extends State<AddPaymentPage> {
 
   int cuotaIni = 0;
 
-  String paymentIdGenerator(int paymentCount) {
-    collectionReference.get().then((QuerySnapshot paymentSnapshot) {
-      paymentCounter = paymentSnapshot.size;
-    });
-    paymentCount = paymentCounter++;
-    String idGenerated = paymentCount.toString().padLeft(5, '0');
-    idGenerated = '$idGenerated-$selectedLote';
-    return idGenerated;
+  Future<String> paymentIdGenerator(String selectedLote) async {
+    try {
+      // Fetch all documents to find the max numeric value in the IDs
+      QuerySnapshot paymentSnapshot = await collectionReference.get();
+
+      int maxId = 0;
+
+      for (var doc in paymentSnapshot.docs) {
+        String docId = doc.id;
+        
+        // Extract numeric part of the docId
+        String numericPart = docId.split('-').first;
+        int? currentId = int.tryParse(numericPart);
+
+        if (currentId != null && currentId > maxId) {
+          maxId = currentId;
+        }
+      }
+
+      // Increment the maxId and generate the new payment ID
+      int newId = maxId + 1;
+      String idGenerated = newId.toString().padLeft(5, '0');
+      return '$idGenerated-$selectedLote';
+    } catch (e) {
+      // ignore: avoid_print
+      print('Error generating payment ID: $e');
+      return 'Error';
+    }
   }
 
   String nextState(){
