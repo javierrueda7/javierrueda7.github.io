@@ -22,6 +22,7 @@
     --accent-contrast:#fffaf1;
     --tag:#57685f;
     --tag-bg:rgba(87,104,95,0.10);
+    --status-testing:#3f6f8f;
     --grid-line: rgba(28,24,16,0.05);
     --shadow: 0 10px 30px rgba(28,24,16,0.08);
     --radius:8px;
@@ -41,6 +42,7 @@
       --accent-contrast:#1a1408;
       --tag:#93a69c;
       --tag-bg:rgba(147,166,156,0.12);
+      --status-testing:#7fa7c9;
       --grid-line: rgba(241,236,224,0.045);
       --shadow: 0 10px 34px rgba(0,0,0,0.45);
     }
@@ -56,6 +58,7 @@
     --accent-contrast:#1a1408;
     --tag:#93a69c;
     --tag-bg:rgba(147,166,156,0.12);
+    --status-testing:#7fa7c9;
     --grid-line: rgba(241,236,224,0.045);
     --shadow: 0 10px 34px rgba(0,0,0,0.45);
   }
@@ -196,6 +199,7 @@
   }
   .project-card:hover{ transform:translateY(-3px); border-color:color-mix(in srgb, var(--accent) 55%, var(--border)); border-top-color:var(--accent); box-shadow:var(--shadow); }
   .project-top{ display:flex; align-items:flex-start; justify-content:space-between; gap:10px; }
+  .project-title-row{ display:flex; align-items:center; flex-wrap:wrap; gap:9px; }
   .project-top h3{ font-family:'Sora',sans-serif; font-size:1.15rem; font-weight:700; letter-spacing:-0.01em; }
   .project-links a{
     width:32px; height:32px; border-radius:6px; border:1px solid var(--border);
@@ -222,6 +226,9 @@
     font-family:'IBM Plex Mono',monospace; font-size:.66rem; padding:3px 9px; border-radius:5px;
     border:1px solid var(--border); color:var(--text-muted); white-space:nowrap;
   }
+  .badge-live{ color:var(--tag); border-color:color-mix(in srgb, var(--tag) 45%, var(--border)); background:var(--tag-bg); }
+  .badge-dev{ color:var(--accent); border-color:color-mix(in srgb, var(--accent) 45%, var(--border)); background:color-mix(in srgb, var(--accent) 12%, transparent); }
+  .badge-testing{ color:var(--status-testing); border-color:color-mix(in srgb, var(--status-testing) 45%, var(--border)); background:color-mix(in srgb, var(--status-testing) 12%, transparent); }
   .other-card p{ color:var(--text-muted); font-size:.88rem; }
   .other-tags{ list-style:none; display:flex; flex-wrap:wrap; gap:6px; margin-top:2px; }
   .other-tags li{ font-family:'IBM Plex Mono',monospace; font-size:.68rem; color:var(--text-muted); }
@@ -325,7 +332,10 @@
 
         <article class="project-card">
           <div class="project-top">
-            <h3>atDoor</h3>
+            <div class="project-title-row">
+              <h3>atDoor</h3>
+              <span class="badge badge-dev" data-i18n="status.dev">En desarrollo</span>
+            </div>
             <div class="project-links">
               <a href="https://github.com/javierrueda7/atDoor" target="_blank" rel="noopener" aria-label="GitHub"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5C5.65.5.5 5.65.5 12c0 5.09 3.29 9.4 7.86 10.93.57.1.78-.25.78-.55v-2.1c-3.2.7-3.87-1.36-3.87-1.36-.53-1.34-1.29-1.7-1.29-1.7-1.05-.72.08-.7.08-.7 1.17.08 1.78 1.2 1.78 1.2 1.03 1.77 2.71 1.26 3.37.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.7 0-1.26.45-2.29 1.19-3.09-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.18 1.18a11 11 0 0 1 5.79 0c2.2-1.49 3.17-1.18 3.17-1.18.64 1.59.24 2.76.12 3.05.74.8 1.18 1.83 1.18 3.09 0 4.43-2.69 5.4-5.26 5.69.42.36.78 1.07.78 2.16v3.2c0 .3.21.66.79.55A10.52 10.52 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5Z"/></svg></a>
             </div>
@@ -336,7 +346,10 @@
 
         <article class="project-card">
           <div class="project-top">
-            <h3>SegurApp</h3>
+            <div class="project-title-row">
+              <h3>SegurApp</h3>
+              <span class="badge badge-live" data-i18n="status.live">En producción</span>
+            </div>
             <div class="project-links">
               <a href="https://github.com/javierrueda7/rsas" target="_blank" rel="noopener" aria-label="GitHub"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5C5.65.5.5 5.65.5 12c0 5.09 3.29 9.4 7.86 10.93.57.1.78-.25.78-.55v-2.1c-3.2.7-3.87-1.36-3.87-1.36-.53-1.34-1.29-1.7-1.29-1.7-1.05-.72.08-.7.08-.7 1.17.08 1.78 1.2 1.78 1.2 1.03 1.77 2.71 1.26 3.37.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.7 0-1.26.45-2.29 1.19-3.09-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.18 1.18a11 11 0 0 1 5.79 0c2.2-1.49 3.17-1.18 3.17-1.18.64 1.59.24 2.76.12 3.05.74.8 1.18 1.83 1.18 3.09 0 4.43-2.69 5.4-5.26 5.69.42.36.78 1.07.78 2.16v3.2c0 .3.21.66.79.55A10.52 10.52 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5Z"/></svg></a>
             </div>
@@ -347,7 +360,10 @@
 
         <article class="project-card">
           <div class="project-top">
-            <h3>CYMA Portal</h3>
+            <div class="project-title-row">
+              <h3>CYMA Portal</h3>
+              <span class="badge badge-testing" data-i18n="status.testing">En pruebas</span>
+            </div>
             <div class="project-links">
               <a href="https://github.com/javierrueda7/cyma-portal" target="_blank" rel="noopener" aria-label="GitHub"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5C5.65.5.5 5.65.5 12c0 5.09 3.29 9.4 7.86 10.93.57.1.78-.25.78-.55v-2.1c-3.2.7-3.87-1.36-3.87-1.36-.53-1.34-1.29-1.7-1.29-1.7-1.05-.72.08-.7.08-.7 1.17.08 1.78 1.2 1.78 1.2 1.03 1.77 2.71 1.26 3.37.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.7 0-1.26.45-2.29 1.19-3.09-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.18 1.18a11 11 0 0 1 5.79 0c2.2-1.49 3.17-1.18 3.17-1.18.64 1.59.24 2.76.12 3.05.74.8 1.18 1.83 1.18 3.09 0 4.43-2.69 5.4-5.26 5.69.42.36.78 1.07.78 2.16v3.2c0 .3.21.66.79.55A10.52 10.52 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5Z"/></svg></a>
             </div>
@@ -358,7 +374,10 @@
 
         <article class="project-card">
           <div class="project-top">
-            <h3>Albaterra ERP</h3>
+            <div class="project-title-row">
+              <h3>Albaterra ERP</h3>
+              <span class="badge badge-live" data-i18n="status.live">En producción</span>
+            </div>
             <div class="project-links">
               <a href="https://github.com/javierrueda7/albaterrapp" target="_blank" rel="noopener" aria-label="GitHub"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5C5.65.5.5 5.65.5 12c0 5.09 3.29 9.4 7.86 10.93.57.1.78-.25.78-.55v-2.1c-3.2.7-3.87-1.36-3.87-1.36-.53-1.34-1.29-1.7-1.29-1.7-1.05-.72.08-.7.08-.7 1.17.08 1.78 1.2 1.78 1.2 1.03 1.77 2.71 1.26 3.37.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.7 0-1.26.45-2.29 1.19-3.09-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.18 1.18a11 11 0 0 1 5.79 0c2.2-1.49 3.17-1.18 3.17-1.18.64 1.59.24 2.76.12 3.05.74.8 1.18 1.83 1.18 3.09 0 4.43-2.69 5.4-5.26 5.69.42.36.78 1.07.78 2.16v3.2c0 .3.21.66.79.55A10.52 10.52 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5Z"/></svg></a>
             </div>
@@ -369,7 +388,10 @@
 
         <article class="project-card">
           <div class="project-top">
-            <h3>Playr</h3>
+            <div class="project-title-row">
+              <h3>Playr</h3>
+              <span class="badge badge-dev" data-i18n="status.dev">En desarrollo</span>
+            </div>
             <div class="project-links">
               <a href="https://github.com/javierrueda7/squad" target="_blank" rel="noopener" aria-label="GitHub"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5C5.65.5.5 5.65.5 12c0 5.09 3.29 9.4 7.86 10.93.57.1.78-.25.78-.55v-2.1c-3.2.7-3.87-1.36-3.87-1.36-.53-1.34-1.29-1.7-1.29-1.7-1.05-.72.08-.7.08-.7 1.17.08 1.78 1.2 1.78 1.2 1.03 1.77 2.71 1.26 3.37.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.7 0-1.26.45-2.29 1.19-3.09-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.18 1.18a11 11 0 0 1 5.79 0c2.2-1.49 3.17-1.18 3.17-1.18.64 1.59.24 2.76.12 3.05.74.8 1.18 1.83 1.18 3.09 0 4.43-2.69 5.4-5.26 5.69.42.36.78 1.07.78 2.16v3.2c0 .3.21.66.79.55A10.52 10.52 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5Z"/></svg></a>
             </div>
@@ -380,7 +402,10 @@
 
         <article class="project-card">
           <div class="project-top">
-            <h3>APEX</h3>
+            <div class="project-title-row">
+              <h3>APEX</h3>
+              <span class="badge badge-dev" data-i18n="status.dev">En desarrollo</span>
+            </div>
             <div class="project-links">
               <a href="https://github.com/javierrueda7/apex-app" target="_blank" rel="noopener" aria-label="GitHub"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5C5.65.5.5 5.65.5 12c0 5.09 3.29 9.4 7.86 10.93.57.1.78-.25.78-.55v-2.1c-3.2.7-3.87-1.36-3.87-1.36-.53-1.34-1.29-1.7-1.29-1.7-1.05-.72.08-.7.08-.7 1.17.08 1.78 1.2 1.78 1.2 1.03 1.77 2.71 1.26 3.37.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.7 0-1.26.45-2.29 1.19-3.09-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.18 1.18a11 11 0 0 1 5.79 0c2.2-1.49 3.17-1.18 3.17-1.18.64 1.59.24 2.76.12 3.05.74.8 1.18 1.83 1.18 3.09 0 4.43-2.69 5.4-5.26 5.69.42.36.78 1.07.78 2.16v3.2c0 .3.21.66.79.55A10.52 10.52 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5Z"/></svg></a>
             </div>
@@ -415,7 +440,7 @@
         <div class="other-card">
           <div class="other-top">
             <h4 data-i18n="proj.menu.name">Menú Digital</h4>
-            <span class="badge" data-i18n="badge.progress">En desarrollo</span>
+            <span class="badge badge-dev" data-i18n="status.dev">En desarrollo</span>
           </div>
           <p data-i18n="proj.menu.desc">App multi-tenant de menú digital para restaurantes: carrito, pedidos en tiempo real hacia cocina y personalización de marca por negocio desde un mismo build.</p>
           <ul class="other-tags"><li>Flutter</li><li>Firestore</li></ul>
@@ -424,7 +449,7 @@
         <div class="other-card">
           <div class="other-top">
             <h4 data-i18n="proj.powerbi.name">PowerBI Access Portal</h4>
-            <span class="badge" data-i18n="badge.internal">Herramienta interna</span>
+            <span class="badge badge-live" data-i18n="status.live">En producción</span>
           </div>
           <p data-i18n="proj.powerbi.desc">Portal de control de acceso a dashboards de Power BI embebidos, con gestión de usuarios y permisos por dashboard.</p>
           <ul class="other-tags"><li>Flutter Web</li><li>Firebase</li></ul>
@@ -433,7 +458,7 @@
         <div class="other-card">
           <div class="other-top">
             <h4 data-i18n="proj.encuestas.name">CYMA Encuestas</h4>
-            <span class="badge" data-i18n="badge.internal">Herramienta interna</span>
+            <span class="badge badge-live" data-i18n="status.live">En producción</span>
           </div>
           <p data-i18n="proj.encuestas.desc">App de formularios y encuestas dinámicas con exportación a Excel y envío automático por correo.</p>
           <ul class="other-tags"><li>Flutter</li><li>Firebase</li></ul>
@@ -491,7 +516,8 @@
       "other.kicker":"Otros proyectos",
       "other.title":"Prototipos y herramientas internas",
       "other.sub":"Proyectos más pequeños, en etapa temprana o construidos para un uso específico — igual de reales, con menos alcance.",
-      "badge.prototype":"Prototipo","badge.progress":"En desarrollo","badge.internal":"Herramienta interna",
+      "badge.prototype":"Prototipo",
+      "status.live":"En producción","status.dev":"En desarrollo","status.testing":"En pruebas",
       "proj.spect.desc":"Sitio institucional con asistente de IA para un centro de medicina nuclear: catálogo de 26 procedimientos y un asistente con tool-use de Claude para consultar preparación y agendar citas.",
       "proj.menu.name":"Menú Digital",
       "proj.menu.desc":"App multi-tenant de menú digital para restaurantes: carrito, pedidos en tiempo real hacia cocina y personalización de marca por negocio desde un mismo build.",
@@ -527,7 +553,8 @@
       "other.kicker":"More projects",
       "other.title":"Prototypes and internal tools",
       "other.sub":"Smaller projects, early-stage or built for a specific use case — just as real, with narrower scope.",
-      "badge.prototype":"Prototype","badge.progress":"In progress","badge.internal":"Internal tool",
+      "badge.prototype":"Prototype",
+      "status.live":"In production","status.dev":"In development","status.testing":"In testing",
       "proj.spect.desc":"An institutional site with an AI assistant for a nuclear medicine center: a catalog of 26 procedures and a Claude tool-use assistant for prep info and appointment booking.",
       "proj.menu.name":"Digital Menu",
       "proj.menu.desc":"A multi-tenant digital menu app for restaurants: cart, real-time kitchen orders, and per-business branding from a single build.",
