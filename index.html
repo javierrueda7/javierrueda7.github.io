@@ -301,7 +301,7 @@
           <div class="section-kicker mono" data-i18n="about.kicker">Sobre mí</div>
           <h2 class="section-title" style="margin-bottom:22px;" data-i18n="about.title">Ingeniería de software con foco en producto</h2>
           <p data-i18n="about.p1">Lo que más me engancha es agarrar un problema de negocio real y desordenado y convertirlo en una herramienta que alguien usa todos los días — desde un asesor de seguros hasta un centro de medicina nuclear. Últimamente eso me ha llevado a meterme de lleno en IA aplicada, no como moda sino como una forma más de resolver ese mismo problema.</p>
-          <p data-i18n="about.p2">Trabajo principalmente con <strong>Flutter</strong> y <strong>React Native</strong> para móvil, <strong>Node.js/NestJS</strong> para backend, y <strong>PostgreSQL/Supabase/Firebase</strong> como capa de datos. Casi siempre construyo de punta a punta: entiendo el negocio, armo el backend y termino la app que la gente usa.</p>
+          <p data-i18n="about.p2">Trabajo principalmente con <strong>Flutter</strong> y <strong>React Native</strong> para móvil, <strong>Node.js/NestJS</strong> para backend, y <strong>PostgreSQL/Supabase/Firebase</strong> como capa de datos. Últimamente eso incluye combinar <strong>Claude y Gemini</strong> en el mismo producto, colas y WebSockets para trabajo en tiempo real, y CI/CD con monitoreo (Sentry) para no perder de vista lo que ya está en producción. Casi siempre construyo de punta a punta: entiendo el negocio, armo el backend y termino la app que la gente usa.</p>
           <p data-i18n="about.p3">Llevo unos <strong>4 años</strong> trabajando como freelance y ahora busco sumar esa experiencia a un equipo de forma más estable. Vivo en <strong>Bucaramanga, Colombia</strong>, prefiero trabajar remoto pero tengo flexibilidad para presencial o para moverme si el proyecto lo amerita.</p>
         </div>
         <div class="skills-box">
@@ -314,7 +314,9 @@
             <span class="skill-pill">PostgreSQL · Supabase</span>
             <span class="skill-pill">Firebase</span>
             <span class="skill-pill">Next.js · Tailwind</span>
-            <span class="skill-pill">Claude API · RAG</span>
+            <span class="skill-pill">Claude · Gemini · RAG</span>
+            <span class="skill-pill">Redis · WebSockets</span>
+            <span class="skill-pill">CI/CD · Sentry</span>
           </div>
         </div>
       </div>
@@ -341,8 +343,8 @@
               <a href="https://github.com/javierrueda7/atDoor" target="_blank" rel="noopener" aria-label="GitHub"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5C5.65.5.5 5.65.5 12c0 5.09 3.29 9.4 7.86 10.93.57.1.78-.25.78-.55v-2.1c-3.2.7-3.87-1.36-3.87-1.36-.53-1.34-1.29-1.7-1.29-1.7-1.05-.72.08-.7.08-.7 1.17.08 1.78 1.2 1.78 1.2 1.03 1.77 2.71 1.26 3.37.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.7 0-1.26.45-2.29 1.19-3.09-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.18 1.18a11 11 0 0 1 5.79 0c2.2-1.49 3.17-1.18 3.17-1.18.64 1.59.24 2.76.12 3.05.74.8 1.18 1.83 1.18 3.09 0 4.43-2.69 5.4-5.26 5.69.42.36.78 1.07.78 2.16v3.2c0 .3.21.66.79.55A10.52 10.52 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5Z"/></svg></a>
             </div>
           </div>
-          <p class="project-desc" data-i18n="proj.atdoor.desc">Marketplace para contratar servicios y alojamientos a domicilio. Backend modular en NestJS (reservas, pagos, mensajería, reseñas, notificaciones) y app móvil en Expo con flujos separados para clientes y proveedores.</p>
-          <ul class="tags"><li>NestJS</li><li>PostgreSQL</li><li>Redis</li><li>Expo</li><li>TypeScript</li></ul>
+          <p class="project-desc" data-i18n="proj.atdoor.desc">Marketplace para contratar servicios y alojamientos a domicilio. Backend modular en NestJS con colas (Redis/Bull) y chat en tiempo real por WebSockets, además de pagos, reseñas y notificaciones; app móvil en Expo con flujos separados para clientes y proveedores. Acaba de pasar por una ronda fuerte de hardening de seguridad (SQL injection, IDOR, fuerza bruta).</p>
+          <ul class="tags"><li>NestJS</li><li>PostgreSQL</li><li>Redis</li><li>WebSockets</li><li>Expo</li><li>TypeScript</li></ul>
         </article>
 
         <article class="project-card">
@@ -355,8 +357,8 @@
               <a href="https://github.com/javierrueda7/rsas" target="_blank" rel="noopener" aria-label="GitHub"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5C5.65.5.5 5.65.5 12c0 5.09 3.29 9.4 7.86 10.93.57.1.78-.25.78-.55v-2.1c-3.2.7-3.87-1.36-3.87-1.36-.53-1.34-1.29-1.7-1.29-1.7-1.05-.72.08-.7.08-.7 1.17.08 1.78 1.2 1.78 1.2 1.03 1.77 2.71 1.26 3.37.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.7 0-1.26.45-2.29 1.19-3.09-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.18 1.18a11 11 0 0 1 5.79 0c2.2-1.49 3.17-1.18 3.17-1.18.64 1.59.24 2.76.12 3.05.74.8 1.18 1.83 1.18 3.09 0 4.43-2.69 5.4-5.26 5.69.42.36.78 1.07.78 2.16v3.2c0 .3.21.66.79.55A10.52 10.52 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5Z"/></svg></a>
             </div>
           </div>
-          <p class="project-desc" data-i18n="proj.segurapp.desc">Archivador digital inteligente para agencias de seguros: pólizas, clientes, comisiones repartidas, abonos y reportes de vencimientos, con generación automática de PDFs. En uso real, con CI/CD y manual de usuario completo.</p>
-          <ul class="tags"><li>Flutter</li><li>Supabase</li><li>PostgreSQL</li><li>CI/CD</li></ul>
+          <p class="project-desc" data-i18n="proj.segurapp.desc">Archivador digital inteligente para agencias de seguros: pólizas, clientes, comisiones repartidas, abonos y reportes de vencimientos, con generación automática de PDFs. Ahora con importación asistida por IA (Gemini) que extrae los datos de una póliza desde un PDF o foto, y con Row Level Security reforzado en Postgres. En uso real, con CI/CD y manual de usuario completo.</p>
+          <ul class="tags"><li>Flutter</li><li>Supabase</li><li>PostgreSQL</li><li>Gemini</li><li>CI/CD</li></ul>
         </article>
 
         <article class="project-card">
@@ -369,8 +371,8 @@
               <a href="https://github.com/javierrueda7/cyma-portal" target="_blank" rel="noopener" aria-label="GitHub"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5C5.65.5.5 5.65.5 12c0 5.09 3.29 9.4 7.86 10.93.57.1.78-.25.78-.55v-2.1c-3.2.7-3.87-1.36-3.87-1.36-.53-1.34-1.29-1.7-1.29-1.7-1.05-.72.08-.7.08-.7 1.17.08 1.78 1.2 1.78 1.2 1.03 1.77 2.71 1.26 3.37.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.7 0-1.26.45-2.29 1.19-3.09-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.18 1.18a11 11 0 0 1 5.79 0c2.2-1.49 3.17-1.18 3.17-1.18.64 1.59.24 2.76.12 3.05.74.8 1.18 1.83 1.18 3.09 0 4.43-2.69 5.4-5.26 5.69.42.36.78 1.07.78 2.16v3.2c0 .3.21.66.79.55A10.52 10.52 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5Z"/></svg></a>
             </div>
           </div>
-          <p class="project-desc" data-i18n="proj.cyma.desc">Portal interno con IA para una consultora ambiental: revisión automatizada de Estudios de Impacto Ambiental con hallazgos categorizados, y un asistente conversacional con RAG sobre normativa ambiental. En uso activo por el cliente.</p>
-          <ul class="tags"><li>Node.js</li><li>Claude API</li><li>RAG</li><li>pgvector</li><li>OAuth</li></ul>
+          <p class="project-desc" data-i18n="proj.cyma.desc">Portal interno con IA para una consultora ambiental: revisión automatizada de Estudios de Impacto Ambiental con hallazgos categorizados, y un asistente conversacional con RAG (pgvector) sobre normativa ambiental, usando Claude y Gemini según el caso. Integra Google Drive/OAuth para la gestión documental. En uso activo por el cliente.</p>
+          <ul class="tags"><li>Node.js</li><li>Claude API</li><li>Gemini</li><li>RAG</li><li>pgvector</li><li>OAuth</li></ul>
         </article>
 
         <article class="project-card">
@@ -383,22 +385,22 @@
               <a href="https://github.com/javierrueda7/albaterrapp" target="_blank" rel="noopener" aria-label="GitHub"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5C5.65.5.5 5.65.5 12c0 5.09 3.29 9.4 7.86 10.93.57.1.78-.25.78-.55v-2.1c-3.2.7-3.87-1.36-3.87-1.36-.53-1.34-1.29-1.7-1.29-1.7-1.05-.72.08-.7.08-.7 1.17.08 1.78 1.2 1.78 1.2 1.03 1.77 2.71 1.26 3.37.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.7 0-1.26.45-2.29 1.19-3.09-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.18 1.18a11 11 0 0 1 5.79 0c2.2-1.49 3.17-1.18 3.17-1.18.64 1.59.24 2.76.12 3.05.74.8 1.18 1.83 1.18 3.09 0 4.43-2.69 5.4-5.26 5.69.42.36.78 1.07.78 2.16v3.2c0 .3.21.66.79.55A10.52 10.52 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5Z"/></svg></a>
             </div>
           </div>
-          <p class="project-desc" data-i18n="proj.albaterra.desc">ERP inmobiliario para venta de lotes y proyectos de vivienda: cotizaciones, separaciones, planes de pago, comisiones de vendedores y generación de contratos en PDF. Más de 30 pantallas — el sistema más grande del portafolio.</p>
-          <ul class="tags"><li>Flutter</li><li>Firebase</li><li>Firestore</li></ul>
+          <p class="project-desc" data-i18n="proj.albaterra.desc">ERP inmobiliario para venta de lotes y proyectos de vivienda: cotizaciones, separaciones, planes de pago, comisiones de vendedores y generación de contratos en PDF, con exportes a Excel. Más de 30 pantallas — el sistema más grande del portafolio.</p>
+          <ul class="tags"><li>Flutter</li><li>Firebase</li><li>Firestore</li><li>PDF</li></ul>
         </article>
 
         <article class="project-card">
           <div class="project-top">
             <div class="project-title-row">
               <h3>Playr</h3>
-              <span class="badge badge-dev" data-i18n="status.dev">En desarrollo</span>
+              <span class="badge badge-testing" data-i18n="status.testing">En pruebas</span>
             </div>
             <div class="project-links">
               <a href="https://github.com/javierrueda7/squad" target="_blank" rel="noopener" aria-label="GitHub"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5C5.65.5.5 5.65.5 12c0 5.09 3.29 9.4 7.86 10.93.57.1.78-.25.78-.55v-2.1c-3.2.7-3.87-1.36-3.87-1.36-.53-1.34-1.29-1.7-1.29-1.7-1.05-.72.08-.7.08-.7 1.17.08 1.78 1.2 1.78 1.2 1.03 1.77 2.71 1.26 3.37.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.7 0-1.26.45-2.29 1.19-3.09-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.18 1.18a11 11 0 0 1 5.79 0c2.2-1.49 3.17-1.18 3.17-1.18.64 1.59.24 2.76.12 3.05.74.8 1.18 1.83 1.18 3.09 0 4.43-2.69 5.4-5.26 5.69.42.36.78 1.07.78 2.16v3.2c0 .3.21.66.79.55A10.52 10.52 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5Z"/></svg></a>
             </div>
           </div>
-          <p class="project-desc" data-i18n="proj.playr.desc">App social deportiva para encontrar compañeros de juego, agendar partidos y crear grupos por deporte. MVP completo con autenticación, chat, calificaciones y moderación.</p>
-          <ul class="tags"><li>React Native</li><li>Expo</li><li>Supabase</li></ul>
+          <p class="project-desc" data-i18n="proj.playr.desc">App social deportiva para encontrar compañeros de juego, reservar canchas y crear grupos por deporte, con rachas, puntaje de confiabilidad y reservas gestionadas por los dueños de las canchas. En camino a lanzamiento en App Store / Play Store, con monitoreo de errores (Sentry) y builds automatizados vía EAS.</p>
+          <ul class="tags"><li>React Native</li><li>Expo</li><li>Supabase</li><li>Sentry</li><li>EAS Build</li></ul>
         </article>
 
         <article class="project-card">
@@ -443,7 +445,7 @@
             <h4 data-i18n="proj.menu.name">Menú Digital</h4>
             <span class="badge badge-dev" data-i18n="status.dev">En desarrollo</span>
           </div>
-          <p data-i18n="proj.menu.desc">App multi-tenant de menú digital para restaurantes: carrito, pedidos en tiempo real hacia cocina y personalización de marca por negocio desde un mismo build.</p>
+          <p data-i18n="proj.menu.desc">App multi-tenant de menú digital para restaurantes: carrito de pedidos enviados directo a WhatsApp, catálogo con imágenes cacheadas y personalización de marca por negocio desde un mismo build.</p>
           <ul class="other-tags"><li>Flutter</li><li>Firestore</li></ul>
         </div>
 
@@ -503,17 +505,17 @@
       "about.kicker":"Sobre mí",
       "about.title":"Ingeniería de software con foco en producto",
       "about.p1":"Lo que más me engancha es agarrar un problema de negocio real y desordenado y convertirlo en una herramienta que alguien usa todos los días — desde un asesor de seguros hasta un centro de medicina nuclear. Últimamente eso me ha llevado a meterme de lleno en IA aplicada, no como moda sino como una forma más de resolver ese mismo problema.",
-      "about.p2":"Trabajo principalmente con <strong>Flutter</strong> y <strong>React Native</strong> para móvil, <strong>Node.js/NestJS</strong> para backend, y <strong>PostgreSQL/Supabase/Firebase</strong> como capa de datos. Casi siempre construyo de punta a punta: entiendo el negocio, armo el backend y termino la app que la gente usa.",
+      "about.p2":"Trabajo principalmente con <strong>Flutter</strong> y <strong>React Native</strong> para móvil, <strong>Node.js/NestJS</strong> para backend, y <strong>PostgreSQL/Supabase/Firebase</strong> como capa de datos. Últimamente eso incluye combinar <strong>Claude y Gemini</strong> en el mismo producto, colas y WebSockets para trabajo en tiempo real, y CI/CD con monitoreo (Sentry) para no perder de vista lo que ya está en producción. Casi siempre construyo de punta a punta: entiendo el negocio, armo el backend y termino la app que la gente usa.",
       "about.p3":"Llevo unos <strong>4 años</strong> trabajando como freelance y ahora busco sumar esa experiencia a un equipo de forma más estable. Vivo en <strong>Bucaramanga, Colombia</strong>, prefiero trabajar remoto pero tengo flexibilidad para presencial o para moverme si el proyecto lo amerita.",
       "skills.heading":"Stack principal",
       "projects.kicker":"Proyectos destacados",
       "projects.title":"Productos que he construido",
       "projects.sub":"SegurApp y Albaterra son los más pulidos hoy: completos y en uso real. CYMA Portal, Playr y atDoor vienen cerca — y cuando estén terminados, los van a superar.",
-      "proj.atdoor.desc":"Marketplace para contratar servicios y alojamientos a domicilio. Backend modular en NestJS (reservas, pagos, mensajería, reseñas, notificaciones) y app móvil en Expo con flujos separados para clientes y proveedores.",
-      "proj.segurapp.desc":"Archivador digital inteligente para agencias de seguros: pólizas, clientes, comisiones repartidas, abonos y reportes de vencimientos, con generación automática de PDFs. En uso real, con CI/CD y manual de usuario completo.",
-      "proj.cyma.desc":"Portal interno con IA para una consultora ambiental: revisión automatizada de Estudios de Impacto Ambiental con hallazgos categorizados, y un asistente conversacional con RAG sobre normativa ambiental. En uso activo por el cliente.",
-      "proj.albaterra.desc":"ERP inmobiliario para venta de lotes y proyectos de vivienda: cotizaciones, separaciones, planes de pago, comisiones de vendedores y generación de contratos en PDF. Más de 30 pantallas — el sistema más grande del portafolio.",
-      "proj.playr.desc":"App social deportiva para encontrar compañeros de juego, agendar partidos y crear grupos por deporte. MVP completo con autenticación, chat, calificaciones y moderación.",
+      "proj.atdoor.desc":"Marketplace para contratar servicios y alojamientos a domicilio. Backend modular en NestJS con colas (Redis/Bull) y chat en tiempo real por WebSockets, además de pagos, reseñas y notificaciones; app móvil en Expo con flujos separados para clientes y proveedores. Acaba de pasar por una ronda fuerte de hardening de seguridad (SQL injection, IDOR, fuerza bruta).",
+      "proj.segurapp.desc":"Archivador digital inteligente para agencias de seguros: pólizas, clientes, comisiones repartidas, abonos y reportes de vencimientos, con generación automática de PDFs. Ahora con importación asistida por IA (Gemini) que extrae los datos de una póliza desde un PDF o foto, y con Row Level Security reforzado en Postgres. En uso real, con CI/CD y manual de usuario completo.",
+      "proj.cyma.desc":"Portal interno con IA para una consultora ambiental: revisión automatizada de Estudios de Impacto Ambiental con hallazgos categorizados, y un asistente conversacional con RAG (pgvector) sobre normativa ambiental, usando Claude y Gemini según el caso. Integra Google Drive/OAuth para la gestión documental. En uso activo por el cliente.",
+      "proj.albaterra.desc":"ERP inmobiliario para venta de lotes y proyectos de vivienda: cotizaciones, separaciones, planes de pago, comisiones de vendedores y generación de contratos en PDF, con exportes a Excel. Más de 30 pantallas — el sistema más grande del portafolio.",
+      "proj.playr.desc":"App social deportiva para encontrar compañeros de juego, reservar canchas y crear grupos por deporte, con rachas, puntaje de confiabilidad y reservas gestionadas por los dueños de las canchas. En camino a lanzamiento en App Store / Play Store, con monitoreo de errores (Sentry) y builds automatizados vía EAS.",
       "proj.apex.desc":"App social para entusiastas del motorsport: feed de publicaciones, garage para catalogar vehículos, registro de sesiones por GPS y mapa de amigos cercanos.",
       "other.kicker":"Otros proyectos",
       "other.title":"Prototipos y herramientas internas",
@@ -522,7 +524,7 @@
       "status.live":"En producción","status.dev":"En desarrollo","status.testing":"En pruebas",
       "proj.spect.desc":"Sitio institucional con asistente de IA para un centro de medicina nuclear: catálogo de 26 procedimientos y un asistente con tool-use de Claude para consultar preparación y agendar citas.",
       "proj.menu.name":"Menú Digital",
-      "proj.menu.desc":"App multi-tenant de menú digital para restaurantes: carrito, pedidos en tiempo real hacia cocina y personalización de marca por negocio desde un mismo build.",
+      "proj.menu.desc":"App multi-tenant de menú digital para restaurantes: carrito de pedidos enviados directo a WhatsApp, catálogo con imágenes cacheadas y personalización de marca por negocio desde un mismo build.",
       "proj.powerbi.name":"Portal de Acceso Power BI",
       "proj.powerbi.desc":"Portal de control de acceso a dashboards de Power BI embebidos, con gestión de usuarios y permisos por dashboard.",
       "proj.encuestas.name":"CYMA Encuestas",
@@ -541,17 +543,17 @@
       "about.kicker":"About",
       "about.title":"Software engineering with a product mindset",
       "about.p1":"What really hooks me is taking a messy, real business problem and turning it into something people use every day — from an insurance advisor to a nuclear medicine center. Lately that's pulled me deep into applied AI, not as a trend but as one more way to solve that same problem.",
-      "about.p2":"I work mainly with <strong>Flutter</strong> and <strong>React Native</strong> for mobile, <strong>Node.js/NestJS</strong> for backend, and <strong>PostgreSQL/Supabase/Firebase</strong> as the data layer. I almost always build end to end: I understand the business, build the backend, and ship the app people actually use.",
+      "about.p2":"I work mainly with <strong>Flutter</strong> and <strong>React Native</strong> for mobile, <strong>Node.js/NestJS</strong> for backend, and <strong>PostgreSQL/Supabase/Firebase</strong> as the data layer. Lately that's included combining <strong>Claude and Gemini</strong> in the same product, queues and WebSockets for real-time work, and CI/CD with monitoring (Sentry) to keep an eye on what's already in production. I almost always build end to end: I understand the business, build the backend, and ship the app people actually use.",
       "about.p3":"I've spent about <strong>4 years</strong> working freelance, and I'm now looking to bring that experience to a team on a more stable basis. I'm based in <strong>Bucaramanga, Colombia</strong>, prefer working remote, and I'm flexible about on-site work or relocating if the project calls for it.",
       "skills.heading":"Core stack",
       "projects.kicker":"Featured projects",
       "projects.title":"Products I've built",
       "projects.sub":"SegurApp and Albaterra are the most polished today — complete and in real use. CYMA Portal, Playr, and atDoor are close behind, and once finished, they'll surpass them.",
-      "proj.atdoor.desc":"A marketplace for booking on-demand services and stays. Modular NestJS backend (bookings, payments, messaging, reviews, notifications) with an Expo mobile app featuring separate client and provider flows.",
-      "proj.segurapp.desc":"A smart digital archive for insurance agencies: policies, clients, split commissions, payments, and renewal reports, with automatic PDF generation. In real-world use, with CI/CD and a full user manual.",
-      "proj.cyma.desc":"An internal AI-powered portal for an environmental consultancy: automated review of Environmental Impact Studies with categorized findings, plus a RAG-based conversational assistant over environmental regulations. Actively used by the client.",
-      "proj.albaterra.desc":"A real-estate ERP for lot and housing project sales: quotes, reservations, payment plans, sales-rep commissions, and PDF contract generation. Over 30 screens — the largest system in the portfolio.",
-      "proj.playr.desc":"A sports social app for finding people to play with, scheduling matches, and creating groups by sport. A complete MVP with auth, chat, ratings, and moderation.",
+      "proj.atdoor.desc":"A marketplace for booking on-demand services and stays. Modular NestJS backend with Redis/Bull queues and real-time WebSocket chat, plus payments, reviews, and notifications; an Expo mobile app with separate client and provider flows. Just went through a serious security-hardening pass (SQL injection, IDOR, brute-force protection).",
+      "proj.segurapp.desc":"A smart digital archive for insurance agencies: policies, clients, split commissions, payments, and renewal reports, with automatic PDF generation. Now with AI-assisted policy import (Gemini) that pulls the data straight from a PDF or photo, plus hardened Postgres Row Level Security. In real-world use, with CI/CD and a full user manual.",
+      "proj.cyma.desc":"An internal AI-powered portal for an environmental consultancy: automated review of Environmental Impact Studies with categorized findings, plus a RAG-based (pgvector) conversational assistant over environmental regulations, using Claude and Gemini depending on the task. Integrates Google Drive/OAuth for document management. Actively used by the client.",
+      "proj.albaterra.desc":"A real-estate ERP for lot and housing project sales: quotes, reservations, payment plans, sales-rep commissions, PDF contract generation, and Excel exports. Over 30 screens — the largest system in the portfolio.",
+      "proj.playr.desc":"A sports social app for finding people to play with, booking courts, and creating groups by sport, with win-streak tracking, reliability scores, and owner-managed court reservations. Heading toward an App Store / Play Store launch, with crash monitoring (Sentry) and automated EAS builds.",
       "proj.apex.desc":"A social app for motorsport enthusiasts: post feed, a garage to catalog vehicles, GPS session tracking, and a nearby-friends map.",
       "other.kicker":"More projects",
       "other.title":"Prototypes and internal tools",
@@ -560,7 +562,7 @@
       "status.live":"In production","status.dev":"In development","status.testing":"In testing",
       "proj.spect.desc":"An institutional site with an AI assistant for a nuclear medicine center: a catalog of 26 procedures and a Claude tool-use assistant for prep info and appointment booking.",
       "proj.menu.name":"Digital Menu",
-      "proj.menu.desc":"A multi-tenant digital menu app for restaurants: cart, real-time kitchen orders, and per-business branding from a single build.",
+      "proj.menu.desc":"A multi-tenant digital menu app for restaurants: a cart that sends orders straight to WhatsApp, an image-cached catalog, and per-business branding from a single build.",
       "proj.powerbi.name":"Power BI Access Portal",
       "proj.powerbi.desc":"An access-control portal for embedded Power BI dashboards, with user management and per-dashboard permissions.",
       "proj.encuestas.name":"CYMA Surveys",
