@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Esta página se mudó</title>
+<script>
+  // Los proyectos que vivían en javierrueda7.github.io/<repo> se mudaron a
+  // la organización La Ru Development. GitHub Pages sirve este 404.html para
+  // cualquier ruta que no exista aquí, así que redirigimos conservando la ruta,
+  // los parámetros y el #hash (los links profundos siguen funcionando).
+  (function () {
+    var destino = "https://laruedevelopment.github.io";
+    var mudados = {
+      "segurapprsas": "SegurAppRSAS",
+      "cyma-encuestasmop": "CYMA-EncuestasMOP",
+      "cyma-ideas-ia": "CyMA-Ideas-IA",
+      "albaterrapp": "albaterrapp",
+      "skymotion": "SkyMotion",
+      "encuestasweb": "encuestasWeb",
+      "html-portfolio": "practica-html-portfolio"
+    };
+    var partes = location.pathname.split("/");
+    var primero = (partes[1] || "").toLowerCase();
+    if (mudados[primero]) {
+      partes[1] = mudados[primero];
+      location.replace(destino + partes.join("/") + location.search + location.hash);
+    }
+  })();
+</script>
+<style>
+  body { font-family: system-ui, sans-serif; background: #fafafa; color: #222;
+         display: grid; place-items: center; min-height: 100vh; margin: 0; padding: 16px; text-align: center; }
+  a { color: #2563eb; }
+</style>
+</head>
+<body>
+  <main>
+    <h1>Página no encontrada</h1>
+    <p>Si buscabas uno de mis proyectos, ahora están en
+      <a href="https://github.com/laruedevelopment">La Ru Development</a>.</p>
+    <p><a href="/">Volver al portafolio</a></p>
+  </main>
+</body>
+</html>
