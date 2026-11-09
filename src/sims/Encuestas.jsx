@@ -374,7 +374,7 @@ function Resp({ sv, upd, say, setDlg }) {
         <div className="en-tablew"><table className="en-table">
           <thead><tr><th>Persona</th><th>Fecha</th><th>Estado</th>{sv.fields.map((f) => <th key={f.id}>{f.label}</th>)}<th /></tr></thead>
           <tbody>{rows.map((r) => (
-            <tr key={r.id}><td>{r.who}</td><td>{fd(r.date)}</td><td><span className={'en-chip ' + (r.state === 'Enviada' ? 'ok' : 'warn')}>{r.state}</span></td>{sv.fields.map((f) => <td key={f.id}>{r.vals[f.id] || '—'}</td>)}<td><button className="en-ibtn dng" aria-label="Eliminar respuesta" onClick={() => del(r)}><LI n="trash" size={16} /></button></td></tr>
+            <tr key={r.id}><td style={{ whiteSpace: "nowrap" }}>{r.who}</td><td style={{ whiteSpace: "nowrap" }}>{fd(r.date)}</td><td><span className={'en-chip ' + (r.state === 'Enviada' ? 'ok' : 'warn')}>{r.state}</span></td>{sv.fields.map((f) => <td key={f.id}>{r.vals[f.id] || '—'}</td>)}<td><button className="en-ibtn dng" aria-label="Eliminar respuesta" onClick={() => del(r)}><LI n="trash" size={16} /></button></td></tr>
           ))}</tbody></table></div>
       )}
     </>

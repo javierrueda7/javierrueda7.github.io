@@ -435,7 +435,7 @@ function Inicio({ s }) {
   const rows = [
     [`${11 + s.handoffs} conversaciones pasaron a una persona esta semana`, 'Revise si alguien las atendió', <button key="a" className="sf-btn sm" onClick={() => { s.setCallsPre({ out: 'Pasó a una persona' }); s.go('llamadas') }}>Revisar</button>],
     ['3 devoluciones de llamada pendientes', 'Se llaman solas al abrir el horario de atención', <Pill key="b" k="info">Automático</Pill>],
-    [`${unconf} citas del lunes sin confirmar`, 'Sofía envía el recordatorio hoy a las 4:00 p. m.', <button key="c" className="sf-btn sm" onClick={() => { s.setWeek(26); s.go('citas') }}>Ver citas</button>],
+    [`${unconf} citas de mañana sin confirmar`, 'Sofía envía el recordatorio hoy a las 4:00 p. m.', <button key="c" className="sf-btn sm" onClick={() => { s.setWeek(26); s.go('citas') }}>Ver citas</button>],
     ['Aún no se consulta la EPS en ADRES', 'Sofía no puede confirmar la afiliación del paciente. La Rue la activa con ustedes.', <button key="d" className="sf-btn sm" onClick={() => s.toast('Aviso enviado a La Rue (simulado)')}>Avisar a La Rue</button>],
   ]
   if (conflicts > 0) rows.push([`${conflicts} citas por reprogramar por cierres del centro`, 'Hay cierres programados que cruzan citas ya agendadas', <button key="e" className="sf-btn sm" onClick={() => { s.setWeek(26); s.go('citas') }}>Ver citas</button>])
@@ -568,10 +568,11 @@ function Llamadas({ s }) {
   const [range, setRange] = useState('30')
   const [out, setOut] = useState(pre?.out ?? '')
   const [page, setPage] = useState(0)
+  const [q, setQ] = useState('')
   useEffect(() => { if (pre?.out) setOut(pre.out) }, [pre])
   const m = TIERS[s.tier].m
   const cost = (c) => (c.ch === 'Llamada' ? c.min * (0.0213 + 0.036 * m) : c.msgs * 0.0016 * m)
-  const list = s.convs.filter((c) => (ch === 'Todos' || (ch === 'Llamadas' ? c.ch === 'Llamada' : c.ch === 'WhatsApp')) && (range === '30' || (range === '7' ? c.d >= 18 : c.d === TODAY)) && (!out || c.out === out))
+  const list = s.convs.filter((c) => (ch === 'Todos' || (ch === 'Llamadas' ? c.ch === 'Llamada' : c.ch === 'WhatsApp')) && (range === '30' || (range === '7' ? c.d >= 18 : c.d === TODAY)) && (!out || c.out === out) && (!q.trim() || `${c.name} ${c.tel}`.toLowerCase().includes(q.trim().toLowerCase())))
   const total = list.length
   const shown = list.slice(page * 12, page * 12 + 12)
   const tot = (n) => (n === 0 ? 0 : n)
@@ -582,11 +583,12 @@ function Llamadas({ s }) {
         <span className="sf-seg">{['Todos', 'Llamadas', 'WhatsApp'].map((l) => <button key={l} className={ch === l ? 'on' : ''} onClick={() => { setCh(l); setPage(0) }}>{l}</button>)}</span>
         <select className="sf-in" aria-label="Rango" value={range} onChange={(e) => { setRange(e.target.value); setPage(0) }}><option value="1">Hoy</option><option value="7">Últimos 7 días</option><option value="30">Últimos 30 días</option></select>
         <select className="sf-in" aria-label="Resultado" value={out} onChange={(e) => { setOut(e.target.value); setPage(0) }}><option value="">Cualquier resultado</option>{OUTS.map((o) => <option key={o}>{o}</option>)}</select>
+        <input className="sf-in sf-find" aria-label="Buscar por nombre o teléfono" placeholder="Buscar por nombre o teléfono" value={q} onChange={(e) => { setQ(e.target.value); setPage(0) }} />
       </div>
       <Card pad={false}>
         <div className="sf-scroll"><table className="sf-t"><thead><tr><th>Cuándo</th><th>Canal</th><th>Contacto</th><th>Duración</th><th>Resultado</th><th className="r">Costo aprox.</th></tr></thead>
           <tbody>{shown.map((c) => (
-            <tr key={c.id}><td>{dlabel(c.d)}<small className="blk">{hm(c.t)}</small></td><td>{c.ch}</td><td>{c.name}<small className="blk">{c.tel}</small></td><td>{c.ch === 'Llamada' ? `${Math.floor(c.min)} min ${Math.round((c.min % 1) * 60)} s` : `${c.msgs} mensajes`}</td><td><Pill k={c.out === 'Pasó a una persona' ? 'warn' : c.out === 'Agendó una cita' ? 'ok' : c.out === 'Colgó sin atender' ? 'bad' : ''}>{c.out}</Pill></td><td className="r">{usd(cost(c), 3)}<small className="blk">{cop(cost(c) * USD)}</small></td></tr>
+            <tr key={c.id}><td>{dlabel(c.d)}<small className="blk">{hm(c.t)}</small></td><td><Pill k={c.ch === 'Llamada' ? 'info' : 'ok'}>{c.ch}</Pill></td><td>{c.name}<small className="blk">{c.tel}</small></td><td>{c.ch === 'Llamada' ? `${Math.floor(c.min)} min ${Math.round((c.min % 1) * 60)} s` : `${c.msgs} mensajes`}</td><td><Pill k={c.out === 'Pasó a una persona' ? 'warn' : c.out === 'Agendó una cita' ? 'ok' : c.out === 'Colgó sin atender' ? 'bad' : ''}>{c.out}</Pill></td><td className="r">{usd(cost(c), 3)}<small className="blk">{cop(cost(c) * USD)}</small></td></tr>
           ))}{shown.length === 0 && <tr><td colSpan="6" className="sf-empty">No hay conversaciones con ese filtro.</td></tr>}</tbody></table></div>
         <Pager page={page} setPage={setPage} total={tot(total)} size={12} />
       </Card>
@@ -599,7 +601,7 @@ function Opinion({ s }) {
   const [on, setOn] = useState(false)
   const bars = [['5 puntos', 21], ['4 puntos', 20], ['3 puntos', 2], ['2 puntos', 3], ['1 punto', 0]]
   const topics = [['Precio', 7, 3], ['Trato del personal', 9, 0], ['Tiempo de espera', 8, 1], ['Preparación clara', 6, 1], ['Facilidad para agendar', 6, 0], ['Entrega de resultados', 5, 0]]
-  const com = [['Muy amables y me explicaron todo antes del examen.', 'Trato del personal', 'hace 1 día', 10], ['Agendé por WhatsApp en dos minutos, sin llamar a nadie.', 'Facilidad para agendar', 'hace 2 días', 10], ['Me dijeron exactamente qué traer y cuántas horas de ayuno.', 'Preparación clara', 'hace 3 días', 9], ['Llegué a la hora y esperé más de 40 minutos para pasar.', 'Tiempo de espera', 'hace 4 días', 5], ['El informe se demoró más de lo que me dijeron.', 'Entrega de resultados', 'hace 5 días', 6], ['No me quedó claro cuánto iba a pagar al final.', 'Precio', 'hace 6 días', 7]]
+  const com = [['Muy amables y me explicaron todo antes del examen.', 'Trato del personal', 'hace 1 día', 10], ['Agendé por WhatsApp en dos minutos, sin llamar a nadie.', 'Facilidad para agendar', 'hace 2 días', 10], ['Me dijeron exactamente qué traer y cuántas horas de ayuno.', 'Preparación clara', 'hace 3 días', 9], ['Llegué a la hora y esperé más de 40 minutos para pasar.', 'Tiempo de espera', 'hace 4 días', 5], ['El informe se demoró más de lo que me dijeron.', 'Entrega de resultados', 'hace 5 días', 6], ['No me quedó claro cuánto iba a pagar al final.', 'Precio', 'hace 6 días', 7], ['La recepcionista fue muy paciente con mi mamá.', 'Trato del personal', 'hace 6 días', 9], ['Me ofrecieron otra fecha sin que yo insistiera.', 'Facilidad para agendar', 'hace 7 días', 9], ['Me llegó el recordatorio, pero no decía la del apoyo.', 'Preparación clara', 'hace 8 días', 8]]
   return (
     <>
       <Intro>Lo que dicen los pacientes después de su estudio. Sofía les escribe por WhatsApp al día siguiente con dos preguntas cortas. Las respuestas son anónimas: aquí no se ve quién contestó.</Intro>
@@ -610,7 +612,7 @@ function Opinion({ s }) {
       </div>
       <div className="sf-g2">
         <Card title="Cómo calificaron">{bars.map(([l, n]) => <div key={l} className="sf-mini"><span>{l}</span><div><i style={{ width: `${(n / 21) * 100}%`, background: '#0e7c86' }} /></div><b>{n}</b></div>)}</Card>
-        <Card title="De qué hablan">{topics.map(([t, a, b]) => <div key={t} className="sf-topic"><b>{t}</b><small>{a} a favor · {b} por mejorar</small></div>)}</Card>
+        <Card title="De qué hablan">{topics.map(([t, a, b]) => <div key={t} className="sf-topic"><div className="sf-trow"><b>{t}</b><small>{a} a favor · {b} por mejorar</small></div><div className="sf-two"><i style={{ width: `${(a / (a + b)) * 100}%` }} /><i className="bad" style={{ width: `${(b / (a + b)) * 100}%` }} /></div></div>)}</Card>
       </div>
       <Card title="Comentarios recientes" pad={false}>
         {com.map(([q, t, w, n]) => <div key={q} className="sf-arow"><div><b>«{q}»</b><small>{t} · {w} · por WhatsApp</small></div><Pill k={n >= 9 ? 'ok' : n >= 7 ? 'info' : 'warn'}>{n} de 10</Pill></div>)}
@@ -640,8 +642,8 @@ function Pregunte({ s }) {
   return (
     <>
       <Intro>Pregunte por cómo va el centro y responde con cifras ya calculadas de Sofía. No abre fichas ni conversaciones, y solo ve lo que su rol permite.</Intro>
-      <Card title="¿Qué quiere saber de su centro hoy?">
-        <form className="sf-ask" onSubmit={(e) => { e.preventDefault(); ask(q) }}><input className="sf-in" aria-label="Pregunta" value={q} onChange={(e) => setQ(e.target.value)} placeholder="Escriba su pregunta" /><button className="sf-btn pri">Preguntar</button></form>
+      <Card title="¿Qué quiere saber de su centro hoy?" cls="sf-pq">
+        <form className="sf-ask" onSubmit={(e) => { e.preventDefault(); ask(q) }}><input className="sf-in" aria-label="Pregunta" value={q} onChange={(e) => setQ(e.target.value)} placeholder="Pregunte algo, por ejemplo: ¿cómo va el mes?" /><button className="sf-btn pri">Preguntar</button></form>
         <div className="sf-chips2">{['¿Cómo va el mes?', 'Señales de la semana', 'Pacientes que no vuelven', '¿Cuánto gastamos esta semana?'].map((t) => <button key={t} className="sf-chip" onClick={() => ask(t)}>{t}</button>)}</div>
       </Card>
       {hist.map((h, i) => <Card key={i} title={h.q}><p className="sf-answer">{h.a}</p></Card>)}
@@ -655,23 +657,35 @@ function Pacientes({ s }) {
   const [page, setPage] = useState(0)
   const [asc, setAsc] = useState(true)
   const [nu, setNu] = useState(null)
-  const list = s.patients.filter((p) => (!eps || p.eps === eps) && (!qq || p.name.toLowerCase().includes(qq.toLowerCase()) || p.id.toLowerCase().includes(qq.toLowerCase()))).sort((a, b) => (asc ? 1 : -1) * a.name.split(' ').slice(1).join(' ').localeCompare(b.name.split(' ').slice(1).join(' ')))
+  const [fm, setFm] = useState(false)
+  const [cols, setCols] = useState({ doc: true, phone: true, eps: true, auth: true })
+  const list = s.patients.filter((p) => (!eps || p.eps === eps) && (!qq || `${p.name} ${p.id} ${p.doc} ${p.phone}`.toLowerCase().includes(qq.toLowerCase()))).sort((a, b) => (asc ? 1 : -1) * a.name.split(' ').slice(1).join(' ').localeCompare(b.name.split(' ').slice(1).join(' ')))
   return (
     <>
       <Intro>Las personas que Sofía ha atendido o que ustedes cargan. Aquí se corrigen datos, se importan listas y se atienden solicitudes de los pacientes sobre sus datos.</Intro>
       <div className="sf-filters">
-        <input className="sf-in" aria-label="Buscar paciente" placeholder="Buscar por nombre o código" value={qq} onChange={(e) => { setQq(e.target.value); setPage(0) }} />
+        <input className="sf-in" aria-label="Buscar paciente" placeholder="Buscar por nombre, documento o celular" value={qq} onChange={(e) => { setQq(e.target.value); setPage(0) }} />
         <select className="sf-in" aria-label="EPS" value={eps} onChange={(e) => { setEps(e.target.value); setPage(0) }}><option value="">Todas las EPS</option>{EPS.map((e) => <option key={e}>{e}</option>)}</select>
         <span className="sp" />
         <button className="sf-btn pri" onClick={() => setNu({ name: '', doc: '', phone: '', eps: 'Particular' })}><Ic n="plus" /> Nuevo paciente</button>
         <button className="sf-btn" onClick={() => s.toast('Importar: en esta demo no se carga ningún archivo')}><Ic n="up" /> Importar desde Excel</button>
         <button className="sf-btn" onClick={() => dl('pacientes.csv', csv([['Código', 'Nombre', 'Documento', 'Celular', 'EPS'], ...s.patients.map((p) => [p.id, p.name, p.doc, p.phone, p.eps])]))}><Ic n="down" /> Exportar</button>
+        <button className="sf-btn" onClick={() => setFm(true)}>Campos de la ficha</button>
       </div>
       <Card pad={false}>
-        <div className="sf-scroll"><table className="sf-t"><thead><tr><th><button className="sf-th" onClick={() => setAsc(!asc)}>Paciente {asc ? '↑' : '↓'}</button></th><th>Documento</th><th>Celular</th><th>EPS</th><th>Autorización de datos</th></tr></thead>
-          <tbody>{list.slice(page * 12, page * 12 + 12).map((p) => <tr key={p.id}><td><span className="sf-who"><span className="sf-av">{initials(p.name)}</span><span><b>{p.name}</b><small className="blk">{p.id}</small></span></span></td><td>{p.doc}</td><td>{p.phone}</td><td>{p.eps}</td><td>{p.auth}</td></tr>)}</tbody></table></div>
+        <div className="sf-scroll"><table className="sf-t"><thead><tr><th><button className="sf-th" onClick={() => setAsc(!asc)}>Paciente {asc ? '↑' : '↓'}</button></th>{cols.doc && <th>Documento</th>}{cols.phone && <th>Celular</th>}{cols.eps && <th>EPS</th>}{cols.auth && <th>Autorización de datos</th>}</tr></thead>
+          <tbody>{list.slice(page * 12, page * 12 + 12).map((p) => <tr key={p.id}><td><span className="sf-who"><span className="sf-av">{initials(p.name)}</span><span><b>{p.name}</b><small className="blk">{p.id}</small></span></span></td>{cols.doc && <td>{p.doc}</td>}{cols.phone && <td>{p.phone}</td>}{cols.eps && <td>{p.eps}</td>}{cols.auth && <td><Pill k="ok">{p.auth}</Pill></td>}</tr>)}</tbody></table></div>
         <Pager page={page} setPage={setPage} total={list.length} size={12} />
       </Card>
+      {fm && (
+        <Modal title="Campos de la ficha" onClose={() => setFm(false)}>
+          <p className="sf-note">Elija qué datos se muestran en la lista de pacientes. El nombre y el código siempre se ven.</p>
+          {[['doc', 'Documento'], ['phone', 'Celular'], ['eps', 'EPS'], ['auth', 'Autorización de datos']].map(([k, l]) => (
+            <label key={k} className="sf-swrow"><input type="checkbox" checked={cols[k]} onChange={(e) => setCols({ ...cols, [k]: e.target.checked })} /><b>{l}</b></label>
+          ))}
+          <div className="sf-actions"><button className="sf-btn pri" onClick={() => setFm(false)}>Listo</button></div>
+        </Modal>
+      )}
       {nu && (
         <Modal title="Nuevo paciente" onClose={() => setNu(null)}>
           <form className="sf-form" onSubmit={(e) => {
@@ -875,7 +889,7 @@ function Horarios({ s }) {
             <div className="sf-actions"><button className="sf-btn pri" disabled={!dirty} onClick={save}>Guardar horario</button></div>
           </Card>
           <Card title="Así responde Sofía">
-            <div className="sf-pv"><div className="sf-bub me">Buenas noches, quisiera una cita.</div><div className="sf-bub">{`Hola, le habla Sofía de ${CENTER}. Nuestro horario de atención es ${txt}. ${draft.callback ? 'Con gusto le devolvemos la llamada cuando abramos.' : ''}`}</div>{draft.wa && <div className="sf-bub">{draft.msg}</div>}</div>
+            <div className="sf-pv"><div className="sf-bub me">Buenas noches, quisiera una cita.</div><div className="sf-bub">{`Hola, le habla Sofía de ${CENTER}. Nuestro horario de atención es ${txt.replace(/\.$/, '')}. ${draft.callback ? 'Con gusto le devolvemos la llamada cuando abramos.' : ''}`}</div>{draft.wa && <div className="sf-bub">{draft.msg}</div>}</div>
             <p className="sf-note">Hoy, el horario es: <b>{txt}</b>.</p>
           </Card>
         </div>
@@ -1222,7 +1236,7 @@ export default function Sofia() {
   useEffect(() => {
     const el = rootRef.current
     if (!el) return undefined
-    const fit = () => setCompact(el.clientWidth < 760)
+    const fit = () => setCompact(el.clientWidth < 640)
     fit()
     const ro = new ResizeObserver(fit)
     ro.observe(el)

@@ -277,34 +277,37 @@ export default function Backline() {
   const pending = 2
   void pending
 
-  const Rsvp = ({ e }) => {
+  const Ticket = ({ e }) => {
+    const d = new Date(e.date + 'T12:00:00')
+    const l = sets.find((x) => x.id === e.set)
+    const past = e.date < TODAY
     const mine = e.rsvp[ME]
     const yes = MEMBERS.filter((m) => e.rsvp[m.id] === 'si').length
     const none = MEMBERS.filter((m) => !e.rsvp[m.id])
     return (
-      <div className="bk-rsvp">
-        <div className="btns">
-          {[['si', 'Voy', ''], ['quiza', 'Quizás', 'qz'], ['no', 'No voy', 'no']].map(([v, l, c]) => <button key={v} className={`${mine === v ? 'on' : ''} ${c}`} aria-pressed={mine === v} onClick={() => setRsvp(e.id, v)}>{l}</button>)}
+      <article>
+        <div className={`bk-ticket ${past ? 'past' : ''}`}>
+          <div className="bk-tdate"><b>{d.getDate()}</b><span>{MES[d.getMonth()]}</span></div>
+          <div className="bk-tbody">
+            <div className="bk-eye">{e.type} · {fdate(e.date)}</div>
+            <h3>{e.title}</h3>
+            <div className="bk-li-s">{e.time} · {e.place}</div>
+            <div className="bk-subrow">
+              <span style={{ color: 'var(--sage)' }}>{yes}/{MEMBERS.length} confirmados</span>
+              {l && <button className="bk-link" onClick={() => { setTab('music'); setSub((x) => ({ ...x, music: 'sets' })); setView({ n: 'set', id: l.id }) }}>{l.name}</button>}
+              <button className="bk-link" style={{ color: 'var(--mut)' }} onClick={() => { setF({ ...e }); setSheet({ n: 'event', id: e.id }) }}>Editar</button>
+            </div>
+          </div>
         </div>
-        <div className="bk-ok" style={{ color: yes >= 3 ? 'var(--sage)' : 'var(--mut)' }}>{yes}/{MEMBERS.length} confirmados</div>
-        {none.length > 0 && <div className="bk-help" style={{ fontSize: 12.5 }}>Sin responder: {none.map((m) => m.name.split(' ')[0]).join(', ')}</div>}
-      </div>
-    )
-  }
-  const Ticket = ({ e }) => {
-    const d = new Date(e.date + 'T12:00:00')
-    const l = sets.find((x) => x.id === e.set)
-    return (
-      <div className="bk-ticket">
-        <div className="bk-tdate"><span>{MES[d.getMonth()]}</span><b>{d.getDate()}</b></div>
-        <div className="bk-tbody">
-          <div className="bk-eye am">{e.type} · {fdate(e.date)}</div>
-          <h3>{e.title}</h3>
-          <div className="bk-li-s">{e.time} · {e.place}</div>
-          {l && <button className="bk-link" style={{ fontSize: 13 }} onClick={() => { setTab('music'); setSub((s) => ({ ...s, music: 'sets' })); setView({ n: 'set', id: l.id }) }}>Ver setlist: {l.name}</button>}
-        </div>
-        {e.date >= TODAY && <Rsvp e={e} />}
-      </div>
+        {!past && (
+          <>
+            <div className="bk-rsvp" role="group" aria-label={`¿Vas a ${e.title}?`}>
+              {[['si', 'Voy', ''], ['quiza', 'Quizás', 'qz'], ['no', 'No voy', 'no']].map(([v, lb, c]) => <button key={v} className={`bk-btn ${mine === v ? 'on' : ''} ${c}`} aria-pressed={mine === v} onClick={() => setRsvp(e.id, v)}>{lb}</button>)}
+            </div>
+            {none.length > 0 && <p className="bk-li-s" style={{ marginTop: 8 }}>Sin responder: {none.map((m) => m.name.split(' ')[0]).join(', ')}</p>}
+          </>
+        )}
+      </article>
     )
   }
 
@@ -438,7 +441,7 @@ export default function Backline() {
             </div>
           ))}
         </div>
-        <p className="bk-help">Arrastra el asa ⋮⋮ para cambiar el orden (también las etiquetas). Toca una canción para ver sus detalles.</p>
+        <p className="bk-help">Arrastra el asa ⋮⋮ para cambiar el orden (también las etiquetas). Toca una canción para editar sus detalles. Para cambiar el nombre, poner etiquetas a una canción o quitar elementos, pulsa «Editar setlist».</p>
         <div className="bk-stack">
           <button className="bk-btn blk" onClick={() => setSheet({ n: 'addsongs', id: l.id })}><Ico n="plus" />Agregar canciones</button>
           <button className="bk-btn blk" onClick={() => setSheet({ n: 'label', id: l.id })}><Ico n="tag" />Agregar etiqueta</button>
@@ -462,8 +465,7 @@ export default function Backline() {
         <div className="bk-pills">{[['prox', `Próximos · ${upcoming.length}`], ['pas', 'Pasados']].map(([id, l]) => <button key={id} className={`bk-pill ${evf === id ? 'on' : ''}`} aria-pressed={evf === id} onClick={() => setEvf(id)}>{l}</button>)}</div>
         {list.length === 0 && <div className="bk-callout"><b>Nada agendado</b><br />Crea el próximo ensayo o toque y la banda podrá confirmar asistencia desde el celular. <button className="bk-link" onClick={() => setSheet({ n: 'event' })}>Agendar un evento</button></div>}
         {list.map((e) => (
-          <div key={e.id} className="bk-stack"><Ticket e={e} />
-            <div className="bk-row2" style={{ justifyContent: 'flex-end' }}><button className="bk-btn sm dng" onClick={() => setEvents((l) => l.filter((x) => x.id !== e.id))}>Eliminar</button></div></div>
+          <div key={e.id}><Ticket e={e} /></div>
         ))}
       </>
     )
@@ -540,7 +542,8 @@ export default function Backline() {
         <>
           <div className="bk-chat">
             {msgs.length === 0 && <div className="bk-help">Aquí empieza el chat de la banda. Escribe el primer mensaje.</div>}
-            {msgs.map((m, i) => <div key={i} className={`bk-bub ${m.who === ME ? 'me' : ''}`}><small><b>{MEMBERS.find((x) => x.id === m.who).name.split(' ')[0]}</b> {m.h}</small>{m.t}</div>)}
+            {msgs.length > 0 && <div className="bk-day">Hoy</div>}
+            {msgs.map((m, i) => { const mm = MEMBERS.find((x) => x.id === m.who); return <div key={i} className={`bk-msg ${m.who === ME ? 'me' : ''}`}>{m.who !== ME && <span className="bk-av" style={{ width: 30, height: 30, fontSize: 11 }}>{mm.ini}</span>}<div className="bk-bub"><small><b>{mm.name.split(' ')[0]}</b> {m.h}</small>{m.t}</div></div> })}
           </div>
           <form className="bk-row2" onSubmit={(e) => { e.preventDefault(); if (!chatText.trim()) return; setMsgs([...msgs, { who: ME, t: chatText.trim(), h: 'ahora' }]); setChatText('') }}>
             <input className="bk-in" placeholder="Escribe un mensaje…" value={chatText} onChange={(e) => setChatText(e.target.value)} aria-label="Mensaje" />
@@ -635,13 +638,13 @@ export default function Backline() {
       const ok = (f.title ?? '').trim() && f.date
       return (
         <Sheet onClose={close}>
-          <h3>Nuevo evento</h3>
+          <h3>{sheet.id ? 'Editar evento' : 'Nuevo evento'}</h3>
           <label className="bk-f">Tipo<select value={f.type ?? 'ensayo'} onChange={(e) => setF({ ...f, type: e.target.value })}><option value="ensayo">Ensayo</option><option value="toque">Toque</option></select></label>
           <label className="bk-f">Título<input value={f.title ?? ''} onChange={(e) => setF({ ...f, title: e.target.value })} autoFocus /></label>
           <div className="bk-grid2"><label className="bk-f">Fecha<input type="date" value={f.date ?? ''} onChange={(e) => setF({ ...f, date: e.target.value })} /></label><label className="bk-f">Hora<input value={f.time ?? ''} placeholder="7:30 pm" onChange={(e) => setF({ ...f, time: e.target.value })} /></label></div>
           <label className="bk-f">Lugar<input value={f.place ?? ''} onChange={(e) => setF({ ...f, place: e.target.value })} /></label>
           <label className="bk-f">Setlist<select value={f.set ?? ''} onChange={(e) => setF({ ...f, set: e.target.value })}><option value="">Sin setlist</option>{sets.map((x) => <option key={x.id} value={x.id}>{x.name}</option>)}</select></label>
-          <div className="bk-row2"><button className="bk-btn pri" style={{ flex: 1 }} disabled={!ok} onClick={() => { setEvents([...events, { id: 'e' + Date.now(), type: f.type ?? 'ensayo', title: f.title.trim(), date: f.date, time: f.time || '7:00 pm', place: f.place || 'Por definir', set: f.set || null, rsvp: { [ME]: 'si' } }]); setEvf('prox'); say('Evento agendado'); close() }}>Agendar</button><button className="bk-btn" onClick={close}>Cancelar</button></div>
+          <div className="bk-row2"><button className="bk-btn pri" style={{ flex: 1 }} disabled={!ok} onClick={() => { if (sheet.id) { setEvents(events.map((x) => (x.id === sheet.id ? { ...x, type: f.type ?? x.type, title: f.title.trim(), date: f.date, time: f.time || x.time, place: f.place || x.place, set: f.set || null } : x))); say('Evento actualizado'); close(); return } setEvents([...events, { id: 'e' + Date.now(), type: f.type ?? 'ensayo', title: f.title.trim(), date: f.date, time: f.time || '7:00 pm', place: f.place || 'Por definir', set: f.set || null, rsvp: { [ME]: 'si' } }]); setEvf('prox'); say('Evento agendado'); close() }}>{sheet.id ? 'Guardar' : 'Agendar'}</button>{sheet.id ? <button className="bk-btn dng" onClick={() => { setEvents(events.filter((x) => x.id !== sheet.id)); close() }}>Eliminar</button> : null}<button className="bk-btn" onClick={close}>Cancelar</button></div>
         </Sheet>
       )
     }

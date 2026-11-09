@@ -30,9 +30,9 @@ function seed() {
     orders.push({ code, email: 'demo@ejemplo.test', ced: String(10000000 + Math.floor(r() * 9e6)), phone: '300 000 ' + String(1000 + Math.floor(r() * 8999)), receipt: o.status === 'porpagar' ? null : 'comprobante.jpg', origin: 'web', method: 'breb', created: stampNow(), ...o, total: o.qty * o.price, tickets })
     return orders[orders.length - 1]
   }
-  // confirmadas web preventa: 128 personas, 36 ya ingresaron
+  // confirmadas web preventa: 118 personas, 36 ya ingresaron
   const sizes = [2, 4, 3, 1, 5, 2, 3, 2, 1, 4]
-  let left = 128; let k = 0
+  let left = 118; let k = 0
   while (left > 0) { const q = Math.min(left, sizes[k % sizes.length]); mk({ name: NAMES[k % NAMES.length], tipo: 'Preventa', price: 30000, qty: q, status: 'confirmada' }); left -= q; k++ }
   let ing = 36
   orders.forEach((o) => o.tickets.forEach((t) => { if (ing > 0) { t.used = true; t.usedAt = '20/12/26, 7:' + String(10 + (ing % 50)).padStart(2, '0') + ' p. m.'; ing-- } }))
@@ -215,28 +215,34 @@ export default function Boleteria() {
     const stepsA = o.status === 'confirmada' ? ['Reserva recibida', 'Comprobante recibido', 'Pago confirmado'] : o.status === 'porvalidar' ? ['Reserva recibida', 'Comprobante recibido', 'Validamos tu pago (máx. 24 h)'] : ['Reserva recibida', 'Sube tu comprobante', 'Validamos tu pago (máx. 24 h)']
     const cur = o.status === 'confirmada' ? 3 : o.status === 'porvalidar' ? 2 : 1
     const upload = (e) => { const f = e.target.files?.[0]; if (!f) return; if (f.size > 5 * 1024 * 1024) { say('El archivo pasa de 5 MB'); return } setOrders((l) => l.map((x) => (x.code === o.code ? { ...x, receipt: f.name, status: 'porvalidar' } : x))); say('Comprobante recibido') }
+    const conf = o.status === 'confirmada'
+    const guardaBox = (
+      <div className="bo-box l"><div className="bo-lbl">Guarda este enlace</div><div className="bo-note">Es la forma de ver tus boletas en cualquier momento, aunque el correo no te llegue. Cópialo o envíatelo por WhatsApp.</div>
+          <div className="bo-acts"><button className="bo-btn sm cl" onClick={() => copy(linkOf(o), 'Enlace copiado')}>Copiar enlace</button><button className="bo-btn sm cl" onClick={() => say('Se abriría WhatsApp con tu enlace')}>Envíamelo por WhatsApp</button></div></div>
+    )
     return (
       <div className="bo-frame"><div className="bo-pg" style={{ gap: 11 }}>
-        <a className="bo-lk" style={{ fontSize: 13 }} onClick={() => setPv({ n: 'landing' })}>← Inicio</a>
+        <a className="bo-lk" style={{ fontSize: 13, justifySelf: 'start', textDecoration: 'none' }} onClick={() => setPv({ n: 'landing' })}>← Inicio</a>
         <div className="bo-note">{cfg.nombre}</div>
         <h1 style={{ border: 0, paddingBottom: 0 }}>Pedido {o.code}</h1>
         <div><span className={`bo-tag ${cls}`}>{lab}</span> &nbsp;<b>{o.qty} × {o.tipo} · {money2(o.total)}</b></div>
         <div className="bo-note">{EVENT.long} · <u>{cfg.lugar}</u></div>
-        <div className="bo-box l"><div className="bo-lbl">Guarda este enlace</div><div className="bo-note">Es la forma de ver tus boletas en cualquier momento, aunque el correo no te llegue. Cópialo o envíatelo por WhatsApp.</div>
-          <div className="bo-acts"><button className="bo-btn sm cl" onClick={() => copy(linkOf(o), 'Enlace copiado')}>Copiar enlace</button><button className="bo-btn sm cl" onClick={() => say('Se abriría WhatsApp con tu enlace')}>Envíamelo por WhatsApp</button></div></div>
+        {conf && guardaBox}
         {o.status !== 'anulada' && o.status !== 'rechazada' && (
           <div className="bo-box"><div className="bo-lbl">Estado de tu pago</div>
             <div className="bo-steps">{stepsA.map((s, i) => <div key={s} className={`bo-step ${i < cur ? '' : i === cur ? 'cur' : 'todo'}`}><i>{i < cur ? '✓' : i + 1}</i>{s}</div>)}</div>
-            {o.status === 'confirmada' && <div className="bo-note">Tu QR está activo.</div>}</div>
+            {o.status === 'confirmada' && <div className="bo-note">Tu QR está activo.</div>}{o.status === 'porpagar' && <div className="bo-note">Paga y sube la captura de tu comprobante para activar tu entrada.</div>}</div>
         )}
         {o.status === 'confirmada' && <div className="bo-av ok">Pago validado. Presenta estos QR en la entrada.</div>}
+        {o.status === 'confirmada' && <div className="bo-note">También te enviamos las boletas por correo. Si no llegan, <b>revisa la carpeta de spam o correo no deseado</b>; aquí siempre las tienes.</div>}
         {o.status === 'porvalidar' && <div className="bo-av warn">Recibimos tu comprobante. Lo estamos validando; esta página se actualiza sola cuando se confirme.</div>}
         {o.status === 'rechazada' && <div className="bo-av mal">No pudimos validar tu comprobante. Sube uno nuevo para que lo revisemos otra vez.</div>}
         {o.status === 'anulada' && <div className="bo-av mal">Este pedido fue anulado y las entradas se liberaron.</div>}
         {(o.status === 'porpagar' || o.status === 'rechazada') && (
           <>
-            <div className="bo-av warn">Paga y sube la captura de tu comprobante para activar tu entrada.<br />Tienes hasta el martes, 10 de noviembre, 3:00 p. m. para pagar (te quedan {hh} h {mm} min). Pasado ese plazo la reserva se cancela y las entradas se liberan para otras personas.</div>
-            <div className="bo-box"><div className="bo-lbl">Paga por Bre-B o Nequi</div>
+            <div className="bo-av warn"><b>Tienes hasta el martes, 10 de noviembre, 3:00 p. m. para pagar (te quedan {hh} h {mm} min).</b> Pasado ese plazo la reserva se cancela y las entradas se liberan para otras personas.</div>
+            <div className="bo-av warn">Te enviamos un correo con estos datos. Si no lo ves, <b>revisa la carpeta de spam o correo no deseado.</b></div>
+            <div className="bo-box dash"><div className="bo-lbl">Paga por Bre-B o Nequi</div>
               <div className="bo-pay"><div className="bo-note">BRE-B · LLAVE<br /><b style={{ color: 'var(--ink)' }}>{cfg.breb}</b></div><button className="bo-btn sm cl" onClick={() => copy(cfg.breb)}>Copiar</button>
                 <div className="bo-note">NEQUI · NÚMERO<br /><b style={{ color: 'var(--ink)' }}>{cfg.nequi}</b></div><button className="bo-btn sm cl" onClick={() => copy(cfg.nequi)}>Copiar</button></div>
               <div className="bo-note">A nombre de {cfg.titular}</div><div><b>Valor exacto: {money(o.total)}</b></div>
@@ -248,6 +254,7 @@ export default function Boleteria() {
               <div className="bo-note">Imagen o PDF, máximo 5 MB.</div></div>
           </>
         )}
+        {!conf && o.status !== 'anulada' && guardaBox}
         {o.status !== 'anulada' && <div className="bo-lbl" style={{ marginTop: 4 }}>{o.status === 'confirmada' ? 'Tus entradas' : 'Tus entradas'}</div>}
         {o.status === 'porpagar' && <div className="bo-note">Ya están reservadas con su QR, pero no sirven para entrar hasta que confirmemos tu pago. Cuando se confirme, esta página se actualiza sola y el QR se activa.</div>}
         {o.status !== 'anulada' && o.tickets.map((t) => {
@@ -267,7 +274,7 @@ export default function Boleteria() {
           )
         })}
         {o.status === 'confirmada' && <div className="bo-note" style={{ textAlign: 'center' }}>Tip: sube el brillo del celular al llegar.</div>}
-        <div className="bo-box" style={{ textAlign: 'center' }}><h3>¿Van más amigos?</h3><div className="bo-note">Haz otra reserva para más personas. Cada pedido tiene su propio enlace y su propio pago.</div><button className="bo-btn acc blk" onClick={() => setPv({ n: 'landing' })}>Comprar más boletas</button></div>
+        <div className="bo-box" style={{ textAlign: 'center' }}><h3>{conf ? '¿Van más amigos?' : '¿Quieres más boletas?'}</h3><div className="bo-note">Haz otra reserva para más personas. Cada pedido tiene su propio enlace y su propio pago.</div><button className="bo-btn acc blk" onClick={() => setPv({ n: 'landing' })}>Comprar más boletas</button></div>
         <a className="bo-lk" style={{ textAlign: 'center' }} onClick={() => setPv({ n: 'landing' })}>Volver a la página de inicio</a>
       </div><Where /><Foot /></div>
     )

@@ -244,16 +244,17 @@ function Lista({ rows, setPols, setPays, open, say, narrow, setDialog, cat }) {
   const [fa, setFa] = useState('')
   const [fr, setFr] = useState('')
   const [fs, setFs] = useState('')
+  const [fp, setFp] = useState('')
   const [sort, setSort] = useState({ k: 'cod', dir: -1 })
   const filtered = useMemo(() => {
     const s = q.trim().toLowerCase()
     const c = fc.trim().toLowerCase()
     const r = rows.filter((p) =>
       (!s || [p.cod, p.nro, p.cliente, p.doc, p.aseg, p.ramo, p.prod, p.ases, p.bien].join(' ').toLowerCase().includes(s)) &&
-      (!c || (p.cliente + ' ' + p.doc).toLowerCase().includes(c)) && (!fa || p.aseg === fa) && (!fr || p.ramo === fr) && (!fs || p.ases === fs))
+      (!c || (p.cliente + ' ' + p.doc).toLowerCase().includes(c)) && (!fa || p.aseg === fa) && (!fr || p.ramo === fr) && (!fs || p.ases === fs) && (!fp || p.prod === fp))
     return r.sort((a, b) => (a[sort.k] > b[sort.k] ? 1 : a[sort.k] < b[sort.k] ? -1 : 0) * sort.dir)
-  }, [rows, q, fc, fa, fr, fs, sort])
-  const clear = () => { setQ(''); setFc(''); setFa(''); setFr(''); setFs('') }
+  }, [rows, q, fc, fa, fr, fs, fp, sort])
+  const clear = () => { setQ(''); setFc(''); setFa(''); setFr(''); setFs(''); setFp('') }
   const del = (p) => setDialog({ title: '¿Eliminar la póliza ' + p.cod + '?', body: `${p.cliente} · ${p.ramo}. Se borrarán también sus abonos.`, ok: 'Eliminar', danger: true, onOk: () => { setPols((l) => l.filter((x) => x.cod !== p.cod)); setPays((l) => l.filter((x) => x.pol !== p.cod)); say('Póliza ' + p.cod + ' eliminada') } })
   const th = (k, label, cls = '') => (
     <th className={cls} aria-sort={sort.k === k ? (sort.dir > 0 ? 'ascending' : 'descending') : 'none'}>
@@ -261,7 +262,8 @@ function Lista({ rows, setPols, setPays, open, say, narrow, setDialog, cat }) {
     </th>
   )
   const ramos = [...new Set(rows.map((r) => r.ramo))]
-  const any = q || fc || fa || fr || fs
+  const prods = [...new Set(rows.map((r) => r.prod))]
+  const any = q || fc || fa || fr || fs || fp
   return (
     <div className="pz-list">
       <div className="pz-search"><LI n="search" size={16} /><input placeholder="Buscar por código, nro. póliza, cliente, documento, aseguradora, ramo, asesor…" value={q} onChange={(e) => setQ(e.target.value)} aria-label="Buscar pólizas" /></div>
@@ -269,6 +271,7 @@ function Lista({ rows, setPols, setPays, open, say, narrow, setDialog, cat }) {
         <input placeholder="Cliente o documento" value={fc} onChange={(e) => setFc(e.target.value)} aria-label="Filtrar por cliente" />
         <select value={fa} onChange={(e) => setFa(e.target.value)} aria-label="Aseguradora"><option value="">Aseguradora</option>{cat.aseg.map((a) => <option key={a}>{a}</option>)}</select>
         <select value={fr} onChange={(e) => setFr(e.target.value)} aria-label="Ramo"><option value="">Ramo</option>{ramos.map((a) => <option key={a}>{a}</option>)}</select>
+        <select value={fp} onChange={(e) => setFp(e.target.value)} aria-label="Producto"><option value="">Producto</option>{prods.map((a) => <option key={a}>{a}</option>)}</select>
         <select value={fs} onChange={(e) => setFs(e.target.value)} aria-label="Asesor"><option value="">Asesor</option>{cat.ases.map((a) => <option key={a}>{a}</option>)}</select>
       </div>
       <p className="pz-count"><span>{filtered.length} de {rows.length} pólizas · Presiona Alt+N para crear una nueva póliza</span><button className="pz-btn ghost sm" onClick={clear} disabled={!any}>Limpiar</button></p>

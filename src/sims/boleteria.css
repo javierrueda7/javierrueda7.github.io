@@ -32,7 +32,7 @@
 .bo-btn.acc { background: var(--red); box-shadow: 3px 3px 0 var(--ink); }
 .bo-hero .bo-btn.acc { border-color: #efe9dc; box-shadow: 3px 3px 0 #efe9dc; width: 100%; }
 .bo-btn.acc:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--ink); }
-.bo-btn.dk { background: var(--reddk); box-shadow: 3px 3px 0 var(--ink); width: 100%; }
+.bo-btn.dk { background: var(--red); box-shadow: 3px 3px 0 var(--ink); width: 100%; }
 .bo-btn.cl { background: transparent; color: var(--ink); }
 .bo-btn.sm { min-height: 34px; padding: 0 11px; font-size: 12px; }
 .bo-btn.bad { background: transparent; color: var(--bad); border-color: var(--bad); }
@@ -41,7 +41,7 @@
 .bo-info { display: grid; grid-template-columns: 1fr 1fr; border-bottom: 2px solid var(--ink); }
 .bo-info > div { padding: 10px; text-align: center; border-right: 2px solid var(--ink); font: 600 11px var(--osw); letter-spacing: .1em; text-transform: uppercase; color: var(--ink2); }
 .bo-info > div:last-child { border: 0; }
-.bo-info b { display: block; font: 600 22px var(--osw); color: var(--ink); letter-spacing: .04em; }
+.bo-info b { display: block; text-transform: none; font: 600 22px var(--osw); color: var(--ink); letter-spacing: .04em; }
 .bo-price { padding: 10px; text-align: center; font: 600 11px var(--osw); letter-spacing: .12em; text-transform: uppercase; color: var(--ink2); background: var(--card); border-bottom: 2px solid var(--ink); }
 .bo-price b { font: 600 17px var(--osw); color: var(--ink); } .bo-price .sv { display: inline-block; background: var(--red); color: #fff; padding: 2px 10px; margin-top: 5px; letter-spacing: .06em; }
 .bo-sec { padding: 14px 14px 4px; display: grid; gap: 10px; }
@@ -88,6 +88,7 @@
 .bo-tk .sub { font-size: 12.5px; color: var(--ink2); }
 .bo-stamp { position: absolute; top: 62px; left: 50%; transform: translateX(-50%) rotate(-14deg); border: 3px solid var(--ink); padding: 0 10px; font: 700 24px var(--osw); letter-spacing: .06em; background: rgba(255,255,255,.7); white-space: nowrap; }
 .bo-pend-t { position: absolute; top: 66px; font: 700 15px var(--osw); letter-spacing: .1em; background: var(--warnbg); border: 2px solid var(--warn); color: var(--warn); padding: 1px 10px; transform: rotate(-8deg); }
+.bo-box.dash { border-style: dashed; }
 .bo-pay { display: grid; grid-template-columns: 1fr auto; gap: 4px 8px; align-items: center; }
 .bo-pay b { font: 500 16px 'IBM Plex Mono', monospace; }
 .bo-big { font: 600 22px var(--osw); letter-spacing: .06em; }
@@ -115,7 +116,7 @@
 .bo-ord { background: var(--card); border: 2px solid var(--ink); border-radius: 3px; padding: 10px; display: grid; gap: 5px; }
 .bo-ord .top { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
 .bo-ord .top b { font: 600 17px var(--osw); letter-spacing: .06em; }
-.bo-ord .sm { font-size: 12.5px; color: var(--ink2); line-height: 1.35; }
+.bo-ord div.sm { font-size: 12.5px; color: var(--ink2); line-height: 1.35; }
 .bo-acts { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 3px; }
 .bo-rc { border: 2px dashed var(--ink2); background: #fff; height: 90px; display: grid; place-items: center; font-size: 12px; color: var(--ink2); }
 table.bo-t { width: 100%; border-collapse: collapse; font-size: 13px; }

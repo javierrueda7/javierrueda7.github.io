@@ -298,13 +298,13 @@ function Cotizaciones({ quotes, go }) {
   const list = quotes.filter((x) => !s || ['C-' + x.n, x.lot, x.client.name, x.client.doc].join(' ').toLowerCase().includes(s)).sort((a, b) => b.n - a.n)
   return (
     <>
-      <Head t="Cotizaciones" sub="Ofertas a clientes interesados"><button className="lt-btn pri" onClick={() => go('nuevacot')}><LI n="plus" size={16} /> Nueva cotización</button></Head>
+      <Head t="Cotizaciones" sub="Todas las cotizaciones del proyecto"><button className="lt-btn pri" onClick={() => go('nuevacot')}><LI n="plus" size={16} /> Nueva cotización</button></Head>
       <label className="lt-sbox flat"><LI n="search" size={16} /><input placeholder="Número, lote, cliente o documento" value={q} onChange={(e) => setQ(e.target.value)} aria-label="Buscar cotizaciones" /></label>
       {list.length === 0 ? <div className="lt-empty">No hay cotizaciones<button className="lt-btn" onClick={() => go('nuevacot')}>Crear la primera</button></div> : (
         <div className="lt-card"><div className="lt-tw"><table className="lt-table">
           <thead><tr><th>#</th><th>Fecha</th><th>Lote</th><th>Cliente</th><th>Asesor</th><th className="r">Precio final</th><th>Estado</th></tr></thead>
           <tbody>{list.map((x) => (
-            <tr key={x.n} className="click" onClick={() => go('cotizdet', x.n)}><td className="num">C-{String(x.n).padStart(4, '0')}</td><td className="num">{fd(x.date)}</td><td>Lote {x.lot}</td><td><b>{x.client.name}</b></td><td>{x.asesor}</td><td className="num r">{money(priceQ(x))}</td><td><Tag c={QTAG[x.status]}>{x.status}</Tag></td></tr>
+            <tr key={x.n} className="click" onClick={() => go('cotizdet', x.n)}><td className="num">C-{String(x.n).padStart(4, '0')}</td><td className="num">{fd(x.date)}</td><td className="nw">Lote {x.lot}</td><td><b>{x.client.name}</b></td><td>{x.asesor}</td><td className="num r">{money(priceQ(x))}</td><td><Tag c={QTAG[x.status]}>{x.status}</Tag></td></tr>
           ))}</tbody></table></div></div>
       )}
     </>
@@ -518,7 +518,7 @@ function Recibo({ r, close }) {
 function Recibos({ receipts, setModal }) {
   return (
     <>
-      <Head t="Recibos" sub="Recibos de caja de los pagos recibidos" />
+      <Head t="Recibos" sub="Todos los pagos recibidos" />
       <div className="lt-card"><div className="lt-tw"><table className="lt-table">
         <thead><tr><th>Recibo</th><th>Fecha</th><th>Lote</th><th>Comprador</th><th>Medio</th><th className="r">Valor</th></tr></thead>
         <tbody>{receipts.slice(0, 20).map((r) => <tr key={r.rc} className="click" onClick={() => setModal({ title: 'Recibo', body: (close) => <Recibo r={r} close={close} /> })}><td className="num">R-{String(r.rc + 1000).padStart(5, '0')}</td><td className="num">{fd(r.date)}</td><td>Lote {r.sep.lot}</td><td><b>{r.sep.buyer.name}</b></td><td>{r.medio}</td><td className="num r">{money(r.amount)}</td></tr>)}</tbody></table></div></div>
