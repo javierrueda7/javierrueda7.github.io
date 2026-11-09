@@ -5,6 +5,18 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Javier Rueda</title>
 <meta name="description" content="Javier Rueda — Ingeniero de software. Aplicaciones full-stack para web, móvil e IA aplicada.">
+<link rel="canonical" href="https://javierrueda7.github.io/">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="es_CO">
+<meta property="og:site_name" content="Javier Rueda">
+<meta property="og:title" content="Javier Rueda — Ingeniero de software">
+<meta property="og:description" content="Aplicaciones full-stack para web, móvil e IA aplicada. Mira mis proyectos y pruébalos en demos interactivas.">
+<meta property="og:url" content="https://javierrueda7.github.io/">
+<meta property="og:image" content="https://javierrueda7.github.io/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:image" content="https://javierrueda7.github.io/og.png">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%230d0c09'/%3E%3Ctext x='50' y='68' font-size='58' font-family='monospace' fill='%23e0a458' text-anchor='middle'%3E%3C/%3E%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -208,6 +220,8 @@
   }
   .project-links a:hover{ color:var(--accent); border-color:var(--accent); }
   .project-desc{ color:var(--text-muted); font-size:.94rem; flex-grow:1; }
+  .demo-link{ align-self:flex-start; font-family:'IBM Plex Mono',monospace; font-size:.8rem; color:var(--accent); border-bottom:1px solid transparent; transition:border-color .15s ease; }
+  .demo-link:hover{ border-bottom-color:var(--accent); }
   .tags{ list-style:none; display:flex; flex-wrap:wrap; gap:7px; }
   .tags li{
     font-family:'IBM Plex Mono',monospace; font-size:.72rem; color:var(--tag);
@@ -257,6 +271,7 @@
     <nav class="links">
       <a class="navlink" href="#about" data-i18n="nav.about">Sobre mí</a>
       <a class="navlink" href="#projects" data-i18n="nav.projects">Proyectos</a>
+      <a class="navlink" href="demos/" data-i18n="nav.demos">Demos</a>
       <a class="navlink" href="#contact" data-i18n="nav.contact">Contacto</a>
     </nav>
     <div class="nav-controls">
@@ -278,6 +293,7 @@
       <p class="hero-tagline" data-i18n="hero.tagline">Freelance: un problema de negocio entra, una app sale.</p>
       <div class="hero-actions">
         <a href="#projects" class="btn btn-primary" data-i18n="hero.cta.projects">Ver proyectos</a>
+        <a href="demos/" class="btn btn-ghost" data-i18n="hero.cta.demos">Probar las demos</a>
         <a href="#contact" class="btn btn-ghost" data-i18n="hero.cta.contact">Contáctame</a>
       </div>
       <div class="hero-social">
@@ -344,6 +360,7 @@
             </div>
           </div>
           <p class="project-desc" data-i18n="proj.atdoor.desc">Marketplace para contratar servicios y alojamientos a domicilio. Backend modular en NestJS con colas (Redis/Bull) y chat en tiempo real por WebSockets, además de pagos, reseñas y notificaciones; app móvil en Expo con flujos separados para clientes y proveedores. Acaba de pasar por una ronda fuerte de hardening de seguridad (SQL injection, IDOR, fuerza bruta).</p>
+          <a class="demo-link" href="demos/#/atdoor" data-i18n="demo.try">Probar demo →</a>
           <ul class="tags"><li>NestJS</li><li>PostgreSQL</li><li>Redis</li><li>WebSockets</li><li>Expo</li><li>TypeScript</li></ul>
         </article>
 
@@ -358,6 +375,7 @@
             </div>
           </div>
           <p class="project-desc" data-i18n="proj.segurapp.desc">Archivador digital inteligente para agencias de seguros: pólizas, clientes, comisiones repartidas, abonos y reportes de vencimientos, con generación automática de PDFs. Ahora con importación asistida por IA (Gemini) que extrae los datos de una póliza desde un PDF o foto, y con Row Level Security reforzado en Postgres. En uso real, con CI/CD y manual de usuario completo.</p>
+          <a class="demo-link" href="demos/#/polizas" data-i18n="demo.try">Probar demo →</a>
           <ul class="tags"><li>Flutter</li><li>Supabase</li><li>PostgreSQL</li><li>Gemini</li><li>CI/CD</li></ul>
         </article>
 
@@ -372,6 +390,7 @@
             </div>
           </div>
           <p class="project-desc" data-i18n="proj.cyma.desc">Portal interno con IA para una consultora ambiental: revisión automatizada de Estudios de Impacto Ambiental con hallazgos categorizados, y un asistente conversacional con RAG (pgvector) sobre normativa ambiental, usando Claude y Gemini según el caso. Integra Google Drive/OAuth para la gestión documental. En uso activo por el cliente.</p>
+          <a class="demo-link" href="demos/#/ambiental" data-i18n="demo.try">Probar demo →</a>
           <ul class="tags"><li>Node.js</li><li>Claude API</li><li>Gemini</li><li>RAG</li><li>pgvector</li><li>OAuth</li></ul>
         </article>
 
@@ -386,6 +405,7 @@
             </div>
           </div>
           <p class="project-desc" data-i18n="proj.albaterra.desc">ERP inmobiliario para venta de lotes y proyectos de vivienda: cotizaciones, separaciones, planes de pago, comisiones de vendedores y generación de contratos en PDF, con exportes a Excel. Más de 30 pantallas — el sistema más grande del portafolio.</p>
+          <a class="demo-link" href="demos/#/lotes" data-i18n="demo.try">Probar demo →</a>
           <ul class="tags"><li>Flutter</li><li>Firebase</li><li>Firestore</li><li>PDF</li></ul>
         </article>
 
@@ -400,6 +420,7 @@
             </div>
           </div>
           <p class="project-desc" data-i18n="proj.playr.desc">App social deportiva para encontrar compañeros de juego, reservar canchas y crear grupos por deporte, con rachas, puntaje de confiabilidad y reservas gestionadas por los dueños de las canchas. En camino a lanzamiento en App Store / Play Store, con monitoreo de errores (Sentry) y builds automatizados vía EAS.</p>
+          <a class="demo-link" href="demos/#/playr" data-i18n="demo.try">Probar demo →</a>
           <ul class="tags"><li>React Native</li><li>Expo</li><li>Supabase</li><li>Sentry</li><li>EAS Build</li></ul>
         </article>
 
@@ -414,6 +435,7 @@
             </div>
           </div>
           <p class="project-desc" data-i18n="proj.apex.desc">App social para entusiastas del motorsport: feed de publicaciones, garage para catalogar vehículos, registro de sesiones por GPS y mapa de amigos cercanos.</p>
+          <a class="demo-link" href="demos/#/apex" data-i18n="demo.try">Probar demo →</a>
           <ul class="tags"><li>React Native</li><li>Expo Router</li><li>Supabase</li></ul>
         </article>
 
@@ -446,6 +468,7 @@
             <span class="badge badge-dev" data-i18n="status.dev">En desarrollo</span>
           </div>
           <p data-i18n="proj.menu.desc">App multi-tenant de menú digital para restaurantes: carrito de pedidos enviados directo a WhatsApp, catálogo con imágenes cacheadas y personalización de marca por negocio desde un mismo build.</p>
+          <a class="demo-link" href="demos/#/menu" data-i18n="demo.try">Probar demo →</a>
           <ul class="other-tags"><li>Flutter</li><li>Firestore</li></ul>
         </div>
 
@@ -455,6 +478,7 @@
             <span class="badge badge-live" data-i18n="status.live">En producción</span>
           </div>
           <p data-i18n="proj.powerbi.desc">Portal de control de acceso a dashboards de Power BI embebidos, con gestión de usuarios y permisos por dashboard.</p>
+          <a class="demo-link" href="demos/#/analitica" data-i18n="demo.try">Probar demo →</a>
           <ul class="other-tags"><li>Flutter Web</li><li>Firebase</li></ul>
         </div>
 
@@ -464,6 +488,7 @@
             <span class="badge badge-live" data-i18n="status.live">En producción</span>
           </div>
           <p data-i18n="proj.encuestas.desc">App de formularios y encuestas dinámicas con exportación a Excel y envío automático por correo.</p>
+          <a class="demo-link" href="demos/#/encuestas" data-i18n="demo.try">Probar demo →</a>
           <ul class="other-tags"><li>Flutter</li><li>Firebase</li></ul>
         </div>
 
@@ -497,11 +522,11 @@
 (function(){
   var dict = {
     es: {
-      "nav.about":"Sobre mí","nav.projects":"Proyectos","nav.contact":"Contacto",
+      "nav.about":"Sobre mí","nav.projects":"Proyectos","nav.demos":"Demos","nav.contact":"Contacto",
       "hero.eyebrow":"Disponible para nuevos proyectos",
       "hero.role":"Ingeniero de Software",
       "hero.tagline":"Freelance: un problema de negocio entra, una app sale.",
-      "hero.cta.projects":"Ver proyectos","hero.cta.contact":"Contáctame",
+      "hero.cta.projects":"Ver proyectos","hero.cta.demos":"Probar las demos","demo.try":"Probar demo →","hero.cta.contact":"Contáctame",
       "about.kicker":"Sobre mí",
       "about.title":"Ingeniería de software con foco en producto",
       "about.p1":"Lo que más me engancha es agarrar un problema de negocio real y desordenado y convertirlo en una herramienta que alguien usa todos los días — desde un asesor de seguros hasta un centro de medicina nuclear. Últimamente eso me ha llevado a meterme de lleno en IA aplicada, no como moda sino como una forma más de resolver ese mismo problema.",
@@ -535,11 +560,11 @@
       "footer.built":"Construido con HTML, CSS y JS"
     },
     en: {
-      "nav.about":"About","nav.projects":"Projects","nav.contact":"Contact",
+      "nav.about":"About","nav.projects":"Projects","nav.demos":"Demos","nav.contact":"Contact",
       "hero.eyebrow":"Open to new opportunities",
       "hero.role":"Software Engineer",
       "hero.tagline":"Freelance: a business problem goes in, an app comes out.",
-      "hero.cta.projects":"View projects","hero.cta.contact":"Get in touch",
+      "hero.cta.projects":"View projects","hero.cta.demos":"Try the demos","demo.try":"Try demo →","hero.cta.contact":"Get in touch",
       "about.kicker":"About",
       "about.title":"Software engineering with a product mindset",
       "about.p1":"What really hooks me is taking a messy, real business problem and turning it into something people use every day — from an insurance advisor to a nuclear medicine center. Lately that's pulled me deep into applied AI, not as a trend but as one more way to solve that same problem.",
