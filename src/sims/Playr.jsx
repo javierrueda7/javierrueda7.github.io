@@ -1,288 +1,359 @@
-import { useMemo, useReducer, useState } from 'react'
-import { TabBar, useToast, cop } from '../lib/ui.jsx'
+import { useMemo, useState } from 'react'
+import './playr.css'
 
-const ME = 'Tú (Camilo)'
-const NAMES = ['Mateo R.', 'Santi P.', 'Dani G.', 'Juanjo L.', 'Nico B.', 'Esteban M.', 'Andrés C.', 'Fabio T.', 'Leo V.', 'Sebas H.']
+// Todo es inventado: jugadores, canchas, grupos y chats. La interfaz sigue la app real.
+const PATHS = {
+  home: 'M3 11l9-8 9 8M5 10v10h5v-6h4v6h5V10',
+  search: 'M11 4a7 7 0 100 14 7 7 0 000-14zm9 16l-4-4',
+  chat: 'M21 12a8 8 0 01-11.5 7.2L4 20l1-4.4A8 8 0 1121 12z',
+  user: 'M12 12a4 4 0 100-8 4 4 0 000 8zm-8 9c0-4 4-6 8-6s8 2 8 6',
+  plus: 'M12 5v14M5 12h14',
+  bell: 'M6 9a6 6 0 1112 0c0 6 2 7 2 7H4s2-1 2-7zm4 10a2 2 0 004 0',
+  cup: 'M8 4h8v5a4 4 0 01-8 0V4zM8 6H4v1a4 4 0 004 4m8-5h4v1a4 4 0 01-4 4M12 13v4m-4 3h8',
+  users: 'M9 11a3 3 0 100-6 3 3 0 000 6zm-6 8c0-3 3-5 6-5s6 2 6 5m1-8a3 3 0 100-6m5 14c0-2-1.5-3.6-4-4.4',
+  filter: 'M4 7h10M18 7h2M4 17h2M10 17h10M14 4v6M6 14v6',
+  map: 'M9 4L3 6v14l6-2 6 2 6-2V4l-6 2-6-2zm0 0v14m6-12v14',
+  list: 'M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01',
+  cal: 'M4 7h16v13H4zM4 11h16M8 3v4M16 3v4',
+  pin: 'M12 21s7-6 7-11a7 7 0 10-14 0c0 5 7 11 7 11zm0-8a3 3 0 100-6 3 3 0 000 6z',
+  cash: 'M3 7h18v10H3zM12 9.5a2.5 2.5 0 100 5 2.5 2.5 0 000-5z',
+  back: 'M19 12H5m6-6l-6 6 6 6',
+  send: 'M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z',
+  clock: 'M12 3a9 9 0 100 18 9 9 0 000-18zm0 5v5l3 2',
+  edit: 'M4 20h4L19 9l-4-4L4 16v4z',
+  key: 'M15 7a4 4 0 11-3.5 6L4 20v-3H1v-3h3l2-2a4 4 0 019-5z',
+}
+const Ico = ({ n }) => <svg viewBox="0 0 24 24" className="pl-ico" aria-hidden="true"><path d={PATHS[n]} /></svg>
 
-const VENUES = [
-  { id: 'v1', name: 'La Bombonera Norte', zone: 'Cabecera', price: 120000, x: 28, y: 32 },
-  { id: 'v2', name: 'Cancha El Potrero', zone: 'Cañaveral', price: 90000, x: 66, y: 58 },
-  { id: 'v3', name: 'Sintética La 45', zone: 'Centro', price: 105000, x: 42, y: 74 },
+const NAMES = ['Mateo Salcedo', 'Laura Beltrán', 'Camilo Ortiz', 'Daniela Prieto', 'Nicolás Mejía', 'Valentina Rojas', 'Esteban Gil', 'Sara Quintero', 'Felipe Arango', 'Juliana Cruz', 'Sebastián Rey', 'Mariana Peña']
+const COLORS = ['#047857', '#c2410c', '#1d4ed8', '#6d28d9', '#0f766e', '#be185d']
+const initials = (n) => n.split(' ').map((p) => p[0]).slice(0, 2).join('')
+const Av = ({ name, size = 40 }) => <span className="pl-av" style={{ width: size, height: size, background: COLORS[(name.charCodeAt(0) + name.length) % COLORS.length], fontSize: size * 0.38 }}>{initials(name)}</span>
+const LV = { Principiante: ['#d6f3e8', '#047857'], Intermedio: ['#fdecd0', '#b45309'], Avanzado: ['#fde0e0', '#b91c1c'] }
+
+const SEED = [
+  { id: 1, title: 'Futbolito de oficina', fmt: 'Fútbol 6', cap: 12, when: 'mar 10 nov · 18:00', place: 'Cancha El Mirador', addr: 'Cra. 10 #20-30', price: 8000, lv: 'Principiante', code: 'PL4821', joined: NAMES.slice(0, 5), x: 34, y: 38 },
+  { id: 2, title: 'Partido amistoso', fmt: 'Fútbol 7', cap: 14, when: 'mar 10 nov · 19:00', place: 'Cancha Los Pinos', addr: 'Calle 45 #12-08', price: 10000, lv: 'Principiante', code: 'PL7305', joined: NAMES.slice(1, 9), x: 62, y: 56 },
+  { id: 3, title: 'Banquitas con los parceros', fmt: 'Fútbol 5', cap: 10, when: 'mié 11 nov · 20:00', place: 'Sintética La 45', addr: 'Av. 27 #45-10', price: 9000, lv: 'Intermedio', code: 'PL1190', joined: NAMES.slice(4, 8), x: 48, y: 74 },
+  { id: 4, title: 'Pachanga de jueves', fmt: 'Fútbol 5', cap: 10, when: 'jue 12 nov · 21:00', place: 'Cancha El Mirador', addr: 'Cra. 10 #20-30', price: 12000, lv: 'Avanzado', code: 'PL5562', joined: NAMES.slice(2, 10), x: 22, y: 58 },
 ]
-const HOURS = ['6 pm', '7 pm', '8 pm', '9 pm', '10 pm']
-const DAYS = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom']
-const SEED_HEAT = [
-  [1, 2, 3, 2, 0], [0, 1, 2, 2, 1], [1, 1, 3, 3, 1], [1, 2, 3, 3, 2],
-  [2, 3, 3, 3, 3], [3, 3, 3, 2, 2], [1, 2, 2, 1, 0],
+const GROUPS = [
+  { id: 1, name: 'Parceros del Sábado', desc: 'Partido fijo todos los sábados a las 6 pm.', members: NAMES.slice(0, 8) },
+  { id: 2, name: 'Futbolito Cabecera', desc: 'Para los que viven por el norte de la ciudad.', members: NAMES.slice(3, 10) },
+  { id: 3, name: 'Los de la Oficina', desc: 'Jueves después del trabajo.', members: NAMES.slice(5, 12) },
 ]
-
-const initial = {
-  games: [
-    { id: 1, venue: 'La Bombonera Norte', when: 'Hoy · 8:00 pm', format: 'Fútbol 5', cap: 10, joined: NAMES.slice(0, 7), result: null },
-    { id: 2, venue: 'Cancha El Potrero', when: 'Mañana · 7:00 pm', format: 'Fútbol 7', cap: 14, joined: NAMES.slice(2, 5), result: null },
-    { id: 3, venue: 'Sintética La 45', when: 'Hace 2 días', format: 'Fútbol 5', cap: 10, joined: [], result: { a: 4, b: 3, A: ['Mateo R.', 'Santi P.', 'Dani G.', 'Nico B.', ME], B: ['Juanjo L.', 'Esteban M.', 'Andrés C.', 'Fabio T.', 'Leo V.'] } },
-    { id: 4, venue: 'La Bombonera Norte', when: 'Hace 6 días', format: 'Fútbol 5', cap: 10, joined: [], result: { a: 2, b: 2, A: ['Mateo R.', 'Juanjo L.', 'Dani G.', 'Sebas H.', 'Leo V.'], B: ['Santi P.', ME, 'Nico B.', 'Fabio T.', 'Andrés C.'] } },
-    { id: 5, venue: 'Cancha El Potrero', when: 'Hace 9 días', format: 'Fútbol 5', cap: 10, joined: [], result: { a: 1, b: 5, A: ['Esteban M.', 'Andrés C.', 'Dani G.', 'Sebas H.', 'Leo V.'], B: ['Mateo R.', ME, 'Nico B.', 'Fabio T.', 'Santi P.'] } },
-  ],
-  bookings: [], // {venue, d, h}
-  nextId: 6,
-}
-
-function reducer(s, a) {
-  switch (a.type) {
-    case 'toggleJoin':
-      return {
-        ...s,
-        games: s.games.map((g) => {
-          if (g.id !== a.id) return g
-          const inn = g.joined.includes(ME)
-          if (!inn && g.joined.length >= g.cap) return g
-          return { ...g, joined: inn ? g.joined.filter((n) => n !== ME) : [...g.joined, ME] }
-        }),
-      }
-    case 'create':
-      return { ...s, nextId: s.nextId + 1, games: [{ id: s.nextId, joined: [ME], result: null, ...a.game }, ...s.games] }
-    case 'result':
-      return {
-        ...s,
-        games: s.games.map((g) => {
-          if (g.id !== a.id) return g
-          const A = g.joined.filter((_, i) => i % 2 === 0)
-          const B = g.joined.filter((_, i) => i % 2 === 1)
-          return { ...g, result: { a: a.a, b: a.b, A, B } }
-        }),
-      }
-    case 'book':
-      return { ...s, bookings: [...s.bookings, a.b] }
-    default:
-      return s
-  }
-}
-
-function table(games) {
-  const t = {}
-  const add = (n, pts, w, d, l) => {
-    t[n] ??= { n, pj: 0, g: 0, e: 0, p: 0, pts: 0 }
-    t[n].pj++; t[n].pts += pts; t[n].g += w; t[n].e += d; t[n].p += l
-  }
-  games.filter((g) => g.result).forEach(({ result: r }) => {
-    const [pa, pb, wa, wb, d] = r.a > r.b ? [3, 0, 1, 0, 0] : r.a < r.b ? [0, 3, 0, 1, 0] : [1, 1, 0, 0, 1]
-    r.A.forEach((n) => add(n, pa, wa, d, wb))
-    r.B.forEach((n) => add(n, pb, wb, d, wa))
-  })
-  return Object.values(t).sort((x, y) => y.pts - x.pts || y.g - x.g || x.n.localeCompare(y.n))
-}
-
-function GameCard({ g, onOpen, dispatch }) {
-  const inn = g.joined.includes(ME)
-  const full = g.joined.length >= g.cap
-  return (
-    <div className="card">
-      <div className="row">
-        <strong>{g.venue}</strong>
-        {g.result ? <span className="pill ok">{g.result.a} - {g.result.b}</span> : <span className={`pill ${full ? 'warn' : ''}`}>{g.joined.length}/{g.cap}</span>}
-      </div>
-      <div className="sub">{g.format} · {g.when}</div>
-      <div className="row" style={{ marginTop: 10 }}>
-        <button className="sbtn ghost sm" onClick={() => onOpen(g.id)}>Ver partido</button>
-        {!g.result && (
-          <button className="sbtn sm" disabled={!inn && full} onClick={() => dispatch({ type: 'toggleJoin', id: g.id })}>
-            {inn ? 'Salirme' : full ? 'Lleno' : 'Apuntarme'}
-          </button>
-        )}
-      </div>
-    </div>
-  )
-}
-
-function Detail({ g, dispatch, back, toast }) {
-  const [a, setA] = useState(0)
-  const [b, setB] = useState(0)
-  return (
-    <>
-      <button className="sbtn ghost sm" style={{ alignSelf: 'flex-start' }} onClick={back}>← Volver</button>
-      <div className="card">
-        <strong>{g.venue}</strong>
-        <div className="sub">{g.format} · {g.when}</div>
-      </div>
-      {g.result ? (
-        <div className="card">
-          <div className="h">Resultado</div>
-          <div style={{ fontSize: 32, fontWeight: 800, textAlign: 'center', margin: '6px 0' }}>{g.result.a} <span className="sub">-</span> {g.result.b}</div>
-          <div className="row" style={{ alignItems: 'flex-start' }}>
-            <div><div className="h">Equipo A</div>{g.result.A.map((n) => <div key={n} className="sub">{n}</div>)}</div>
-            <div style={{ textAlign: 'right' }}><div className="h">Equipo B</div>{g.result.B.map((n) => <div key={n} className="sub">{n}</div>)}</div>
-          </div>
-        </div>
-      ) : (
-        <>
-          <div className="card">
-            <div className="h">Jugadores ({g.joined.length}/{g.cap})</div>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 8 }}>
-              {g.joined.map((n) => <span key={n} className={`pill ${n === ME ? 'ok' : ''}`}>{n}</span>)}
-              {g.joined.length === 0 && <span className="sub">Nadie todavía</span>}
-            </div>
-          </div>
-          <div className="card">
-            <div className="h">Registrar resultado</div>
-            <div className="row" style={{ margin: '8px 0' }}>
-              <label className="field">Equipo A<input type="number" min="0" max="30" value={a} onChange={(e) => setA(+e.target.value)} /></label>
-              <label className="field">Equipo B<input type="number" min="0" max="30" value={b} onChange={(e) => setB(+e.target.value)} /></label>
-            </div>
-            <button className="sbtn" style={{ width: '100%' }} disabled={g.joined.length < 2} onClick={() => { dispatch({ type: 'result', id: g.id, a, b }); toast('Resultado guardado. Mira la tabla.') }}>
-              Guardar y actualizar tabla
-            </button>
-            {g.joined.length < 2 && <div className="sub" style={{ marginTop: 6 }}>Se necesitan al menos 2 jugadores.</div>}
-          </div>
-        </>
-      )}
-    </>
-  )
-}
-
-function Create({ dispatch, done }) {
-  const [f, setF] = useState({ venue: VENUES[0].name, when: 'Sábado · 6:00 pm', format: 'Fútbol 5' })
-  const cap = f.format === 'Fútbol 5' ? 10 : f.format === 'Fútbol 7' ? 14 : 22
-  const set = (k) => (e) => setF({ ...f, [k]: e.target.value })
-  return (
-    <>
-      <div className="h">Crear partido</div>
-      <label className="field">Cancha<select value={f.venue} onChange={set('venue')}>{VENUES.map((v) => <option key={v.id}>{v.name}</option>)}</select></label>
-      <label className="field">Cuándo<select value={f.when} onChange={set('when')}>{['Sábado · 6:00 pm', 'Sábado · 8:00 pm', 'Domingo · 10:00 am', 'Viernes · 9:00 pm'].map((x) => <option key={x}>{x}</option>)}</select></label>
-      <label className="field">Formato<select value={f.format} onChange={set('format')}>{['Fútbol 5', 'Fútbol 7', 'Fútbol 11'].map((x) => <option key={x}>{x}</option>)}</select></label>
-      <div className="sub">Cupos: {cap} jugadores</div>
-      <button className="sbtn" onClick={() => { dispatch({ type: 'create', game: { ...f, cap } }); done() }}>Publicar partido</button>
-    </>
-  )
-}
-
-function Courts({ s, dispatch, toast }) {
-  const [sel, setSel] = useState(VENUES[0].id)
-  const v = VENUES.find((x) => x.id === sel)
-  const taken = (d, h) => SEED_HEAT[d][h] >= 3 || s.bookings.some((b) => b.venue === sel && b.d === d && b.h === h)
-  return (
-    <>
-      <div className="h">Canchas cerca de ti</div>
-      <div className="card" style={{ position: 'relative', height: 150, background: 'linear-gradient(#e8efe6,#dfe8dc)', overflow: 'hidden' }}>
-        <svg width="100%" height="100%" style={{ position: 'absolute', inset: 0 }} aria-hidden="true">
-          <path d="M0 90 Q120 50 340 110" stroke="#c9d5c4" strokeWidth="10" fill="none" />
-          <path d="M120 0 Q150 80 90 160" stroke="#c9d5c4" strokeWidth="7" fill="none" />
-        </svg>
-        {VENUES.map((x) => (
-          <button key={x.id} aria-label={x.name} onClick={() => setSel(x.id)} style={{ position: 'absolute', left: `${x.x}%`, top: `${x.y}%`, transform: 'translate(-50%,-100%)', border: 0, background: x.id === sel ? 'var(--app)' : '#fff', color: x.id === sel ? '#fff' : '#333', borderRadius: 99, padding: '3px 9px', fontSize: 11, fontWeight: 600, boxShadow: '0 1px 4px rgba(0,0,0,.25)' }}>
-            {cop(x.price / 1000)}k
-          </button>
-        ))}
-      </div>
-      <div className="card">
-        <div className="row"><strong>{v.name}</strong><span className="pill">{v.zone}</span></div>
-        <div className="sub">{cop(v.price)} la hora · toca una franja libre para reservar</div>
-      </div>
-      <div className="card" style={{ overflowX: 'auto' }}>
-        <table style={{ borderCollapse: 'separate', borderSpacing: 3, width: '100%', fontSize: 11 }}>
-          <thead><tr><th />{DAYS.map((d) => <th key={d} style={{ fontWeight: 500, color: '#777' }}>{d}</th>)}</tr></thead>
-          <tbody>
-            {HOURS.map((h, hi) => (
-              <tr key={h}>
-                <td style={{ color: '#777', whiteSpace: 'nowrap' }}>{h}</td>
-                {DAYS.map((d, di) => {
-                  const t = taken(di, hi)
-                  return (
-                    <td key={d}>
-                      <button disabled={t} aria-label={`${d} ${h}`} onClick={() => { dispatch({ type: 'book', b: { venue: sel, d: di, h: hi } }); toast(`Reservada: ${d} ${h}`) }} style={{ width: '100%', height: 26, border: 0, borderRadius: 5, background: t ? '#e4e4df' : '#cfe9d8', cursor: t ? 'default' : 'pointer' }} />
-                    </td>
-                  )
-                })}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </>
-  )
-}
-
-function Owner({ s }) {
-  const grid = useMemo(() => SEED_HEAT.map((row, d) => row.map((n, h) => n + s.bookings.filter((b) => b.d === d && b.h === h).length)), [s.bookings])
-  const total = grid.flat().reduce((a, b) => a + b, 0)
-  const income = total * 105000 / 3
-  const color = (n) => `color-mix(in srgb, var(--app) ${Math.min(n, 4) * 24 + 4}%, #f0f0ec)`
-  return (
-    <>
-      <div className="h">Panel de dueño · La Bombonera Norte</div>
-      <div className="row">
-        <div className="card" style={{ flex: 1 }}><div className="sub">Reservas semana</div><strong style={{ fontSize: 22 }}>{Math.round(total / 3)}</strong></div>
-        <div className="card" style={{ flex: 1 }}><div className="sub">Ingresos</div><strong style={{ fontSize: 22 }}>{cop(income)}</strong></div>
-      </div>
-      <div className="card">
-        <div className="h">Mapa de calor de ocupación</div>
-        <table style={{ borderCollapse: 'separate', borderSpacing: 3, width: '100%', fontSize: 11, marginTop: 6 }}>
-          <tbody>
-            {HOURS.map((h, hi) => (
-              <tr key={h}>
-                <td style={{ color: '#777', whiteSpace: 'nowrap' }}>{h}</td>
-                {DAYS.map((d, di) => <td key={d} title={`${d} ${h}: ${grid[di][hi]}`} style={{ height: 26, borderRadius: 5, background: color(grid[di][hi]) }} />)}
-              </tr>
-            ))}
-            <tr><td />{DAYS.map((d) => <td key={d} style={{ textAlign: 'center', color: '#777' }}>{d}</td>)}</tr>
-          </tbody>
-        </table>
-        <div className="sub" style={{ marginTop: 8 }}>Reserva una franja en la pestaña Canchas y vuelve: el mapa se actualiza.</div>
-      </div>
-    </>
-  )
-}
+const CHATS = [
+  { id: 1, who: 'Mateo Salcedo', ago: 'hace 43 minutos', unread: 2, msgs: [['in', 'Falta uno para el sábado, ¿te sumas?'], ['in', 'Dale, llevo el balón']] },
+  { id: 2, who: 'Laura Beltrán', ago: 'hace 5 horas', unread: 1, msgs: [['in', 'Gracias por el pase en el último partido']] },
+  { id: 3, who: 'Camilo Ortiz', ago: 'hace 1 día', unread: 0, msgs: [['out', '¿Hay cupo a las 8?'], ['in', 'Sí, hay cupo a las 8 pm']] },
+]
+const NOTIFS = [
+  { t: 'Nuevo jugador en tu partido', d: 'Laura Beltrán se unió a Futbolito de oficina.', ago: 'hace 12 minutos', k: 'p' },
+  { t: 'Te invitaron a un grupo', d: 'Mateo Salcedo te invitó a Parceros del Sábado.', ago: 'hace 1 hora', k: 's' },
+  { t: 'Recordatorio', d: 'Tu partido empieza mañana a las 6:00 pm.', ago: 'hace 3 horas', k: 'p' },
+]
+const cupos = (g) => g.cap - g.joined.length
 
 export default function Playr() {
-  const [s, dispatch] = useReducer(reducer, initial)
+  const [theme, setTheme] = useState('light')
   const [tab, setTab] = useState('home')
-  const [open, setOpen] = useState(null)
-  const [toast, toastNode] = useToast()
-  const tabs = [
-    { id: 'home', label: 'Partidos', icon: 'ball' },
-    { id: 'create', label: 'Crear', icon: 'home' },
-    { id: 'table', label: 'Tabla', icon: 'users' },
-    { id: 'courts', label: 'Canchas', icon: 'pin' },
-    { id: 'owner', label: 'Dueño', icon: 'chart' },
-  ]
-  const standings = table(s.games)
-  const game = s.games.find((g) => g.id === open)
-  const go = (t) => { setTab(t); setOpen(null) }
+  const [scr, setScr] = useState(null) // {n:'game'|'groups'|'group'|'notifs'|'chat'|'create'|'ranking', id}
+  const [games, setGames] = useState(SEED)
+  const [mine, setMine] = useState([1])
+  const [view, setView] = useState('list')
+  const [filter, setFilter] = useState('all')
+  const [mapSel, setMapSel] = useState(null)
+  const [q, setQ] = useState('')
+  const [pos, setPos] = useState('Todas')
+  const [gtab, setGtab] = useState('mine')
+  const [mtab, setMtab] = useState('Amigos')
+  const [chats, setChats] = useState(CHATS)
+  const [draft, setDraft] = useState('')
+  const [ntab, setNtab] = useState('Todas')
+  const [toast, setToast] = useState('')
+  const [form, setForm] = useState({ title: '', fmt: 'Fútbol 5', place: 'Cancha El Mirador', price: 8000, lv: 'Principiante' })
+  const [joinedGroups, setJoinedGroups] = useState([1, 2, 3])
+  const [banner, setBanner] = useState(true)
+
+  const say = (m) => { setToast(m); setTimeout(() => setToast(''), 2000) }
+  const me = 'Jugador Demo'
+  const go = (t) => { setTab(t); setScr(null) }
+  const toggleJoin = (id) => {
+    const g = games.find((x) => x.id === id)
+    const inn = mine.includes(id)
+    if (!inn && cupos(g) === 0) return say('El partido está lleno')
+    setGames(games.map((x) => (x.id === id ? { ...x, joined: inn ? x.joined.filter((n) => n !== me) : [...x.joined, me] } : x)))
+    setMine(inn ? mine.filter((i) => i !== id) : [...mine, id])
+    say(inn ? 'Saliste del partido' : '¡Te uniste al partido!')
+  }
+  const list = filter === 'mine' ? games.filter((g) => mine.includes(g.id)) : games
+  const game = games.find((g) => g.id === scr?.id)
+  const people = useMemo(() => NAMES.filter((n) => n.toLowerCase().includes(q.toLowerCase())), [q])
+
+  const Header = ({ back, title, right }) => (
+    <div className="pl-head" style={{ padding: '38px 14px 10px' }}>
+      <div className="pl-row" style={{ gap: 10 }}>
+        {back && <button className="pl-ic" aria-label="Volver" onClick={back}><Ico n="back" /></button>}
+        <b style={{ fontSize: 18 }}>{title}</b>
+      </div>
+      {right}
+    </div>
+  )
+
+  let content
+  if (scr?.n === 'game' && game) {
+    const inn = mine.includes(game.id)
+    const lv = LV[game.lv]
+    content = (
+      <>
+        <div className="pl-hero">
+          <button className="pl-ic" aria-label="Volver" onClick={() => setScr(null)} style={{ position: 'absolute', left: 12, top: 36 }}><Ico n="back" /></button>
+          <div style={{ fontSize: 46 }}>⚽</div>
+          <h2>{game.title}</h2>
+          <span className="pl-chip">Fútbol</span> <span className="pl-chip">{game.fmt}</span> <span className="pl-chip">{game.lv}</span>
+        </div>
+        <div className="pl-body">
+          <div className="pl-stat"><div><b>{game.joined.length}/{game.cap}</b><span>Jugadores</span></div><div><b>{cupos(game)}</b><span>Cupos</span></div><div><b>${game.price.toLocaleString('es-CO')}</b><span>Por persona</span></div></div>
+          <div className="pl-card" style={{ display: 'grid', gap: 10 }}>
+            <div className="pl-row"><span><Ico n="key" /> Código <b style={{ marginLeft: 6, letterSpacing: 1 }}>{game.code}</b></span></div>
+            {[['Fecha y hora', game.when], ['Categoría', 'Mixto'], ['Lugar', game.place], ['Dirección', game.addr]].map(([k, v]) => <div key={k}><div className="pl-sub">{k}</div><div style={{ fontSize: 14 }}>{v}</div></div>)}
+          </div>
+          <div className="pl-card">
+            <div className="pl-h" style={{ marginBottom: 8 }}>Jugadores ({game.joined.length})</div>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>{game.joined.map((n) => <span key={n} className="pl-chip"><Av name={n} size={20} /> {n.split(' ')[0]}</span>)}</div>
+          </div>
+          <span className="pl-lv" style={{ background: lv[0], color: lv[1], alignSelf: 'flex-start' }}>Nivel {game.lv}</span>
+          <button className={`pl-btn ${inn ? 'out' : ''}`} onClick={() => toggleJoin(game.id)} disabled={!inn && cupos(game) === 0}>{inn ? 'Salirme del partido' : cupos(game) === 0 ? 'Partido lleno' : 'Unirme al partido'}</button>
+          {inn && <button className="pl-btn out" onClick={() => setScr({ n: 'chat', id: 'game' })}>Chat del partido</button>}
+        </div>
+      </>
+    )
+  } else if (scr?.n === 'create') {
+    content = (
+      <>
+        <Header back={() => setScr(null)} title="Crear partido" />
+        <div className="pl-body">
+          <label className="pl-sub">Nombre del partido<input className="pl-in" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} placeholder="Ej. Pichanga de viernes" /></label>
+          <label className="pl-sub">Formato<select className="pl-in" value={form.fmt} onChange={(e) => setForm({ ...form, fmt: e.target.value })}>{['Fútbol 5', 'Fútbol 6', 'Fútbol 7', 'Fútbol 11'].map((x) => <option key={x}>{x}</option>)}</select></label>
+          <label className="pl-sub">Cancha<select className="pl-in" value={form.place} onChange={(e) => setForm({ ...form, place: e.target.value })}>{['Cancha El Mirador', 'Cancha Los Pinos', 'Sintética La 45'].map((x) => <option key={x}>{x}</option>)}</select></label>
+          <div className="pl-sub">Nivel</div>
+          <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>{Object.keys(LV).map((l) => <button key={l} className={`pl-pill ${form.lv === l ? 'on' : ''}`} onClick={() => setForm({ ...form, lv: l })}>{l}</button>)}</div>
+          <label className="pl-sub">Precio por persona<input className="pl-in" type="number" value={form.price} onChange={(e) => setForm({ ...form, price: +e.target.value })} /></label>
+          <button className="pl-btn" disabled={!form.title.trim()} onClick={() => {
+            const id = Date.now()
+            const cap = +form.fmt.replace(/\D/g, '') * 2
+            setGames([{ id, title: form.title.trim(), fmt: form.fmt, cap, when: 'sáb 14 nov · 18:00', place: form.place, addr: 'Dirección de ejemplo', price: form.price, lv: form.lv, code: 'PL' + String(id).slice(-4), joined: [me], x: 50, y: 50 }, ...games])
+            setMine([...mine, id]); setForm({ ...form, title: '' }); setView('list'); setFilter('all'); go('home'); say('Partido creado')
+          }}>Publicar partido</button>
+        </div>
+      </>
+    )
+  } else if (scr?.n === 'groups') {
+    content = (
+      <>
+        <Header back={() => setScr(null)} title="Grupos" />
+        <div className="pl-body">
+          <div style={{ display: 'flex', gap: 8 }}>{[['mine', 'Mis grupos'], ['disc', 'Descubrir']].map(([id, l]) => <button key={id} className={`pl-pill ${gtab === id ? 'on' : ''}`} style={{ flex: 1 }} onClick={() => setGtab(id)}>{l}</button>)}</div>
+          {GROUPS.filter((g) => (gtab === 'mine') === joinedGroups.includes(g.id)).map((g) => (
+            <div key={g.id} className="pl-card pl-row" style={{ alignItems: 'flex-start' }}>
+              <button style={{ all: 'unset', cursor: 'pointer', display: 'flex', gap: 12, flex: 1 }} onClick={() => setScr({ n: 'group', id: g.id })}>
+                <Av name={g.name} size={48} />
+                <span><b>{g.name}</b><br /><span className="pl-chip" style={{ padding: '1px 8px', margin: '3px 0' }}>⚽ Fútbol</span><br /><span className="pl-sub">{g.desc}</span></span>
+              </button>
+              {gtab === 'disc' && <button className="pl-pill solid" onClick={() => { setJoinedGroups([...joinedGroups, g.id]); say('Te uniste al grupo') }}>Unirme</button>}
+            </div>
+          ))}
+          {GROUPS.filter((g) => (gtab === 'mine') === joinedGroups.includes(g.id)).length === 0 && <div className="pl-sub" style={{ textAlign: 'center', padding: 24 }}>{gtab === 'mine' ? 'Aún no estás en ningún grupo.' : 'Ya estás en todos los grupos.'}</div>}
+        </div>
+      </>
+    )
+  } else if (scr?.n === 'group') {
+    const g = GROUPS.find((x) => x.id === scr.id)
+    content = (
+      <>
+        <Header back={() => setScr({ n: 'groups' })} title={g.name} />
+        <div className="pl-body">
+          <div className="pl-card"><div className="pl-sub">{g.desc}</div></div>
+          <div className="pl-h">Miembros ({g.members.length})</div>
+          {g.members.map((n) => <div key={n} className="pl-card pl-row" style={{ padding: 10 }}><span className="pl-row" style={{ gap: 10 }}><Av name={n} size={34} />{n}</span></div>)}
+          <button className="pl-btn" onClick={() => setScr({ n: 'create' })}>Crear partido del grupo</button>
+        </div>
+      </>
+    )
+  } else if (scr?.n === 'notifs') {
+    content = (
+      <>
+        <Header back={() => setScr(null)} title="Notificaciones" right={<button className="pl-pill" style={{ color: '#fff', borderColor: 'transparent' }} onClick={() => say('Todas marcadas como leídas')}>Marcar todo</button>} />
+        <div className="pl-body">
+          <div style={{ display: 'flex', gap: 6 }}>{['Todas', 'Partidos', 'Social'].map((x) => <button key={x} className={`pl-pill ${ntab === x ? 'solid' : ''}`} onClick={() => setNtab(x)}>{x}</button>)}</div>
+          {NOTIFS.filter((n) => ntab === 'Todas' || (ntab === 'Partidos') === (n.k === 'p')).map((n) => (
+            <div key={n.t} className="pl-card" style={{ display: 'flex', gap: 10 }}><span className="pl-ic" style={{ background: 'var(--pl)', color: 'var(--p)', flex: 'none' }}><Ico n="bell" /></span><div><b>{n.t}</b><div className="pl-sub">{n.d}</div><div className="pl-sub" style={{ marginTop: 2 }}>{n.ago}</div></div></div>
+          ))}
+        </div>
+      </>
+    )
+  } else if (scr?.n === 'ranking') {
+    content = (
+      <>
+        <Header back={() => setScr(null)} title="Ranking del mes" />
+        <div className="pl-body">
+          {NAMES.slice(0, 8).map((n, i) => <div key={n} className="pl-card pl-row" style={{ padding: 10 }}><span className="pl-row" style={{ gap: 10 }}><b style={{ width: 18 }}>{i + 1}</b><Av name={n} size={34} />{n}</span><b>{18 - i * 2} goles</b></div>)}
+        </div>
+      </>
+    )
+  } else if (scr?.n === 'chat') {
+    const c = scr.id === 'game' ? { who: game ? game.title : 'Partido', msgs: [['in', 'Bienvenidos al chat del partido ⚽'], ['in', '¿Alguien lleva petos?']] } : chats.find((x) => x.id === scr.id)
+    const msgs = scr.id === 'game' ? (chats.find((x) => x.id === 'g')?.msgs ?? c.msgs) : c.msgs
+    const send = (e) => {
+      e.preventDefault()
+      if (!draft.trim()) return
+      if (scr.id === 'game') setChats((l) => [...l.filter((x) => x.id !== 'g'), { id: 'g', who: c.who, msgs: [...msgs, ['out', draft.trim()]] }])
+      else setChats((l) => l.map((x) => (x.id === c.id ? { ...x, unread: 0, msgs: [...x.msgs, ['out', draft.trim()]] } : x)))
+      setDraft('')
+    }
+    content = (
+      <>
+        <Header back={() => setScr(scr.id === 'game' ? { n: 'game', id: game.id } : null)} title={c.who} />
+        <div className="pl-body">{msgs.map(([d, t], i) => <div key={i} className={`pl-msg ${d === 'out' ? 'me' : ''}`}>{t}</div>)}</div>
+        <form onSubmit={send} className="pl-row" style={{ padding: 10, background: 'var(--card)', borderTop: '1px solid var(--dv)' }}>
+          <input className="pl-in" aria-label="Mensaje" placeholder="Escribe un mensaje…" value={draft} onChange={(e) => setDraft(e.target.value)} />
+          <button className="pl-ic" style={{ background: 'var(--p)' }} aria-label="Enviar"><Ico n="send" /></button>
+        </form>
+      </>
+    )
+  } else if (tab === 'home') {
+    content = (
+      <>
+        <div className="pl-head">
+          <span className="pl-word">PlayR</span>
+          <div className="pl-row" style={{ gap: 8 }}>
+            <button className="pl-ic" aria-label="Ranking" onClick={() => setScr({ n: 'ranking' })} style={{ color: '#ffc94d' }}><Ico n="cup" /></button>
+            <button className="pl-ic" aria-label="Grupos" onClick={() => setScr({ n: 'groups' })}><Ico n="users" /></button>
+            <button className="pl-ic" aria-label="Notificaciones" onClick={() => setScr({ n: 'notifs' })}><Ico n="bell" /><span className="pl-badge">3</span></button>
+          </div>
+        </div>
+        <div className="pl-body">
+          <div className="pl-row">
+            <div style={{ whiteSpace: 'nowrap', minWidth: 0 }}><b style={{ fontSize: 15 }}>Hola, Jugador 👋</b><div style={{ color: 'var(--p)', fontWeight: 600, fontSize: 12 }}>Todas las ciudades ⌄</div></div>
+            <div className="pl-row" style={{ gap: 5 }}>
+              <button className="pl-pill" style={{ background: 'var(--card)', boxShadow: 'var(--sh)', borderColor: 'transparent', padding: '6px 10px' }} onClick={() => go('search')}>Reservar</button>
+              <button className="pl-ic" aria-label="Filtros" style={{ background: 'var(--pl)', color: 'var(--p)', width: 32, height: 32 }} onClick={() => say('Filtros por nivel, formato y fecha')}><Ico n="filter" /></button>
+              <button className="pl-ic" aria-label={view === 'list' ? 'Ver mapa' : 'Ver lista'} style={{ background: 'var(--pl)', color: 'var(--p)', width: 32, height: 32 }} onClick={() => setView(view === 'list' ? 'map' : 'list')}><Ico n={view === 'list' ? 'map' : 'list'} /></button>
+            </div>
+          </div>
+          {banner && <div className="pl-banner"><span>⚽</span><div style={{ flex: 1 }}><b>¡Estás debutando en Playr!</b><div className="pl-sub" style={{ color: 'var(--tx)' }}>En esta temporada de debut todo es gratis y los más activos ganarán premios.</div></div><button style={{ all: 'unset', cursor: 'pointer', fontSize: 16 }} aria-label="Cerrar aviso" onClick={() => setBanner(false)}>✕</button></div>}
+          <div style={{ display: 'flex', gap: 8 }}>
+            <button className={`pl-pill ${filter === 'all' ? 'solid' : ''}`} style={{ flex: 1, padding: 12 }} onClick={() => setFilter('all')}>Partidos existentes</button>
+            <button className={`pl-pill alt ${filter === 'mine' ? 'on' : ''}`} style={{ flex: 1, padding: 12 }} onClick={() => setFilter('mine')}>Tus próximos partidos<span className="pl-badge" style={{ background: 'var(--card)', color: 'var(--s)' }}>{mine.length}</span></button>
+          </div>
+          {view === 'list' && list.map((g) => {
+            const lv = LV[g.lv]
+            return (
+              <button key={g.id} className="pl-card" style={{ textAlign: 'left', border: 0, cursor: 'pointer', display: 'grid', gap: 8 }} onClick={() => setScr({ n: 'game', id: g.id })}>
+                <div className="pl-row"><span className="pl-chip">⚽ {g.fmt}</span><span className="pl-lv" style={{ background: lv[0], color: lv[1] }}>{g.lv}</span></div>
+                <b style={{ fontSize: 16 }}>{g.title}</b>
+                <div className="pl-sub"><Ico n="cal" /> {g.when}</div>
+                <div className="pl-sub"><Ico n="pin" /> {g.place}</div>
+                <div className="pl-bar2"><i style={{ width: `${(g.joined.length / g.cap) * 100}%` }} /></div>
+                <div className="pl-row"><span className="pl-sub">{g.joined.length}/{g.cap} jugadores</span><span className="pl-chip">{cupos(g)} cupos</span></div>
+                <b style={{ color: 'var(--s)' }}>${g.price.toLocaleString('es-CO')}/persona</b>
+              </button>
+            )
+          })}
+          {view === 'list' && list.length === 0 && <div className="pl-sub" style={{ textAlign: 'center', padding: 24 }}>Aún no te has unido a ningún partido.</div>}
+          {view === 'map' && (
+            <div className="pl-map">
+              <svg viewBox="0 0 300 380" width="100%" height="100%" preserveAspectRatio="none" aria-hidden="true">
+                <rect width="300" height="380" fill="none" />
+                <path d="M0 120 Q90 90 170 150 T300 130" stroke="#fff" strokeWidth="14" fill="none" opacity=".8" />
+                <path d="M80 0 Q120 140 70 380" stroke="#fff" strokeWidth="10" fill="none" opacity=".7" />
+                <path d="M0 270 Q150 230 300 300" stroke="#fff" strokeWidth="9" fill="none" opacity=".7" />
+                <ellipse cx="230" cy="70" rx="46" ry="30" fill="#b9d9a8" opacity=".6" />
+              </svg>
+              {games.map((g) => <button key={g.id} className={`pl-pin ${mapSel === g.id ? 'on' : ''}`} style={{ left: `${g.x}%`, top: `${g.y}%` }} aria-label={g.title} onClick={() => setMapSel(g.id)}><span>⚽</span></button>)}
+              {mapSel && (() => { const g = games.find((x) => x.id === mapSel); return <button className="pl-card" style={{ position: 'absolute', left: 10, right: 10, bottom: 10, textAlign: 'left', border: 0 }} onClick={() => setScr({ n: 'game', id: g.id })}><b>{g.title}</b><div className="pl-sub">{g.when} · {cupos(g)} cupos</div></button> })()}
+            </div>
+          )}
+        </div>
+      </>
+    )
+  } else if (tab === 'search') {
+    content = (
+      <>
+        <div style={{ background: 'var(--card)', padding: '38px 14px 10px', flex: 'none', display: 'grid', gap: 8 }}>
+          <b style={{ fontSize: 24 }}>Buscar</b>
+          <div className="pl-banner" style={{ borderRadius: 12, padding: '8px 12px' }}><Ico n="key" /> <span className="pl-sub" style={{ color: 'var(--tx)' }}>¿Tienes el código de un partido? Escríbelo aquí</span></div>
+          <input className="pl-in" aria-label="Buscar jugadores" placeholder="Busca jugadores…" value={q} onChange={(e) => setQ(e.target.value)} />
+          <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>{['Todas', 'Portero', 'Defensa', 'Mediocampista', 'Delantero'].map((x) => <button key={x} className={`pl-pill ${pos === x ? 'on' : ''}`} style={{ padding: '4px 10px' }} onClick={() => setPos(x)}>{x}</button>)}</div>
+        </div>
+        <div className="pl-body">
+          <div className="pl-sub">{people.length} jugadores</div>
+          {people.map((n, i) => <div key={n} className="pl-card pl-row"><span className="pl-row" style={{ gap: 12 }}><Av name={n} size={44} /><span><b>{n}</b><br /><span className="pl-sub">@{n.split(' ')[0].toLowerCase()} · Bucaramanga · {24 + (i % 9)} años</span><br /><b style={{ color: 'var(--p)', fontSize: 12 }}>{8 + (i * 3) % 12} partidos jugados</b></span></span></div>)}
+          {people.length === 0 && <div className="pl-sub" style={{ textAlign: 'center', padding: 24 }}>Ningún jugador coincide con «{q}».</div>}
+        </div>
+      </>
+    )
+  } else if (tab === 'msgs') {
+    const tabs = ['Amigos', 'Grupos', 'Equipos', 'Partidos', 'Reservas']
+    content = (
+      <>
+        <div style={{ background: 'var(--card)', padding: '38px 14px 10px', flex: 'none' }}>
+          <div className="pl-row"><b style={{ fontSize: 18, flex: 1, textAlign: 'center' }}>Mensajes</b></div>
+          <div style={{ display: 'flex', gap: 6, overflowX: 'auto', marginTop: 8 }}>{tabs.map((x) => <button key={x} className={`pl-pill ${mtab === x ? 'solid' : ''}`} style={{ flex: 'none' }} onClick={() => setMtab(x)}>{x}{x === 'Amigos' && <span className="pl-badge" style={{ position: 'static', display: 'inline-grid', marginLeft: 5 }}>{chats.reduce((s, c) => s + (c.unread || 0), 0)}</span>}</button>)}</div>
+        </div>
+        <div className="pl-body">
+          {mtab === 'Amigos' ? chats.filter((c) => c.id !== 'g').map((c) => (
+            <button key={c.id} className="pl-card pl-row" style={{ border: 0, textAlign: 'left', cursor: 'pointer' }} onClick={() => { setChats(chats.map((x) => (x.id === c.id ? { ...x, unread: 0 } : x))); setScr({ n: 'chat', id: c.id }) }}>
+              <span className="pl-row" style={{ gap: 12 }}><Av name={c.who} size={44} /><span><b>{c.who}</b><br /><span className="pl-sub">{c.msgs[c.msgs.length - 1][1]}</span></span></span>
+              <span style={{ textAlign: 'right' }}><span className="pl-sub">{c.ago}</span>{c.unread > 0 && <><br /><span className="pl-badge" style={{ position: 'static', display: 'inline-grid', background: 'var(--p)' }}>{c.unread}</span></>}</span>
+            </button>
+          )) : <div className="pl-sub" style={{ textAlign: 'center', padding: 30 }}>No tienes conversaciones en «{mtab}» todavía.</div>}
+        </div>
+      </>
+    )
+  } else {
+    const modes = [['light', 'Claro'], ['dark', 'Oscuro']]
+    content = (
+      <>
+        <div className="pl-hero" style={{ paddingBottom: 14 }}>
+          <span className="pl-av" style={{ width: 76, height: 76, background: '#047857', fontSize: 28, margin: '0 auto' }}>JD</span>
+          <h2 style={{ marginBottom: 2 }}>Jugador Demo</h2>
+          <div style={{ opacity: .85 }}>@jugadordemo</div>
+          <div style={{ marginTop: 6 }}><span className="pl-chip">🌱 Nuevo</span> <span className="pl-chip">🎯 Muy confiable (100%)</span></div>
+        </div>
+        <div className="pl-body">
+          <div className="pl-stat" style={{ '--n': 4 }}>{[['6', 'Partidos'], ['6', 'Goles'], ['2', 'Asist.'], ['11', 'Amigos']].map(([a, b]) => <div key={b}><b>{a}</b><span>{b}</span></div>)}</div>
+          <div className="pl-h">Palmarés · 3 premios mensuales</div>
+          <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>{['1 × Balón de Oro', '1 × Bota de Oro', '1 × Rey de las Asistencias'].map((x) => <span key={x} className="pl-pill">{x}</span>)}</div>
+          <div className="pl-card"><div className="pl-h" style={{ marginBottom: 8 }}>Insignias</div><span className="pl-chip" style={{ padding: '10px 14px', borderRadius: 14 }}>👟 Primeros pasos</span></div>
+          <div className="pl-card pl-row"><span><div className="pl-h">Mi perfil de juego</div><span className="pl-lv" style={{ background: LV.Intermedio[0], color: LV.Intermedio[1] }}>Intermedio</span> <span className="pl-sub">⚽ Delantero</span></span><Ico n="edit" /></div>
+          <div className="pl-card">
+            <div className="pl-h" style={{ marginBottom: 8 }}>Apariencia</div>
+            <div style={{ display: 'flex', gap: 8 }}>{modes.map(([id, l]) => <button key={id} className={`pl-pill ${theme === id ? 'solid' : ''}`} style={{ flex: 1, padding: 12 }} onClick={() => setTheme(id)}>{theme === id ? '✓ ' : ''}{l}</button>)}</div>
+          </div>
+        </div>
+      </>
+    )
+  }
+
+  const showBar = !scr || scr.n === 'chat' ? !scr : false
+  const tabs = [['home', 'Inicio', 'home'], ['search', 'Buscar', 'search'], null, ['msgs', 'Mensajes', 'chat'], ['me', 'Perfil', 'user']]
+  const unread = chats.reduce((s, c) => s + (c.unread || 0), 0)
 
   return (
-    <div className="app">
-      <div className="app-top"><h3>Playr</h3><small>Bucaramanga · datos de ejemplo</small></div>
-      <div className="app-body">
-        {tab === 'home' && !game && (
-          <>
-            <div className="h">Próximos y recientes</div>
-            {s.games.map((g) => <GameCard key={g.id} g={g} onOpen={setOpen} dispatch={dispatch} />)}
-          </>
-        )}
-        {tab === 'home' && game && <Detail g={game} dispatch={dispatch} back={() => setOpen(null)} toast={toast} />}
-        {tab === 'create' && <Create dispatch={dispatch} done={() => { go('home'); toast('Partido publicado') }} />}
-        {tab === 'table' && (
-          <>
-            <div className="h">Tabla · Los Jueves FC</div>
-            <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12 }}>
-                <thead><tr style={{ background: '#f1f2ee', color: '#666' }}><th style={{ textAlign: 'left', padding: 8 }}>Jugador</th><th>PJ</th><th>G</th><th>E</th><th>P</th><th>Pts</th></tr></thead>
-                <tbody>
-                  {standings.map((r, i) => (
-                    <tr key={r.n} style={{ borderTop: '1px solid #eee', background: r.n === ME ? '#eaf5ee' : undefined, textAlign: 'center' }}>
-                      <td style={{ textAlign: 'left', padding: '7px 8px' }}>{i + 1}. {r.n}</td><td>{r.pj}</td><td>{r.g}</td><td>{r.e}</td><td>{r.p}</td><td><strong>{r.pts}</strong></td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </>
-        )}
-        {tab === 'courts' && <Courts s={s} dispatch={dispatch} toast={toast} />}
-        {tab === 'owner' && <Owner s={s} />}
-      </div>
-      {toastNode}
-      <TabBar tabs={tabs} value={tab} onChange={go} />
+    <div className={`pl ${theme === 'dark' ? 'dark' : ''}`}>
+      {content}
+      {toast && <div className="pl-toast" role="status">{toast}</div>}
+      {showBar && (
+        <div className="pl-bar" role="tablist">
+          {tabs.map((t, i) => t ? (
+            <button key={t[0]} role="tab" aria-selected={tab === t[0]} className={`pl-tab ${tab === t[0] ? 'on' : ''}`} onClick={() => go(t[0])}>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d={PATHS[t[2]]} /></svg>{t[1]}
+              {t[0] === 'msgs' && unread > 0 && <span className="pl-badge">{unread}</span>}
+            </button>
+          ) : <button key="fab" className="pl-fab" aria-label="Crear partido" onClick={() => setScr({ n: 'create' })}><svg viewBox="0 0 24 24" aria-hidden="true"><path d={PATHS.plus} /></svg></button>)}
+        </div>
+      )}
     </div>
   )
 }

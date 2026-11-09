@@ -82,7 +82,7 @@ button { cursor: pointer; }
 .lab-body {
   flex: 1; display: grid; gap: 28px; padding: 28px 24px 48px;
   grid-template-columns: 250px minmax(0, 1fr) 320px;
-  max-width: 1320px; width: 100%; margin: 0 auto;
+  max-width: 1520px; width: 100%; margin: 0 auto;
 }
 .lab-hint { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 14px; }
 .lab-list { display: flex; flex-direction: column; gap: 6px; align-self: start; position: sticky; top: 78px; }
