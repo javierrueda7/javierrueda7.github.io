@@ -226,3 +226,10 @@ button { cursor: pointer; }
 
 .lab-list { max-height: calc(100vh - 100px); overflow-y: auto; padding-right: 4px; }
 @media (max-width: 720px) { .lab-list { max-height: none; overflow-y: visible; } }
+
+/* Pantallas angostas: nada debe quedar recortado dentro del marco */
+.app-top { flex-wrap: wrap; }
+.app .row { flex-wrap: wrap; }
+@media (max-width: 720px) {
+  .twocol { grid-template-columns: minmax(0, 1fr) !important; }
+}

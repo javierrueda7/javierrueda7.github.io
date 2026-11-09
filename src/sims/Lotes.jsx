@@ -38,7 +38,7 @@ export default function Lotes() {
   return (
     <div className="app" style={{ '--app': '#2f7d4f' }}>
       <div className="app-top" style={{ background: '#2f7d4f' }}><h3>Lotes del Valle</h3><small>proyecto de ejemplo · {count('disponible')} disponibles · {count('separado')} separados · {count('vendido')} vendidos</small></div>
-      <div className="app-body" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.1fr) minmax(0, 1fr)', alignItems: 'start' }}>
+      <div className="app-body twocol" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.1fr) minmax(0, 1fr)', alignItems: 'start' }}>
         <div className="card">
           <div className="h" style={{ marginBottom: 8 }}>Plano de lotes</div>
           <div style={{ display: 'grid', gridTemplateColumns: `repeat(${COLS}, 1fr)`, gap: 6 }}>

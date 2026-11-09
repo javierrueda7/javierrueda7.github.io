@@ -43,7 +43,7 @@ export default function Ambiental() {
       <div className="app-top" style={{ background: '#0f766e' }}><div><h3>Revisor de estudios ambientales</h3><small>Vía Ficticia Km 12 · EIA de ejemplo</small></div>
         {stage === 'idle' && <button className="sbtn sm" style={{ background: '#fff', color: '#0f766e' }} onClick={run}>Analizar con IA</button>}
       </div>
-      <div className="app-body" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)', alignItems: 'start' }}>
+      <div className="app-body twocol" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)', alignItems: 'start' }}>
         <div className="card" style={{ display: 'grid', gap: 8 }}>
           <div className="h">Documento</div>
           {PARAS.map((p) => {
