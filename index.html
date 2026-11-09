@@ -344,7 +344,7 @@
       <div class="section-head">
         <div class="section-kicker mono" data-i18n="projects.kicker">Proyectos destacados</div>
         <h2 class="section-title" data-i18n="projects.title">Productos que he construido</h2>
-        <p class="section-sub" data-i18n="projects.sub">El gestor de pólizas, la venta de lotes y Playr son los más pulidos hoy: completos y en uso real. El revisor ambiental y atDoor vienen cerca — y cuando estén terminados, los van a superar.</p>
+        <p class="section-sub" data-i18n="projects.sub">El gestor de pólizas, la venta de lotes, Playr y Backline son los más pulidos hoy: completos y en uso real. El revisor ambiental y atDoor vienen cerca — y cuando estén terminados, los van a superar.</p>
       </div>
 
       <div class="project-grid">
@@ -357,7 +357,7 @@
             </div>
             
           </div>
-          <p class="project-desc" data-i18n="proj.atdoor.desc">Marketplace para contratar servicios y alojamientos a domicilio. Backend modular en NestJS con colas (Redis/Bull) y chat en tiempo real por WebSockets, además de pagos, reseñas y notificaciones; app móvil en Expo con flujos separados para clientes y proveedores. Acaba de pasar por una ronda fuerte de hardening de seguridad (SQL injection, IDOR, fuerza bruta).</p>
+          <p class="project-desc" data-i18n="proj.atdoor.desc">Marketplace para contratar servicios y alojamientos a domicilio. Backend modular en NestJS con colas (Redis/Bull) y chat en tiempo real por WebSockets, además de pagos, reseñas y notificaciones; app móvil en Expo con flujos separados para clientes y proveedores. Con revisiones de seguridad aplicadas (SQL injection, IDOR, fuerza bruta).</p>
           <a class="demo-link" href="demos/#/atdoor" data-i18n="demo.try">Probar demo →</a>
           <ul class="tags"><li>NestJS</li><li>PostgreSQL</li><li>Redis</li><li>WebSockets</li><li>Expo</li><li>TypeScript</li></ul>
         </article>
@@ -383,7 +383,7 @@
             </div>
             
           </div>
-          <p class="project-desc" data-i18n="proj.cyma.desc">Portal interno con IA para una consultora ambiental: revisión automatizada de Estudios de Impacto Ambiental con hallazgos categorizados, y un asistente conversacional con RAG (pgvector) sobre normativa ambiental, usando Claude y Gemini según el caso. Integra Google Drive/OAuth para la gestión documental. En uso activo por el cliente.</p>
+          <p class="project-desc" data-i18n="proj.cyma.desc">Portal interno con IA para una consultora ambiental: revisión automatizada de Estudios de Impacto Ambiental con hallazgos categorizados, y un asistente conversacional con RAG (pgvector) sobre normativa ambiental, usando Claude y Gemini según el caso. Integra Google Drive/OAuth para la gestión documental.</p>
           <a class="demo-link" href="demos/#/ambiental" data-i18n="demo.try">Probar demo →</a>
           <ul class="tags"><li>Node.js</li><li>Claude API</li><li>Gemini</li><li>RAG</li><li>pgvector</li><li>OAuth</li></ul>
         </article>
@@ -428,6 +428,47 @@
           <ul class="tags"><li>React Native</li><li>Expo Router</li><li>Supabase</li></ul>
         </article>
 
+      
+        <article class="project-card">
+          <div class="project-top">
+            <div class="project-title-row">
+              <h3>Backline</h3>
+              <span class="badge badge-live" data-i18n="status.live">En producción</span>
+            </div>
+            <div class="project-links">
+              <a href="https://github.com/laruedevelopment/backline" target="_blank" rel="noopener" aria-label="GitHub"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5C5.65.5.5 5.65.5 12c0 5.09 3.29 9.4 7.86 10.93.57.1.78-.25.78-.55v-2.1c-3.2.7-3.87-1.36-3.87-1.36-.53-1.34-1.29-1.7-1.29-1.7-1.05-.72.08-.7.08-.7 1.17.08 1.78 1.2 1.78 1.2 1.03 1.77 2.71 1.26 3.37.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.7 0-1.26.45-2.29 1.19-3.09-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.18 1.18a11 11 0 0 1 5.79 0c2.2-1.49 3.17-1.18 3.17-1.18.64 1.59.24 2.76.12 3.05.74.8 1.18 1.83 1.18 3.09 0 4.43-2.69 5.4-5.26 5.69.42.36.78 1.07.78 2.16v3.2c0 .3.21.66.79.55A10.52 10.52 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5Z"/></svg></a>
+            </div>
+          </div>
+          <p class="project-desc" data-i18n="proj.backline.desc">PWA para bandas: repertorio con tono y BPM, setlists que se reordenan, agenda con confirmación de asistencia, modo escenario con transposición y metrónomo, y chat de banda. Funciona sin conexión. Nació de un dolor real: una banda que perdía su setlist en un chat.</p>
+          <a class="demo-link" href="demos/#/backline" data-i18n="demo.try">Probar demo →</a>
+          <a class="demo-link" href="https://laruedevelopment.github.io/backline/" target="_blank" rel="noopener" data-i18n="app.open">Abrir la app →</a>
+          <ul class="tags"><li>React 19</li><li>Vite</li><li>TypeScript</li><li>Supabase</li><li>PWA</li></ul>
+        </article>
+
+        <article class="project-card">
+          <div class="project-top">
+            <div class="project-title-row">
+              <h3 data-i18n="proj.boleteria.name">Boletería</h3>
+              <span class="badge badge-live" data-i18n="status.live">En producción</span>
+            </div>
+          </div>
+          <p class="project-desc" data-i18n="proj.boleteria.desc">Venta y control de entradas para un toque: el público compra y sube el comprobante de su transferencia, el staff lo valida y la persona recibe un QR único. En la puerta, escáner con ingreso único y un tablero en vivo. Roles de administrador, validador y taquilla.</p>
+          <a class="demo-link" href="demos/#/boleteria" data-i18n="demo.try">Probar demo →</a>
+          <ul class="tags"><li>React 19</li><li>Vite</li><li>Supabase</li><li>Cloudflare Workers</li></ul>
+        </article>
+
+        <article class="project-card">
+          <div class="project-top">
+            <div class="project-title-row">
+              <h3>Sofía</h3>
+              <span class="badge badge-testing" data-i18n="status.pilot">Piloto</span>
+            </div>
+          </div>
+          <p class="project-desc" data-i18n="proj.sofia.desc">Agente de IA para las citas de un centro de diagnóstico, por WhatsApp, llamadas y chat web: agenda, reprograma y cancela con un motor propio de horarios, entiende notas de voz y fotos de órdenes médicas, y pasa a una persona cuando hace falta. Un mismo código sirve a varios negocios mediante perfiles, con control del gasto de IA por niveles. En piloto con un cliente real.</p>
+          <a class="demo-link" href="demos/#/sofia" data-i18n="demo.try">Probar demo →</a>
+          <ul class="tags"><li>Node.js</li><li>TypeScript</li><li>Claude</li><li>WhatsApp Cloud API</li><li>Railway</li></ul>
+        </article>
+
       </div>
     </div>
   </section>
@@ -441,6 +482,16 @@
       </div>
 
       <div class="other-grid">
+        <div class="other-card">
+          <div class="other-top">
+            <h4>Slothy</h4>
+            <span class="badge" data-i18n="badge.prototype">Prototipo</span>
+          </div>
+          <p data-i18n="proj.slothy.desc">Recepcionista virtual para negocios pequeños: el cliente reserva por un chat con enlace o QR y la cita aparece al instante en el panel del dueño, con agenda, clientes, equipo e ingresos.</p>
+          <a class="demo-link" href="demos/#/slothy" data-i18n="demo.try">Probar demo →</a>
+          <ul class="other-tags"><li>Hono</li><li>React</li><li>Postgres</li></ul>
+        </div>
+
 
         <div class="other-card">
           <div class="other-top">
@@ -515,7 +566,7 @@
       "hero.eyebrow":"Disponible para nuevos proyectos",
       "hero.role":"Ingeniero de Software",
       "hero.tagline":"Freelance: un problema de negocio entra, una app sale.",
-      "hero.cta.projects":"Ver proyectos","hero.cta.demos":"Probar las demos","demo.try":"Probar demo →","store.get":"Ver en las tiendas →","hero.cta.contact":"Contáctame",
+      "hero.cta.projects":"Ver proyectos","hero.cta.demos":"Probar las demos","demo.try":"Probar demo →","store.get":"Ver en las tiendas →","app.open":"Abrir la app →","hero.cta.contact":"Contáctame",
       "about.kicker":"Sobre mí",
       "about.title":"Ingeniería de software con foco en producto",
       "about.p1":"Lo que más me engancha es agarrar un problema de negocio real y desordenado y convertirlo en una herramienta que alguien usa todos los días — desde un asesor de seguros hasta un centro de medicina nuclear. Últimamente eso me ha llevado a meterme de lleno en IA aplicada, no como moda sino como una forma más de resolver ese mismo problema.",
@@ -524,11 +575,12 @@
       "skills.heading":"Stack principal",
       "projects.kicker":"Proyectos destacados",
       "projects.title":"Productos que he construido",
-      "projects.sub":"El gestor de pólizas, la venta de lotes y Playr son los más pulidos hoy: completos y en uso real. El revisor ambiental y atDoor vienen cerca — y cuando estén terminados, los van a superar.",
-      "proj.atdoor.desc":"Marketplace para contratar servicios y alojamientos a domicilio. Backend modular en NestJS con colas (Redis/Bull) y chat en tiempo real por WebSockets, además de pagos, reseñas y notificaciones; app móvil en Expo con flujos separados para clientes y proveedores. Acaba de pasar por una ronda fuerte de hardening de seguridad (SQL injection, IDOR, fuerza bruta).",
+      "projects.sub":"El gestor de pólizas, la venta de lotes, Playr y Backline son los más pulidos hoy: completos y en uso real. El revisor ambiental y atDoor vienen cerca — y cuando estén terminados, los van a superar.",
+      "proj.atdoor.desc":"Marketplace para contratar servicios y alojamientos a domicilio. Backend modular en NestJS con colas (Redis/Bull) y chat en tiempo real por WebSockets, además de pagos, reseñas y notificaciones; app móvil en Expo con flujos separados para clientes y proveedores. Con revisiones de seguridad aplicadas (SQL injection, IDOR, fuerza bruta).",
+      "proj.backline.desc":"PWA para bandas: repertorio con tono y BPM, setlists que se reordenan, agenda con confirmación de asistencia, modo escenario con transposición y metrónomo, y chat de banda. Funciona sin conexión. Nació de un dolor real: una banda que perdía su setlist en un chat.","proj.boleteria.name":"Boletería","proj.boleteria.desc":"Venta y control de entradas para un toque: el público compra y sube el comprobante de su transferencia, el staff lo valida y la persona recibe un QR único. En la puerta, escáner con ingreso único y un tablero en vivo. Roles de administrador, validador y taquilla.","proj.sofia.desc":"Agente de IA para las citas de un centro de diagnóstico, por WhatsApp, llamadas y chat web: agenda, reprograma y cancela con un motor propio de horarios, entiende notas de voz y fotos de órdenes médicas, y pasa a una persona cuando hace falta. Un mismo código sirve a varios negocios mediante perfiles, con control del gasto de IA por niveles. En piloto con un cliente real.","proj.slothy.desc":"Recepcionista virtual para negocios pequeños: el cliente reserva por un chat con enlace o QR y la cita aparece al instante en el panel del dueño, con agenda, clientes, equipo e ingresos.",
       "proj.segurapp.name":"Gestor de pólizas","proj.cyma.name":"Revisor ambiental con IA","proj.albaterra.name":"Venta de lotes","proj.spect.name":"Asistente para centro de diagnóstico",
       "proj.segurapp.desc":"Archivador digital inteligente para agencias de seguros: pólizas, clientes, comisiones repartidas, abonos y reportes de vencimientos, con generación automática de PDFs. Ahora con importación asistida por IA (Gemini) que extrae los datos de una póliza desde un PDF o foto, y con Row Level Security reforzado en Postgres. En uso real, con CI/CD y manual de usuario completo.",
-      "proj.cyma.desc":"Portal interno con IA para una consultora ambiental: revisión automatizada de Estudios de Impacto Ambiental con hallazgos categorizados, y un asistente conversacional con RAG (pgvector) sobre normativa ambiental, usando Claude y Gemini según el caso. Integra Google Drive/OAuth para la gestión documental. En uso activo por el cliente.",
+      "proj.cyma.desc":"Portal interno con IA para una consultora ambiental: revisión automatizada de Estudios de Impacto Ambiental con hallazgos categorizados, y un asistente conversacional con RAG (pgvector) sobre normativa ambiental, usando Claude y Gemini según el caso. Integra Google Drive/OAuth para la gestión documental.",
       "proj.albaterra.desc":"ERP inmobiliario para venta de lotes y proyectos de vivienda: cotizaciones, separaciones, planes de pago, comisiones de vendedores y generación de contratos en PDF, con exportes a Excel. Más de 30 pantallas — el sistema más grande del portafolio.",
       "proj.playr.desc":"App social deportiva para encontrar compañeros de juego, reservar canchas y crear grupos por deporte, con rachas, puntaje de confiabilidad y reservas gestionadas por los dueños de las canchas. Ya disponible en App Store y Google Play, con monitoreo de errores (Sentry) y builds automatizados vía EAS.",
       "proj.apex.desc":"App social para entusiastas del motorsport: feed de publicaciones, garage para catalogar vehículos, registro de sesiones por GPS y mapa de amigos cercanos.",
@@ -536,7 +588,7 @@
       "other.title":"Prototipos y herramientas internas",
       "other.sub":"Proyectos más pequeños, en etapa temprana o construidos para un uso específico — igual de reales, con menos alcance.",
       "badge.prototype":"Prototipo",
-      "status.live":"En producción","status.dev":"En desarrollo","status.testing":"En pruebas",
+      "status.live":"En producción","status.dev":"En desarrollo","status.testing":"En pruebas","status.pilot":"Piloto",
       "proj.spect.desc":"Sitio institucional con asistente de IA para un centro de medicina nuclear: catálogo de 26 procedimientos y un asistente con tool-use de Claude para consultar preparación y agendar citas.",
       "proj.menu.name":"Menú Digital",
       "proj.menu.desc":"App multi-tenant de menú digital para restaurantes: carrito de pedidos enviados directo a WhatsApp, catálogo con imágenes cacheadas y personalización de marca por negocio desde un mismo build.",
@@ -554,7 +606,7 @@
       "hero.eyebrow":"Open to new opportunities",
       "hero.role":"Software Engineer",
       "hero.tagline":"Freelance: a business problem goes in, an app comes out.",
-      "hero.cta.projects":"View projects","hero.cta.demos":"Try the demos","demo.try":"Try demo →","store.get":"Get it on the stores →","hero.cta.contact":"Get in touch",
+      "hero.cta.projects":"View projects","hero.cta.demos":"Try the demos","demo.try":"Try demo →","store.get":"Get it on the stores →","app.open":"Open the app →","hero.cta.contact":"Get in touch",
       "about.kicker":"About",
       "about.title":"Software engineering with a product mindset",
       "about.p1":"What really hooks me is taking a messy, real business problem and turning it into something people use every day — from an insurance advisor to a nuclear medicine center. Lately that's pulled me deep into applied AI, not as a trend but as one more way to solve that same problem.",
@@ -563,11 +615,12 @@
       "skills.heading":"Core stack",
       "projects.kicker":"Featured projects",
       "projects.title":"Products I've built",
-      "projects.sub":"The policy manager, lot sales, and Playr are the most polished today — complete and in real use. The environmental reviewer and atDoor are close behind, and once finished, they'll surpass them.",
-      "proj.atdoor.desc":"A marketplace for booking on-demand services and stays. Modular NestJS backend with Redis/Bull queues and real-time WebSocket chat, plus payments, reviews, and notifications; an Expo mobile app with separate client and provider flows. Just went through a serious security-hardening pass (SQL injection, IDOR, brute-force protection).",
+      "projects.sub":"The policy manager, lot sales, Playr, and Backline are the most polished today — complete and in real use. The environmental reviewer and atDoor are close behind, and once finished, they'll surpass them.",
+      "proj.atdoor.desc":"A marketplace for booking on-demand services and stays. Modular NestJS backend with Redis/Bull queues and real-time WebSocket chat, plus payments, reviews, and notifications; an Expo mobile app with separate client and provider flows. Security reviews applied (SQL injection, IDOR, brute-force protection).",
+      "proj.backline.desc":"A PWA for bands: a repertoire with key and BPM, reorderable setlists, a schedule with attendance confirmation, a stage mode with transposition and metronome, and band chat. Works offline. It started from a real pain: a band losing its setlist in a chat.","proj.boleteria.name":"Ticketing","proj.boleteria.desc":"Ticket sales and door control for a gig: buyers upload their transfer receipt, staff validates it, and each person gets a unique QR. At the door, a single-entry scanner and a live dashboard. Admin, validator, and box-office roles.","proj.sofia.desc":"An AI agent for a diagnostic center's appointments, over WhatsApp, calls, and web chat: it books, reschedules, and cancels with its own scheduling engine, understands voice notes and photos of medical orders, and hands over to a person when needed. One codebase serves several businesses through profiles, with tiered AI-spend control. Piloting with a real client.","proj.slothy.desc":"A virtual receptionist for small businesses: customers book through a chat via link or QR and the appointment shows up instantly in the owner's dashboard, with schedule, clients, team, and revenue.",
       "proj.segurapp.name":"Policy manager","proj.cyma.name":"AI environmental reviewer","proj.albaterra.name":"Lot sales","proj.spect.name":"Assistant for a diagnostic center",
       "proj.segurapp.desc":"A smart digital archive for insurance agencies: policies, clients, split commissions, payments, and renewal reports, with automatic PDF generation. Now with AI-assisted policy import (Gemini) that pulls the data straight from a PDF or photo, plus hardened Postgres Row Level Security. In real-world use, with CI/CD and a full user manual.",
-      "proj.cyma.desc":"An internal AI-powered portal for an environmental consultancy: automated review of Environmental Impact Studies with categorized findings, plus a RAG-based (pgvector) conversational assistant over environmental regulations, using Claude and Gemini depending on the task. Integrates Google Drive/OAuth for document management. Actively used by the client.",
+      "proj.cyma.desc":"An internal AI-powered portal for an environmental consultancy: automated review of Environmental Impact Studies with categorized findings, plus a RAG-based (pgvector) conversational assistant over environmental regulations, using Claude and Gemini depending on the task. Integrates Google Drive/OAuth for document management.",
       "proj.albaterra.desc":"A real-estate ERP for lot and housing project sales: quotes, reservations, payment plans, sales-rep commissions, PDF contract generation, and Excel exports. Over 30 screens — the largest system in the portfolio.",
       "proj.playr.desc":"A sports social app for finding people to play with, booking courts, and creating groups by sport, with win-streak tracking, reliability scores, and owner-managed court reservations. Now available on the App Store and Google Play, with crash monitoring (Sentry) and automated EAS builds.",
       "proj.apex.desc":"A social app for motorsport enthusiasts: post feed, a garage to catalog vehicles, GPS session tracking, and a nearby-friends map.",
@@ -575,7 +628,7 @@
       "other.title":"Prototypes and internal tools",
       "other.sub":"Smaller projects, early-stage or built for a specific use case — just as real, with narrower scope.",
       "badge.prototype":"Prototype",
-      "status.live":"In production","status.dev":"In development","status.testing":"In testing",
+      "status.live":"In production","status.dev":"In development","status.testing":"In testing","status.pilot":"Pilot",
       "proj.spect.desc":"An institutional site with an AI assistant for a nuclear medicine center: a catalog of 26 procedures and a Claude tool-use assistant for prep info and appointment booking.",
       "proj.menu.name":"Digital Menu",
       "proj.menu.desc":"A multi-tenant digital menu app for restaurants: a cart that sends orders straight to WhatsApp, an image-cached catalog, and per-business branding from a single build.",
