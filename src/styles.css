@@ -223,3 +223,6 @@ button { cursor: pointer; }
 /* Los hijos de una columna con scroll no deben encogerse (aplastaba el mapa de Apex) */
 .app-body > * { flex-shrink: 0; }
 .app svg { display: block; }
+
+.lab-list { max-height: calc(100vh - 100px); overflow-y: auto; padding-right: 4px; }
+@media (max-width: 720px) { .lab-list { max-height: none; overflow-y: visible; } }
