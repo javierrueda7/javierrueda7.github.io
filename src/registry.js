@@ -22,7 +22,7 @@ export const PROJECTS = [
       'En Perfil cambia la apariencia a Oscuro',
     ],
     simulated: 'Mapa con GPS real, pagos, notificaciones push y los módulos de dueño de cancha y administración. Aquí todos los jugadores y canchas son inventados.',
-    link: { label: 'Ver en App Store', href: 'https://apps.apple.com/co/app/playr/id6807193893' },
+    link: { label: 'Ver en las tiendas', href: 'https://playr.lat/' },
     Sim: lazy(() => import('./sims/Playr.jsx')),
   },
   {
