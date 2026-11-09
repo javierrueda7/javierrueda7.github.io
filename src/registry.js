@@ -244,4 +244,24 @@ export const PROJECTS = [
     simulated: 'El análisis real con IA y la búsqueda sobre normativa. Aquí el documento y los hallazgos están escritos de antemano, sobre un proyecto inventado.',
     Sim: lazy(() => import('./sims/Ambiental.jsx')),
   },
+  {
+    id: 'encuestas',
+    name: 'Encuestas de campo',
+    tagline: 'Formularios dinámicos con exportación a Excel',
+    status: 'live',
+    statusLabel: 'En producción (caso de cliente)',
+    device: 'desktop',
+    accent: '#b45309',
+    stack: ['Flutter', 'Firebase + Firestore', 'Apps Script', 'GitHub Actions'],
+    about:
+      'Un equipo técnico arma sus propios formularios, los llena en campo desde el celular o la web, consulta las respuestas y las baja a Excel.',
+    try: [
+      'Llena el formulario dejando un campo obligatorio vacío',
+      'Guarda una respuesta válida y mírala en la tabla',
+      'En «Editar formulario» agrega un campo nuevo',
+      'Exporta las respuestas a un archivo .csv',
+    ],
+    simulated: 'Usuarios y permisos, carga de datos masiva y el envío automático por correo. Aquí los formularios y las mediciones son de ejemplo.',
+    Sim: lazy(() => import('./sims/Encuestas.jsx')),
+  },
 ]
