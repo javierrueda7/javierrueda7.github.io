@@ -85,7 +85,7 @@
 .pz-ico.grn { background: var(--grns); color: var(--grn); } .pz-ico.nvy { background: var(--navys); color: var(--navy); } .pz-ico.wrn { background: var(--wrns); color: var(--wrn); }
 
 .pz-search { position: relative; margin-bottom: 8px; color: var(--ink2); } .pz-search svg { position: absolute; left: 11px; top: 11px; } .pz-search input { padding-left: 34px; }
-.pz-filters { display: grid; grid-template-columns: 1.3fr 1fr 1fr 1fr; gap: 8px; } .pz.narrow .pz-filters { grid-template-columns: 1fr 1fr; }
+.pz-filters { display: grid; grid-template-columns: 1.3fr 1fr 1fr 1fr 1fr; gap: 8px; } .pz.narrow .pz-filters { grid-template-columns: 1fr 1fr; }
 .pz-count { margin: 6px 2px; color: var(--ink2); font-size: 12px; display: flex; justify-content: space-between; align-items: center; gap: 8px; }
 .pz-table td.num, .pz-table td.acts { white-space: nowrap; } .pz-table td:nth-child(4) { min-width: 170px; } .pz-table td:nth-child(3), .pz-table td:nth-child(5) { min-width: 130px; }
 .pz-tablew { background: var(--surf); border: 1px solid var(--line); border-radius: 12px; overflow: auto; max-height: 100%; } .pz-tablew.inner { border: 0; border-radius: 0; }
@@ -146,5 +146,5 @@
 .pz.rail .pz-item { justify-content: center; padding: 0; position: relative; } .pz.rail .pz-item .pz-badge { position: absolute; top: 2px; right: 2px; line-height: 14px; padding: 0 5px; font-size: 10px; }
 .pz.rail .pz-user { flex-direction: column; padding: 8px 0; } .pz.rail .pz-sbrand .pz-logo { width: 34px; }
 .pz.rail .pz-content { padding: 12px 12px 20px; } .pz.rail .pz-head { padding: 10px 12px; }
-.pz.rail .pz-fgrid { grid-template-columns: 1fr 1fr; } .pz.rail .pz-filters { grid-template-columns: repeat(4, minmax(0, 1fr)); } .pz.rail .pz-filters select, .pz.rail .pz-filters input { padding: 0 6px; font-size: 12px; }
+.pz.rail .pz-fgrid { grid-template-columns: 1fr 1fr; } .pz.rail .pz-filters { grid-template-columns: repeat(5, minmax(0, 1fr)); } .pz.rail .pz-filters select, .pz.rail .pz-filters input { padding: 0 6px; font-size: 12px; }
 .pz.rail .pz-stat b { font-size: 15px; } .pz.rail .pz-stat { padding: 8px 10px; }

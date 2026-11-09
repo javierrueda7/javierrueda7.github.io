@@ -9,7 +9,7 @@ const STYLES = {
     tipo: '¿Cómo te provoca el pedido?', mesa: '¿En cuál mesa te acomodamos?', confirm: '¡Dale, confirmar pedido!', sent: '¡Listo! Tu pedido ya va pa\' la cocina.',
   },
   santandereano: {
-    seed: '#8D6E3A', pt: '#74561f', sc: '#f2dfc0', bg: '#fffaf3', card: '#f6ece1', hue: 35,
+    seed: '#8D6E3A', pt: '#74561f', sc: '#f2dfc0', bg: '#fffaf3', card: '#fbf0e0', hue: 35,
     tipo: '¿Cómo va a ser el pedido?', mesa: '¿En qué mesa lo sentamos?', confirm: 'De una, confirmar pedido', sent: 'Pedido enviado a cocina, ya se lo alistamos.',
   },
   elegante: {
@@ -35,8 +35,8 @@ const BUSINESSES = [
   {
     id: 'demo-santandereano', name: 'Fogón Santandereano', kind: 'Restaurante santandereano', style: 'santandereano',
     cats: [
-      ['Entradas', [['Arepa santandereana', 'Arepa de maíz pelado con queso campesino', 9000]]],
-      ['Platos principales', [['Mute santandereano', 'Sopa de maíz y carnes con papa y yuca', 22000], ['Carne oreada', 'Carne secada al sol con yuca y arepa', 30000]]],
+      ['Entradas', [['Mute santandereano', 'Sopa tradicional con maíz, papa, carne y garbanzo', 22000], ['Arepa santandereana', 'Arepa de maíz pelado con chicharrón', 9000]]],
+      ['Platos principales', [['Carne oreada', 'Carne secada al sol con yuca y arepa', 30000]]],
       ['Bebidas', [['Masato', 'Bebida de arroz fermentada, servida fría', 6000]]],
       ['Postres', [['Bocadillo con queso', 'Bocadillo veleño con queso fresco', 7000]]],
     ],
@@ -53,8 +53,8 @@ const BUSINESSES = [
   {
     id: 'demo-business', name: 'Sabores del Barrio', kind: 'Restaurante casual', style: 'casual',
     cats: [
-      ['Entradas', [['Empanadas colombianas (x4)', 'Cuatro empanadas de carne con ají', 12000], ['Patacones con hogao', 'Plátano verde frito con hogao casero', 14000]]],
-      ['Platos fuertes', [['Bandeja paisa', 'Frijoles, arroz, chicharrón, carne, huevo y arepa', 32000], ['Ajiaco santafereño', 'Sopa de papas con pollo, mazorca y alcaparras', 28000]]],
+      ['Entradas', [['Empanadas colombianas (x4)', 'De carne y papa, con ají casero', 12000], ['Patacones con hogao', 'Plátano verde frito con hogao y suero costeño', 14000]]],
+      ['Platos principales', [['Bandeja paisa', 'Frijoles, arroz, chicharrón, carne, huevo y arepa', 32000], ['Ajiaco santafereño', 'Sopa de papas con pollo, mazorca y alcaparras', 28000]]],
       ['Bebidas', [['Gaseosa 400ml', 'Botella personal bien fría', 5000], ['Jugo de lulo', 'Lulo natural en agua o leche', 7000]]],
       ['Postres', [['Obleas con arequipe', 'Obleas crocantes con arequipe y queso', 8000]]],
     ],
@@ -62,7 +62,7 @@ const BUSINESSES = [
   {
     id: 'demo-cafeteria', name: 'Café de la Esquina', kind: 'Cafetería', style: 'casual',
     cats: [
-      ['Cafés', [['Tinto', 'Café filtrado, taza de 8 oz', 3000], ['Café con leche', 'Café con leche caliente espumada', 5000], ['Chocolate santafereño', 'Chocolate espeso para acompañar con queso', 9000]]],
+      ['Cafés', [['Tinto', 'Café negro colombiano tradicional', 3000], ['Café con leche', 'Café colombiano con leche caliente', 5000], ['Chocolate santafereño', 'Con queso y almojábana', 9000]]],
       ['Panadería', [['Pan de bono', 'Horneado cada mañana', 3500], ['Croissant', 'Mantequilla y hojaldre, tibio', 6000]]],
       ['Bebidas frías', [['Jugo natural', 'Fruta del día en agua o leche', 6000]]],
       ['Snacks', []],
@@ -71,10 +71,10 @@ const BUSINESSES = [
   {
     id: 'demo-cafe-especializado', name: 'Origen', kind: 'Café especializado', style: 'elegante',
     cats: [
-      ['Espresso', [['Espresso', 'Doble, de finca de Huila', 5000], ['Cappuccino', 'Espresso con leche vaporizada', 8000]]],
-      ['Filtrados', [['V60', 'Café de origen preparado a mano', 9000]]],
-      ['Fríos', [['Cold brew', 'Extracción en frío de 18 horas', 9000]]],
-      ['Postres', [['Torta de especialidad', 'Porción de torta de la semana', 11000]]],
+      ['Espresso', [['Espresso', 'Origen único, tueste de la casa', 5000], ['Cappuccino', 'Espresso, leche vaporizada y espuma', 8000]]],
+      ['Métodos de filtrado', [['V60', 'Café de origen preparado a mano', 9000]]],
+      ['Bebidas frías', [['Cold brew', 'Extracción en frío de 18 horas', 9000]]],
+      ['Repostería', [['Torta de especialidad', 'Porción de torta de la semana', 11000]]],
     ],
   },
   {
@@ -108,6 +108,7 @@ const P = {
   minus: 'M8 12h8',
   trash: 'M5 7h14M9 7V4h6v3M7 7l1 13h8l1-13M10 11v6M14 11v6',
   check: 'M5 12.5l4.5 4.5L19 7.5',
+  checkc: 'M12 3a9 9 0 100 18 9 9 0 000-18zM7.8 12.3l2.8 2.8 5.6-5.8',
   receipt: 'M6 3h12v18l-3-2-3 2-3-2-3 2V3zM9 8h6M9 12h6',
   table: 'M4 7h16M12 7v13M8 20h8M6 7l1.2 3.5h9.6L18 7',
   store: 'M4 9l1.5-5h13L20 9M4 9v11h16V9M4 9a2.7 2.7 0 005.3 0 2.7 2.7 0 005.4 0A2.7 2.7 0 0020 9M10 20v-5h4v5',
@@ -290,7 +291,7 @@ export default function Menu() {
                 </div>
                 <div className="mn-foot">
                   <div className="mn-total"><span>Total</span><b>{cop(total)}</b></div>
-                  <button className="mn-cta" disabled={!lines.length} onClick={confirm}><Ic n="check" c="ctaic" />{st.confirm}</button>
+                  <button className="mn-cta" disabled={!lines.length} onClick={confirm}><Ic n="checkc" c="ctaic" />{st.confirm}</button>
                 </div>
               </>
             )}

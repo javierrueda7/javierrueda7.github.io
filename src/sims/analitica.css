@@ -210,7 +210,7 @@
   .an-left h2 { font-size: 22px; }
   .an-right { padding: 24px 20px; }
   .an-who { display: none; }
-  .an-tools .an-seg { order: 3; } .an-rc { order: 4; }
+  .an-tools .an-seg { order: 3; } .an-rc { order: 4; } .an-tools .an-search { flex: 1 1 100%; }
   .an-tw table, .an-tw tbody { display: block; }
   .an-tw thead { display: none; }
   .an-tw tr { display: flex; flex-wrap: wrap; gap: 4px 12px; padding: 14px 16px; border-top: 1px solid var(--s100); align-items: center; }
